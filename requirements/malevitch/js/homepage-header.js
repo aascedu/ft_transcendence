@@ -84,7 +84,8 @@ window.addEventListener('click', function ({target}){
 // 
 
 document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	hideEveryPage();
+
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
@@ -97,7 +98,8 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 //
 
 document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	hideEveryPage();
+
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
