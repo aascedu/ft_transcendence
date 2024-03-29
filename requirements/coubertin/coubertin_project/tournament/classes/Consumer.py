@@ -13,7 +13,7 @@ class Consumer(AsyncWebsocketConsumer):
 
         self.admin = False
         if (len(self.myTournament.players) == 0):
-            self.admin = True # Est-ce qu'on laisse le choix a l'admin de jouer ou non ?
+            self.admin = True # Do we let the admin chose if he plays or not ?
 
         self.id = len(self.myTournament.players) # We want it to be his place in the players array
         self.myName = len(self.myTournament.players) # I will need the id of the player.
@@ -64,8 +64,8 @@ class Consumer(AsyncWebsocketConsumer):
     async def StartRound(self, event): # Sent by every single players
         global tournaments
 
-        if (self.admin): # This is shit
-            self.myTournament.onGoingGames = len(self.myTournament.players) / 2
+        if (self.admin):
+            self.myTournament.onGoingGames = len(self.myTournament.players) / 2 # Check this in case of disconnected participants
             self.myTournament.currentRound += 1
 
             # Check tournament end
