@@ -56,8 +56,8 @@ class signinView(View):
             jwt = JWT.objectToAccessToken(client)
         except BaseException as e:
             return JsonResponse({"Err": e.__str__()})
-        response.set_cookie("Ref", refresh_token)
-        response.set_cookie("Auth", jwt)
+        response.set_cookie("ref", refresh_token)
+        response.set_cookie("auth", jwt)
         return response
 
 
@@ -104,7 +104,7 @@ class signupView(View):
             refresh_token = JWT.objectToRefreshToken(client)
             jwt = JWT.objectToAccessToken(client)
         except BaseException as e:
-            return JsonResponse({"Err", e.__str__()})
+            return JsonResponse({"Err": e.__str__()})
         response = JsonResponse({})
         response.set_cookie("ref", refresh_token)
         response.set_cookie("auth", jwt)
@@ -137,68 +137,3 @@ class refreshView(View):
         response = JsonResponse({})
         response.set_cookie("auth", jwt)
         return response
-
-
-"""
-old views
-"""
-
-
-class checkInView(View):
-    def get(self, request: HttpRequest, type: str, data: str) -> JsonResponse:
-        if (type == "mail"):
-            query = Client.objects.filter(email=data).first()
-        else:
-            query = Client.objects.filter(pseudo=data).first()
-        if not query:
-            return JsonResponse({"availability": True})
-        return JsonResponse({"availability": False, "client": query.toDict()})
-
-    def post(self, request: HttpRequest, checked: str,
-             mail: str) -> JsonResponse:
-        mailaddr = request.POST.get("mail")
-        nickname = request.POST.get("nick")
-        password = request.POST.get("pass")
-        firstnme = request.POST.get("firstnme")
-        lastname = request.POST.get("lastname")
-
-        if (not mailaddr or not nickname or not password or not firstnme or not lastname):
-            return JsonResponse(
-                {"status": "Error", "msg": "All information must be filled"})
-
-        newClient = Client(email=mailaddr,
-                           pseudo=nickname,
-                           password=password,
-                           firstName=firstnme,
-                           lastName=lastname)
-        success = newClient.save()
-
-        if success == False:
-            return JsonResponse({"Error": "Intern database error"})
-
-        return JsonResponse({"status": "success"})
-        return JsonResponse({"": ""})
-
-
-def new_view(request, nick: str, mail: str, password: str):
-    client = Client.objects.all().filter(nick=nick).first()
-    # if yo is not None:
-    # yo.delete()
-    # return JsonResponse({"damned": "youpi"})
-
-    print(mail, nick)
-    # client = Client.objects.create(email=mail, password=make_password(password), nick=nick)
-    # client.save()
-    print(client.to_alfred())
-    print(f'http://alfred:8001/user/user-profile/{client.unique_id}')
-    request = requests.post(f'http://alfred:8001/user/user-profile/{client.unique_id}',  # creation de la ressource
-                            json=client.to_alfred())
-    print(request)
-    return JsonResponse({"": ""}, safe=False)
-
-
-def test_view(request, password: str) -> JsonResponse:
-    hashed_password = bcrypt.hashpw(
-        password.encode('utf-8'), salt)
-    return JsonResponse({"pass": hashed_password.__str__()})
-
