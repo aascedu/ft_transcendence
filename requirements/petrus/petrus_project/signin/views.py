@@ -93,7 +93,7 @@ class signupView(View):
 
 # checker si les requests sont successfull
         request = requests.post(
-            f'http://alfred:8001/user/user-profile/{client.unique_id}',
+            f'http://alfred:8001/user/users/{client.unique_id}',
             json=client.to_alfred())
 # checker si les requests sont successfull
         request = requests.post(
