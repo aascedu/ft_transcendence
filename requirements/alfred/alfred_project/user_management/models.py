@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Client(models.Model):
-    font_size_choices = [(1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
+    font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
 
     languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
 
@@ -12,8 +12,8 @@ class Client(models.Model):
     email = models.EmailField()
     avatar = models.ImageField('avatars/', blank=True)
     friends = models.ManyToManyField('self', blank=True)
-    font = models.IntegerField(choices=font_size_choices)
-    lang = models.IntegerField(choices=languages_choices)
+    font = models.IntegerField(choices=font_size_choices, default=0)
+    lang = models.IntegerField(choices=languages_choices, default=1)
 
 
     objects = models.Manager()
@@ -88,7 +88,7 @@ class FriendshipRequest(models.Model):
     @staticmethod
     def processRequest(sender, receiver) -> JsonResponse:
         if receiver in sender.friends.all():
-            return JsonResponse({"Err": "redondant request"})
+            return JsonResponse({"Err": "friendship allready establisheg"})
 
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()

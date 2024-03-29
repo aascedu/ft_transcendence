@@ -8,8 +8,6 @@ from shared.error_management import report_error
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
-        print(request.user.id)
-        print(request.user.error)
         try:
             client = Client.objects.get(unique_id=request.user.id)
         except BaseException as e:
@@ -27,7 +25,12 @@ class userInfoView(View):
         return JsonResponse(target.public_dict())
 
     def patch(self, request, id: int) -> JsonResponse:
-        client = Client.objects.get(request.user.id)
+        try:
+            client = Client.objects.get(unique_id=request.user.id)
+        except BaseException as e:
+            response = JsonResponse({"Err": e.__str__()})
+            response.delete_cookie('aut')
+            return response
         data = request.data
         client.avatar = data.get("Avatar", client.avatar)
         client.lang = data.get("Lang", client.lang)
@@ -79,8 +82,6 @@ class userInfoView(View):
 
 class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
-
-
         if id == 0:
             emiter = Client.objects.get(unique_id=request.user.id)
             return JsonResponse({
@@ -127,6 +128,8 @@ class friendView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         sender = Client.objects.get(unique_id=request.user.id)
+        if id == request.user.id:
+            return JsonResponse({"Err": "invalid id"})
         try:
             receiver = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:

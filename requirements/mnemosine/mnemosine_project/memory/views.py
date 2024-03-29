@@ -1,6 +1,8 @@
 from django.http import JsonResponse
 from django.views import View
 
+import requests
+
 from memory.models import Tournament, Game, Player
 
 def request_get_all(ids_str, key_name, model):
@@ -21,8 +23,6 @@ def request_get_all(ids_str, key_name, model):
 class tournamentView(View):
     def get(self, request, id: int = 0):
         return_json = {}
-
-        queries = request.GET.getlist('query')
 
         data = request.GET.getlist('tournaments')
         return_json |= request_get_all(data, "Tournaments", Tournament)
@@ -54,12 +54,12 @@ class gameView(View):
         new_game = Game()
         try:
             new_game.player1 = Player.objects.get(unique_id=info_array[0])
-        except BaseException:
+        except BaseException as e:
             return JsonResponse({"Err": f"Player 1 may not exist {e.__str__()}"})
         new_game.score1 = info_array[1]
         try:
             new_game.player2 = Player.objects.get(unique_id=info_array[2])
-        except BaseException:
+        except BaseException as e:
             return JsonResponse({"Err": f"Player 2 may not exist {e.__str__()}"})
         new_game.score2 = info_array[3]
         try:
@@ -74,35 +74,43 @@ class playerView(View):
         return_json = {}
 
         queries = request.GET.getlist('query')
-
-        if 'perso' in queries:
+        if 'personal' in queries:
             try:
                 personal_player = Player.objects.get(id=request.user.id)
                 return_json |= {"Perso" : personal_player.to_dict()}
             except BaseException as e:
                 return_json |= {"Err": e.__str__()}
 
-        if 'friends' in queries:
+        if 'friend' in queries:
             try:
-                # request to alfred to know friends
-                pass
+                response = requests.get(f"http://alfred:8001/user/friends/{request.user.id}")
+                friends_ids = response.json().get("Friends")
+                print(request.user.id)
+                print(friends_ids)
+                if id in friends_ids:
+                    friend = Player.objects.get(id=id)
+                    return_json |= {"Friend": friend.to_dict()}
             except BaseException as e:
                 return_json |= {"Err": e.__str__()}
 
-        data = request.GET.getlist('players')
-        return_json |= request_get_all(data, 'Players', Player)
+        if 'friends' in queries:
+            pass
+
+        if 'players' in queries:
+            data = request.GET.getlist('players')
+            return_json |= request_get_all(data, 'Players', Player)
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
         data = request.data
-        if not 'Id' in data:
+        if 'Id' not in data:
             return JsonResponse({"Err": "no id provided"})
-        if not 'Elo' in data:
+        if 'Elo' not in data:
             data['Elo'] = 500
         player = Player()
-        player.unique_id = data['Id']
+        player.id = data['Id']
         player.elo = data['Elo']
-        try: 
+        try:
             player.save()
         except BaseException as e:
             return JsonResponse({"Err": e.__str__()})
@@ -110,27 +118,31 @@ class playerView(View):
 
     def delete(self, request, id: int = 0):
         data = request.data
-        if not 'Id' in data:
+        if 'Id' not in data:
             return JsonResponse({"Err": "no id provided"})
         try:
             player = Player.objects.get(unique_id=data['Id'])
         except BaseException:
             return JsonResponse({"Err": "no player for the id"})
+        try:
+            player.delete()
+        except BaseException as e:
+            return JsonResponse({"Err": f"unexpected error : {e.__str__()}"})
         return JsonResponse({"Player suppressed": True})
 
     def patch(self, request, id: int = 0):
         data = request.data
-        if not 'Id' in data:
+        if 'Id' not in data:
             return JsonResponse({"Err": "no id provided"})
         try:
             player = Player.objects.get(unique_id=data['Id'])
         except BaseException:
             return JsonResponse({"Err": "no player for the id"})
-        if not 'Elo' in data:
+        if 'Elo' not in data:
             return JsonResponse({"Err": "no elo provided"})
         player.elo = data['Elo']
         try:
-            player.update()
-        except:
+            player.save()
+        except BaseException as e:
             return JsonResponse({"Err": e.__str__()})
         return JsonResponse({"Player updated": player.to_dict()})

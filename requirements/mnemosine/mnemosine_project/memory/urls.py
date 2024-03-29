@@ -6,9 +6,12 @@ from memory.views import (
         playerView,
 )
 
+from memory.models import Player
 
 def view_db(request):
-    return JsonResponse({"\"db\"": "nothing is in db"})
+    return JsonResponse({"Players":
+                    [e.to_dict() for e in Player.objects.all()]
+                         })
 
 
 urlpatterns = [
