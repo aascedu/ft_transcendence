@@ -1,6 +1,7 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from tournament.classes.Tournament import tournaments
+import requests
 
 class Consumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -9,17 +10,22 @@ class Consumer(AsyncWebsocketConsumer):
         # Join room group
         self.tournamentName = self.scope["url_route"]["kwargs"]["tournamentName"]
         self.myTournament = tournaments[self.tournamentName]
+
+        self.admin = False
+        if (len(self.myTournament.players) == 0):
+            self.admin = True # Est-ce qu'on laisse le choix a l'admin de jouer ou non ?
+
         self.id = len(self.myTournament.players) # We want it to be his place in the players array
         self.myName = len(self.myTournament.players) # I will need the id of the player.
         print ("Tournament room name is " + self.tournamentName)
 
-        await self.channel_layer.group_add("tournamentsRoom", self.channel_name)
+        await self.channel_layer.group_add(self.tournamentName, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global tournaments
-        await self.channel_layer.group_discard("tournamentsRoom", self.channel_name)
+        await self.channel_layer.group_discard(self.tournamentName, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -28,32 +34,60 @@ class Consumer(AsyncWebsocketConsumer):
         
         # Send message to room group
         await self.channel_layer.group_send(
-            "tournamentsRoom", {
+            self.tournamentName, {
                 "type": type
             }
         )
 
+    async def Ready(self, event): # When someone on the tournament page
+
+        if (self.myTournament.state > 0 and self.myTournament.onGoingGames == 0):
+            await self.channel_layer.group_send(
+                self.tournamentName, {
+                    "type": "StartRound",
+                }
+            )
+
     async def Start(self, event): # Only for admin
         global tournaments
         
+        if (self.admin == False):
+            return
+
         self.myTournament.state += 1
-        await self.send(json.dumps({
-                "action": "redirect",
-                }))
+        await self.channel_layer.group_send(
+                self.tournamentName, {
+                    "type": "StartRound",
+                }
+            )
         
-    async def StartRound(self, event): # Only for admin
+    async def StartRound(self, event): # Sent by every single players
         global tournaments
 
+        if (self.admin): # This is shit
+            self.myTournament.onGoingGames = len(self.myTournament.players) / 2
+            self.myTournament.currentRound += 1
+
+            # Check tournament end
+            if (self.myTournament.players == 1):
+                self.myTournament.state += 1
+                requests.post(
+                        f'http://coubertin:8002/tournament/gameResult/',
+                        json={
+                            "name": self.myTournament.name, # string
+                            "players": self.myTournament.players, # list of strings
+                            "games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2)
+                
         await self.send(json.dumps({
                 "action": "startMatch",
                 "player1": self.myTournament.players[self.id - self.id % 2],
                 "player2": self.myTournament.players[self.id + (1 - self.id % 2)],
                 }))
-        
-    async def EndTournament(self, event): # Only for admin
-        tournamentDict = {
-            "name": self.myTournament.name, # string
-            "players": self.myTournament.players, # list of strings
-            "games": self.myTournament.gameHistory, # list of games dictionnaries (keys: player1, player2, score1, score2)
-        }
-        
+
+# Parcours utilisateur
+# Creation du tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
+# Inscription au tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
+# L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
+# Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
+# Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
+            

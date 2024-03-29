@@ -5,14 +5,15 @@ from tournament.classes.Tournament import Tournament, tournaments
 import json
 import io
 
-class createTournament(View):
-    def post(self, request):
+class createTournament(View): 
+    def post(self, request): # Maybe we can set admin here instead.
         global tournaments
 
         data = json.load(io.BytesIO(request.body))
         tournamentName = data.get('tournamentName', None)
         nbPlayers = data.get('nbPlayers', None)
         tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
+        return JsonResponse({}) # Redirect on the tournament url ?
 
 class joinTournament(View):
     def post(self, request):
@@ -24,7 +25,11 @@ class joinTournament(View):
             return JsonResponse({'Err': 'tournament does not exists'})
         if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
             return JsonResponse({'Err': 'tournament is already full'})
-        tournaments[tournamentName].players += data.get('playerName', None)
+        try:
+            tournaments[tournamentName].players += data.get('playerName', None)
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__})
+        return JsonResponse({})
 
 def printData(data):
     print('Tournament name: ', data.get('tournamentName', None))
@@ -32,7 +37,7 @@ def printData(data):
     print('Player ', game['Player1'], ' had a score of ', game['Score1'])
     print('Player ', game['Player2'], ' had a score of ', game['Score2'])
 
-class gameResult(View):
+class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments
 
