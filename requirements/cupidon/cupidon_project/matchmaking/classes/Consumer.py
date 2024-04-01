@@ -31,12 +31,16 @@ class Consumer(AsyncWebsocketConsumer):
         )
 
     async def PlayerData(self, event):
+        global waitingList
+        
         id = event['id']
         elo = event['elo']
         self.me = Player(id, elo)
         waitingList[id] = self.me # Get player name with the token here
 
     async def Ping(self, event):
+        global waitingList
+        
         self.me.margin += 10
 
         for id in waitingList:
