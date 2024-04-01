@@ -10,8 +10,10 @@ class createTournament(View):
         global tournaments
 
         data = request.data
-        tournamentName = data.get('tournamentName', None)
-        nbPlayers = data.get('nbPlayers', None)
+        if 'tournamentName' not in data or 'nbPlayers' not in data:
+            return JsonResponse({'Err': "tournamentName or nbPlayers not provided"})
+        tournamentName = data['tournamentName']
+        nbPlayers = data['nbPlayers']
         tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
         return JsonResponse({}) # Redirect on the tournament url ?
 
@@ -20,7 +22,7 @@ class joinTournament(View):
         global tournaments
         
         data = request.data
-        tournamentName = data.get('tournamentName', None)
+        tournamentName = data['tournamentName']
         if (tournamentName not in tournaments):
             return JsonResponse({'Err': 'tournament does not exists'})
         if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
@@ -35,8 +37,8 @@ class joinTournament(View):
         return JsonResponse({})
 
 def printData(data):
-    print('Tournament name: ', data.get('tournamentName', None))
-    game = data.get('game', None)
+    print('Tournament name: ', data['tournamentName'])
+    game = data['game']
     print('Player ', game['Player1'], ' had a score of ', game['Score1'])
     print('Player ', game['Player2'], ' had a score of ', game['Score2'])
 
@@ -45,9 +47,11 @@ class gameResult(View): # We need to remove the loser from the player list
         global tournaments
 
         data = request.data
+        if 'tournamentName' not in data or 'game' not in data:
+            return JsonResponse({'Err': "tournamentName or game not provided"})
         printData(data)
-        tournament = tournaments[data.get('tournamentName', None)]
-        tournament.addGame(data.get('game', None)) # Game is a dictionnary
+        tournament = tournaments[data['tournamentName']]
+        tournament.addGame(data['game']) # Game is a dictionnary
         return JsonResponse({})
 
 def tournamentHome(request, tournamentName):
