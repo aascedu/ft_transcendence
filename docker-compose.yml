@@ -35,6 +35,33 @@ services:
 
 # Reverse proxy container
   aegis:
+    depends_on:
+      alfred:
+        condition: service_started
+      aether:
+        condition: service_started
+      apollo:
+        condition: service_healthy
+      coubertin:
+        condition: service_started
+      cupidon:
+        condition: service_started
+      davinci:
+        condition: service_started
+      hermes:
+        condition: service_started
+      iris:
+        condition: service_healthy
+      ludo:
+        condition: service_started
+      malevitch:
+        condition: service_started
+      mensura:
+        condition: service_started
+      mnemosine:
+        condition: service_started
+      petrus:
+        condition: service_started
     container_name: aegis
     image: aegis
     build:
@@ -52,22 +79,6 @@ services:
       - aegis guard
       - atlas
       - sentinel
-    depends_on:
-      - alfred
-      - apollo
-      - coubertin
-      - cupidon
-      - davinci
-      - hermes
-      - iris
-      - lovelace
-      - ludo
-      - malevitch
-      - mensura
-      - mnemosine
-      - petrus
-      - aether
-
     restart: on-failure
 
 # Data exporter container
@@ -102,7 +113,7 @@ services:
     environment:
       - "NODE_NAME=logstash"
       - "xpack.monitoring.enabled=false"
-      - "ELASTIC_USER=elastic"
+      - "ELASTIC_USER=${ELASTIC_USER}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTIC_HOSTS=https://apollo:9200"
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
