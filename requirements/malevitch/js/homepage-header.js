@@ -83,13 +83,28 @@ window.addEventListener('click', function ({target}){
 
 // 
 
-document.querySelector('.homepage-header-open-friend-list').addEventListener('click', function() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
+document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
+	hideEveryPage();
+
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
 
 	g_state.pageToDisplay = '.friends-list';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+//
+
+document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.my-tournaments';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });
