@@ -9,7 +9,7 @@ class createTournament(View):
     def post(self, request): # Maybe we can set admin here instead.
         global tournaments
 
-        data = json.load(io.BytesIO(request.body))
+        data = request.data
         tournamentName = data.get('tournamentName', None)
         nbPlayers = data.get('nbPlayers', None)
         tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
@@ -18,15 +18,18 @@ class createTournament(View):
 class joinTournament(View):
     def post(self, request):
         global tournaments
-
-        data = json.load(io.BytesIO(request.body))
+        
+        data = request.data
         tournamentName = data.get('tournamentName', None)
         if (tournamentName not in tournaments):
             return JsonResponse({'Err': 'tournament does not exists'})
         if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
             return JsonResponse({'Err': 'tournament is already full'})
         try:
-            tournaments[tournamentName].players += data.get('playerName', None)
+            if 'playerName' in data:
+                tournaments[tournamentName].addPlayer(data['playerName'])
+            else:
+                return JsonResponse({'Err': "no player name provided"})
         except Exception as e:
             return JsonResponse({'Err': e.__str__})
         return JsonResponse({})
@@ -41,7 +44,7 @@ class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments
 
-        data = json.load(io.BytesIO(request.body))
+        data = request.data
         printData(data)
         tournament = tournaments[data.get('tournamentName', None)]
         tournament.addGame(data.get('game', None)) # Game is a dictionnary

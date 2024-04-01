@@ -72,11 +72,12 @@ class Consumer(AsyncWebsocketConsumer):
             if (self.myTournament.players == 1):
                 self.myTournament.state += 1
                 requests.post(
-                        f'http://coubertin:8002/tournament/gameResult/',
+                        f'http://mnemosine:8008/memory/pong/tournaments/0',
                         json={
                             "name": self.myTournament.name, # string
                             "players": self.myTournament.players, # list of strings
-                            "games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2)
+                            "games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2, round)
+                return
                 
         await self.send(json.dumps({
                 "action": "startMatch",
