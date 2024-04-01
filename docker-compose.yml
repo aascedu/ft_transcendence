@@ -83,6 +83,9 @@ services:
 
 # Data exporter container
   aegis_exporter:
+    depends_on:
+      aegis:
+        condition: service_started
     container_name: aegis_exporter
     image: aegis_exporter
     build:
@@ -336,6 +339,9 @@ services:
 
 # Data exporter container
   mensura_exporter:
+    depends_on:
+      mensura:
+        condition: service_started
     container_name: mensura_exporter
     image: quay.io/prometheus/node-exporter
     volumes:
