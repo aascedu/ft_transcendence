@@ -41,6 +41,10 @@ build: | migrate volumes
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
 
+.PHONY: ci
+ci: | migrate volumes modsec
+	$(COMPOSE_F) $(DOCKER_FILE) up --build
+
 #---- setups ----#
 
 volumes:
