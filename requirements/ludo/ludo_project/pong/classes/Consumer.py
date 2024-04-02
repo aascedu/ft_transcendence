@@ -3,7 +3,7 @@ from pong.classes.Match import matches, Match
 from pong.classes.Player import Player
 from pong.classes.GameSettings import gameSettings
 from pong.classes.Ball import Ball
-# import time
+import time
 import math
 import json
 import requests
@@ -33,6 +33,8 @@ class Consumer(AsyncWebsocketConsumer):
             self.isPlayer = False # a tester !
             self.id = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
+        self.lastRequestTime = 0
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -44,6 +46,12 @@ class Consumer(AsyncWebsocketConsumer):
     # Receive message from front
     async def receive(self, text_data):
         global matches
+
+        # Check if the request is good here
+        currentTime = time.time_ns()
+        if (currentTime - self.lastRequestTime < 9800000):
+            return
+        self.lastRequestTime = currentTime
 
         gameDataJson = json.loads(text_data)
         self.type = gameDataJson["type"]
@@ -193,3 +201,7 @@ class Consumer(AsyncWebsocketConsumer):
                     "ballSpeed": self.myMatch.ball.speed,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
                 }))
+
+
+# Quand je recois une requete : je get le time, je verifie le temps qui s'est ecoule depuis la requete precedente.
+# Si c'est plus de 10 ms, good, sinon non.
