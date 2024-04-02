@@ -252,3 +252,11 @@ function goToHomepageGame(previous) {
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
+
+// 
+
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
+}

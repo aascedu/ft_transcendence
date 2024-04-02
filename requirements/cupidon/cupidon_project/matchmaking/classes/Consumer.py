@@ -1,46 +1,57 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from matchmaking.classes.Matchmaking import matchmaking
+from matchmaking.classes.Player import Player, waitingList
 
 class Consumer(AsyncWebsocketConsumer):
     async def connect(self):
-        global matchmaking
+        global waitingList
 
         # Join room group
         await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
 
-        self.id = len(matchmaking.waitingList)
-        matchmaking.waitingList.append(self.id) # Get player name with the token here
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
-        global matchmaking
+        global waitingList
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        state = text_data_json['state']
+        type = text_data_json['type']
         
         # Send message to room group
         await self.channel_layer.group_send(
             "matchmakingRoom", {
-                "type": state
+                "type": type,
+                "id": text_data_json['id'],
+                "elo": text_data_json['elo'],
             }
         )
 
-    # Receive message from room group (mettre un _ dans le nom de la room entre les deux joueurs)
-    async def Ready(self, event):
-        if len(matchmaking.waitingList) > 1:
-            matchmaking.inGame[str(matchmaking.waitingList[0]) + '-' + str(matchmaking.waitingList[1])] = [str(matchmaking.waitingList[0]), str(matchmaking.waitingList[1])]
-            # matchmaking.waitingList.remove[matchmaking.waitingList[0]]
-            # matchmaking.waitingList.remove[matchmaking.waitingList[1]]
-            await self.send(json.dumps({
-                    "action": "redirect", 
-                    "url": "https://localhost:8000/ludo/pong/"
-                            + str(matchmaking.waitingList[0])
-                            + "-"
-                            + str(matchmaking.waitingList[1])
-                            + "/"
-                    }))
+    async def PlayerData(self, event):
+        global waitingList
+        
+        id = event['id']
+        elo = event['elo']
+        self.me = Player(id, elo)
+        waitingList[id] = self.me # Get player name with the token here
+
+    async def Ping(self, event):
+        global waitingList
+        
+        self.me.margin += 10
+
+        for id in waitingList:
+            if (id != self.me.id and
+                waitingList[id].elo > self.me.elo - self.me.margin and
+                waitingList[id].elo < self.me.elo + self.me.margin):
+                    await self.send(json.dumps({
+                            "action": "redirect", 
+                            "url": "https://localhost:8000/ludo/pong/"
+                                    + str(waitingList[self.me.id])
+                                    + "-"
+                                    + str(waitingList[id])
+                                    + "/"
+                            }))
