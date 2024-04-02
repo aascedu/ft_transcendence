@@ -140,6 +140,8 @@ services:
       - elastic_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
+    networks:
+      - atlas
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
@@ -241,6 +243,8 @@ services:
       - kibana_data:/usr/share/kibana/data
     ports:
       - "5601:5601"
+    networks:
+      - atlas
     environment:
       - "SERVERNAME=kibana"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"

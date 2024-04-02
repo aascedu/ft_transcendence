@@ -6,6 +6,7 @@
 .env
 .api_keys
 requirements/aegis/ModSecurity/
+requirements/tutum/vault
 /vendor/
 *.log
 
