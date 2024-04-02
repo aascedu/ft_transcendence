@@ -21,6 +21,7 @@ composer.phar
 tutorial
 youpi
 sources.txt
+requirements/shared_code/tutum.txt
 
 # volumes & env
 **/shared
