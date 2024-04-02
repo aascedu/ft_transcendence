@@ -11,6 +11,7 @@ if [ $? -eq 2 ]; then
     KEY=`cat /token/tutum.txt | head -n 1`
     vault operator unseal $KEY
     vault secrets enable -path=secret kv-v2
+    vault kv put -mount=secret env KPW=$KIBANA_PASSWORD EPW=$ELASTIC_PASSWORD
 else
     KEY=`cat /token/tutum.txt | head -n 1`
     vault operator unseal $KEY

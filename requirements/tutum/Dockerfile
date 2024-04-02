@@ -1,6 +1,11 @@
 FROM        debian:bookworm
 
 ENV         VAULT_ADDR=http://0.0.0.0:8200/
+ARG         ELASTIC_PASSWORD
+ARG         KIBANA_PASSWORD
+
+RUN         export ELASTIC_PASSWORD=ELASTIC_PASSWORD && \
+            export KIBANA_PASSWORD=KIBANA_PASSWORD
 
 COPY        conf/config.hcl /config.hcl
 

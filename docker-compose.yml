@@ -383,6 +383,10 @@ services:
     build:
       context: ./requirements/tutum
       dockerfile: Dockerfile
+      args:
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+        KIBANA_PASSWORD: $KIBANA_PASSWORD
+    env_file: .env
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./requirements/shared_code:/token
