@@ -31,6 +31,13 @@ window.addEventListener('popstate', function (event) {
 	render(g_state);
 });
 
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
+	document.querySelector('.available-tournaments').classList.add('visually-hidden');
+}
+
 // Translation functions.
 
 function loadTranslations() {
@@ -251,12 +258,4 @@ function goToHomepageGame(previous) {
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
-}
-
-// 
-
-function hideEveryPage() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
-	document.querySelector('.friends-list').classList.add('visually-hidden');
-	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 }
