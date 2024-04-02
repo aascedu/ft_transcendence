@@ -67,6 +67,7 @@ services:
       - mnemosine
       - petrus
       - aether
+      - tutum
 
     restart: on-failure
 
@@ -366,8 +367,8 @@ services:
     ports:
       - "8009:8009"
     depends_on:
-      - aegis
-      - tutum
+      tutum:
+        condition: service_started
     networks:
       - atlas
     restart: on-failure
@@ -380,10 +381,9 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/tutum/vault:/opt/vault
+      - ./requirements/shared_code:/token
     ports:
       - "8200:8200"
-    depends_on:
-      - aegis
     networks:
       - atlas
     restart: on-failure
