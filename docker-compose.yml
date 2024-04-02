@@ -80,12 +80,21 @@ services:
       - atlas
       - sentinel
     restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl http://localhost:8000 | echo -e 'cannot curl'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 # Data exporter container
   aegis_exporter:
     depends_on:
       aegis:
-        condition: service_started
+        condition: service_healthy
     container_name: aegis_exporter
     image: aegis_exporter
     build:

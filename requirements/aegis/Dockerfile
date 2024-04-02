@@ -21,6 +21,7 @@ COPY    ModSecurity /ModSecurity
 #        make install
 
 #---- ModSecurity connector -------------------------------------------#
+
 RUN     apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
@@ -45,7 +46,6 @@ RUN     apk update && \
         tar -xvf v4.0.0.tar.gz && \
         rm v4.0.0.tar.gz && \
         cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf
-
 
 COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
 COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
