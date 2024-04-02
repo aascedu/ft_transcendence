@@ -64,6 +64,22 @@ class EloGame(baseModel):
 
     def to_dict(self):
         return {"EloWin": self.eloWin} | self.game.to_dict()
+    
+    @staticmethod
+    def elo_update(self):
+        # Algo calcul de elo
+
+        result1 = True # True if player1 wins, False if not
+        result2 = False # Same as before
+        rating1 = 1000 # Rating of first player
+        rating2 = 1200 # Rating of second player
+        K = 300 # To adjust the speed at which the elo is modified
+
+        P1 = 1.0 / (1.0 + pow(10, (rating1 - rating2) / 400)) # To estimate probabilty of player 1 winning
+        P2 = 1.0 / (1.0 + pow(10, (rating2 - rating1) / 400)) # Same for player 2
+
+        rating1 += K * (result1 - P1) # Change in player 1 rating
+        rating2 += K * (result2 - P2) # Change in player 2 rating
 
 
 class Tournament(baseModel):
