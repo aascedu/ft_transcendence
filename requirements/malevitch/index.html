@@ -353,30 +353,30 @@
 				<div class="friends-list-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 					<div class="friends-list-online w-100 d-flex flex-wrap align-items-center">
 						<div class="friends-list-online-title friends-list-title w-100">
-							<p data-language="online-friends">Friends online</p>
+							<p data-language="online-friends" class="unselectable">Friends online</p>
 						</div>
 						<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="friends-card-name">Ami1</div>
+							<div class="friends-card-name unselectable">Ami1</div>
 							<div class="friends-card-picture">
 								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 						</div>
 						<!-- <div class="friends-list-no-online w-100 d-flex justify-content-center align-items-center text-center">
-							<p class="empty-list-content" data-language="no-friends-online">No friends are online...</p>
+							<p class="empty-list-content unselectable" data-language="no-friends-online">No friends are online...</p>
 						</div> -->
 					</div>
 					<div class="friends-list-offline w-100 d-flex flex-wrap align-items-center">
 						<div class="friends-list-offline-title friends-list-title w-100">
-							<p data-language="offline-friends">Friends offline</p>
+							<p data-language="offline-friends" class="unselectable">Friends offline</p>
 						</div>
 						<!-- <div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="friends-card-name">Ami1</div>
+							<div class="friends-card-name unselectable">Ami1</div>
 							<div class="friends-card-picture">
 								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 						</div> -->
 						<div class="friends-list-no-offline w-100 d-flex justify-content-center align-items-center text-center">
-							<p class="empty-list-content" data-language="no-friends-offline">No friends are offline...</p>
+							<p class="empty-list-content unselectable" data-language="no-friends-offline">No friends are offline...</p>
 						</div>
 					</div>
 				</div>
@@ -399,24 +399,30 @@
 				<div class="my-tournaments-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
 						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
-							<p data-language="my-ongoing-tournaments">My ongoing tournaments</p>
+							<p data-language="my-ongoing-tournaments" class="unselectable">My ongoing tournaments</p>
 						</div>
-						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
+						<!-- <div class="content-card d-flex justify-content-center align-items-center purple-shadow">
 							<div class="my-tournaments-card-picture position-absolute">
 								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi1</div>
+							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi1</div>
+						</div> -->
+						<div class="my-tournaments-no-open w-100 d-flex justify-content-center align-items-center text-center">
+							<p class="empty-list-content unselectable" data-language="no-ongoing-tournament">You don't have any ongoing tournament...</p>
 						</div>
 					</div>
 					<div class="my-tournaments-closed w-100 d-flex flex-wrap align-items-center">
 						<div class="my-tournaments-closed-title my-tournaments-title w-100">
-							<p data-language="closed-tournaments">Closed tournaments</p>
+							<p data-language="closed-tournaments" class="unselectable">Closed tournaments</p>
 						</div>
-						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
+						<!-- <div class="content-card d-flex justify-content-center align-items-center purple-shadow">
 							<div class="my-tournaments-card-picture position-absolute">
 								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi2</div>
+							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi2</div>
+						</div> -->
+						<div class="my-tournaments-no-closed w-100 d-flex justify-content-center align-items-center text-center">
+							<p class="empty-list-content unselectable" data-language="no-closed-tournament">You don't have any closed tournament...</p>
 						</div>
 					</div>
 				</div>
