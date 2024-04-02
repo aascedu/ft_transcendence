@@ -1,0 +1,85 @@
+* {
+	font-family: "Syne", sans-serif;
+}
+
+body {
+	overflow: hidden;
+	height: auto;
+}
+
+.dot-pattern {
+	background: white;
+	background-image: radial-gradient(#7300E6 1px, transparent 0);
+	background-size: 50px 50px;
+	background-position: 12.5px 12.5px;
+}
+
+.unselectable {
+	user-select: none;
+	-moz-user-select: none;
+	-webkit-user-drag: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+}
+
+.four {
+	color: #7300E6;
+	font-size: 250pt;
+	font-weight: 700;
+	text-shadow: 10px 10px 12px rgba(115, 0, 230, 0.3);
+	margin-bottom: 48px;
+}
+
+.zero img {
+	height: 225pt;
+	filter: drop-shadow(10px 10px 12px rgba(115, 0, 230, 0.3));
+}
+
+/* language selector */
+
+.language-selector {
+	filter: drop-shadow(10px 10px 12px rgba(115, 0, 230, 0.3));
+}
+
+.language-selector button,
+.language-selector ul li a {
+	width: 72px;
+	height: 72px;
+	background-size: cover;
+	background-clip: content-box;
+	padding: 4px;
+	border-radius: 36px;
+	font-size: 0;
+}
+
+.language-selector button {
+	margin-right: 11px;
+}
+
+.language-selector ul li a {
+	margin-top: 10px;
+}
+
+.language-selector button img,
+.language-selector ul li a img {
+	width: 100%;
+}
+
+.language-selector button:hover,
+.language-selector ul li a:hover,
+.language-selector button:focus,
+.language-selector ul li a:focus {
+	cursor: pointer;
+	box-shadow: inset 0 0 5px 1px rgba(115, 0, 230, 0.5);
+	outline: 0;
+}
+
+/* message */
+
+.message {
+	margin-left: 24px;
+	font-size: 48pt;
+	color: #7300E6;
+	font-weight: 500;
+	text-shadow: 10px 10px 12px rgba(115, 0, 230, 0.3);
+}
