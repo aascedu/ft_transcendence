@@ -5,6 +5,7 @@
 # security
 .env
 .api_keys
+.api_logstash_request
 requirements/aegis/ModSecurity/
 /vendor/
 *.log
@@ -26,3 +27,6 @@ sources.txt
 **/*_env
 **/env
 **/env_**
+
+# temporary
+elastic-agent.yml
