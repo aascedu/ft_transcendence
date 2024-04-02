@@ -57,7 +57,7 @@ COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
 COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
 COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
 COPY    conf/proxy.conf /etc/nginx/nginx.conf
-COPY    404.html /usr/share/nginx/html
+COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
 
