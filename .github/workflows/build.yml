@@ -25,7 +25,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build containers
-      run: make all
+      run: make ci
 
     #- name: Health Check Mensura
     #  run: curl -Lk https://localhost:8000/mensura/
