@@ -26,7 +26,7 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | migrate volumes modsec
+debug: | volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
 
 all: | volumes modsec
@@ -40,6 +40,8 @@ build: | migrate volumes
 
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
+
+reset: | db_reset debug
 
 #---- setups ----#
 
