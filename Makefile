@@ -35,7 +35,7 @@ all: | volumes modsec
 up: | migrate volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
-build: | migrate volumes
+build: | migrate volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 
 down:

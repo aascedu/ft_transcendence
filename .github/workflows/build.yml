@@ -28,7 +28,7 @@ jobs:
           echo KIBANA_PASSWORD=test >> .env
 
     - name: Build containers
-      run: make all
+      run: make build
 
     #- name: Health Check Mensura
     #  run: curl -Lk https://localhost:8000/mensura/
