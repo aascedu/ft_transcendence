@@ -56,25 +56,25 @@ class gameView(View):
             return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
                                  "Loses": [game.to_dict() for game in requestee.loses.all()]}}
 
-        if 'lasts' in queryparams:
-            return_json |=
+        if 'latests' in queryparams:
+            try:
+                x = min(int(queryparams.get('latests', 10)), 10)
+            except ValueError as e:
+                return JsonResponse({"Err": e.__str__()})
+            latest_games = Game.objects.order_by('-id').reverse()[:x]
+            return_json |= {"latests": [game.to_dict() for game in latest_games]}
 
         return JsonResponse(return_json)
 
     def post(self, request, id: int=0):
         try:
-            new_game = Game()
-            new_game.winner = Player.objects.get(id=request.data['Winner'])
-            new_game.loser = Player.objects.get(id=request.data['Loser'])
-            new_game.winner_score = request.data['Winner-score']
-            new_game.loser_score = request.data['Loser-score']
-            #    new_game = Game.from_json(request.data)
+            new_game = Game.from_json(request.data)
         except BaseException as e:
             return JsonResponse({"Err": f"can't instantiate the game : {e.__str__()}"})
         try:
             new_game.game_db_update()
-        except BaseException:
-            return JsonResponse({"Err": "unexpected error ocured"})
+        except BaseException as e:
+            return JsonResponse({"Err": f"unexpected error ocured {e.__str__()}"})
         return JsonResponse(new_game.to_dict())
 
     def delete(self, request, id: int=0):

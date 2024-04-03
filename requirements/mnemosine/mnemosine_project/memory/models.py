@@ -15,10 +15,6 @@ class Player(baseModel):
         default=define.dictionaire['default_player_win_count'])
     lose_count = models.IntegerField(
         default=define.dictionaire['default_player_lose_count'])
-    # tournaments_played = models.ManyToManyField(
-    #     'Tournament', through='TournamentPlayer')
-    # turnament_win_count = models.IntegerField(
-    #     default=define.dictionaire['default_player_tournament_win_count'])
 
     def to_dict(self):
         return {
@@ -44,7 +40,6 @@ class Game(baseModel):
         related_name='loses')
     loser_score = models.IntegerField()
 
-    # duration = models.DurationField()
 
     def to_dict(self):
         return {
@@ -53,8 +48,6 @@ class Game(baseModel):
             "Winner-score": self.winner_score,
             "Loser": self.loser.id,
             "Loser-score": self.loser_score,
-            # "Date": self.date,
-            # "Duration" : self.duration,
         }
 
 
@@ -69,25 +62,23 @@ class Game(baseModel):
 
 
     def game_db_update(self):
-        #update elo and win lose count
+        rating1 = self.winner.elo
+        rating2 = self.loser.elo
+        elo_change_speed = 10
+
+
+        self.winner.win_count += 1
+        winner_coef = 1.0 / (1.0 + pow(10, (rating1 - rating2) / 400))
+        self.winner.elo += elo_change_speed * (1 - winner_coef)
+
+        self.loser.lose_count += 1
+        loser_coef = 1.0 / (1.0 + pow(10, (rating2 - rating1) / 400))
+        self.loser.elo += elo_change_speed * (-loser_coef)
+
         self.save()
+        self.winner.save()
+        self.loser.save()
 
-
-    @staticmethod
-    def elo_update():
-        # Algo calcul de elo
-
-        result1 = True # True if player1 wins, False if not
-        result2 = False # Same as before
-        rating1 = 1000 # Rating of first player
-        rating2 = 1200 # Rating of second player
-        K = 300 # To adjust the speed at which the elo is modified
-
-        P1 = 1.0 / (1.0 + pow(10, (rating1 - rating2) / 400)) # To estimate probabilty of player 1 winning
-        P2 = 1.0 / (1.0 + pow(10, (rating2 - rating1) / 400)) # Same for player 2
-
-        rating1 += K * (result1 - P1) # Change in player 1 rating
-        rating2 += K * (result2 - P2) # Change in player 2 rating
 
 
 class Tournament(baseModel):

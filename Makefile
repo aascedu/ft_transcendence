@@ -41,7 +41,8 @@ build: | migrate volumes
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
 
-reset: | db_reset debug
+reset: | db_reset
+	make debug
 
 #---- setups ----#
 
