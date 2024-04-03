@@ -46,16 +46,18 @@ class gameView(View):
         return_json = {}
         queryparams = request.GET
 
-
-
         players = queryparams.getlist('players')
         for player in players:
             try:
-                requester = Player.objects.get(id=int(player))
+                player_id = int(player)
+                requestee = Player.objects.get(id=player_id)
             except BaseException as e:
                 return JsonResponse({"Err": f"bad request: {e.__str__()}"})
-            return_json |= {id: {"Wins": [game.to_dict() for game in requester.wins.all()],
-                                 "Loses": [game.to_dict() for game in requester.loses.all()]}}
+            return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
+                                 "Loses": [game.to_dict() for game in requestee.loses.all()]}}
+
+        if 'lasts' in queryparams:
+            return_json |=
 
         return JsonResponse(return_json)
 
