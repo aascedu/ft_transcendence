@@ -15,6 +15,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Install venv
+      run: |
+          python3 -m venv ci_env
+          source ci_env/bin/activate
+          pip install -r global_requirements.txt
+
     - name: Create .env file for CI
       run: |
           touch .env
