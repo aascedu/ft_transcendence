@@ -99,21 +99,18 @@ class Tournament(baseModel):
 
 class TournamentParticipation(baseModel):
     player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournaments')
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='participations')
 
     class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
         unique_together = ('player', 'tournament')
 
 
 class TournamentGame(baseModel):
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    participation = models.ForeignKey(TournamentParticipation,
+                                   on_delete=models.CASCADE,
+                                   related_name='games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
 
     class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
         unique_together = ('tournament', 'game')
 
-    @staticmethod
-    def from_json(json):
-        tournament_game_created = TournamentGame()
-        tournament_game_created.game = Game.from_json(json)
-        return tournament_game_created
