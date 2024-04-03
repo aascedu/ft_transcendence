@@ -115,7 +115,7 @@ aether:
 	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash# pour la prod: remettre all
 
 clean: down
-	$(COMPOSE) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	rm -rf $(VOLUMES_PATH)/*
 	rm -rf ./requirements/tutum/vault
 	rm -rf ./requirements/aegis/ModSecurity

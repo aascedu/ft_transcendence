@@ -29,6 +29,7 @@ requirements/shared_code/tutum.txt
 **/*_env
 **/env
 **/env_**
+/tokens
 
 # temporary
 elastic-agent.yml
