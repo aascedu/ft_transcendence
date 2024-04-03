@@ -131,6 +131,8 @@ services:
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
     ports:
       - "9600:9600"
+    networks:
+      - aegis guard
 
 # Profil container
   alfred:
@@ -178,6 +180,8 @@ services:
       - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
       - "xpack.security.transport.ssl.verification_mode=certificate"
       - "xpack.license.self_generated.type=${LICENSE}"
+    networks:
+      - aegis guard
     healthcheck:
       test:
         [
@@ -275,6 +279,8 @@ services:
       # - "server.rewriteBasePath=true"
       # - "server.publicBaseUrl="
       # - "server.basePath="
+    networks:
+      - aegis guard
     healthcheck:
      test:
        [
@@ -379,6 +385,13 @@ services:
       - atlas
     restart: on-failure
 
+# Filebeat container
+  orion:
+    container_name: orion
+    image: docker.elastic.co/beats/filebeat:8.13.1
+    ports:
+      - "5044:5044"
+
 # Authentification container
   petrus:
     container_name: petrus
@@ -456,6 +469,8 @@ services:
         until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
         echo "All done!";
       '
+    networks:
+      - aegis guard
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
       interval: 1s

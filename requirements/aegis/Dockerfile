@@ -76,5 +76,10 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
         openssl req -x509 -nodes                                       \
             -out /etc/nginx/ssl/ft_transcendence.crt                   \
             -keyout /etc/nginx/ssl/ft_transcendence.key                \
-            -subj "/C=FR/L=Lyon/CN=batch42.me" || \
+            -subj "/C=FR/L=Lyon/CN=batch42.me" ||                      \
+            { echo "SSL certification failed"; exit 1; } &&            \
+        openssl req -x509 -nodes                                       \
+            -out /etc/nginx/ssl/elastic.crt                            \
+            -keyout /etc/nginx/ssl/elastic.key                         \
+            -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
             { echo "SSL certification failed"; exit 1; }
