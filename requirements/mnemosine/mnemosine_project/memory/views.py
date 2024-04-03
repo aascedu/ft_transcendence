@@ -7,10 +7,12 @@ from memory.models import Tournament, Game, Player
 
 def request_get_all(ids_str, key_name, model):
     return_json = {}
+    print(ids_str)
+
     try :
         ids = [int(id) for id in ids_str]
-    except TypeError:
-        return {"Err": "wrong query params provided"}
+    except BaseException as e:
+        return {"Err": f"wrong query params provided {e.__str__()}"}
     try:
         querylist = model.objects.filter(id__in=ids)
     except BaseException as e:
@@ -30,43 +32,51 @@ class tournamentView(View):
 
     def post(self, request, id: int = 0):
         data = request.data
+        try:
+            tournament = Tournament.from_json(data)
+        except BaseException as e:
+            return JsonResponse({"Err": e.__str__()})
+
+        data = request.data
         return JsonResponse({})
 
 
 class gameView(View):
     def get(self, request, id: int=0):
         return_json = {}
+        queryparams = request.GET
 
-        data = request.GET.getlist('games')
-        return_json |= request_get_all(data, "Games", Game)
+
+
+        players = queryparams.getlist('players')
+        for player in players:
+            try:
+                requester = Player.objects.get(id=int(player))
+            except BaseException as e:
+                return JsonResponse({"Err": f"bad request: {e.__str__()}"})
+            return_json |= {id: {"Wins": [game.to_dict() for game in requester.wins.all()],
+                                 "Loses": [game.to_dict() for game in requester.loses.all()]}}
+
         return JsonResponse(return_json)
 
     def post(self, request, id: int=0):
-        data = request.data
-        info_array = []
-        for key in ('P1', 'Score-p1', 'P2', 'Score-p2'):
-            if key not in data:
-                return JsonResponse({"Err": f'missing value {key}'})
-            try:
-                info_array.append(int(data[key]))
-            except BaseException:
-                return JsonResponse({"Err": "bad body content"})
-        new_game = Game()
         try:
-            new_game.player1 = Player.objects.get(unique_id=info_array[0])
+            new_game = Game()
+            new_game.winner = Player.objects.get(id=request.data['Winner'])
+            new_game.loser = Player.objects.get(id=request.data['Loser'])
+            new_game.winner_score = request.data['Winner-score']
+            new_game.loser_score = request.data['Loser-score']
+            #    new_game = Game.from_json(request.data)
         except BaseException as e:
-            return JsonResponse({"Err": f"Player 1 may not exist {e.__str__()}"})
-        new_game.score1 = info_array[1]
+            return JsonResponse({"Err": f"can't instantiate the game : {e.__str__()}"})
         try:
-            new_game.player2 = Player.objects.get(unique_id=info_array[2])
-        except BaseException as e:
-            return JsonResponse({"Err": f"Player 2 may not exist {e.__str__()}"})
-        new_game.score2 = info_array[3]
-        try:
-            new_game.save()
+            new_game.game_db_update()
         except BaseException:
             return JsonResponse({"Err": "unexpected error ocured"})
-        return JsonResponse({})
+        return JsonResponse(new_game.to_dict())
+
+    def delete(self, request, id: int=0):
+        pass
 
 
 class playerView(View):
@@ -121,7 +131,7 @@ class playerView(View):
         if 'Id' not in data:
             return JsonResponse({"Err": "no id provided"})
         try:
-            player = Player.objects.get(unique_id=data['Id'])
+            player = Player.objects.get(id=data['Id'])
         except BaseException:
             return JsonResponse({"Err": "no player for the id"})
         try:
@@ -135,7 +145,7 @@ class playerView(View):
         if 'Id' not in data:
             return JsonResponse({"Err": "no id provided"})
         try:
-            player = Player.objects.get(unique_id=data['Id'])
+            player = Player.objects.get(id=data['Id'])
         except BaseException:
             return JsonResponse({"Err": "no player for the id"})
         if 'Elo' not in data:
