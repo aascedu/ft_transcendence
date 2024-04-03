@@ -24,9 +24,6 @@ class Player(baseModel):
             "Lose-Count": self.win_count,
         }
 
-    def __str__(self):
-        return f"{self.id}, {self.wins.all()}, {self.loses.all()}"
-
 
 class Game(baseModel):
     winner = models.ForeignKey(
@@ -80,7 +77,6 @@ class Game(baseModel):
         self.loser.save()
 
 
-
 class Tournament(baseModel):
     name = models.SlugField()
     games = models.ManyToManyField(Game, through='TournamentGame', blank=True)
@@ -96,22 +92,17 @@ class Tournament(baseModel):
         created_tournament = Tournament()
         game_array = [TournamentGame.from_json(game) for game in json['Games']]
 
-        created_tournament = Tournament.objects.create(
-                name=json['Name'],
-            )
-
         for tournamentgame in game_array:
             created_tournament.games.add(tournamentgame.game)
         return created_tournament
 
 
-class TournamentPlayer(baseModel):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+class TournamentParticipation(baseModel):
+    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournaments')
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
 
     class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
         unique_together = ('player', 'tournament')
-
 
 
 class TournamentGame(baseModel):
