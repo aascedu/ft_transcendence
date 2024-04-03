@@ -31,7 +31,7 @@ class Consumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         type = text_data_json['type']
-        
+
         # Send message to room group
         await self.channel_layer.group_send(
             self.tournamentName, {
@@ -50,7 +50,7 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def Start(self, event): # Only for admin
         global tournaments
-        
+
         if (self.admin == False):
             return
 
@@ -60,7 +60,7 @@ class Consumer(AsyncWebsocketConsumer):
                     "type": "StartRound",
                 }
             )
-        
+
     async def StartRound(self, event): # Sent by every single players
         global tournaments
 
@@ -74,11 +74,11 @@ class Consumer(AsyncWebsocketConsumer):
                 requests.post(
                         f'http://mnemosine:8008/memory/pong/tournaments/0',
                         json={
-                            "name": self.myTournament.name, # string
-                            "players": self.myTournament.players, # list of strings
-                            "games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2, round)
+                            "Name": self.myTournament.name, # string
+                            "Players": self.myTournament.players, # list of strings
+                            "Games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2, round)
                 return
-                
+
         await self.send(json.dumps({
                 "action": "startMatch",
                 "player1": self.myTournament.players[self.id - self.id % 2],
@@ -91,4 +91,4 @@ class Consumer(AsyncWebsocketConsumer):
 # L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
 # Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
 # Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
-            
+
