@@ -285,3 +285,8 @@ body {
 	border-width: 0;
 	padding: 12px;
 }
+
+.empty-list-content {
+	margin-top: 24px;
+	opacity: 60%;
+}

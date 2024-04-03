@@ -5,6 +5,7 @@
 # security
 .env
 .api_keys
+.api_logstash_request
 requirements/aegis/ModSecurity/
 requirements/tutum/vault
 /vendor/
@@ -28,3 +29,7 @@ requirements/shared_code/tutum.txt
 **/*_env
 **/env
 **/env_**
+
+# temporary
+elastic-agent.yml
+
