@@ -58,7 +58,7 @@ modsec:
 
 aegis:
 	$(COMPOSE) up -d aegis
-	$(COMPOSE_F) $(DOCKER_FILE) exec aegis /bin/bash
+	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
 
 alfred:
 	$(COMPOSE) up -d alfred
