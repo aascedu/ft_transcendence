@@ -14,15 +14,15 @@ class Tournament:
         self.players += player
 
     def addGame(self, game):
-        game['round'] = self.currentRound
+        game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.onGoingGames -= 1
 
     def toDict(self):
         tournamentDict = {
-            'tournamentName': self.name,
-            'players': self.players,
-            'games': self.gameHistory,
+            'TournamentName': self.name,
+            'Players': self.players,
+            'Games': self.gameHistory,
         }
                 
 tournaments = {}
