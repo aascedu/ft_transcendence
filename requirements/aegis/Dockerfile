@@ -21,6 +21,7 @@ COPY    ModSecurity /ModSecurity
 #        make install
 
 #---- ModSecurity connector -------------------------------------------#
+
 RUN     apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
@@ -46,7 +47,6 @@ RUN     apk update && \
         rm v4.0.0.tar.gz && \
         cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf
 
-
 COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
 COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
 COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
@@ -57,6 +57,7 @@ COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
 COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
 COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
 COPY    conf/proxy.conf /etc/nginx/nginx.conf
+COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
 
