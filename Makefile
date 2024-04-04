@@ -123,6 +123,7 @@ clean: down
 	rm -rf ./requirements/aegis/ModSecurity
 	rm -rf ./tokens
 	rm -rf ./requirements/tutum/vault
+	rm ./requirements/shared_code/shared_token.py
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)

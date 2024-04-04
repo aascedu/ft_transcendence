@@ -1,7 +1,8 @@
 from datetime import datetime, timedelta
 from jwt import encode, decode
 
-
+from .shared_token import vault_token
+import hvac
 
 from .var import public_key
 from .var import private_key
@@ -9,8 +10,15 @@ from .var import algo
 
 
 class JWT:
-    publicKey = public_key   # replace os.environ['PUBLIC_KEY']
-    privateKey = private_key  # replace os.environ['PRIVATE_KEY']
+    client = hvac.Client(url='http://tutum:8200', token=vault_token)
+    if client.is_authenticated() == False:
+        print("BIG ERROR")
+    priv_response = client.secrets.kv.v2.read_secret_version(path='shared/priv')
+    print(priv_response['data']['data']['private_key'])
+    pub_response = client.secrets.kv.v2.read_secret_version(path='shared/pub')
+    print(pub_response['data']['data']['public_key'])
+    publicKey = pub_response['data']['data']['public_key']
+    privateKey = priv_response['data']['data']['private_key']
     algo = algo
     expiration_acccess_token = timedelta(minutes=15)
     expiration_refresh_token = timedelta(days=1)
