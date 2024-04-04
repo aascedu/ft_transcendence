@@ -95,3 +95,8 @@ class Consumer(AsyncWebsocketConsumer):
 # Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
 # Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
             
+# Faire une socket admin a part qui ne correspond a auccun joueur ?
+# Actions de l'admin: 
+#   - Quand une game se termine: check s'il faut lancer le round suivant
+#   - Check si fin du tournoi, si c'est le cas envoyer a la db
+#   - 
