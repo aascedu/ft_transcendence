@@ -20,7 +20,7 @@ class Tournament:
 
     def toDict(self):
         tournamentDict = {
-            'TournamentName': self.name,
+            'Name': self.name,
             'Players': self.players,
             'Games': self.gameHistory,
         }
