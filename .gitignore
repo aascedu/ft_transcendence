@@ -7,6 +7,7 @@
 .api_keys
 .api_logstash_request
 requirements/aegis/ModSecurity/
+requirements/tutum/vault
 /vendor/
 *.log
 
@@ -29,6 +30,8 @@ sources.txt
 **/*_env
 **/env
 **/env_**
+/tokens
 
 # temporary
 elastic-agent.yml
+

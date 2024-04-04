@@ -5,6 +5,8 @@ from shared.jwt_management import JWT
 import requests
 import bcrypt
 
+import hvac
+
 from signin.models import Client
 
 
@@ -63,11 +65,13 @@ class signinView(View):
 
 class signupView(View):
     """ s'inscrire """
-
+    #with open('./petrus_project/shared/tutum.txt', 'r') as file:
+    #    token = file.read()
+    #client = hvac.Client(url='http://tutum:8200', token=token)
+    #client.is_authenticated()
     def get(self, request):
         request = request
         return JsonResponse({"Ava": True})
-
 
     def post(self, request):
         data = request.data

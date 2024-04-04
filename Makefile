@@ -29,7 +29,7 @@ SYSTEM		=	docker system
 debug: | volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
 
-all: | volumes modsec
+all: | migrate volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build
 
 up: | migrate volumes
@@ -117,6 +117,12 @@ aether:
 	$(COMPOSE) up -d aether
 	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash# pour la prod: remettre all
 
+clean: down
+	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	rm -rf $(VOLUMES_PATH)/*
+	rm -rf ./requirements/aegis/ModSecurity
+	rm -rf ./tokens
+	rm -rf ./requirements/tutum/vault
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)

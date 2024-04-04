@@ -5,6 +5,7 @@ RUN         apt update -y && \
             apt install -y  apt-transport-https \
                             software-properties-common \
                             curl \
+                            jq \
                             wget && \
             mkdir -p /etc/apt/keyrings/ && \
             wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null && \
@@ -13,5 +14,6 @@ RUN         apt update -y && \
             apt install grafana-enterprise -y
 
 COPY        conf/grafana.ini /etc/grafana/grafana.ini
+COPY        tools/entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT ["grafana-server", "--config=/etc/grafana/grafana.ini", "--homepath=/usr/share/grafana/"]
+ENTRYPOINT  ["sh", "/entrypoint.sh"]
