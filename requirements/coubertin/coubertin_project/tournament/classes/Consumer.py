@@ -30,12 +30,12 @@ class Consumer(AsyncWebsocketConsumer):
     # Receive message from WebSocket
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        type = text_data_json['type']
+        type = text_data_json['Type']
         
         # Send message to room group
         await self.channel_layer.group_send(
             self.tournamentName, {
-                "type": type
+                'Type': type
             }
         )
 
@@ -44,7 +44,7 @@ class Consumer(AsyncWebsocketConsumer):
         if (self.myTournament.state > 0 and self.myTournament.onGoingGames == 0):
             await self.channel_layer.group_send(
                 self.tournamentName, {
-                    "type": "StartRound",
+                    'Type': "StartRound",
                 }
             )
 
@@ -57,7 +57,7 @@ class Consumer(AsyncWebsocketConsumer):
         self.myTournament.state += 1
         await self.channel_layer.group_send(
                 self.tournamentName, {
-                    "type": "StartRound",
+                    'Type': "StartRound",
                 }
             )
         
@@ -74,16 +74,22 @@ class Consumer(AsyncWebsocketConsumer):
                 requests.post(
                         f'http://mnemosine:8008/memory/pong/tournaments/0',
                         json={
-                            "name": self.myTournament.name, # string
-                            "players": self.myTournament.players, # list of strings
-                            "games": self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2, round)
+                            'Name': self.myTournament.name, # string
+                            'Players': self.myTournament.players, # list of strings
+                            'Games': self.myTournament.gameHistory,}) # list of games dictionnaries (keys: player1, player2, score1, score2, round)
                 return
                 
         await self.send(json.dumps({
-                "action": "startMatch",
-                "player1": self.myTournament.players[self.id - self.id % 2],
-                "player2": self.myTournament.players[self.id + (1 - self.id % 2)],
+                'Action': "startMatch",
+                'Player1': self.myTournament.players[self.id - self.id % 2],
+                'Player2': self.myTournament.players[self.id + (1 - self.id % 2)],
                 }))
+        
+    async def TournamentState(self, event):
+        await self.send(json.dumps({
+            'Action': "tournamentState",
+            'Tournament': self.myTournament.toDict(),
+            }))
 
 # Parcours utilisateur
 # Creation du tournoi -> view correspondante, puis redirection automatique sur la page d'accueil

@@ -4,8 +4,8 @@ class Tournament:
         self.name = name
         self.state = 0 # 0 = inscritpion, 1 = en cours, 2 = termine
         self.onGoingGames = 0
-        self.currentRound = 1
-        self.players = []
+        self.currentRound = 0
+        self.players = [] # Id du player
         self.gameHistory = [] # Liste des dictionnaires de games
 
     def addPlayer(self, player):
@@ -14,8 +14,15 @@ class Tournament:
         self.players += player
 
     def addGame(self, game):
-        game['round'] = self.currentRound
+        game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.onGoingGames -= 1
+
+    def toDict(self):
+        tournamentDict = {
+            'TournamentName': self.name,
+            'Players': self.players,
+            'Games': self.gameHistory,
+        }
                 
 tournaments = {}
