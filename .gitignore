@@ -20,6 +20,8 @@ composer.phar
 
 # parasites docs
 tutorial
+**/migrations/**
+.env
 youpi
 sources.txt
 requirements/shared_code/tutum.txt

@@ -21,7 +21,7 @@ render(g_state);
 
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
-	
+
 	if (event.state) {
 		pageToHide.classList.add('visually-hidden');
 		switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
@@ -241,7 +241,7 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 		var	nextFontSizeInput = document.querySelector(next + '-font-size');
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
-		
+
 		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
@@ -258,4 +258,12 @@ function goToHomepageGame(previous) {
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
+}
+
+//
+
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 }
