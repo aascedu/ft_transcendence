@@ -88,7 +88,7 @@ class FriendshipRequest(models.Model):
     @staticmethod
     def processRequest(sender, receiver) -> JsonResponse:
         if receiver in sender.friends.all():
-            return JsonResponse({"Err": "friendship allready establisheg"})
+            return JsonResponse({"Err": "friendship already established"})
 
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
