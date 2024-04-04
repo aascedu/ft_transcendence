@@ -28,7 +28,11 @@ jobs:
           echo KIBANA_PASSWORD=test >> .env
 
     - name: Build containers
-      run: make all
+      run: |
+          python3 -m venv ci_env
+          source ci_env/bin/activate
+          pip install -r global_requirements.txt
+          make build
 
     #- name: Health Check Mensura
     #  run: curl -Lk https://localhost:8000/mensura/

@@ -41,7 +41,7 @@ exampleSocket.onerror = function(event) {
 
 exampleSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.action === "redirect") {
+    if (data.Action === "redirect") {
         window.location.href = data.url;
     }
 };
