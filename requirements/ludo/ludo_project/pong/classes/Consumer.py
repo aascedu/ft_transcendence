@@ -203,5 +203,4 @@ class Consumer(AsyncWebsocketConsumer):
                 }))
 
 
-# Quand je recois une requete : je get le time, je verifie le temps qui s'est ecoule depuis la requete precedente.
-# Si c'est plus de 10 ms, good, sinon non.
+# Keep this id (as gameId) and add the id of the player incoming. For the time of the game use gameId, when sending result use the real id.
