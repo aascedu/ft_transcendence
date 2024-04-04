@@ -1,33 +1,32 @@
 version: '3.8'
 
 networks:
-  
   aegis guard: {}
-  
+
   atlas:
     internal: true
-  
+
+
   sentinel:
     internal: true
 
 volumes:
-  
   shared_code:
     driver: local
     driver_opts:
       type: none
       device: ./requirements/shared_code
       o: bind
-  
+
   certificates:
     driver: local
-  
+
   elastic_data:
     driver: local
-  
+
   kibana_data:
     driver: local
-  
+
   logstash_data:
     driver: local
 

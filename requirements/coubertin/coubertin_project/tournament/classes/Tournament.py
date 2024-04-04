@@ -10,7 +10,7 @@ class Tournament:
 
     def addPlayer(self, player):
         if (len(self.players) >= self.nbPlayers):
-            raise Exception('Too many players already') 
+            raise Exception('Too many players already')
         self.players += player
 
     def addGame(self, game):
@@ -24,5 +24,5 @@ class Tournament:
             'Players': self.players,
             'Games': self.gameHistory,
         }
-                
+
 tournaments = {}

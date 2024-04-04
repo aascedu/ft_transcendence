@@ -6,7 +6,7 @@ document.querySelector('.homepage-header-logo').addEventListener('click', functi
 	var	currentPage = g_state.pageToDisplay;
 
 	g_state.pageToDisplay = '.homepage-game';
-	
+
 	if (currentPage != '.homepage-game') {
 		document.querySelector(currentPage).classList.add('visually-hidden');
 		window.history.pushState(g_state, null, "");
@@ -81,7 +81,7 @@ window.addEventListener('click', function ({target}){
 	}
 });
 
-// 
+//
 
 document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
 	hideEveryPage();
@@ -109,7 +109,7 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 	render(g_state);
 });
 
-// 
+//
 
 document.querySelector('.homepage-header-available-tournaments').addEventListener('click', function() {
 	hideEveryPage();
