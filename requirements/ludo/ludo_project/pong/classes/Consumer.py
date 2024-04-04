@@ -137,7 +137,7 @@ class Consumer(AsyncWebsocketConsumer):
             if (len(self.myMatch.players) > 1):
                 if (self.myMatch.gameStarted == False):
                     self.myMatch.gameStarted == True
-                    # self.myMatch.startTime = time.time()
+                    time.sleep(3)
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
                 if (pointWinner != -1):
                     self.myMatch.score[pointWinner] += 1
