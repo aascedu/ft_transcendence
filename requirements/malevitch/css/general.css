@@ -244,7 +244,6 @@ body {
 }
 
 .category-icon {
-	left: 16px;
 	height: 40px;
 	width: 40px;
 	border-radius: 20px;
@@ -284,6 +283,19 @@ body {
 	border-radius: 12px;
 	border-width: 0;
 	padding: 12px;
+}
+
+.user-card-name {
+	font-size: 16pt;
+	font-weight: 700;
+	color: #7300E6;
+}
+
+.user-card-picture img {
+	width: 40px;
+	height: 40px;
+	border-radius: 20px;
+	border-width: 0;
 }
 
 .empty-list-content {

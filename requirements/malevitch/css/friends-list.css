@@ -81,13 +81,13 @@
 
 .friends-list-offline
 .content-card
-.friends-card-name {
+.user-card-name {
 	color: rgba(115, 0, 230, 0.6);
 }
 
 .friends-list-offline
 .content-card
-.friends-card-picture {
+.user-card-picture {
 	filter: grayscale(100%);
 }
 

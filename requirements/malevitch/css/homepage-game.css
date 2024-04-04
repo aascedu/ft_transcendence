@@ -11,6 +11,12 @@
 	height: 100%;
 }
 
+.homepage-game-content-history-icon,
+.homepage-game-content-friends-icon,
+.homepage-game-content-stats-icon {
+	left: 16px;
+}
+
 /* left content */
 
 .homepage-game-content-left {
@@ -106,19 +112,6 @@
 .category-icon img {
 	height: 20px;
 	margin-left: 1px;
-}
-
-.friends-card-name {
-	font-size: 16pt;
-	font-weight: 700;
-	color: #7300E6;
-}
-
-.friends-card-picture img {
-	width: 40px;
-	height: 40px;
-	border-radius: 20px;
-	border-width: 0;
 }
 
 .homepage-game-content-no-friends img {
