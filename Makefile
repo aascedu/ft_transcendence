@@ -117,8 +117,9 @@ aether:
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	rm -rf $(VOLUMES_PATH)/*
-	rm -rf ./requirements/tutum/vault
 	rm -rf ./requirements/aegis/ModSecurity
+	rm -rf ./tokens
+	rm -rf ./requirements/tutum/vault
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
