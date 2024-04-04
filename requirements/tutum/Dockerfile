@@ -1,12 +1,13 @@
 FROM        debian:bookworm
 
 ENV         VAULT_ADDR=http://0.0.0.0:8200/
-ENV         VAULT_TOKEN=""
 ARG         ELASTIC_PASSWORD
 ARG         KIBANA_PASSWORD
+ARG         GRAFANA_PASSWD
 
 RUN         export ELASTIC_PASSWORD=ELASTIC_PASSWORD && \
-            export KIBANA_PASSWORD=KIBANA_PASSWORD
+            export KIBANA_PASSWORD=KIBANA_PASSWORD && \
+            export GRAFANA_PASSWD=GRAFANA_PASSWD
 
 COPY        conf/config.hcl /config.hcl
 COPY        conf/env-policy.hcl /env-policy.hcl

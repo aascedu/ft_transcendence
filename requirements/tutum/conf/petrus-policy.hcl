@@ -1,3 +1,3 @@
-path "secret/data/petrus" {
-  capabilities = [ "create", "read", "update" ]
+path "secret/data/petrus/*" {
+  capabilities = [ "read" ]
 }
