@@ -21,19 +21,17 @@ class joinTournament(View):
     def post(self, request):
         global tournaments
         
-        data = request.data
-        tournamentName = data['tournamentName']
-        if (tournamentName not in tournaments):
-            return JsonResponse({'Err': 'tournament does not exists'})
-        if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
-            return JsonResponse({'Err': 'tournament is already full'})
         try:
-            if 'playerName' in data:
-                tournaments[tournamentName].addPlayer(data['playerName'])
-            else:
-                return JsonResponse({'Err': "no player name provided"})
+            playerId = request.user.id
+            data = request.data
+            tournamentName = data['tournamentName']
+            if (tournamentName not in tournaments):
+                return JsonResponse({'Err': "tournament does not exists"})
+            tournaments[tournamentName].addPlayer(playerId)
+            
         except Exception as e:
-            return JsonResponse({'Err': e.__str__})
+            return JsonResponse({'Err': e.__str__()})
+
         return JsonResponse({})
 
 def printData(data):
