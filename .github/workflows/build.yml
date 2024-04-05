@@ -33,9 +33,6 @@ jobs:
           python3 -m venv ci_env
           source ci_env/bin/activate
           pip install -r global_requirements.txt
-          echo
-          ls
-          echo
           make build
 
     #- name: Health Check Mensura
