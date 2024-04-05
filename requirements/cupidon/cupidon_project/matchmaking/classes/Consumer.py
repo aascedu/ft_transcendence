@@ -22,21 +22,31 @@ class Consumer(AsyncWebsocketConsumer):
         type = text_data_json['type']
         
         # Send message to room group
-        await self.channel_layer.group_send(
-            "matchmakingRoom", {
-                "type": type,
-                "id": text_data_json['id'],
-                "elo": text_data_json['elo'],
-            }
-        )
+        if (type == 'playerData'):
+            await self.channel_layer.group_send(
+                "matchmakingRoom", {
+                    'type': type,
+                    'id': text_data_json['id'],
+                    'elo': text_data_json['elo'],
+                }
+            )
+
+        else:
+            await self.channel_layer.group_send(
+                'matchmakingRoom', {
+                    'type': type,
+                }
+            )
 
     async def PlayerData(self, event):
         global waitingList
         
+        print("player data gonna set")
         id = event['id']
         elo = event['elo']
         self.me = Player(id, elo)
         waitingList[id] = self.me # Get player name with the token here
+        print("player data set")
 
     async def Ping(self, event):
         global waitingList
@@ -55,3 +65,6 @@ class Consumer(AsyncWebsocketConsumer):
                                     + str(waitingList[id])
                                     + "/"
                             }))
+
+# Faire une vue joinWaitingRoom (dans laquelle j'ai donc acces a l'id du player)
+# Ensuite rediriger sur la page avec les websockets etc...
