@@ -155,6 +155,7 @@ async function signUpEmail(input) {
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
 	
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
+		console.log(input.value);
 		// Make the following inputs appear only when the choosen email is valid.
 		try {
 			const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
