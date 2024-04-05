@@ -14,6 +14,17 @@ let g_state = {
 function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
+
+
+	// A ENLEVER APRES
+
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
+
+	//
 }
 
 window.history.replaceState(g_state, null, "");

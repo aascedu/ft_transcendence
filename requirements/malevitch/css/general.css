@@ -1,6 +1,8 @@
 * {
 	font-family: "Syne", sans-serif;
 	font-size: 0pt;
+	min-height: 0;
+	min-width: 0;
 }
 
 body {

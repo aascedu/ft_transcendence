@@ -51,6 +51,7 @@
 	border-bottom-color: rgba(115, 0, 230, 0.6);
 	border-bottom-width: 2px;
 	border-bottom-style: solid;
+	margin-top: 16px;
 }
 
 .tournament-info-title p {
@@ -127,7 +128,6 @@
 .bracket-round {
 	display: flex;
 	flex-direction: column;
-	min-height: 100%;
 	width: 30%;
 	justify-content: space-around;
 	align-content: center;
@@ -137,7 +137,6 @@
 	position: relative;
 	display: flex;
 	flex-direction: column;
-	width: 100%;
 	margin-bottom: 32px;
 	margin-right: 0;
 }
@@ -150,12 +149,10 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	width: 100%;
 	height: 56px;
 	position: relative;
 	border-radius: 8px;
 	background-color: rgba(115, 0, 230, 0.1);
-	backdrop-filter: blur(3px);
 	filter: drop-shadow(2px 2px 4px rgba(115, 0, 230, 0.2));
 	padding: 8px;
 }
@@ -203,7 +200,7 @@
 
 .bracket-match-lines-alt {
 	position: absolute;
-	left: -30px;
+	left: -28px;
 	top: 62px;
 }
 
