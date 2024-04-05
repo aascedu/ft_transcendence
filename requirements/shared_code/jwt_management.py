@@ -16,7 +16,7 @@ class VaultInteractionError(Exception):
 
 def get_key_from_vault(vault_token):
     try:
-        client = hvac.Client(url='http://tutum:8200', token=vault_tokn)
+        client = hvac.Client(url='http://tutum:8200', token=vault_token)
         if not client.is_authenticated():
             raise AuthenticationError("Failed to authenticate with Vault")
         
