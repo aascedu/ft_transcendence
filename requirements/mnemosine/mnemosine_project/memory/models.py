@@ -37,7 +37,6 @@ class Game(baseModel):
         related_name='loses')
     loser_score = models.IntegerField()
 
-
     def to_dict(self):
         return {
             "Id": self.id,
@@ -47,16 +46,15 @@ class Game(baseModel):
             "Loser-score": self.loser_score,
         }
 
-
     @staticmethod
-    def from_json(json):
+    def from_json_saved(json):
         created_game = Game()
         created_game.winner = Player.objects.get(id=json['Winner'])
         created_game.loser = Player.objects.get(id=json['Loser'])
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+        created_game.save()
         return created_game
-
 
     def game_db_update(self):
         rating1 = self.winner.elo
@@ -79,38 +77,45 @@ class Game(baseModel):
 
 class Tournament(baseModel):
     name = models.SlugField()
-    games = models.ManyToManyField(Game, through='TournamentGame', blank=True)
 
     def to_dict(self):
         return {
             "TournamentName": self.name,
-            "Games": list([a.to_dict() for a in self.games.all()]),
+            "Games": [a.to_dict() for a in self.games.all()],
         }
 
+    def add_game(self, game):
+        raise NotImplementedError()
+
     @staticmethod
-    def from_json(json):
-        created_tournament = Tournament()
-        game_array = [TournamentGame.from_json(game) for game in json['Games']]
-
-        for tournamentgame in game_array:
-            created_tournament.games.add(tournamentgame.game)
-        return created_tournament
-
-
-class TournamentParticipation(baseModel):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournaments')
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='participations')
-
-    class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
-        unique_together = ('player', 'tournament')
-
+    def from_json_saved(json):
+        tournament = Tournament.objects.create(name="Named")
+        print("tournament created")
+        games = [TournamentGame.from_json_saved(game_array) for game_array in json['Games']]
+        for game in games:
+            print("tournament")
+            game.tournament = tournament
+        return tournament
 
 class TournamentGame(baseModel):
-    participation = models.ForeignKey(TournamentParticipation,
-                                   on_delete=models.CASCADE,
-                                   related_name='games')
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    round = models.SmallIntegerField()
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='games')
 
-    class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
-        unique_together = ('tournament', 'game')
+    @staticmethod
+    def from_json_saved(json):
+        game = TournamentGame()
+        game.game = Game.from_json_saved(json)
+        game.round = json['Round']
+        print(game.to_dict())
+        print("pre tournament game")
+        game.save()
+        print("post tournament game")
+        return game
 
+    def to_dict(self):
+        return {
+                "Id": self.id,
+                "Game": self.game.to_dict(),
+                "Round": self.round
+        }
