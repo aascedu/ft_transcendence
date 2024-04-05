@@ -8,7 +8,7 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-game"
+	pageToDisplay: ".homepage-id"
 };
 
 function render() {
@@ -252,8 +252,11 @@ function goToHomepageGame(previous) {
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');
 
-	var	homepageHeader = document.querySelector('.homepage-game');
+	var	homepageHeader = document.querySelector('.homepage-header');
 	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
