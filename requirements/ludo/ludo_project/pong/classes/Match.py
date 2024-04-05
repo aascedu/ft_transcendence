@@ -4,6 +4,7 @@ from pong.classes.Ball import Ball
 # A init autrement
 class Match:
     def __init__(self):
+        self.playersId = []
         self.players = []
         self.score = [0, 0]
         self.ball = Ball(gameSettings=gameSettings())
@@ -11,8 +12,8 @@ class Match:
         self.startTime = 0
     
     def toDict(self):
-        player1 = self.players[0].id
-        player2 = self.players[1].id
+        player1 = self.playersId[0].id
+        player2 = self.playersId[1].id
         score1 = self.score[0]
         score2 = self.score[1]
         return ({

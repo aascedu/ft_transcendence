@@ -61,6 +61,7 @@ class Consumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.roomName, {
                     "type": self.type,
+                    "id": gameDataJson["id"]
                 }
             )
 
@@ -80,7 +81,7 @@ class Consumer(AsyncWebsocketConsumer):
 
         self.myMatch.players.append(Player(self.id, self.gameSettings)) # A check avec le viewer !!
         self.myMatch.ball = Ball(self.gameSettings)
-        # self.lastRefreshTime = time.time()
+        self.myMatch.playersId[self.id] = event["id"]
 
         await self.send (text_data=json.dumps({
             "type": "gameParameters",
