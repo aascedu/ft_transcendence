@@ -411,6 +411,35 @@
 					<img src="assets/general/no-tournament.svg" alt="no tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 					<p data-language="no-available-tournament" class="text-center unselectable">There is no tournament available yet...</p>
 				</div>
+				<!-- EXAMPLE OF TOURNAMENTS -->
+				<div class="my-tournaments-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
+					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
+						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
+							<p data-language="my-ongoing-tournaments">My ongoing tournaments</p>
+						</div>
+						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
+							<div class="my-tournaments-card-picture position-absolute">
+								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi1</div>
+						</div>
+					</div>
+					<div class="my-tournaments-closed w-100 d-flex flex-wrap align-items-center">
+						<div class="my-tournaments-closed-title my-tournaments-title w-100">
+							<p data-language="closed-tournaments">Closed tournaments</p>
+						</div>
+						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
+							<div class="my-tournaments-card-picture position-absolute">
+								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi2</div>
+						</div>
+					</div>
+				</div>
+				<!-- <div class="my-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+					<img src="assets/general/no-history.svg" alt="no history icon" draggable="false" (dragstart)="false;" class="unselectable">
+					<p data-language="no-tournament" class="text-center unselectable">You didn't play in any tournament yet...</p>
+				</div> -->
 			</div>
 		</div>
 		<!-- MY-TOURNAMENTS -->

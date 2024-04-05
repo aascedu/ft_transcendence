@@ -11,13 +11,29 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
+    - name: Create .env file for CI
+      run: |
+          touch .env
+          echo ELASTIC_USER=elastic >> .env
+          echo ELASTIC_PASSWORD=test >> .env
+          echo STACK_VERSION=8.12.2 >> .env
+          echo CLUSTER_NAME=docker-cluster >> .env
+          echo LICENSE=basic >> .env
+          echo ES_PORT=9200 >> .env
+          echo KIBANA_PORT=5601 >> .env
+          echo KIBANA_PASSWORD=test >> .env
+          echo GRAFANA_PASSWD=grafana >> .env
+
     - name: Build containers
-      run: make all
+      run: |
+          python3 -m venv ci_env
+          source ci_env/bin/activate
+          pip install -r global_requirements.txt
+          make build
 
     #- name: Health Check Mensura
     #  run: curl -Lk https://localhost:8000/mensura/

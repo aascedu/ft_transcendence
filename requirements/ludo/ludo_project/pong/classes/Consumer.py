@@ -109,7 +109,7 @@ class Consumer(AsyncWebsocketConsumer):
         elif (self.id == 0):
             requests.post(
                 f'http://mnemosine:8008/memory/pong/match/0/',
-                json={self.myMatch.toDict()}) 
+                json={self.myMatch.to_mnemosine()})
         # requests.post() # Poster direct a la db
 
         if (event["winner"] == self.id):
@@ -124,7 +124,7 @@ class Consumer(AsyncWebsocketConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
-            
+
     async def gameLogic(self, frames, id):
         global matches
 
@@ -180,7 +180,7 @@ class Consumer(AsyncWebsocketConsumer):
                     "ballAngle": math.pi - self.myMatch.ball.angle,
             }))
 
-        # Received from opponent 
+        # Received from opponent
         else:
             await self.gameLogic(event["frames"], (self.id + 1) % 2)
             if (self.id % 2 == 0):
