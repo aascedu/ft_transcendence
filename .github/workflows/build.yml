@@ -34,7 +34,7 @@ jobs:
           source ci_env/bin/activate
           pip install -r global_requirements.txt
           echo
-          pwd
+          ls
           echo
           make build
 
