@@ -46,8 +46,8 @@ services:
         condition: service_started
       cupidon:
         condition: service_started
-      davinci:
-        condition: service_started
+      # davinci:
+      #   condition: service_started
       hermes:
         condition: service_started
       iris:
@@ -169,16 +169,9 @@ services:
       - "cluster.name=${CLUSTER_NAME}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "network.host=0.0.0.0"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.http.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.transport.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.verification_mode=certificate"
+      - "xpack.security.enabled=false"
+      - "xpack.security.http.ssl.enabled=false"
+      - "xpack.security.transport.ssl.enabled=false"
       - "xpack.license.self_generated.type=${LICENSE}"
     networks:
       - aegis guard
@@ -186,7 +179,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+          "curl -I http://localhost:9200 | grep 'HTTP/1.1 200 OK'",
         ]
       interval: 10s
       timeout: 10s
@@ -225,17 +218,18 @@ services:
     restart: on-failure
 
 # Matchmaking container
-  davinci:
-    container_name: davinci
-    image: davinci
-    build:
-      context: ./requirements/davinci
-      dockerfile: Dockerfile
-    ports:
-      - "8010:8010"
-    networks:
-      - sentinel
-    restart: on-failure
+  # davinci:
+  #   container_name: davinci
+  #   image: davinci
+  #   build:
+  #     context: ./requirements/davinci
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8010:8010"
+  #   networks:
+  #     - sentinel
+  #   restart: on-failure
+  # depends_on: prometheus no ??
 
 # Notification container
   hermes:
@@ -268,17 +262,18 @@ services:
     ports:
       - "5601:5601"
     environment:
-      - "SERVERNAME=kibana"
-      - "ELASTICSEARCH_HOSTS=https://apollo:9200"
-      - "ELASTICSEARCH_USERNAME=kibana_system"
-      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-      # - "XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-      # - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-      # - "XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
+      - "SERVERNAME=kibana"
+      - "ELASTICSEARCH_HOSTS=http://apollo:9200"
+      - "elasticsearch.username=${KIBANA_USER}"
+      - "elasticsearch.password=${KIBANA_PASSWORD}"
+      - "xpack.security.enabled=true"
+      - "xpack.encryptedSavedObjects.encryptionKey=${OBJ_ENCRYPT_KEY}"
+      - "xpack.reporting.encryptionKey=${REP_ENCRYPT_KEY}"
+      - "xpack.security.encryptionKey=${SEC_ENCRYPT_KEY}"
       # - "server.rewriteBasePath=true"
-      # - "server.publicBaseUrl="
-      # - "server.basePath="
+      # - "server.basePath=''"
+      # - "server.host=0.0.0.0"
     networks:
       - aegis guard
     healthcheck:
@@ -386,11 +381,11 @@ services:
     restart: on-failure
 
 # Filebeat container
-  orion:
-    container_name: orion
-    image: docker.elastic.co/beats/filebeat:8.13.1
-    ports:
-      - "5044:5044"
+  # orion:
+  #   container_name: orion
+  #   image: docker.elastic.co/beats/filebeat:8.13.1
+  #   ports:
+  #     - "5044:5044"
 
 # Authentification container
   petrus:
@@ -435,40 +430,39 @@ services:
           exit 1;
         fi;
         if [ ! -f config/certs/ca.zip ]; then
-          echo "Creating CA";
-          bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
-          unzip config/certs/ca.zip -d config/certs;
+            echo "Creating CA";
+            bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
+            unzip config/certs/ca.zip -d config/certs;
         fi;
         if [ ! -f config/certs/certs.zip ]; then
-          echo "Creating certs";
-          echo -ne \
-          "instances:\n"\
-          "  - name: apollo\n"\
-          "    dns:\n"\
-          "      - apollo\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          "  - name: iris\n"\
-          "    dns:\n"\
-          "      - iris\n"\
-          "      - localhost\n"\
-          "    ip:\n"\
-          "      - 127.0.0.1\n"\
-          > config/certs/instances.yml;
-          bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
-          unzip config/certs/certs.zip -d config/certs;
+            echo "Creating certs";
+            echo -ne \
+            "instances:\n"\
+            "  - name: apollo\n"\
+            "    dns:\n"\
+            "      - apollo\n"\
+            "      - localhost\n"\
+            "    ip:\n"\
+            "      - 127.0.0.1\n"\
+            "  - name: iris\n"\
+            "    dns:\n"\
+            "      - iris\n"\
+            "      - localhost\n"\
+            "    ip:\n"\
+            "      - 127.0.0.1\n"\
+            > config/certs/instances.yml;
+            bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
+            unzip config/certs/certs.zip -d config/certs;
         fi;
-        echo "Setting file permissions"
+        echo -e "\e[1;33mSetting file permissions\e[0m"
         chown -R root:root config/certs;
-        find . -type d -exec chmod 750 \{\} \;;
-        find . -type f -exec chmod 640 \{\} \;;
-        echo "Waiting for Elasticsearch availability";
-        until curl --cacert config/certs/ca/ca.crt https://apollo:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-        echo "Setting kibana_system password";
-        until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-        echo "All done!";
-      '
+        find . -type d -exec chmod 750 {} \;
+        find . -type f -exec chmod 640 {} \;
+        echo -e "\e[1;36mWaiting for Elasticsearch availability\e[0m"
+        until curl -I http://apollo:9200 | grep "HTTP/1.1 200 OK"; do sleep 30; done;
+        echo -e "\e[1;35mSetting kibana_system password with ${ELASTIC_PASSWORD} ${KIBANA_PASSWORD} \e[0m"
+        until curl -v -sS --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" -X POST http://apollo:9200/_xpack/security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "\"acknowledged\":true"; do sleep 10; done;
+        echo -e "\e[1;32mAll done!\e[0m";'
     networks:
       - aegis guard
     healthcheck:
@@ -476,3 +470,5 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+
+    # until curl -v -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" http://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
