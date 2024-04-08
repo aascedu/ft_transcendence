@@ -217,10 +217,10 @@ function togglePasswordView(container) {
 
 document.querySelectorAll('.font-size-input').forEach(function(item) {
 	item.addEventListener('input', function () {
-			var	newSize = this.value;
+		var	newSize = this.value;
 
-			updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
-			g_prevFontSize = newSize;
+		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
+		g_prevFontSize = newSize;
 	});
 });
 
@@ -280,4 +280,6 @@ function hideEveryPage() {
 	document.querySelector('.homepage-game').classList.add('visually-hidden');
 	document.querySelector('.friends-list').classList.add('visually-hidden');
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
+	document.querySelector('.available-tournaments').classList.add('visually-hidden');
+	document.querySelector('.tournament-info').classList.add('visually-hidden');
 }
