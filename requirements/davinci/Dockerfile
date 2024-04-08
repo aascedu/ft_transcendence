@@ -7,11 +7,9 @@ RUN         apt update -y && \
                             curl \
                             jq \
                             wget && \
-            mkdir -p /etc/apt/keyrings/ && \
-            wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | tee /etc/apt/keyrings/grafana.gpg > /dev/null && \
-            echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" | tee -a /etc/apt/sources.list.d/grafana.list && \
-            apt update -y && \
-            apt install grafana-enterprise -y
+            apt-get install -y adduser libfontconfig1 musl && \
+            wget https://dl.grafana.com/enterprise/release/grafana-enterprise_10.4.0_amd64.deb && \
+            dpkg -i grafana-enterprise_10.4.0_amd64.deb
 
 COPY        conf/grafana.ini /etc/grafana/grafana.ini
 COPY        tools/entrypoint.sh /entrypoint.sh

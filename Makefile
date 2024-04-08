@@ -120,9 +120,10 @@ aether:
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	rm -rf $(VOLUMES_PATH)/*
-	rm -rf ./requirements/aegis/ModSecurity
-	rm -rf ./tokens
-	rm -rf ./requirements/tutum/vault
+	rm -rf ./requirements/aegis/ModSecurity || true
+	rm -rf ./tokens || true
+	rm -rf ./requirements/tutum/vault || true
+	rm ./requirements/shared_code/shared_token.py || true
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)

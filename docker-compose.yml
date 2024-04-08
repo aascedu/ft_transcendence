@@ -151,9 +151,12 @@ services:
       - "8001:8001"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
-# Elastisearch container
+## Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -210,6 +213,9 @@ services:
       - "8002:8002"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Matchmaking container
@@ -226,6 +232,9 @@ services:
       - "8003:8003"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Matchmaking container
@@ -260,6 +269,9 @@ services:
       - "8004:8004"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Kibana container
@@ -316,6 +328,9 @@ services:
       - "8005:8005"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Game container
@@ -332,6 +347,9 @@ services:
       - "8006:8006"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Front container
@@ -394,6 +412,9 @@ services:
       - "8008:8008"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Authentification container
@@ -406,12 +427,11 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
-      - ./tokens:/app/vault/
     ports:
       - "8009:8009"
     depends_on:
       tutum:
-        condition: service_started
+        condition: service_healthy
     networks:
       - atlas
     restart: on-failure
@@ -429,6 +449,7 @@ services:
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./tokens:/tokens
+      - shared_code:/tokens/shared
     ports:
       - "8200:8200"
     networks:

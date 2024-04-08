@@ -26,6 +26,7 @@ jobs:
           echo ES_PORT=9200 >> .env
           echo KIBANA_PORT=5601 >> .env
           echo KIBANA_PASSWORD=test >> .env
+          echo GRAFANA_PASSWD=grafana >> .env
 
     - name: Build containers
       run: |

@@ -10,6 +10,7 @@ requirements/aegis/ModSecurity/
 requirements/tutum/vault
 /vendor/
 *.log
+requirements/shared_code/shared_token.py
 
 # development files
 **/__pycache__/**
