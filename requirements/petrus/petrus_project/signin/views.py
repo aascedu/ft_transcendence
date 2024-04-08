@@ -90,28 +90,31 @@ class signupView(View):
             return JsonResponse({"Err": e}, status=409)
 
 # checker si les requests sont successfull
-        request = requests.post(
-            f'http://alfred:8001/user/users/{client.unique_id}',
-            json=client.to_alfred())
+        try:
+            request = requests.post(
+                f'http://alfred:8001/user/users/{client.unique_id}',
+                json=client.to_alfred())
 # checker si les requests sont successfull
-        request = requests.post(
-            "http://mnemosine:8008/memory/players/0",
-            json=client.to_mnemosine())
+            request = requests.post(
+                "http://mnemosine:8008/memory/players/0",
+                json=client.to_mnemosine())
+        except BaseException as e:
+            print(f"that was hard {e.__str__()}")
+            return JsonResponse({""})
 
         try:
             refresh_token = JWT.objectToRefreshToken(client)
             jwt = JWT.objectToAccessToken(client)
         except BaseException as e:
             return JsonResponse({"Err": e.__str__()})
-        response = JsonResponse({})
-        response.set_cookie("ref", refresh_token)
+        response = JsonResponse({"ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 
 
 class refreshView(View):
     def get(self, request):
-        data = request.COOKIES
+        data = request.data
         if 'ref' not in data:
             return JsonResponse({"Err": "no refresh_token provided key: Ref"})
 

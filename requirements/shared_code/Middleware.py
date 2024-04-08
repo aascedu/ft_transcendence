@@ -1,6 +1,6 @@
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
-from shared.jwt_management import JWT
+from .jwt_management import JWT
 from .var import public_key
 from .common_classes import User
 import os
@@ -32,6 +32,7 @@ class JWTIdentificationMiddleware:
         except BaseException as e:
             request.user = User(error=e.__str__())
             return None
+        request.user = User(error=decodedJWT)
 
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),

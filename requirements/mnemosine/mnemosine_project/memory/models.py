@@ -8,7 +8,6 @@ class baseModel(models.Model):
     class Meta:
         abstract = True
 
-
 class Player(baseModel):
     elo = models.IntegerField(default=define.dictionaire['default_player_elo'])
     win_count = models.IntegerField(
@@ -21,8 +20,27 @@ class Player(baseModel):
             "Id": self.id,
             "Elo": self.elo,
             "Win-Count": self.win_count,
-            "Lose-Count": self.win_count,
+            "Lose-Count": self.lose_count,
         }
+
+class Tournament(baseModel):
+    name = models.SlugField()
+    players = models.ManyToManyField(Player)
+
+    def to_dict(self):
+        return {
+            "TournamentName": self.name,
+            "Games": [a.to_dict() for a in self.games.all()],
+            "players": [player.to_dict() for player in self.players.all()],
+        }
+
+    @staticmethod
+    def from_json_saved(json):
+        tournament = Tournament.objects.create(name="Named")
+        games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
+        for game in games:
+            game.tournament = tournament
+        return tournament
 
 
 class Game(baseModel):
@@ -75,27 +93,6 @@ class Game(baseModel):
         self.loser.save()
 
 
-class Tournament(baseModel):
-    name = models.SlugField()
-
-    def to_dict(self):
-        return {
-            "TournamentName": self.name,
-            "Games": [a.to_dict() for a in self.games.all()],
-        }
-
-    def add_game(self, game):
-        raise NotImplementedError()
-
-    @staticmethod
-    def from_json_saved(json):
-        tournament = Tournament.objects.create(name="Named")
-        print("tournament created")
-        games = [TournamentGame.from_json_saved(game_array) for game_array in json['Games']]
-        for game in games:
-            print("tournament")
-            game.tournament = tournament
-        return tournament
 
 class TournamentGame(baseModel):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
@@ -103,14 +100,15 @@ class TournamentGame(baseModel):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='games')
 
     @staticmethod
-    def from_json_saved(json):
+    def from_json_saved(json, tournament):
         game = TournamentGame()
         game.game = Game.from_json_saved(json)
+        game.tournament = tournament
         game.round = json['Round']
-        print(game.to_dict())
-        print("pre tournament game")
+        if (game.round == 1):
+            tournament.players.add(game.game.winner)
+            tournament.players.add(game.game.loser)
         game.save()
-        print("post tournament game")
         return game
 
     def to_dict(self):
