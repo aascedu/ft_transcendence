@@ -40,7 +40,7 @@
 .homepage-game-content-tournaments:hover,
 .homepage-game-content-new-tournament:hover {
 	cursor: pointer;
-	filter: drop-shadow(4px 4px 12px rgba(115, 0, 230, 0.6));
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 .homepage-game-content-history {
