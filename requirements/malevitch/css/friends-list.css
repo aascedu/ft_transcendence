@@ -1,18 +1,20 @@
 .friends-list {
 	top: 20vh;
-	padding-left: 5vh;
-	padding-right: 2.5vh;
-	padding-bottom: 5vh;
+	padding-left: 2.5vw;
+	padding-right: 1.25vw;
+	padding-bottom: 2.5vw;
 	height: 80vh;
 }
 
 .friends-list-container {
 	height: 100%;
+	padding-top: 16px;
+	padding-bottom: 16px;
 }
 
 .friends-list-container
 .category-title {
-	padding-top: 24px;
+	padding-top: 4px;
 	padding-left: 16px;
 	padding-right: 16px;
 	padding-bottom: 0;
@@ -32,16 +34,12 @@
 	font-weight: 700;
 }
 
-.friends-list-online {
-	padding-top: 16px;
-	padding-bottom: 32px;
-}
-
 .friends-list-title {
 	padding-bottom: 4px;
 	border-bottom-color: rgba(115, 0, 230, 0.6);
 	border-bottom-width: 2px;
 	border-bottom-style: solid;
+	margin-top: 16px;
 }
 
 .friends-list-title p {
@@ -50,7 +48,8 @@
 
 .friends-list-card-container {
 	padding: 16px;
-	flex-grow: 1;
+	padding-top: 0;
+	margin-top: 42px;
 }
 
 .friends-list-card-container
