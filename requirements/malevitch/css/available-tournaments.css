@@ -45,8 +45,9 @@
 }
 
 .available-tournaments-card-container {
-	margin-top: 32px;
 	padding: 16px;
+	padding-top: 0;
+	margin-top: 58px;
 	flex-grow: 1;
 }
 
@@ -69,6 +70,12 @@
 }
 
 .available-tournaments-card-container
+.content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.available-tournaments-card-container
 .content-card:nth-child(even) {
 	margin-left: 8px;
 }
@@ -76,12 +83,6 @@
 .available-tournaments-card-container
 .content-card:nth-child(odd) {
 	margin-right: 8px;
-}
-
-.available-tournaments-card-container
-.content-card:hover {
-	cursor: pointer;
-	filter: drop-shadow(4px 4px 12px rgba(115, 0, 230, 0.6));
 }
 
 .available-tournaments-empty img {
