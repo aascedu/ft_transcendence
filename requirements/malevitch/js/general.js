@@ -8,7 +8,7 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".tournament-info"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
