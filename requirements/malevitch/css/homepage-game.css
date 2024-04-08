@@ -1,7 +1,7 @@
 .homepage-game {
 	top: 20vh;
-	padding-left: 5vh;
-	padding-bottom: 5vh;
+	padding-left: 2.5vw;
+	padding-bottom: 2.5vw;
 	height: 80vh;
 }
 
@@ -20,7 +20,7 @@
 /* left content */
 
 .homepage-game-content-left {
-	padding-right: 2.5vh;
+	padding-right: 1.25vw;
 	height: 100%;
 }
 
@@ -84,7 +84,7 @@
 }
 
 .homepage-game-content-empty-history img {
-	width: 40%;
+	width: 30%;
 	opacity: 50%;
 	margin-right: 16px;
 }
@@ -98,7 +98,7 @@
 
 .homepage-game-content-right {
 	padding-left: 2.5vh;
-	padding-right: 2.5vh;
+	padding-right: 1.25vw;
 	height: 100%;
 }
 
@@ -115,7 +115,7 @@
 }
 
 .homepage-game-content-no-friends img {
-	width: 40%;
+	width: 30%;
 	opacity: 50%;
 	margin-top: 10%;
 }
@@ -149,7 +149,7 @@
 	right: 5vh;
 	height: 80vh;
 	padding-left: 7.5vh;
-	padding-bottom: 5vh;
+	padding-bottom: 2.5vw;
 }
 
 .homepage-game-video-container {

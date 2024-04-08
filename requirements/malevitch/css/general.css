@@ -260,8 +260,6 @@ body {
 
 .category-title {
 	z-index: 998;
-	background-color: rgba(115, 0, 230, 0.1);
-	backdrop-filter: blur(3px);
 	padding-top: 20px;
 	padding-bottom: 20px;
 	border-radius: 16px;
