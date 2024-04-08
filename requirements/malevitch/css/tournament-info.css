@@ -1,8 +1,8 @@
 .tournament-info {
 	top: 20vh;
-	padding-left: 5vh;
-	padding-right: 2.5vh;
-	padding-bottom: 5vh;
+	padding-left: 2.5vw;
+	padding-right: 1.25vw;
+	padding-bottom: 2.5vw;
 	height: 80vh;
 }
 
@@ -16,7 +16,7 @@
 	padding-top: 4px;
 	padding-left: 16px;
 	padding-right: 16px;
-	padding-bottom: 0;
+	padding-bottom: 16px;
 }
 
 .tournament-info-icon {
@@ -41,11 +41,6 @@
 	font-weight: 700;
 }
 
-.tournament-info-players {
-	padding-top: 48px;
-	padding-bottom: 32px;
-}
-
 .tournament-info-title {
 	padding-bottom: 4px;
 	border-bottom-color: rgba(115, 0, 230, 0.6);
@@ -60,6 +55,8 @@
 
 .tournament-info-card-container {
 	padding: 16px;
+	padding-top: 0;
+	margin-top: 42px;
 	flex-grow: 1;
 }
 
@@ -170,6 +167,20 @@
 .bracket-player-picture img {
 	height: 40px;
 	border-radius: 20px;
+}
+
+.bracket-loser {
+	background-color: rgba(255, 255, 255, 0.6);
+}
+
+.bracket-loser .bracket-player-name,
+.bracket-loser .bracket-player-score {
+	color: rgba(115, 0, 230, 0.6);
+}
+
+.bracket-loser
+.bracket-player-picture img {
+	filter: grayscale(100%);
 }
 
 .bracket-match-lines {
