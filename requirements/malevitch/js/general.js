@@ -8,7 +8,7 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-game"
+	pageToDisplay: ".homepage-id"
 };
 
 function render() {
@@ -18,11 +18,11 @@ function render() {
 
 	// A ENLEVER APRES
 
-	var	homepageHeader = document.querySelector('.homepage-header');
-	homepageHeader.classList.remove('visually-hidden');
+	// var	homepageHeader = document.querySelector('.homepage-header');
+	// homepageHeader.classList.remove('visually-hidden');
 
-	var	homepagePicture = document.querySelector('.homepage-game-picture');
-	homepagePicture.classList.remove('visually-hidden');
+	// var	homepagePicture = document.querySelector('.homepage-game-picture');
+	// homepagePicture.classList.remove('visually-hidden');
 
 	//
 }
