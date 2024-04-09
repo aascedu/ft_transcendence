@@ -78,6 +78,7 @@ class Consumer(AsyncWebsocketConsumer):
                 
         await self.send(json.dumps({
                 'Action': "startMatch",
+                'TournamentName': self.myTournament.name,
                 'Player1': self.myTournament.players[self.id - self.id % 2],
                 'Player2': self.myTournament.players[self.id + (1 - self.id % 2)],
                 }))

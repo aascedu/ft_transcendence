@@ -41,8 +41,18 @@ exampleSocket.onerror = function(event) {
 
 exampleSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
-    if (data.Action === "redirect") {
-        window.location.href = data.url;
+    if (data.Action === "startMatch") {
+        window.location.href = "http://localhost:8000/ludo/pong/"
+                                + data.TournamentName
+                                + '-'
+                                + data.Player1
+                                + '-'
+                                + data.Player2;
+    }
+
+    if (data.Action === "tournamentState") {
+        let tournament = data.Tournament;
+        // cf endpoints here
     }
 };
 
