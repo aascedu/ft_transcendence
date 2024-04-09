@@ -50,7 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'shared.Middleware.RawJsonToDataGetMiddleware',
     'shared.Middleware.JWTIdentificationMiddleware',
-    'shared.Middleware.ensureIdentificationMiddleware',
+    # 'shared.Middleware.ensureIdentificationMiddleware',
 ]
 
 ROOT_URLCONF = 'alfred_project.urls'
