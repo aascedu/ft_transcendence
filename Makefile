@@ -120,10 +120,10 @@ aether:
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	rm -rf $(VOLUMES_PATH)/*
-	rm -rf ./requirements/aegis/ModSecurity || true
+#	rm -rf ./requirements/aegis/ModSecurity || true
 	rm -rf ./tokens || true
 	rm -rf ./requirements/tutum/vault || true
-	rm ./requirements/shared_code/shared_token.py || true
+#	rm ./requirements/shared_code/shared_token.py || true
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
@@ -136,7 +136,7 @@ prune:
 	- $(STOP) $$(docker ps -qa)
 	- $(SYSTEM) prune -af
 	- $(VOLUME) prune -af
-	rm -rf ./requirements/aegis/ModSecurity/
+#	rm -rf ./requirements/aegis/ModSecurity/
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
