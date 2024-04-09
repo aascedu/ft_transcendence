@@ -1,39 +1,58 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import JsonResponse
-from .classes import *
+from django.http import HttpResponse, JsonResponse
+from django.views import View
+from tournament.classes.Tournament import Tournament, tournaments
+import json
+import io
 
-################ Donnes a recuperer via les request ################
+class createTournament(View): 
+    def post(self, request): # Maybe we can set admin here instead.
+        global tournaments
 
-testUser1 = Player(id = 0)
-testTournament = Tournament(creator = testUser1.id, name = 'testTournament', maxPlayers = 8, password = 'test')
+        data = request.data
+        if 'tournamentName' not in data or 'nbPlayers' not in data:
+            return JsonResponse({'Err': "tournamentName or nbPlayers not provided"})
+        tournamentName = data['tournamentName']
+        nbPlayers = data['nbPlayers']
+        tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
+        return JsonResponse({}) # Redirect on the tournament url ?
 
-####################################################################
+class joinTournament(View):
+    def post(self, request):
+        global tournaments
+        
+        data = request.data
+        tournamentName = data['tournamentName']
+        if (tournamentName not in tournaments):
+            return JsonResponse({'Err': 'tournament does not exists'})
+        if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
+            return JsonResponse({'Err': 'tournament is already full'})
+        try:
+            if 'playerName' in data:
+                tournaments[tournamentName].addPlayer(data['playerName'])
+            else:
+                return JsonResponse({'Err': "no player name provided"})
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__})
+        return JsonResponse({})
 
-tournaments = {}
+def printData(data):
+    print('Tournament name: ', data['tournamentName'])
+    game = data['game']
+    print('Player ', game['Player1'], ' had a score of ', game['Score1'])
+    print('Player ', game['Player2'], ' had a score of ', game['Score2'])
 
-def tournamentHome(request): #Essayer de retourner la reponse en json
-    global tournaments
-    return HttpResponse('Tournament Home')
+class gameResult(View): # We need to remove the loser from the player list
+    def post(self, request):
+        global tournaments
 
-def startRound(matches, round):
-    for m in matches: # Je reparcours toute la liste, faire une liste de liste pour les matchs dans le tournoi ?
-        if (m.round == round):
-            pass #Lancer le match
+        data = request.data
+        if 'tournamentName' not in data or 'game' not in data:
+            return JsonResponse({'Err': "tournamentName or game not provided"})
+        printData(data)
+        tournament = tournaments[data['tournamentName']]
+        tournament.addGame(data['game']) # Game is a dictionnary
+        return JsonResponse({})
 
-def tournamentCore(request): # Generate matches here.
-    global tournaments
-    if request.method == 'POST':
-        tournamentName = 'testTournament' # Il faut reussir a le get
-        tournament = tournaments[tournamentName]
-        players = tournament.players
-        round = 1
-        while (players.len() > 1):
-            for i in range(0, players.len(), 2):
-                tournament.addMatch(Match([players[i].id, players[i+1].id], round, i/2))
-            # Send les matchs ici ? Recuperer le resultat.
-            round += 1
-    # Quand qqn perd un match on le retire de la liste et on relance une fois que tous les matchs d'une ronde sont termines
-            
-def failed(request):
-    return HttpResponse("Whatever you're doing isn't fucking working")
+def tournamentHome(request, tournamentName):
+    return render(request, 'tournament/home.html', {'tournamentName': tournamentName})

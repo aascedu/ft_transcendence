@@ -1,13 +1,17 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from pong.classes.Match import matches, Match
 from pong.classes.Player import Player
-from pong.classes.gameSettings import gameSettings
+from pong.classes.GameSettings import gameSettings
 from pong.classes.Ball import Ball
-import math as m
+import time
+import math
 import json
+import requests
 
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
+
+# tester si c'est un viewer ou un joueur
 
 class Consumer(AsyncWebsocketConsumer):
 
@@ -24,7 +28,13 @@ class Consumer(AsyncWebsocketConsumer):
 
         self.myMatch = matches[self.roomName]
         self.id = len(self.myMatch.players)
+        self.isPlayer = True
+        if (self.id > 1):
+            self.isPlayer = False # a tester !
+            self.id = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
+        self.lastRequestTime = 0
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -36,6 +46,12 @@ class Consumer(AsyncWebsocketConsumer):
     # Receive message from front
     async def receive(self, text_data):
         global matches
+
+        # Check if the request is good here
+        currentTime = time.time_ns()
+        if (currentTime - self.lastRequestTime < 9800000):
+            return
+        self.lastRequestTime = currentTime
 
         gameDataJson = json.loads(text_data)
         self.type = gameDataJson["type"]
@@ -62,14 +78,17 @@ class Consumer(AsyncWebsocketConsumer):
 
         print("This is from the gameStart function")
 
-        self.myMatch.players.append(Player(self.id, self.gameSettings))
+        self.myMatch.players.append(Player(self.id, self.gameSettings)) # A check avec le viewer !!
         self.myMatch.ball = Ball(self.gameSettings)
+        # self.lastRefreshTime = time.time()
+
         await self.send (text_data=json.dumps({
             "type": "gameParameters",
             "playerHeight": self.gameSettings.playerHeight,
             "playerWidth": self.gameSettings.playerWidth,
             "ballSize": self.gameSettings.ballSize,
             "ballSpeed": self.myMatch.ball.speed,
+            "isPlayer": self.isPlayer,
         }))
 
     async def updateScore(self, event):
@@ -80,6 +99,19 @@ class Consumer(AsyncWebsocketConsumer):
         }))
 
     async def gameEnd(self, event):
+        # Si game de tournoi, envoyer au tournoi, sinon envoyer a la db.
+        print("This is gameEnd function")
+        if (self.roomName.count('-') == 2 and self.id == 0): # N'envoyer qu'avec l'hote
+            requests.post(
+                f'http://coubertin:8002/tournament/gameResult/',
+                json={'tournamentName': 'test',
+                      'game': self.myMatch.toDict()}) # A tester (print dans la view de coubertin)
+        elif (self.id == 0):
+            requests.post(
+                f'http://mnemosine:8008/memory/pong/match/0/',
+                json={self.myMatch.to_mnemosine()})
+        # requests.post() # Poster direct a la db
+
         if (event["winner"] == self.id):
             await self.send (text_data=json.dumps({
                 "type": "youWin",
@@ -92,8 +124,7 @@ class Consumer(AsyncWebsocketConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
-        # requests.post() # Poster direct a la db
-            
+
     async def gameLogic(self, frames, id):
         global matches
 
@@ -104,6 +135,9 @@ class Consumer(AsyncWebsocketConsumer):
 
             # Ball and score management
             if (len(self.myMatch.players) > 1):
+                if (self.myMatch.gameStarted == False):
+                    self.myMatch.gameStarted == True
+                    # self.myMatch.startTime = time.time()
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
                 if (pointWinner != -1):
                     self.myMatch.score[pointWinner] += 1
@@ -143,10 +177,10 @@ class Consumer(AsyncWebsocketConsumer):
                     "ballPosX": self.gameSettings.screenWidth - self.myMatch.ball.pos[0],
                     "ballPosY": self.myMatch.ball.pos[1],
                     "ballSpeed": self.myMatch.ball.speed,
-                    "ballAngle": m.pi - self.myMatch.ball.angle,
+                    "ballAngle": math.pi - self.myMatch.ball.angle,
             }))
 
-        # Received from opponent 
+        # Received from opponent
         else:
             await self.gameLogic(event["frames"], (self.id + 1) % 2)
             if (self.id % 2 == 0):
@@ -165,5 +199,9 @@ class Consumer(AsyncWebsocketConsumer):
                     "ballPosX": self.gameSettings.screenWidth - self.myMatch.ball.pos[0],
                     "ballPosY": self.myMatch.ball.pos[1],
                     "ballSpeed": self.myMatch.ball.speed,
-                    "ballAngle": m.pi - self.myMatch.ball.angle,
+                    "ballAngle": math.pi - self.myMatch.ball.angle,
                 }))
+
+
+# Quand je recois une requete : je get le time, je verifie le temps qui s'est ecoule depuis la requete precedente.
+# Si c'est plus de 10 ms, good, sinon non.

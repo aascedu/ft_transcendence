@@ -1,12 +1,3 @@
-// Font size
-
-document.querySelector('.sign-up-font-size').addEventListener('input', function () {
-	var	newSize = this.value;
-
-	updateFontSizeOfPage(document.querySelector('.sign-up'), newSize - g_prevFontSize);
-	g_prevFontSize = newSize;
-});
-
 // Pre-fill input with nickname.
 
 function getSignUpNickname(nickname) {
@@ -164,6 +155,7 @@ async function signUpEmail(input) {
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
 	
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
+		console.log(input.value);
 		// Make the following inputs appear only when the choosen email is valid.
 		try {
 			const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
@@ -289,8 +281,7 @@ async function submitCreateAccount() {
 			console.error('Error: ' + result.Err);
 		}
 		else {
-			console.log('sign up successful');
-			// switch to homepage.
+			goToHomepageGame('.sign-up');
 		}
 	}
 	catch (error) {
@@ -300,7 +291,7 @@ async function submitCreateAccount() {
 
 // "I already have an account" button.
 
-document.querySelector('.sign-up-sign-in a').addEventListener('click', function () {
+document.querySelector('.sign-up-sign-in button').addEventListener('click', function () {
 	// Switch page and go back to homepage-id.
 	document.querySelector('.sign-up').classList.add('visually-hidden');
 	document.querySelector('.homepage-id').classList.remove('visually-hidden');

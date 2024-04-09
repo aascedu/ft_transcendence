@@ -2,6 +2,8 @@
 let g_userId;
 let	g_userNick;
 let	g_prevFontSize = 0;
+let	g_jwt;
+let	g_refreshToken;
 
 // History routing.
 
@@ -19,13 +21,22 @@ render(g_state);
 
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
-	
+
 	if (event.state) {
 		pageToHide.classList.add('visually-hidden');
+		switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
+		switchNextFontSizeFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
 		g_state = event.state;
 	}
 	render(g_state);
 });
+
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
+	document.querySelector('.available-tournaments').classList.add('visually-hidden');
+}
 
 // Translation functions.
 
@@ -69,30 +80,33 @@ function switchLanguageContent(locale) {
 
 function switchNextLanguageFromPreviousSelector(previous, next) {
 	var	prevSelector = document.querySelector(previous + '-language-selector');
-	var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
-	var	locale = prevSelectorImg.getAttribute('alt');
 
-	var	nextSelector = document.querySelector(next + '-language-selector');
-	var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
+	if (prevSelector !== null) {
+		var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
+		var	locale = prevSelectorImg.getAttribute('alt');
 
-	if (nextSelectorImg.getAttribute('alt') !== locale) {
-		var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
-		var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
-		var	nextSelectorButtons = document.querySelectorAll(next + '-language-selector ul li a img');
+		var	nextSelector = document.querySelector(next + '-language-selector');
+		var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
 
-		nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
-		nextSelectorImg.setAttribute('alt', locale);
-		if (nextSelectorButtons[0].getAttribute('alt') === locale) {
-			nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
-			nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
-		}
-		else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
-			nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
-			nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
-		}
-		else {
-			nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
-			nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
+		if (nextSelectorImg.getAttribute('alt') !== locale) {
+			var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
+			var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
+			var	nextSelectorButtons = document.querySelectorAll(next + '-language-selector ul li a img');
+
+			nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
+			nextSelectorImg.setAttribute('alt', locale);
+			if (nextSelectorButtons[0].getAttribute('alt') === locale) {
+				nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
+				nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
+			}
+			else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
+				nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
+				nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
+			}
+			else {
+				nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
+				nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
+			}
 		}
 	}
 }
@@ -163,6 +177,7 @@ function warnInvalidNickname(nickname, element) {
 function addInfoToElement(info, element) {
 	element.innerHTML = element.innerHTML.split('<b')[0];
 	element.innerHTML = element.textContent + '<b>&nbsp;' + info + '&nbsp;</b>!';
+	updateFontSize(element.querySelector('b'), g_prevFontSize);
 }
 
 // Password eye icons
@@ -179,15 +194,24 @@ function togglePasswordView(container) {
 
 	if (input.getAttribute('type') == 'password') {
 		input.setAttribute('type', 'text');
-		icon.setAttribute('src', 'assets/general/hidden-purple.png');
+		icon.setAttribute('src', 'assets/auth/hidden-purple.png');
 	}
 	else {
 		input.setAttribute('type', 'password');
-		icon.setAttribute('src', 'assets/general/view-purple.png');
+		icon.setAttribute('src', 'assets/auth/view-purple.png');
 	}
 }
 
 // Font size functions
+
+document.querySelectorAll('.font-size-input').forEach(function(item) {
+	item.addEventListener('input', function () {
+			var	newSize = this.value;
+
+			updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
+			g_prevFontSize = newSize;
+	});
+});
 
 function updateFontSize(element, difference) {
 	var computedStyle = window.getComputedStyle(element);
@@ -212,9 +236,37 @@ function updateFontSizeOfPage(element, size) {
 
 function switchNextFontSizeFromPreviousSelector(previous, next) {
 	var	prevFontSizeInput = document.querySelector(previous + '-font-size');
-	var	nextFontSizeInput = document.querySelector(next + '-font-size');
 
-	nextFontSizeInput.value = prevFontSizeInput.value;
-	
-	updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
+	if (prevFontSizeInput !== null) {
+		var	nextFontSizeInput = document.querySelector(next + '-font-size');
+
+		nextFontSizeInput.value = prevFontSizeInput.value;
+
+		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
+	}
+}
+
+//
+
+function goToHomepageGame(previous) {
+	var prevPage = document.querySelector(previous);
+	prevPage.classList.add('visually-hidden');
+
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
+
+	g_state.pageToDisplay = '.homepage-game';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+}
+
+//
+
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 }

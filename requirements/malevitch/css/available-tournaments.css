@@ -1,0 +1,95 @@
+.available-tournaments {
+	top: 20vh;
+	padding-left: 5vh;
+	padding-right: 2.5vh;
+	padding-bottom: 5vh;
+	height: 80vh;
+}
+
+.available-tournaments-container {
+	height: 100%;
+	padding-top: 16px;
+}
+
+.available-tournaments-container
+.category-title {
+	padding-top: 4px;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-bottom: 0;
+}
+
+.available-tournaments-icon {
+	left: 16px;
+}
+
+.available-tournaments-icon img {
+	height: 20px;
+	margin-left: 3px;
+}
+
+.available-tournaments-container
+.category-title p {
+	font-weight: 700;
+}
+
+.available-tournaments-title {
+	padding-bottom: 4px;
+	border-bottom-color: rgba(115, 0, 230, 0.6);
+	border-bottom-width: 2px;
+	border-bottom-style: solid;
+}
+
+.available-tournaments-title p {
+	font-weight: 400;
+}
+
+.available-tournaments-card-container {
+	margin-top: 32px;
+	padding: 16px;
+	flex-grow: 1;
+}
+
+.available-tournaments-card-container
+.content-card {
+	width: calc(50% - 8px);
+}
+
+.available-tournaments-card-picture {
+	left: 16px;
+}
+
+.available-tournaments-card-picture img {
+	height: 20px;
+}
+
+.available-tournaments-card-name {
+	font-size: 14pt;
+	color: #7300E6;
+}
+
+.available-tournaments-card-container
+.content-card:nth-child(even) {
+	margin-left: 8px;
+}
+
+.available-tournaments-card-container
+.content-card:nth-child(odd) {
+	margin-right: 8px;
+}
+
+.available-tournaments-card-container
+.content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(4px 4px 12px rgba(115, 0, 230, 0.6));
+}
+
+.available-tournaments-empty img {
+	width: 20%;
+	opacity: 50%;
+	margin-bottom: 16px;
+}
+
+.available-tournaments-empty p {
+	font-weight: 400;
+}

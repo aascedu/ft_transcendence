@@ -23,12 +23,11 @@
 
 /***************************************** Websockets *****************************************/
 
-console.log("ws://" + window.location.host + '/pong/ws/me/')
 const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Probably add room name
 
 exampleSocket.onopen = function(event) {
     console.log("Socket opened in the front");
-    sendData("Ready");
+    sendPlayerData("PlayerData");
 };
 
 exampleSocket.onclose = function() {
@@ -47,16 +46,33 @@ exampleSocket.onmessage = (event) => {
     }
 };
 
-function sendData(state) {
+function sendPlayerData(state) {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
     const data = {
-        state: state
+        state: state,
+        id: 0, // A recuperer depuis la db
+        elo: 0, // A recuperer depuis la db
     };
   
     // Send the msg object as a JSON-formatted string.
     exampleSocket.send(JSON.stringify(data));
 }
 
+function sendData(state) {
+    const data = {
+        state: state,
+    };
+
+    exampleSocket.send(JSON.stringify(data));
+}
+
+function ping() {
+    sendData('ping');
+}
+
+exampleSocket.addEventListener('open', (event) => {
+    const intervalID = setInterval(ping, 10000);
+});
 
 
 

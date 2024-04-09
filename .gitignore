@@ -1,17 +1,38 @@
-
 # Commit your application's lock file https://getcomposer.org/doc/01-basic-usage.md#commit-your-composer-lock-file-to-version-control
 # You may choose to ignore a library lock file http://getcomposer.org/doc/02-libraries.md#lock-file
 # composer.lock
 
-tutorial
-composer.phar
+# security
+.env
+.api_keys
+.api_logstash_request
+requirements/aegis/ModSecurity/
+requirements/tutum/vault
 /vendor/
-**/*_env
-**/env
-**/*.sqlite3
+*.log
+requirements/shared_code/shared_token.py
+
+# development files
 **/__pycache__/**
+**/__init__.py
 **/migrations
+**/*.sqlite3
+composer.phar
+
+# parasites docs
+tutorial
+**/migrations/**
 .env
 youpi
+sources.txt
+
+# volumes & env
 **/shared
-**/__init__.py
+**/*_env
+**/env
+**/env_**
+/tokens
+
+# temporary
+elastic-agent.yml
+

@@ -1,12 +1,3 @@
-// Font size
-
-document.querySelector('.sign-in-font-size').addEventListener('input', function () {
-	var	newSize = this.value;
-
-	updateFontSizeOfPage(document.querySelector('.sign-in'), newSize - g_prevFontSize);
-	g_prevFontSize = newSize;
-});
-
 // Input box password filling.
 
 document.querySelector('.sign-in-input').addEventListener('input', function() {
@@ -54,15 +45,16 @@ async function submitPassword(password) {
 		});
 
 		const result = await response.json();
-		if ('Err' in result && 'Err' === 'Invalid password') {
+		if ('Err' in result && result.Err == 'invalid password') {
 			sendInvalidPassword();
 		}
 		else if ('Err' in result) {
 			console.error(result.Err);
 		}
 		else {
-			console.log('sign in successful');
-			// switch to homepage.
+			g_jwt = result.Auth;
+			g_refreshToken = result.Ref;
+			goToHomepageGame('.sign-in');
 		}
 	}
 	catch (error) {
@@ -84,7 +76,7 @@ function sendInvalidPassword() {
 
 // "Sign in with another nickname" button.
 
-document.querySelector('.sign-in-other-nickname a').addEventListener('click', function () {
+document.querySelector('.sign-in-other-nickname button').addEventListener('click', function () {
 	// Switch page and go back to homepage-id.
 	document.querySelector('.sign-in').classList.add('visually-hidden');
 	document.querySelector('.homepage-id').classList.remove('visually-hidden');
