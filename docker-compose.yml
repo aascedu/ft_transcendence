@@ -46,8 +46,8 @@ services:
         condition: service_started
       cupidon:
         condition: service_started
-      davinci:
-        condition: service_started
+      # davinci:
+      #   condition: service_started
       hermes:
         condition: service_started
       iris:
@@ -75,6 +75,7 @@ services:
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
       - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
+      - certificates:/usr/share/kibana/config/certs
     networks:
       - aegis guard
       - atlas
@@ -225,17 +226,17 @@ services:
     restart: on-failure
 
 # Matchmaking container
-  davinci:
-    container_name: davinci
-    image: davinci
-    build:
-      context: ./requirements/davinci
-      dockerfile: Dockerfile
-    ports:
-      - "8010:8010"
-    networks:
-      - sentinel
-    restart: on-failure
+  # davinci:
+  #   container_name: davinci
+  #   image: davinci
+  #   build:
+  #     context: ./requirements/davinci
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8010:8010"
+  #   networks:
+  #     - sentinel
+  #   restart: on-failure
 
 # Notification container
   hermes:
@@ -263,22 +264,27 @@ services:
     labels:
       co.elastic.logs/module: kibana
     volumes:
+      - ./requirements/aegis:/usr/share/nginx/html
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
     ports:
       - "5601:5601"
     environment:
-      - "SERVERNAME=kibana"
+      - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
       - "ELASTICSEARCH_USERNAME=kibana_system"
       - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-      # - "XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-      # - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-      # - "XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-      # - "server.rewriteBasePath=true"
-      # - "server.publicBaseUrl="
-      # - "server.basePath="
+      - "SERVER_SSL_ENABLED=false"
+      - "XPACK_REPORTING_ROLES_ENABLED=false"
+      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}"
+      - "XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}"
+      - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
+      - "server.rewriteBasePath=true"
+      - "server.basePath=/iris"
+      # - "server.publicBaseUrl=https://localhost:8000/iris/"
+      # - "SERVER_SSL_KEY=/etc/nginx/ssl/kibana.key"
+      # - "SERVER_SSL_CERTIFICATE=/etc/nginx/ssl/kibana.crt"
     networks:
       - aegis guard
     healthcheck:
