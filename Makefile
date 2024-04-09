@@ -41,6 +41,9 @@ build: | migrate volumes
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
 
+restart:
+	$(COMPOSE_F) $(DOCKER_FILE) restart
+
 #---- setups ----#
 
 volumes:
