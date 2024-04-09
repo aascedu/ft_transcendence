@@ -427,6 +427,7 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
+      - ./tokens/shared:/app/tokens
     ports:
       - "8009:8009"
     depends_on:
@@ -449,7 +450,7 @@ services:
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./tokens:/tokens
-      - shared_code:/tokens/shared
+      #- shared_code:/tokens/shared
     ports:
       - "8200:8200"
     networks:

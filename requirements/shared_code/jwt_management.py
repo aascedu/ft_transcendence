@@ -5,6 +5,7 @@ import hvac
 
 vault_token = ""
 
+from tokens.shared_token  import vault_token
 from .var import algo, public_key, private_key
 
 class AuthenticationError(Exception):
@@ -15,6 +16,7 @@ class VaultInteractionError(Exception):
 
 def get_key_from_vault(vault_token):
     try:
+        print(vault_token)
         client = hvac.Client(url='http://tutum:8200', token=vault_token)
         if not client.is_authenticated():
             raise AuthenticationError("Failed to authenticate with Vault")
