@@ -131,7 +131,7 @@ body {
 	cursor: pointer;
 	text-shadow: 5px 10px 12px rgba(115, 0, 230, 0.5);
 }
-.range-input::-webkit-slider-thumb
+
 /* input warning */
 
 .input-warning {

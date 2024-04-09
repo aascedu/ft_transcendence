@@ -1,33 +1,33 @@
-version: '3.8'
+#version: '3.8'
 
 networks:
-  
   aegis guard: {}
-  
+
   atlas:
     internal: true
-  
+
+
   sentinel:
     internal: true
 
 volumes:
-  
+
   shared_code:
     driver: local
     driver_opts:
       type: none
       device: ./requirements/shared_code
       o: bind
-  
+
   certificates:
     driver: local
-  
+
   elastic_data:
     driver: local
-  
+
   kibana_data:
     driver: local
-  
+
   logstash_data:
     driver: local
 
@@ -61,6 +61,8 @@ services:
       mnemosine:
         condition: service_started
       petrus:
+        condition: service_started
+      tutum:
         condition: service_started
     container_name: aegis
     image: aegis
@@ -149,9 +151,12 @@ services:
       - "8001:8001"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
-# Elastisearch container
+## Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -165,6 +170,9 @@ services:
       - elastic_data:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
+    networks:
+      - atlas
+      - aegis guard
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
@@ -181,8 +189,6 @@ services:
       - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
       - "xpack.security.transport.ssl.verification_mode=certificate"
       - "xpack.license.self_generated.type=${LICENSE}"
-    networks:
-      - aegis guard
     healthcheck:
       test:
         [
@@ -207,6 +213,9 @@ services:
       - "8002:8002"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Matchmaking container
@@ -223,20 +232,28 @@ services:
       - "8003:8003"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Matchmaking container
-  # davinci:
-  #   container_name: davinci
-  #   image: davinci
-  #   build:
-  #     context: ./requirements/davinci
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8010:8010"
-  #   networks:
-  #     - sentinel
-  #   restart: on-failure
+  davinci:
+    container_name: davinci
+    image: davinci
+    build:
+      context: ./requirements/davinci
+      dockerfile: Dockerfile
+    volumes:
+      - ./tokens/davinci:/tokens
+    ports:
+      - "8010:8010"
+    networks:
+      - sentinel
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
 # Notification container
   hermes:
@@ -252,6 +269,9 @@ services:
       - "8004:8004"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Kibana container
@@ -267,8 +287,12 @@ services:
       - ./requirements/aegis:/usr/share/nginx/html
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
+      - ./tokens:/vault
     ports:
       - "5601:5601"
+    networks:
+      - atlas
+      - aegis guard
     environment:
       - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
@@ -285,8 +309,6 @@ services:
       # - "server.publicBaseUrl=https://localhost:8000/iris/"
       # - "SERVER_SSL_KEY=/etc/nginx/ssl/kibana.key"
       # - "SERVER_SSL_CERTIFICATE=/etc/nginx/ssl/kibana.crt"
-    networks:
-      - aegis guard
     healthcheck:
      test:
        [
@@ -311,6 +333,9 @@ services:
       - "8005:8005"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Game container
@@ -327,6 +352,9 @@ services:
       - "8006:8006"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Front container
@@ -389,6 +417,9 @@ services:
       - "8008:8008"
     networks:
       - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
     restart: on-failure
 
 # Filebeat container
@@ -410,9 +441,38 @@ services:
       - shared_code:/app/shared
     ports:
       - "8009:8009"
+    depends_on:
+      tutum:
+        condition: service_healthy
     networks:
       - atlas
     restart: on-failure
+
+  tutum:
+    container_name: tutum
+    image: tutum
+    build:
+      context: ./requirements/tutum
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+        KIBANA_PASSWORD: $KIBANA_PASSWORD
+    env_file: .env
+    volumes:
+      - ./requirements/tutum/vault:/opt/vault
+      - ./tokens:/tokens
+      - shared_code:/tokens/shared
+    ports:
+      - "8200:8200"
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
 
 # Websocket container
   redis:
@@ -477,6 +537,7 @@ services:
       '
     networks:
       - aegis guard
+      - atlas
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
       interval: 1s
