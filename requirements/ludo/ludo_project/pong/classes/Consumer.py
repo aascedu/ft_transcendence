@@ -106,7 +106,7 @@ class Consumer(AsyncWebsocketConsumer):
             requests.post(
                 f'http://coubertin:8002/tournament/gameResult/',
                 json={'tournamentName': 'test',
-                      'game': self.myMatch.toDict()}) # A tester (print dans la view de coubertin)
+                      'game': self.myMatch.toDict()})
         elif (self.id == 0):
             requests.post(
                 f'http://mnemosine:8008/memory/pong/match/0/',
