@@ -8,7 +8,7 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-game"
+	pageToDisplay: ".homepage-id"
 };
 
 function render() {
@@ -21,7 +21,7 @@ render(g_state);
 
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
-	
+
 	if (event.state) {
 		pageToHide.classList.add('visually-hidden');
 		switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
@@ -241,7 +241,7 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 		var	nextFontSizeInput = document.querySelector(next + '-font-size');
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
-		
+
 		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
@@ -252,10 +252,21 @@ function goToHomepageGame(previous) {
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');
 
-	var	homepageHeader = document.querySelector('.homepage-game');
+	var	homepageHeader = document.querySelector('.homepage-header');
 	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
+}
+
+//
+
+function hideEveryPage() {
+	document.querySelector('.homepage-game').classList.add('visually-hidden');
+	document.querySelector('.friends-list').classList.add('visually-hidden');
+	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 }
