@@ -381,6 +381,19 @@ services:
       - sentinel
     restart: on-failure
 
+  alertmanager:
+    container_name: alertmanager
+    image: alertmanager
+    build:
+      context: ./requirements/alertmanager
+      dockerfile: Dockerfile
+    ports:
+      - "9093:9093"
+    networks:
+      - aegis guard
+      - sentinel
+    restart: on-failure
+
 # Data exporter container
   mensura_exporter:
     depends_on:
