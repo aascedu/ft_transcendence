@@ -2,15 +2,16 @@ from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
 
 
+
+
 class Client(models.Model):
     font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
 
     languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
-
+    avatar = models.ImageField(upload_to='avatars/', blank=True)
     unique_id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=16, unique=True)
     email = models.EmailField()
-    avatar = models.ImageField('avatars/', blank=True)
     friends = models.ManyToManyField('self', blank=True)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
