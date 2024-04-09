@@ -18,6 +18,7 @@
 		<link rel="stylesheet" href="css/friends-list.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/my-tournaments.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/available-tournaments.css" type="text/css" media="all">
+		<link rel="stylesheet" href="css/tournament-info.css" type="text/css" media="all">
 	</head>
 	<body class="dot-pattern">
 		<!-- HOMEPAGE-ID -->
@@ -295,8 +296,8 @@
 						<div class="content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 							<!-- EXAMPLE OF ONLINE FRIEND -->
 							<!-- <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="friends-card-name">Ami1</div>
-								<div class="friends-card-picture">
+								<div class="user-card-name">Ami1</div>
+								<div class="user-card-picture">
 									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 								</div>
 							</div> -->
@@ -342,23 +343,23 @@
 			</div>
 		</div>
 		<!-- FRIENDS LIST -->
-		<div class="friends-list w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
-			<div class="friends-list-container category w-100 d-flex flex-column align-items-center purple-shadow">
-				<div class="category-title w-100 d-flex justify-content-center align-items-center">
+		<div class="friends-list w-50 position-absolute visually-hidden">
+			<div class="friends-list-container category w-100 d-flex flex-column flex-wrap purple-shadow">
+				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
 					<div class="friends-list-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/friends.svg" alt="friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
 					<p data-language="friends-list" class="unselectable">Friends list</p>
 				</div>
 				<!-- EXAMPLE OF FRIENDS -->
-				<div class="friends-list-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
+				<div class="friends-list-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
 					<div class="friends-list-online w-100 d-flex flex-wrap align-items-center">
 						<div class="friends-list-online-title friends-list-title w-100">
 							<p data-language="online-friends" class="unselectable">Friends online</p>
 						</div>
 						<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="friends-card-name unselectable">Ami1</div>
-							<div class="friends-card-picture">
+							<div class="user-card-name unselectable">Ami1</div>
+							<div class="user-card-picture">
 								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 						</div>
@@ -366,19 +367,19 @@
 							<p class="empty-list-content unselectable" data-language="no-friends-online">No friends are online...</p>
 						</div> -->
 					</div>
-					<div class="friends-list-offline w-100 d-flex flex-wrap align-items-center">
+					<div class="friends-list-offline w-100 d-flex flex-wrap">
 						<div class="friends-list-offline-title friends-list-title w-100">
 							<p data-language="offline-friends" class="unselectable">Friends offline</p>
 						</div>
-						<!-- <div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="friends-card-name unselectable">Ami1</div>
-							<div class="friends-card-picture">
+						<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+							<div class="user-card-name unselectable">Ami1</div>
+							<div class="user-card-picture">
 								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
-						</div> -->
-						<div class="friends-list-no-offline w-100 d-flex justify-content-center align-items-center text-center">
-							<p class="empty-list-content unselectable" data-language="no-friends-offline">No friends are offline...</p>
 						</div>
+						<!-- <div class="friends-list-no-offline w-100 d-flex justify-content-center align-items-center text-center">
+							<p class="empty-list-content unselectable" data-language="no-friends-offline">No friends are offline...</p>
+						</div> -->
 					</div>
 				</div>
 				<!-- <div class="friends-list-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
@@ -396,8 +397,8 @@
 					</div>
 					<p data-language="tournaments" class="unselectable">Available tournaments</p>
 				</div>
-				<!-- <div class="available-tournaments-card-container w-100 d-flex flex-column overflow-x-hidden overflow-y-auto">
-					<div class="w-100 d-flex flex-wrap align-items-center">
+				<div class="available-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
+					<div class="w-100 d-flex flex-wrap align-items-start">
 						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
 							<div class="available-tournaments-card-picture position-absolute">
 								<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
@@ -405,45 +406,16 @@
 							<div class="available-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi1</div>
 						</div>
 					</div>
-				</div> -->
-				<div class="available-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+				</div>
+				<!-- <div class="available-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
 					<img src="assets/general/no-tournament.svg" alt="no tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 					<p data-language="no-available-tournament" class="text-center unselectable">There is no tournament available yet...</p>
-				</div>
-				<!-- EXAMPLE OF TOURNAMENTS -->
-				<div class="my-tournaments-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
-					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
-						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
-							<p data-language="my-ongoing-tournaments">My ongoing tournaments</p>
-						</div>
-						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
-							<div class="my-tournaments-card-picture position-absolute">
-								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi1</div>
-						</div>
-					</div>
-					<div class="my-tournaments-closed w-100 d-flex flex-wrap align-items-center">
-						<div class="my-tournaments-closed-title my-tournaments-title w-100">
-							<p data-language="closed-tournaments">Closed tournaments</p>
-						</div>
-						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
-							<div class="my-tournaments-card-picture position-absolute">
-								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center">Tournoi2</div>
-						</div>
-					</div>
-				</div>
-				<!-- <div class="my-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
-					<img src="assets/general/no-history.svg" alt="no history icon" draggable="false" (dragstart)="false;" class="unselectable">
-					<p data-language="no-tournament" class="text-center unselectable">You didn't play in any tournament yet...</p>
 				</div> -->
 			</div>
 		</div>
 		<!-- MY-TOURNAMENTS -->
-		<div class="my-tournaments w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
-			<div class="my-tournaments-container category w-100 d-flex flex-column align-items-center purple-shadow">
+		<div class="my-tournaments w-50 position-absolute visually-hidden">
+			<div class="my-tournaments-container category w-100 d-flex flex-column flex-wrap purple-shadow">
 				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
 					<div class="my-tournaments-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
@@ -451,22 +423,22 @@
 					<p data-language="my-tournaments" class="unselectable">My tournaments</p>
 				</div>
 				<!-- EXAMPLE OF TOURNAMENTS -->
-				<div class="my-tournaments-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
+				<div class="my-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
 					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
 						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
 							<p data-language="my-ongoing-tournaments" class="unselectable">My ongoing tournaments</p>
 						</div>
-						<!-- <div class="content-card d-flex justify-content-center align-items-center purple-shadow">
+						<div class="content-card d-flex justify-content-center align-items-center purple-shadow">
 							<div class="my-tournaments-card-picture position-absolute">
 								<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi1</div>
-						</div> -->
-						<div class="my-tournaments-no-open w-100 d-flex justify-content-center align-items-center text-center">
-							<p class="empty-list-content unselectable" data-language="no-ongoing-tournament">You don't have any ongoing tournament...</p>
 						</div>
+						<!-- <div class="my-tournaments-no-open w-100 d-flex justify-content-center align-items-center text-center">
+							<p class="empty-list-content unselectable" data-language="no-ongoing-tournament">You don't have any ongoing tournament...</p>
+						</div> -->
 					</div>
-					<div class="my-tournaments-closed w-100 d-flex flex-wrap align-items-center">
+					<div class="my-tournaments-closed w-100 d-flex flex-wrap">
 						<div class="my-tournaments-closed-title my-tournaments-title w-100">
 							<p data-language="closed-tournaments" class="unselectable">Closed tournaments</p>
 						</div>
@@ -487,6 +459,219 @@
 				</div> -->
 			</div>
 		</div>
+		<!-- TOURNAMENT INFO -->
+		<div class="tournament-info w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
+			<div class="tournament-info-container category w-100 d-flex flex-column align-items-center purple-shadow">
+				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
+					<div class="tournament-info-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<p class="unselectable">Tournoi 1</p>
+					<div class="tournament-info-leave-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/general/leave.svg" alt="leave icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+				</div>
+				<div class="tournament-info-card-container w-100 d-flex align-items-start flex-wrap overflow-x-hidden overflow-y-auto">
+					<div class="tournament-info-players w-100 d-flex flex-wrap align-items-center">
+						<div class="tournament-info-players-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
+							<p data-language="players" class="unselectable">Players</p>
+							<p class="unselectable">2/8</p>
+						</div>
+						<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+							<div class="user-card-name unselectable">Ami1</div>
+							<div class="user-card-picture">
+								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+						</div>
+						<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+							<div class="user-card-name unselectable">Ami1</div>
+							<div class="user-card-picture">
+								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+						</div>
+						<!-- <div class="friends-list-no-online w-100 d-flex justify-content-center align-items-center text-center">
+							<p class="empty-list-content unselectable" data-language="no-friends-online">No friends are online...</p>
+						</div> -->
+					</div>
+					<div class="tournament-info-bracket w-100 d-flex flex-wrap align-items-center">
+						<div class="tournament-info-bracket-title tournament-info-title w-100">
+							<p data-language="bracket" class="unselectable">Tournament bracket</p>
+						</div>
+						<div class="tournament-info-bracket-container d-flex justify-content-center align-items-center overflow-x-auto overflow-y-hidden">
+							<div class="bracket">
+								<div class="bracket-round bracket-round-one">
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player1</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player2</div>
+											<div class="bracket-player-score unselectable">4</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+									<div class="bracket-match">
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player3</div>
+											<div class="bracket-player-score unselectable">2</div>
+										</div>
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player4</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player5</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player6</div>
+											<div class="bracket-player-score unselectable">1</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player7</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player8</div>
+											<div class="bracket-player-score unselectable">3</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+								</div>
+								<div class="bracket-round bracket-round-two">
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player1</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player4</div>
+											<div class="bracket-player-score unselectable">3</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player5</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player7</div>
+											<div class="bracket-player-score unselectable">4</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+								</div>
+								<div class="bracket-round bracket-round-three">
+									<div class="bracket-match">
+										<div class="bracket-player bracket-loser">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player1</div>
+											<div class="bracket-player-score unselectable">2</div>
+										</div>
+										<div class="bracket-player bracket-winner">
+											<div class="bracket-player-picture">
+												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
+											</div>
+											<div class="bracket-player-name unselectable">Player5</div>
+											<div class="bracket-player-score unselectable">5</div>
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="js/general.js"></script>
 		<script src="js/homepage-id.js"></script>
 		<script src="js/sign-in.js"></script>
@@ -496,6 +681,7 @@
 		<script src="js/friends-list.js"></script>
 		<script src="js/my-tournaments.js"></script>
 		<script src="js/available-tournaments.js"></script>
+		<script src="js/tournament-info.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
