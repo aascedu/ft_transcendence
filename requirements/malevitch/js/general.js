@@ -8,7 +8,7 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
@@ -18,11 +18,11 @@ function render() {
 
 	// A ENLEVER APRES
 
-	// var	homepageHeader = document.querySelector('.homepage-header');
-	// homepageHeader.classList.remove('visually-hidden');
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
 
-	// var	homepagePicture = document.querySelector('.homepage-game-picture');
-	// homepagePicture.classList.remove('visually-hidden');
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
 
 	//
 }
@@ -282,4 +282,5 @@ function hideEveryPage() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
+	document.querySelector('.user-profile').classList.add('visually-hidden');
 }
