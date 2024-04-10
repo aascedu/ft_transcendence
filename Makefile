@@ -119,7 +119,7 @@ aether:
 
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
-	rm -rf $(VOLUMES_PATH)/*
+	rm -rf $(VOLUMES_PATH)/* || true
 #	rm -rf ./requirements/aegis/ModSecurity || true
 	rm -rf ./tokens || true
 	rm -rf ./requirements/tutum/vault || true
