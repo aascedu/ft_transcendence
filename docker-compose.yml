@@ -385,7 +385,7 @@ services:
     container_name: alertmanager
     image: alertmanager
     build:
-      context: ./requirements/alertmanager
+      context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile
     ports:
       - "9093:9093"
