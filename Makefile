@@ -118,7 +118,7 @@ petrus:
 
 aether:
 	$(COMPOSE) up -d aether
-	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash# pour la prod: remettre all
+	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
 
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
