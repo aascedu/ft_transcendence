@@ -6,13 +6,17 @@ networks:
   atlas:
     internal: true
 
-
   sentinel:
     internal: true
 
   alfred_network:
     internal: true
 
+  mnemosine_network:
+    internal: true
+
+  petrus_network:
+    internal: true
 
 volumes:
 
@@ -36,6 +40,10 @@ volumes:
     driver: local
 
   alfred_data:
+
+  mnemosine_data:
+
+  petrus_data:
 
 services:
 
@@ -436,6 +444,10 @@ services:
     build:
       context: ./requirements/mnemosine
       dockerfile: Dockerfile
+    environment:
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
       - shared_code:/app/shared
@@ -443,10 +455,29 @@ services:
       - "8008:8008"
     networks:
       - atlas
+      - mnemosine_network
     depends_on:
       tutum:
         condition: service_healthy
     restart: on-failure
+
+  mnemosine_db:
+    image: mnemosine_db
+    container_name: mnemosine_db
+    build:
+      context: ./requirements/mnemosine_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: mnemosine_db
+      POSTGRES_USER: mnemosine_user
+      POSTGRES_PASSWORD: mnemosine_password
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
+    volumes:
+      - mnemosine_data:/var/lib/postgresql/data
+    networks:
+      - mnemosine_network
 
 # Authentification container
   petrus:
@@ -455,6 +486,10 @@ services:
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
+    environment:
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
@@ -466,6 +501,24 @@ services:
     networks:
       - atlas
     restart: on-failure
+
+  petrus_db:
+    image: petrus_db
+    container_name: petrus_db
+    build:
+      context: ./requirements/petrus_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: petrus_db
+      POSTGRES_USER: petrus_user
+      POSTGRES_PASSWORD: petrus_password
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
+    volumes:
+      - petrus_data:/var/lib/postgresql/data
+    networks:
+      - petrus_network
 
   tutum:
     container_name: tutum
