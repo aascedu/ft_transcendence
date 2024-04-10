@@ -1,7 +1,7 @@
 .homepage-game {
 	top: 20vh;
-	padding-left: 5vh;
-	padding-bottom: 5vh;
+	padding-left: 2.5vw;
+	padding-bottom: 2.5vw;
 	height: 80vh;
 }
 
@@ -11,10 +11,16 @@
 	height: 100%;
 }
 
+.homepage-game-content-history-icon,
+.homepage-game-content-friends-icon,
+.homepage-game-content-stats-icon {
+	left: 16px;
+}
+
 /* left content */
 
 .homepage-game-content-left {
-	padding-right: 2.5vh;
+	padding-right: 1.25vw;
 	height: 100%;
 }
 
@@ -34,7 +40,7 @@
 .homepage-game-content-tournaments:hover,
 .homepage-game-content-new-tournament:hover {
 	cursor: pointer;
-	filter: drop-shadow(4px 4px 12px rgba(115, 0, 230, 0.6));
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 .homepage-game-content-history {
@@ -78,7 +84,7 @@
 }
 
 .homepage-game-content-empty-history img {
-	width: 40%;
+	width: 30%;
 	opacity: 50%;
 	margin-right: 16px;
 }
@@ -92,7 +98,7 @@
 
 .homepage-game-content-right {
 	padding-left: 2.5vh;
-	padding-right: 2.5vh;
+	padding-right: 1.25vw;
 	height: 100%;
 }
 
@@ -108,21 +114,8 @@
 	margin-left: 1px;
 }
 
-.friends-card-name {
-	font-size: 16pt;
-	font-weight: 700;
-	color: #7300E6;
-}
-
-.friends-card-picture img {
-	width: 40px;
-	height: 40px;
-	border-radius: 20px;
-	border-width: 0;
-}
-
 .homepage-game-content-no-friends img {
-	width: 40%;
+	width: 30%;
 	opacity: 50%;
 	margin-top: 10%;
 }
@@ -156,7 +149,7 @@
 	right: 5vh;
 	height: 80vh;
 	padding-left: 7.5vh;
-	padding-bottom: 5vh;
+	padding-bottom: 2.5vw;
 }
 
 .homepage-game-video-container {

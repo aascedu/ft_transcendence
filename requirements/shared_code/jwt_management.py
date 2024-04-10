@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from jwt import encode, decode
 
-from .shared_token import vault_token
 import hvac
 
-from .var import public_key
-from .var import private_key
-from .var import algo
+vault_token = ""
+
+from .var import algo, public_key, private_key
 
 class AuthenticationError(Exception):
     pass
@@ -19,17 +18,20 @@ def get_key_from_vault(vault_token):
         client = hvac.Client(url='http://tutum:8200', token=vault_token)
         if not client.is_authenticated():
             raise AuthenticationError("Failed to authenticate with Vault")
-        
+
         priv_response = client.secrets.kv.v2.read_secret_version(path='shared/priv')
         pub_response = client.secrets.kv.v2.read_secret_version(path='shared/pub')
         publicKey = pub_response['data']['data']['public_key']
         privateKey = priv_response['data']['data']['private_key']
-        
+
         return publicKey, privateKey
     except Exception as e:
         raise VaultInteractionError("Error interacting with Vault") from e
 
 class JWT:
+    publicKey: str = public_key
+    privateKey: str = private_key
+    print("vault_token" ,vault_token)
     try:
         publicKey, privateKey = get_key_from_vault(vault_token)
     except AuthenticationError:
