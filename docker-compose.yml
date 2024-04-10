@@ -306,7 +306,7 @@ services:
       - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
       - "server.rewriteBasePath=true"
       - "server.basePath=/iris"
-      # - "server.publicBaseUrl=https://localhost:8000/iris/"
+      - "server.publicBaseUrl=https://localhost:8000/iris"
       # - "SERVER_SSL_KEY=/etc/nginx/ssl/kibana.key"
       # - "SERVER_SSL_CERTIFICATE=/etc/nginx/ssl/kibana.crt"
     healthcheck:
