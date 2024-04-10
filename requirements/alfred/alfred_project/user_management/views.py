@@ -145,6 +145,22 @@ class friendView(View):
         return FriendshipRequest.deleteFriendship(emiter, target)
 
 
+class avatarView(View):
+    def get(self, request, id: int):
+        client = Client.objects.get(unique_id=id)
+        return JsonResponse({f'avatar_url {id}': client.avatar.url})
+
+    def post(self, request, id: int):
+        try:
+            avatar = request.FILES['avatar']
+        except BaseException as e:
+            return JsonResponse({"Err": f"missing file : {e.__str__()}"})
+        client = Client.objects.get(unique_id=request.user.id)
+        client.avatar = avatar
+        client.save()
+        return JsonResponse({})
+
+
 @csrf_exempt
 def createUser(request):
     nick = "arthur"

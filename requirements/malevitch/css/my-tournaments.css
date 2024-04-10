@@ -1,8 +1,8 @@
 .my-tournaments {
 	top: 20vh;
-	padding-left: 5vh;
-	padding-right: 2.5vh;
-	padding-bottom: 5vh;
+	padding-left: 2.5vw;
+	padding-right: 1.25vw;
+	padding-bottom: 2.5vw;
 	height: 80vh;
 }
 
@@ -25,17 +25,11 @@
 
 .my-tournaments-icon img {
 	height: 20px;
-	margin-left: 1px;
 }
 
 .my-tournaments-container
 .category-title p {
 	font-weight: 700;
-}
-
-.my-tournaments-ongoing {
-	padding-top: 48px;
-	padding-bottom: 32px;
 }
 
 .my-tournaments-title {
@@ -51,7 +45,8 @@
 
 .my-tournaments-card-container {
 	padding: 16px;
-	flex-grow: 1;
+	padding-top: 0;
+	margin-top: 58px;
 }
 
 .my-tournaments-card-container
@@ -73,6 +68,12 @@
 }
 
 .my-tournaments-card-container
+.content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.my-tournaments-card-container
 .content-card:nth-child(even) {
 	margin-right: 8px;
 }
@@ -82,16 +83,15 @@
 	margin-left: 8px;
 }
 
-.my-tournaments-closed
-.content-card {
-	background-color: rgba(255, 255, 255, 0.6);
+.my-tournaments-closed {
+	margin-top: 16px;
 }
 
-.my-tournaments-card-container
-.content-card:hover {
-	cursor: pointer;
-	filter: drop-shadow(4px 4px 12px rgba(115, 0, 230, 0.6));
+.my-tournaments-closed
+.content-card {
+	background-color: #F7F0FE;
 }
+
 
 .my-tournaments-closed
 .content-card
