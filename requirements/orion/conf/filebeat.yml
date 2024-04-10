@@ -5,6 +5,6 @@ filebeat.inputs:
       - add_docker_metadata: ~
 
 output.elasticsearch:
-hosts: ["http://apollo:9200"]
-username: "elastic"
-password: "elastic123"
+hosts: ["https://apollo:9200"]
+username: "${ELASTIC_USER}"
+password: "${ELASTIC_PASSWORD}"

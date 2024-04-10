@@ -12,6 +12,6 @@ processors:
 - add_cloud_metadata: ~
 
 output.elasticsearch:
-  hosts: '${ELASTICSEARCH_HOSTS:elasticsearch:9200}'
-  username: '${ELASTICSEARCH_USERNAME:}'
-  password: '${ELASTICSEARCH_PASSWORD:}'
+  hosts: '${ELASTICSEARCH_HOSTS:https://apollo:9200}'
+  username: '${ELASTICSEARCH_USERNAME:${ELASTIC_USER}}'
+  password: '${ELASTICSEARCH_PASSWORD:${ELASTIC_PASSWORD}}'

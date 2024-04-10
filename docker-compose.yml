@@ -6,12 +6,10 @@ networks:
   atlas:
     internal: true
 
-
   sentinel:
     internal: true
 
 volumes:
-
   shared_code:
     driver: local
     driver_opts:
@@ -32,7 +30,6 @@ volumes:
     driver: local
 
 services:
-
 # Reverse proxy container
   aegis:
     depends_on:
@@ -430,7 +427,19 @@ services:
 # Filebeat container
   orion:
     container_name: orion
-    image: docker.elastic.co/beats/filebeat:8.13.1
+    image: orion
+    labels:
+      co.elastic.logs/module: filebeat
+    build:
+      context: ./requirements/orion/
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+    user: "root"
+    environment:
+      - "ELASTIC_USER=${ELASTIC_USER}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+      - "ELASTIC_HOSTS=https://apollo:9200"
     ports:
       - "5044:5044"
 
