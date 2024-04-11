@@ -1,3 +1,41 @@
+// Ask for confirmation when inviting friend
+
+document.querySelector('.user-profile-add-icon').addEventListener('click', function() {
+	document.querySelector('.user-profile-invite-alert').classList.remove('visually-hidden');
+});
+
+	// Confirm / cancel the invitation
+
+document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', function () {
+	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
+
+	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+});
+
+document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('click', function () {
+	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
+});
+
+// Ask for confirmation when removing friend
+
+document.querySelector('.user-profile-remove-icon').addEventListener('click', function() {
+	document.querySelector('.user-profile-remove-alert').classList.remove('visually-hidden');
+});
+
+	// Confirm / cancel the remove
+
+document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('click', function () {
+	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
+
+	document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
+});
+
+document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('click', function () {
+	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
+});
+
 // Current shape graph
 
 function drawGraph() {
