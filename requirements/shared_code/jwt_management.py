@@ -24,6 +24,7 @@ def get_ressource_from_vault(vault_token, path, ressource):
         response = client.secrets.kv.v2.read_secret_version(path=path)
         ressource  = response['data']['data'][ressource]
 
+        print(ressource)
         return ressource
     except Exception as e:
         raise VaultInteractionError("Error interacting with Vault") from e
@@ -46,6 +47,8 @@ class JWT:
     except Exception as e:
         print("An unexpected error occurred:", str(e))
     algo = algo
+    # publicKey = public_key
+    # privateKey = private_key
     expiration_acccess_token = timedelta(minutes=15)
     expiration_refresh_token = timedelta(days=1)
 
