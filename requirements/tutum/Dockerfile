@@ -4,15 +4,28 @@ ENV         VAULT_ADDR=http://0.0.0.0:8200/
 ARG         ELASTIC_PASSWORD
 ARG         KIBANA_PASSWORD
 ARG         GRAFANA_PASSWD
+ARG         POSTGRES_DB
+ARG         POSTGRES_USER
+ARG         POSTGRES_PASSWORD
+ARG         ALFRED_DB
+ARG         ALFRED_USER
+ARG         ALFRED_PASSWORD
 
 RUN         export ELASTIC_PASSWORD=ELASTIC_PASSWORD && \
             export KIBANA_PASSWORD=KIBANA_PASSWORD && \
-            export GRAFANA_PASSWD=GRAFANA_PASSWD
+            export GRAFANA_PASSWD=GRAFANA_PASSWD && \
+            export POSTGRES_DB=POSTGRES_DB && \
+            export POSTGRES_USER=POSTGRES_USER && \
+            export POSTGRES_PASSWORD=POSTGRES_PASSWORD && \
+            export ALFRED_DB=ALFRED_DB && \
+            export ALFRED_USER=ALFRED_USER && \
+            export ALFRED_PASSWORD=ALFRED_PASSWORD
 
 COPY        conf/config.hcl /config.hcl
 COPY        conf/env-policy.hcl /env-policy.hcl
 COPY        conf/shared-policy.hcl /shared-policy.hcl
 COPY        conf/petrus-policy.hcl /petrus-policy.hcl
+COPY        conf/alfred-db-policy.hcl /alfred-db-policy.hcl
 
 RUN         apt update -y && \
             apt upgrade -y && \
