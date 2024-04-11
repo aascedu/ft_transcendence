@@ -6,8 +6,16 @@ networks:
   atlas:
     internal: true
 
-
   sentinel:
+    internal: true
+
+  alfred_network:
+    internal: true
+
+  mnemosine_network:
+    internal: true
+
+  petrus_network:
     internal: true
 
 volumes:
@@ -29,6 +37,15 @@ volumes:
     driver: local
 
   logstash_data:
+    driver: local
+
+  alfred_data:
+    driver: local
+
+  mnemosine_data:
+    driver: local
+
+  petrus_data:
     driver: local
 
 services:
@@ -159,6 +176,10 @@ services:
     build:
       context: ./requirements/alfred
       dockerfile: Dockerfile
+    environment:
+      ALFRED_USER: alfred
+      ALFRED_PASSWORD: alfred_pass
+      ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
       - shared_code:/app/shared
@@ -166,10 +187,31 @@ services:
       - "8001:8001"
     networks:
       - atlas
+      - alfred_network
     depends_on:
+      alfred_db:
+        condition: service_started
       tutum:
         condition: service_healthy
     restart: on-failure
+
+  alfred_db:
+    image: alfred_db
+    container_name: alfred_db
+    build:
+      context: ./requirements/alfred_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: alfred_db
+      POSTGRES_USER: alfred_user
+      POSTGRES_PASSWORD: alfred_password
+      ALFRED_USER: alfred
+      ALFRED_PASSWORD: alfred_pass
+      ALFRED_DB: user_management
+    volumes:
+      - alfred_data:/var/lib/postgresql/data
+    networks:
+      - alfred_network
 
 ## Elastisearch container
   apollo:
@@ -433,6 +475,10 @@ services:
     build:
       context: ./requirements/mnemosine
       dockerfile: Dockerfile
+    environment:
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
       - shared_code:/app/shared
@@ -440,10 +486,31 @@ services:
       - "8008:8008"
     networks:
       - atlas
+      - mnemosine_network
     depends_on:
+      mnemosine_db:
+        condition: service_started
       tutum:
         condition: service_healthy
     restart: on-failure
+
+  mnemosine_db:
+    image: mnemosine_db
+    container_name: mnemosine_db
+    build:
+      context: ./requirements/mnemosine_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: mnemosine_db
+      POSTGRES_USER: mnemosine_user
+      POSTGRES_PASSWORD: mnemosine_password
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
+    volumes:
+      - mnemosine_data:/var/lib/postgresql/data
+    networks:
+      - mnemosine_network
 
 # Authentification container
   petrus:
@@ -452,17 +519,42 @@ services:
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
+    environment:
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
     ports:
       - "8009:8009"
     depends_on:
+      petrus_db:
+        condition: service_started
       tutum:
         condition: service_healthy
     networks:
       - atlas
+      - petrus_network
     restart: on-failure
+
+  petrus_db:
+    image: petrus_db
+    container_name: petrus_db
+    build:
+      context: ./requirements/petrus_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: petrus_db
+      POSTGRES_USER: petrus_user
+      POSTGRES_PASSWORD: petrus_password
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
+    volumes:
+      - petrus_data:/var/lib/postgresql/data
+    networks:
+      - petrus_network
 
   tutum:
     container_name: tutum
