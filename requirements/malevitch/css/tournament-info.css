@@ -27,12 +27,18 @@
 	height: 20px;
 }
 
+.tournament-info-join-icon,
 .tournament-info-leave-icon {
 	right: 16px;
 }
 
+.tournament-info-join-icon img {
+	height: 21px;
+	margin-right: 4px;
+}
+
 .tournament-info-leave-icon img {
-	height: 20px;
+	height: 21px;
 	margin-left: 2px;
 }
 
