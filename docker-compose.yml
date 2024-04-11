@@ -182,10 +182,13 @@ services:
     restart: on-failure
 
   alfred_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: alfred_db
     container_name: alfred_db
     build:
-      context: ./requirements/alfred_db/
+      context: ./requirements/alfred/alfred_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: alfred_db
@@ -474,10 +477,13 @@ services:
     restart: on-failure
 
   mnemosine_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: mnemosine_db
     container_name: mnemosine_db
     build:
-      context: ./requirements/mnemosine_db/
+      context: ./requirements/mnemosine/mnemosine_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: mnemosine_db
@@ -519,10 +525,13 @@ services:
     restart: on-failure
 
   petrus_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: petrus_db
     container_name: petrus_db
     build:
-      context: ./requirements/petrus_db/
+      context: ./requirements/petrus/petrus_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: petrus_db
