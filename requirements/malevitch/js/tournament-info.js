@@ -53,3 +53,7 @@ document.querySelector('.tournament-info-leave-alert .alert-confirm-button').add
 	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
 });
+
+document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('click', function () {
+	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
+});
