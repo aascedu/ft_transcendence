@@ -1,11 +1,25 @@
 from django.db import models
+from django.core import validators
+from django.core.exceptions import ValidationError
+import re
 
 
 class Client(models.Model):
     unique_id = models.BigAutoField(primary_key=True)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
-    nick = models.CharField(max_length=16, unique=True)
+    email = models.EmailField(
+            unique=True,
+    )
+    password: str
+    hashed_password = models.CharField(
+            max_length=128,
+    )
+    nick = models.CharField(
+            unique=True,
+            validators=[
+                validators.MaxLengthValidator(16),
+
+            ],
+    )
 
     objects = models.Manager()
 
@@ -44,3 +58,15 @@ class Client(models.Model):
     @staticmethod
     def get_by_nick(nick):
         return Client.objects.filter(nick=nick).first()
+
+    def check_password(self):
+        if len(self.password) < 8:
+            raise ValidationError("Password too short")
+        if not re.search(r'[A-Z]', self.password):
+            raise ValidationError("Password must contain at least one uppercase char")
+        if not re.search(r'[a-z]', self.password):
+            raise ValidationError("Password must contain at least one lowercase char")
+        if not re.search(r'\d', self.password):
+            raise ValidationError("Password must contain a digit")
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', self.password):
+            raise ValidationError("Password must contain special char")

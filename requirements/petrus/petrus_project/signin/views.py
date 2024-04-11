@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.http import HttpRequest, JsonResponse
 from django.views import View
@@ -48,7 +49,7 @@ class signinView(View):
             return JsonResponse({"Err": "invalid id provided"})
 
         if not bcrypt.checkpw(password.encode('utf-8'),
-                          client.password.encode('utf-8')):
+                          client.hashed_password.encode('utf-8')):
             return JsonResponse({"Err": "invalid password"})
         response = JsonResponse({})
         try:
@@ -69,38 +70,47 @@ class signupView(View):
 
     def post(self, request):
         data = request.data
-        email = data.get('Email', None)
-        nickname = data.get('Nick', None)
-        password = data.get('Pass', None)
-        if password is None or nickname is None or email is None :
-            return JsonResponse(
-                {"Err": "all information must be filled"}, status=200)
-        hashed_password = bcrypt.hashpw(
-            password.encode('utf-8'),
-            bcrypt.gensalt()).decode('utf-8')
-        if Client.objects.filter(email=email).exists():
-            return JsonResponse({"Err": "known email"})
-        if Client.objects.filter(nick=nickname).exists():
-            return JsonResponse({"Err": "nick unavalable"})
         try:
-            client = Client.objects.create(
-                password=hashed_password, email=email, nick=nickname)
+            client = Client()
+            client.email = data['Email']
+            client.nick = data['Nick']
+            client.password = data['Pass']
+        except KeyError as e:
+            return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
+
+        try:
+            client.check_password()
+        except ValidationError as e:
+            return JsonResponse({"Err": e.__str__()})
+
+        client.hashed_password = bcrypt.hashpw(
+            client.password.encode('utf-8'),
+            bcrypt.gensalt()).decode('utf-8')
+
+        if Client.objects.filter(email=client.email).exists():
+            return JsonResponse({"Err": "known email"}, status=409)
+        if Client.objects.filter(nick=client.nick).exists():
+            return JsonResponse({"Err": "nick unavalable"}, status=409)
+        try:
+            client.save()
         except IntegrityError as e:
             print("An integrity error occured:", e)
             return JsonResponse({"Err": e}, status=409)
 
 # checker si les requests sont successfull
-        try:
-            request = requests.post(
-                f'http://alfred:8001/user/users/{client.unique_id}',
-                json=client.to_alfred())
+        response_alfred = requests.post(
+            f'http://alfred:8001/user/users/{client.unique_id}',
+            json=client.to_alfred())
+        if response_alfred.status_code != 200:
+            client.delete()
+            return JsonResponse(response_alfred.json(), status_code=response_alfred.status_code)
 # checker si les requests sont successfull
-            request = requests.post(
-                "http://mnemosine:8008/memory/players/0",
-                json=client.to_mnemosine())
-        except BaseException as e:
-            print(f"that was hard {e.__str__()}")
-            return JsonResponse({""})
+        response_petrus = requests.post(
+            "http://mnemosine:8008/memory/players/0",
+            json=client.to_mnemosine())
+
+        if response_petrus.status_code != 200:
+            client.delete()
 
         try:
             refresh_token = JWT.objectToRefreshToken(client)
