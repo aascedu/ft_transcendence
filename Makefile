@@ -4,9 +4,9 @@
 
 ENV_FILE		=	.env
 DOCKER_FILE		=	docker-compose.yml
-VOLUMES_DIR		=	front_db auth_db game_db \
-					certification_data elasticsearch_data \
-					logstash_data kibana_data
+VOLUMES_DIR		=	certification_data elasticsearch_data \
+					logstash_data kibana_data alfred_data \
+					mnemosine_data petrus_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
@@ -64,6 +64,10 @@ aegis:
 	$(COMPOSE) up -d aegis
 	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
 
+aether:
+	$(COMPOSE) up -d aether
+	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
+
 alfred:
 	$(COMPOSE) up -d alfred
 	$(COMPOSE_F) $(DOCKER_FILE) exec alfred bash
@@ -112,13 +116,15 @@ mnemosine:
 	$(COMPOSE) up -d mnemosine
 	$(COMPOSE_F) $(DOCKER_FILE) exec mnemosine bash
 
+orion:
+	$(COMPOSE) up -d orion
+	$(COMPOSE_F) $(DOCKER_FILE) exec orion /bin/bash
+
 petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
-aether:
-	$(COMPOSE) up -d aether
-	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
+#---- clean ----#
 
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans

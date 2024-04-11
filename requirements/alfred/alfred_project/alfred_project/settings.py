@@ -82,8 +82,12 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['ALFRED_DB'],
+        'USER': os.environ['ALFRED_USER'],
+        'PASSWORD': os.environ['ALFRED_PASSWORD'],
+        'HOST': 'alfred_db',
+        'PORT': '5432',
     }
 }
 

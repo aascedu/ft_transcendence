@@ -9,6 +9,15 @@ networks:
   sentinel:
     internal: true
 
+  alfred_network:
+    internal: true
+
+  mnemosine_network:
+    internal: true
+
+  petrus_network:
+    internal: true
+
 volumes:
   shared_code:
     driver: local
@@ -29,40 +38,49 @@ volumes:
   logstash_data:
     driver: local
 
+  alfred_data:
+    driver: local
+
+  mnemosine_data:
+    driver: local
+
+  petrus_data:
+    driver: local
+
 services:
 # Reverse proxy container
   aegis:
     depends_on:
-      # alfred:
-      #   condition: service_started
+      alfred:
+        condition: service_started
       aether:
         condition: service_started
       apollo:
         condition: service_healthy
-      # coubertin:
-      #   condition: service_started
-      # cupidon:
-      #   condition: service_started
-      # davinci:
-      #   condition: service_started
-      # hermes:
-      #   condition: service_started
+      coubertin:
+        condition: service_started
+      cupidon:
+        condition: service_started
+      davinci:
+        condition: service_started
+      hermes:
+        condition: service_started
       iris:
-        condition: service_healthy
-      # ludo:
-      #   condition: service_started
+        condition: service_started
+      ludo:
+        condition: service_started
       malevitch:
         condition: service_started
-      # mensura:
-      #   condition: service_started
-      # mnemosine:
-      #   condition: service_started
+      mensura:
+        condition: service_started
+      mnemosine:
+        condition: service_started
       orion:
         condition: service_started
-      # petrus:
-      #   condition: service_started
-      # tutum:
-      #   condition: service_started
+      petrus:
+        condition: service_started
+      tutum:
+        condition: service_started
     container_name: aegis
     image: aegis
     build:
@@ -93,20 +111,20 @@ services:
       retries: 120
 
 # Data exporter container
-  # aegis_exporter:
-  #   depends_on:
-  #     aegis:
-  #       condition: service_healthy
-  #   container_name: aegis_exporter
-  #   image: aegis_exporter
-  #   build:
-  #     context: ./requirements/mensura/aegis_exporter
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "9913:9913"
-  #   networks:
-  #     - atlas
-  #   restart: on-failure
+  aegis_exporter:
+    depends_on:
+      aegis:
+        condition: service_healthy
+    container_name: aegis_exporter
+    image: aegis_exporter
+    build:
+      context: ./requirements/mensura/aegis_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9913:9913"
+    networks:
+      - atlas
+    restart: on-failure
 
 # Logstash container
   aether:
@@ -114,7 +132,7 @@ services:
       apollo:
         condition: service_healthy
       iris:
-        condition: service_healthy
+        condition: service_started
     container_name: aether
     image: docker.elastic.co/logstash/logstash:8.12.2
     labels:
@@ -140,25 +158,50 @@ services:
     restart: on-failure
 
 # Profil container
-  # alfred:
-  #   container_name: alfred
-  #   image: alfred
-  #   build:
-  #     context: ./requirements/alfred
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ./requirements/alfred/alfred_project:/app
-  #     - shared_code:/app/shared
-  #   ports:
-  #     - "8001:8001"
-  #   networks:
-  #     - atlas
-  #   depends_on:
-  #     tutum:
-  #       condition: service_healthy
-  #   restart: on-failure
+  alfred:
+    container_name: alfred
+    image: alfred
+    build:
+      context: ./requirements/alfred
+      dockerfile: Dockerfile
+    environment:
+      ALFRED_USER: alfred
+      ALFRED_PASSWORD: alfred_pass
+      ALFRED_DB: user_management
+    volumes:
+      - ./requirements/alfred/alfred_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8001:8001"
+    networks:
+      - atlas
+      - alfred_network
+    depends_on:
+      alfred_db:
+        condition: service_started
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
-## Elastisearch container
+  alfred_db:
+    image: alfred_db
+    container_name: alfred_db
+    build:
+      context: ./requirements/alfred_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: alfred_db
+      POSTGRES_USER: alfred_user
+      POSTGRES_PASSWORD: alfred_password
+      ALFRED_USER: alfred
+      ALFRED_PASSWORD: alfred_pass
+      ALFRED_DB: user_management
+    volumes:
+      - alfred_data:/var/lib/postgresql/data
+    networks:
+      - alfred_network
+
+# Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -202,79 +245,79 @@ services:
       retries: 120
 
 # Tournament container
-#   coubertin:
-#     container_name: coubertin
-#     image: coubertin
-#     build:
-#       context: ./requirements/coubertin
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/coubertin/coubertin_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8002:8002"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+  coubertin:
+    container_name: coubertin
+    image: coubertin
+    build:
+      context: ./requirements/coubertin
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/coubertin/coubertin_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8002:8002"
+    networks:
+      - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
+
+# Matchmaking container
+  cupidon:
+    container_name: cupidon
+    image: cupidon
+    build:
+      context: ./requirements/cupidon
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/cupidon/cupidon_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8003:8003"
+    networks:
+      - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
 # # Matchmaking container
-#   cupidon:
-#     container_name: cupidon
-#     image: cupidon
-#     build:
-#       context: ./requirements/cupidon
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/cupidon/cupidon_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8003:8003"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+  davinci:
+    container_name: davinci
+    image: davinci
+    build:
+      context: ./requirements/davinci
+      dockerfile: Dockerfile
+    volumes:
+      - ./tokens/davinci:/tokens
+    ports:
+      - "8010:8010"
+    networks:
+      - sentinel
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
-# # Matchmaking container
-#   davinci:
-#     container_name: davinci
-#     image: davinci
-#     build:
-#       context: ./requirements/davinci
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./tokens/davinci:/tokens
-#     ports:
-#       - "8010:8010"
-#     networks:
-#       - sentinel
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
-
-# # Notification container
-#   hermes:
-#     container_name: hermes
-#     image: hermes
-#     build:
-#       context: ./requirements/hermes
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/hermes/hermes_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8004:8004"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+# Notification container
+  hermes:
+    container_name: hermes
+    image: hermes
+    build:
+      context: ./requirements/hermes
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/hermes/hermes_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8004:8004"
+    networks:
+      - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
 # Kibana container
   iris:
@@ -306,58 +349,56 @@ services:
       - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}"
       - "XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}"
       - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
-      - "server.rewriteBasePath=true"
-      - "server.basePath=/iris"
-      - "server.publicBaseUrl=https://localhost:8000/iris"
-      # - "SERVER_SSL_KEY=/etc/nginx/ssl/kibana.key"
-      # - "SERVER_SSL_CERTIFICATE=/etc/nginx/ssl/kibana.crt"
-    healthcheck:
-     test:
-       [
-         "CMD-SHELL",
-         "curl -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
-       ]
-     interval: 10s
-     timeout: 10s
-     retries: 120
+      - "SERVER_REWRITEBASEPATH=true"
+      - "SERVER_BASEPATH=/iris"
+      - "SERVER_PUBLICBASEURL=https://localhost:8000/iris"
+    # healthcheck:
+    #  test:
+    #    [
+    #      "CMD-SHELL",
+    #      "curl -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+    #    ]
+    #  interval: 10s
+    #  timeout: 10s
+    #  retries: 120
 
 # Auth inter-container container
-#   lovelace:
-#     container_name: lovelace
-#     image: lovelace
-#     build:
-#       context: ./requirements/lovelace
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/lovelace/lovelace_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8005:8005"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+  lovelace:
+    container_name: lovelace
+    image: lovelace
+    build:
+      context: ./requirements/lovelace
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/lovelace/lovelace_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8005:8005"
+    networks:
+      - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
-# # Game container
-#   ludo:
-#     container_name: ludo
-#     image: ludo
-#     build:
-#       context: ./requirements/ludo
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/ludo/ludo_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8006:8006"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+# Game container
+  ludo:
+    container_name: ludo
+    image: ludo
+    build:
+      context: ./requirements/ludo
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/ludo/ludo_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8006:8006"
+    networks:
+      - atlas
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
 
 # Front container
   malevitch:
@@ -375,54 +416,79 @@ services:
     restart: on-failure
 
 # Prometheus container
-#   mensura:
-#     container_name: mensura
-#     image: mensura
-#     build:
-#       context: ./requirements/mensura
-#       dockerfile: Dockerfile
-#     ports:
-#       - "8011:8011"
-#     networks:
-#       - atlas
-#       - sentinel
-#     restart: on-failure
+  mensura:
+    container_name: mensura
+    image: mensura
+    build:
+      context: ./requirements/mensura
+      dockerfile: Dockerfile
+    ports:
+      - "8011:8011"
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
 
 # # Data exporter container
-#   mensura_exporter:
-#     depends_on:
-#       mensura:
-#         condition: service_started
-#     container_name: mensura_exporter
-#     image: quay.io/prometheus/node-exporter
-#     volumes:
-#       - "/:/host:ro,rslave"
-#     ports:
-#       - "9100:9100"
-#     command: ["--path.rootfs=/host"]
-#     networks:
-#       - atlas
-#     pid: "host"
-#     restart: on-failure
+  mensura_exporter:
+    depends_on:
+      mensura:
+        condition: service_started
+    container_name: mensura_exporter
+    image: quay.io/prometheus/node-exporter
+    volumes:
+      - "/:/host:ro,rslave"
+    ports:
+      - "9100:9100"
+    command: ["--path.rootfs=/host"]
+    networks:
+      - atlas
+    pid: "host"
+    restart: on-failure
 
 # # Stats container
-#   mnemosine:
-#     container_name: mnemosine
-#     image: mnemosine
-#     build:
-#       context: ./requirements/mnemosine
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/mnemosine/mnemosine_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8008:8008"
-#     networks:
-#       - atlas
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     restart: on-failure
+  mnemosine:
+    container_name: mnemosine
+    image: mnemosine
+    build:
+      context: ./requirements/mnemosine
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/mnemosine/mnemosine_project:/app
+      - shared_code:/app/shared
+    environment:
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
+    ports:
+      - "8008:8008"
+    networks:
+      - atlas
+      - mnemosine_network
+    depends_on:
+      mnemosine_db:
+        condition: service_started
+      tutum:
+        condition: service_healthy
+    restart: on-failure
+
+  mnemosine_db:
+    image: mnemosine_db
+    container_name: mnemosine_db
+    build:
+      context: ./requirements/mnemosine_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: mnemosine_db
+      POSTGRES_USER: mnemosine_user
+      POSTGRES_PASSWORD: mnemosine_password
+      MNEMOSINE_USER: mnemosine
+      MNEMOSINE_PASSWORD: 'mnemosine_pass'
+      MNEMOSINE_DB: memory_management
+    volumes:
+      - mnemosine_data:/var/lib/postgresql/data
+    networks:
+      - mnemosine_network
 
 # Filebeat container
   orion:
@@ -444,59 +510,84 @@ services:
       - "5044:5044"
 
 # Authentification container
-#   petrus:
-#     container_name: petrus
-#     image: petrus
-#     build:
-#       context: ./requirements/petrus
-#       dockerfile: Dockerfile
-#     volumes:
-#       - ./requirements/petrus/petrus_project:/app
-#       - shared_code:/app/shared
-#     ports:
-#       - "8009:8009"
-#     depends_on:
-#       tutum:
-#         condition: service_healthy
-#     networks:
-#       - atlas
-#     restart: on-failure
+  petrus:
+    container_name: petrus
+    image: petrus
+    build:
+      context: ./requirements/petrus
+      dockerfile: Dockerfile
+    environment:
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
+    volumes:
+      - ./requirements/petrus/petrus_project:/app
+      - shared_code:/app/shared
+    ports:
+      - "8009:8009"
+    depends_on:
+      petrus_db:
+        condition: service_started
+      tutum:
+        condition: service_healthy
+    networks:
+      - atlas
+      - petrus_network
+    restart: on-failure
 
-#   tutum:
-#     container_name: tutum
-#     image: tutum
-#     build:
-#       context: ./requirements/tutum
-#       dockerfile: Dockerfile
-#       args:
-#         ELASTIC_PASSWORD: $ELASTIC_PASSWORD
-#         KIBANA_PASSWORD: $KIBANA_PASSWORD
-#     env_file: .env
-#     volumes:
-#       - ./requirements/tutum/vault:/opt/vault
-#       - ./tokens:/tokens
-#       - shared_code:/tokens/shared
-#     ports:
-#       - "8200:8200"
-#     networks:
-#       - atlas
-#       - sentinel
-#     restart: on-failure
-#     healthcheck:
-#       test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
-#       interval: 1s
-#       timeout: 5s
-#       retries: 120
+  petrus_db:
+    image: petrus_db
+    container_name: petrus_db
+    build:
+      context: ./requirements/petrus_db/
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: petrus_db
+      POSTGRES_USER: petrus_user
+      POSTGRES_PASSWORD: petrus_password
+      PETRUS_USER: petrus
+      PETRUS_PASSWORD: 'petrus_pass'
+      PETRUS_DB: auth_management
+    volumes:
+      - petrus_data:/var/lib/postgresql/data
+    networks:
+      - petrus_network
 
-# # Websocket container
-#   redis:
-#     container_name: redis
-#     image: 'bitnami/redis:latest'
-#     environment:
-#       - ALLOW_EMPTY_PASSWORD=yes
-#     networks:
-#       - atlas
-#     restart: on-failure
+  tutum:
+    container_name: tutum
+    image: tutum
+    build:
+      context: ./requirements/tutum
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+        KIBANA_PASSWORD: $KIBANA_PASSWORD
+    env_file: .env
+    volumes:
+      - ./requirements/tutum/vault:/opt/vault
+      - ./tokens:/tokens
+      - shared_code:/tokens/shared
+    ports:
+      - "8200:8200"
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+# Websocket container
+  redis:
+    container_name: redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - atlas
+    restart: on-failure
 
 # ELK setup container
   setup:

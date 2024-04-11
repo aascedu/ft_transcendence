@@ -25,6 +25,7 @@ tutorial
 .env
 youpi
 sources.txt
+**/media/
 
 # volumes & env
 **/shared
@@ -32,6 +33,7 @@ sources.txt
 **/env
 **/env_**
 /tokens
+**/media/
 
 # temporary
 elastic-agent.yml
