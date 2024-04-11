@@ -34,7 +34,7 @@ RUN     apk update && \
         rm nginx-$NGINX_VERSION.tar.gz && \
         curl -fSL https://github.com/vozlt/nginx-module-vts/archive/refs/tags/v0.2.2.tar.gz | tar xzf - -C /tmp && \
         cd nginx-$NGINX_VERSION && \
-        ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx --add-dynamic-module=/tmp/nginx-module-vts-0.2.2 && \
+        ./configure --with-compat --add-dynamic-module=../ModSecurity-nginx --add-dynamic-module=/tmp/nginx-module-vts-0.2.2 --with-http_stub_status_module && \
         make && \
         make install && \
         cp objs/ngx_http_vhost_traffic_status_module.so /etc/nginx/modules/ && \

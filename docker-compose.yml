@@ -93,17 +93,32 @@ services:
       retries: 120
 
 # Data exporter container
-  aegis_exporter:
+  aegis_stub_exporter:
     depends_on:
       aegis:
         condition: service_healthy
-    container_name: aegis_exporter
-    image: aegis_exporter
+    container_name: aegis_stub_exporter
+    image: aegis_stub_exporter
     build:
-      context: ./requirements/mensura/aegis_exporter
+      context: ./requirements/mensura/aegis_stub_exporter
       dockerfile: Dockerfile
     ports:
-      - "9913:9913"
+      - "9113:9113"
+    networks:
+      - atlas
+    restart: on-failure
+
+  aegis_vts_exporter:
+    depends_on:
+      aegis:
+        condition: service_healthy
+    container_name: aegis_vts_exporter
+    image: aegis_vts_exporter
+    build:
+      context: ./requirements/mensura/aegis_vts_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9113:9113"
     networks:
       - atlas
     restart: on-failure
