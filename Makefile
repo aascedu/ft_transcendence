@@ -4,8 +4,7 @@
 
 ENV_FILE		=	.env
 DOCKER_FILE		=	docker-compose.yml
-VOLUMES_DIR		=	front_db auth_db game_db \
-					certification_data elasticsearch_data \
+VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data

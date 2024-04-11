@@ -40,10 +40,13 @@ volumes:
     driver: local
 
   alfred_data:
+    driver: local
 
   mnemosine_data:
+    driver: local
 
   petrus_data:
+    driver: local
 
 services:
 
@@ -188,7 +191,7 @@ services:
       POSTGRES_USER: alfred_user
       POSTGRES_PASSWORD: alfred_password
       ALFRED_USER: alfred
-      ALFRED_PASSWORD: 'alfred_pass'
+      ALFRED_PASSWORD: alfred_pass
       ALFRED_DB: user_management
     volumes:
       - alfred_data:/var/lib/postgresql/data
@@ -457,6 +460,8 @@ services:
       - atlas
       - mnemosine_network
     depends_on:
+      mnemosine_db:
+        condition: service_started
       tutum:
         condition: service_healthy
     restart: on-failure
@@ -496,10 +501,13 @@ services:
     ports:
       - "8009:8009"
     depends_on:
+      petrus_db:
+        condition: service_started
       tutum:
         condition: service_healthy
     networks:
       - atlas
+      - petrus_network
     restart: on-failure
 
   petrus_db:

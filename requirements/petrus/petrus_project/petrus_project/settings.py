@@ -68,7 +68,7 @@ WSGI_APPLICATION = 'petrus_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['PETRUS_DB'],
         'USER': os.environ['PETRUS_USER'],
         'PASSWORD': os.environ['PETRUS_PASSWORD'],

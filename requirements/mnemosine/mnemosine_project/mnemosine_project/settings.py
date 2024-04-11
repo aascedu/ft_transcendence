@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'mnemosine_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ['MNEMOSINE_DB'],
         'USER': os.environ['MNEMOSINE_USER'],
         'PASSWORD': os.environ['MNEMOSINE_PASSWORD'],
