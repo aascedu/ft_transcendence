@@ -182,6 +182,9 @@ services:
     restart: on-failure
 
   alfred_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: alfred_db
     container_name: alfred_db
     build:
@@ -474,6 +477,9 @@ services:
     restart: on-failure
 
   mnemosine_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: mnemosine_db
     container_name: mnemosine_db
     build:
@@ -519,6 +525,9 @@ services:
     restart: on-failure
 
   petrus_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: petrus_db
     container_name: petrus_db
     build:
