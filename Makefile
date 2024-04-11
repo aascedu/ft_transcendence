@@ -3,7 +3,16 @@
 #---- variables -------------------------------------------------------#
 
 ENV_FILE		=	.env
+
+WHO				=	$(shell whoami)
+ifeq ($(WHO), twang)
+DOCKER_FILE		=	docker-compose-twang.yml
+# else ifeq ($(WHO), bpoumeau)
+# DOCKER_FILE		=	docker-compose-bpoumeau.yml
+else
 DOCKER_FILE		=	docker-compose.yml
+endif
+
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data

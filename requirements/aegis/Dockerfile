@@ -2,6 +2,11 @@
 
 FROM    nginx:1-alpine3.18
 
+#---- variables -------------------------------------------------------#
+
+ARG     PROXY_CONF
+RUN     export PROXY_CONF=PROXY_CONF
+
 #---- ModSecurity -----------------------------------------------------#
 
 COPY    requirements.txt /requirements.txt
@@ -62,7 +67,7 @@ COPY    conf/iris-whitelist.conf /etc/nginx/modsec/iris-whitelist.conf
 COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
 COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
 
-COPY    conf/proxy.conf /etc/nginx/nginx.conf
+COPY    conf/${PROXY_CONF} /etc/nginx/nginx.conf
 COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
