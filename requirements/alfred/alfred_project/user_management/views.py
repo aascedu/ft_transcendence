@@ -92,8 +92,7 @@ class friendView(View):
                 "friends": [
                     {"id": object.unique_id,
                      "nick": object.nick,
-                     "mail": object.email,
-                     "avatar": object.avatar}
+                     "mail": object.email}
                     for object
                     in emiter
                     .friends
@@ -101,8 +100,7 @@ class friendView(View):
                 ],
                 "requests": [
                     {"id": object.sender.unique_id,
-                     "nick": object.sender.nick,
-                     "avatar": object.sender.avatar}
+                     "nick": object.sender.nick}
                     for object in list(
                         FriendshipRequest
                         .objects
