@@ -7,7 +7,6 @@ from memory.models import Tournament, Game, Player
 
 def request_get_all(ids_str, key_name, model):
     return_json = {}
-    print(ids_str)
 
     try :
         ids = [int(id) for id in ids_str]
@@ -33,12 +32,10 @@ class tournamentView(View):
     def post(self, request, id: int = 0):
         data = request.data
         try:
-            tournament = Tournament.from_json(data)
+            tournament = Tournament.from_json_saved(data)
         except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-
-        data = request.data
-        return JsonResponse({})
+            return JsonResponse({"Err": f"{e.__str__()}"})
+        return JsonResponse(tournament.to_dict())
 
 
 class gameView(View):
@@ -68,13 +65,13 @@ class gameView(View):
 
     def post(self, request, id: int=0):
         try:
-            new_game = Game.from_json(request.data)
+            new_game = Game.from_json_saved(request.data)
         except BaseException as e:
             return JsonResponse({"Err": f"can't instantiate the game : {e.__str__()}"})
         try:
             new_game.game_db_update()
         except BaseException as e:
-            return JsonResponse({"Err": f"unexpected error ocured {e.__str__()}"})
+            return JsonResponse({"Err": f"unexpected error ocured : {e.__str__()}"})
         return JsonResponse(new_game.to_dict())
 
     def delete(self, request, id: int=0):
@@ -97,8 +94,6 @@ class playerView(View):
             try:
                 response = requests.get(f"http://alfred:8001/user/friends/{request.user.id}")
                 friends_ids = response.json().get("Friends")
-                print(request.user.id)
-                print(friends_ids)
                 if id in friends_ids:
                     friend = Player.objects.get(id=id)
                     return_json |= {"Friend": friend.to_dict()}

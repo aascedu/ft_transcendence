@@ -5,6 +5,7 @@ charset-normalizer==3.3.2
 cryptography==42.0.5
 Django==5.0.3
 django-prometheus==2.3.1
+hvac==2.1.0
 idna==3.6
 prometheus_client==0.20.0
 pycparser==2.21
