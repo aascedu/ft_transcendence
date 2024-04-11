@@ -48,7 +48,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       alfred:
@@ -112,7 +112,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Data exporter container
+# # Data exporter container
   aegis_exporter:
     depends_on:
       aegis:
@@ -128,7 +128,7 @@ services:
       - atlas
     restart: on-failure
 
-# Logstash container
+# # Logstash container
   aether:
     depends_on:
       apollo:
@@ -159,7 +159,7 @@ services:
     # ports:
     #   - "5044:5044/udp"
 
-# Profil container
+# # Profil container
   alfred:
     container_name: alfred
     image: alfred
@@ -186,6 +186,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Profil database container
   alfred_db:
     depends_on:
       tutum:
@@ -207,7 +208,7 @@ services:
     networks:
       - alfred_network
 
-# Elastisearch container
+# # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -247,7 +248,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Tournament container
+# # Tournament container
   coubertin:
     container_name: coubertin
     image: coubertin
@@ -267,7 +268,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Matchmaking container
+# # Matchmaking container
   cupidon:
     container_name: cupidon
     image: cupidon
@@ -305,7 +306,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Notification container
+# # Notification container
   hermes:
     container_name: hermes
     image: hermes
@@ -325,7 +326,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Kibana container
+# # Kibana container
   iris:
     depends_on:
       apollo:
@@ -365,7 +366,7 @@ services:
     #  timeout: 10s
     #  retries: 120
 
-# Auth inter-container container
+# # Auth inter-container container
   lovelace:
     container_name: lovelace
     image: lovelace
@@ -385,7 +386,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Game container
+# # Game container
   ludo:
     container_name: ludo
     image: ludo
@@ -405,7 +406,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -420,7 +421,7 @@ services:
       - atlas
     restart: on-failure
 
-# Prometheus container
+# # Prometheus container
   mensura:
     container_name: mensura
     image: mensura
@@ -478,6 +479,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Stats database container
   mnemosine_db:
     depends_on:
       tutum:

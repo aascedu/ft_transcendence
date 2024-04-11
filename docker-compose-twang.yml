@@ -30,7 +30,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       aether:
@@ -74,7 +74,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Logstash container
+# # Logstash container
   aether:
     depends_on:
       apollo:
@@ -101,11 +101,11 @@ services:
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
     networks:
       - sentinel
-    restart: on-failure
     # ports:
     #   - "5044:5044/udp"
+    restart: on-failure
 
-# Elastisearch container
+# # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -145,7 +145,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Kibana container
+# # Kibana container
   iris:
     depends_on:
       apollo:
@@ -185,7 +185,7 @@ services:
     #  timeout: 10s
     #  retries: 120
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -200,7 +200,7 @@ services:
       - atlas
     restart: on-failure
 
-# Filebeat container
+# # Filebeat container
   orion:
     container_name: orion
     image: orion
@@ -219,7 +219,7 @@ services:
     networks:
       - sentinel
 
-# ELK setup container
+# # ELK setup container
   setup:
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2

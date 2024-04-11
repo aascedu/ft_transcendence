@@ -36,7 +36,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       alfred:
@@ -88,7 +88,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Profil container
+# # Profil container
   alfred:
     container_name: alfred
     image: alfred
@@ -115,6 +115,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Profil database container
   alfred_db:
     depends_on:
       tutum:
@@ -136,6 +137,7 @@ services:
     networks:
       - alfred_network
 
+# # Tournament container
   coubertin:
     container_name: coubertin
     image: coubertin
@@ -155,7 +157,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Matchmaking container
+# # Matchmaking container
   cupidon:
     container_name: cupidon
     image: cupidon
@@ -175,7 +177,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Notification container
+# # Notification container
   hermes:
     container_name: hermes
     image: hermes
@@ -195,7 +197,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Auth inter-container container
+# # Auth inter-container container
   lovelace:
     container_name: lovelace
     image: lovelace
@@ -215,7 +217,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Game container
+# # Game container
   ludo:
     container_name: ludo
     image: ludo
@@ -235,7 +237,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -277,6 +279,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Stats database container
   mnemosine_db:
     depends_on:
       tutum:
@@ -298,7 +301,7 @@ services:
     networks:
       - mnemosine_network
 
-# Authentification container
+# # Authentification container
   petrus:
     container_name: petrus
     image: petrus
@@ -325,6 +328,7 @@ services:
       - petrus_network
     restart: on-failure
 
+# # Authentification database container
   petrus_db:
     depends_on:
       tutum:
@@ -346,6 +350,7 @@ services:
     networks:
       - petrus_network
 
+# # Vault container
   tutum:
     container_name: tutum
     image: tutum
@@ -372,7 +377,7 @@ services:
       timeout: 5s
       retries: 120
 
-# Websocket container
+# # Websocket container
   redis:
     container_name: redis
     image: 'bitnami/redis:latest'
