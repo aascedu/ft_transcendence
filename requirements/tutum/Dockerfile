@@ -12,6 +12,7 @@ RUN         export ELASTIC_PASSWORD=ELASTIC_PASSWORD && \
 COPY        conf/config.hcl /config.hcl
 COPY        conf/env-policy.hcl /env-policy.hcl
 COPY        conf/shared-policy.hcl /shared-policy.hcl
+COPY        conf/petrus-policy.hcl /petrus-policy.hcl
 
 RUN         apt update -y && \
             apt upgrade -y && \

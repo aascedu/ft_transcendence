@@ -14,13 +14,18 @@ if [ $? -eq 2 ]; then
     # Create policy for tokens to be created on
     vault policy write env /env-policy.hcl
     vault policy write shared /shared-policy.hcl
+    vault policy write petrus /petrus-policy.hcl
 
     # Create and write in .py file the token for shared and in .txt for other containers
     mkdir -p tokens/shared
+    mkdir -p tokens/petrus
     mkdir -p tokens/davinci
-    echo -n 'vault_token = "' >> /tokens/shared/shared_token.py
-    vault token create -policy=shared | grep 'token' | awk '{print $2}' | head -n 1 | tr -d '\n' >> /tokens/shared/shared_token.py
-    echo -n '"' >> /tokens/shared/shared_token.py
+    echo -n 'vault_token = "' >> /tokens/shared/token.py
+    vault token create -policy=shared | grep 'token' | awk '{print $2}' | head -n 1 | tr -d '\n' >> /tokens/shared/token.py
+    echo -n '"' >> /tokens/shared/token.py
+    echo -n 'vault_token = "' >> /tokens/petrus/token.py
+    vault token create -policy=petrus | grep 'token' | awk '{print $2}' | head -n 1 | tr -d '\n' >> /tokens/petrus/token.py
+    echo -n '"' >> /tokens/petrus/token.py
     vault token create -policy=env | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/env-token.txt
     cp /tokens/env-token.txt /tokens/davinci/env-token.txt
 

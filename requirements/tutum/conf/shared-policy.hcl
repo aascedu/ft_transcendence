@@ -1,3 +1,3 @@
-path "secret/data/shared/*" {
+path "secret/data/shared/pub" {
   capabilities = [ "read" ]
 }
