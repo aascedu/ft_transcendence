@@ -33,6 +33,7 @@ sources.txt
 **/env
 **/env_**
 /tokens
+**/media/
 
 # temporary
 elastic-agent.yml
