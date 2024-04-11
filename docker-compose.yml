@@ -170,6 +170,7 @@ services:
       ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -184,6 +185,9 @@ services:
     restart: on-failure
 
   alfred_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: alfred_db
     container_name: alfred_db
     build:
@@ -253,6 +257,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -272,6 +277,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -309,6 +315,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -371,6 +378,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/lovelace/lovelace_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8005:8005"
@@ -391,6 +399,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
+      - ./tokens/shared:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -455,6 +464,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     environment:
       MNEMOSINE_USER: mnemosine
@@ -473,6 +483,9 @@ services:
     restart: on-failure
 
   mnemosine_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: mnemosine_db
     container_name: mnemosine_db
     build:
@@ -523,6 +536,7 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
+      - ./tokens/petrus:/app/tokens
     ports:
       - "8009:8009"
     depends_on:
@@ -536,6 +550,9 @@ services:
     restart: on-failure
 
   petrus_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: petrus_db
     container_name: petrus_db
     build:
@@ -566,7 +583,7 @@ services:
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./tokens:/tokens
-      - shared_code:/tokens/shared
+      #- shared_code:/tokens/shared
     ports:
       - "8200:8200"
     networks:

@@ -114,6 +114,12 @@
 	margin-left: 1px;
 }
 
+.homepage-game-content-friends
+.content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
 .homepage-game-content-no-friends img {
 	width: 30%;
 	opacity: 50%;

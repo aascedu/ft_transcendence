@@ -19,6 +19,7 @@
 		<link rel="stylesheet" href="css/my-tournaments.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/available-tournaments.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/tournament-info.css" type="text/css" media="all">
+		<link rel="stylesheet" href="css/user-profile.css" type="text/css" media="all">
 	</head>
 	<body class="dot-pattern">
 		<!-- HOMEPAGE-ID -->
@@ -295,16 +296,16 @@
 						</div>
 						<div class="content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 							<!-- EXAMPLE OF ONLINE FRIEND -->
-							<!-- <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
+							<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
 								<div class="user-card-name">Ami1</div>
 								<div class="user-card-picture">
 									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 								</div>
-							</div> -->
-							<div class="homepage-game-content-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+							</div>
+							<!-- <div class="homepage-game-content-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<div class="homepage-game-content-stats category w-100 d-flex flex-column justify-content-between align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
@@ -325,8 +326,8 @@
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
 							</div>
 						</div>
-						<div class="homepage-game-content-stats-card-graphic w-100 d-flex flex-column justify-content-center align-items-center purple-shadow" data-language="current-form">
-							Forme actuelle
+						<div class="homepage-game-content-stats-card-graphic w-100 d-flex flex-column justify-content-center align-items-center purple-shadow" data-language="current-shape">
+							Current shape
 							<div class="homepage-game-content-stats-graphic"></div>
 						</div>
 					</div>
@@ -672,6 +673,94 @@
 				</div>
 			</div>
 		</div>
+		<!-- USER PROFILE -->
+		<div class="user-profile w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
+			<div class="user-profile-container category w-100 d-flex flex-column align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
+				<div class="user-profile-general-info w-100 d-flex justify-content-center align-items-center">
+					<div class="user-profile-picture d-flex justify-content-center align-items-center purple-shadow">
+						<img src="assets/general/friend.png" alt="profile picture of user" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<div class="user-profile-name text-center unselectable">user</div>
+					<div class="user-profile-edit-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
+						<img src="assets/general/edit.svg" alt="edit icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<div class="user-profile-add-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/general/invite-friend.svg" alt="invite friend icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<div class="user-profile-remove-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
+						<img src="assets/general/remove.svg" alt="remove icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+				</div>
+				<div class="user-profile-history w-100 d-flex flex-wrap justify-content-between align-items-center">
+					<div class="user-profile-history-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
+						<p data-language="history" class="unselectable">History</p>
+					</div>
+					<!-- <div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+						<div class="user-profile-history-card-color position-absolute"></div>
+						<div class="user-profile-history-card-result">5-4</div>
+						<div class="user-profile-history-card-event">vs<b> Ami1</b></div>
+					</div> -->
+					<div class="user-profile-empty-history w-100 d-flex flex-column justify-content-center align-items-center">
+						<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
+						<p data-language="profile-empty-history" class="text-center unselectable">No game has been played yet...</p>
+					</div>
+				</div>
+				<div class="user-profile-statistics w-100 d-flex flex-wrap justify-content-between align-items-stretch">
+					<div class="user-profile-statistics-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
+						<p data-language="stats" class="unselectable">Statistics</p>
+					</div>
+					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+						<div class="user-profile-stats-card-stat unselectable">100%</div>
+						<div class="user-profile-stats-card-context text-center unselectable" data-language="winrate">Win rate</div>
+					</div>
+					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+						<div class="user-profile-stats-card-stat unselectable">4.00</div>
+						<div class="user-profile-stats-card-context text-center unselectable" data-language="points-conceded">Average conceded points</div>
+					</div>
+					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
+						<div class="user-profile-stats-card-stat unselectable">3:04</div>
+						<div class="user-profile-stats-card-context text-center unselectable" data-language="match-duration">Average match duration</div>
+					</div>
+					<div class="content-card d-flex flex-column justify-content-between align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
+						<div class="user-profile-stats-card-stat unselectable" data-language="current-shape">Current shape</div>
+						<canvas class="user-profile-stats-graph w-100"></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- USER PROFILE CONFIRMATION ALERTS -->
+		<!-- CONFIRM INVITE -->
+		<div class="user-profile-invite-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="confirm-invite">
+					Do you confirm this invitation ?
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm">
+						Confirm
+					</div>
+					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel">
+						Cancel
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- CONFIRM REMOVE -->
+		<div class="user-profile-remove-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="confirm-remove">
+					Do you want to remove this friend ?
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm">
+						Confirm
+					</div>
+					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel">
+						Cancel
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="js/general.js"></script>
 		<script src="js/homepage-id.js"></script>
 		<script src="js/sign-in.js"></script>
@@ -682,6 +771,7 @@
 		<script src="js/my-tournaments.js"></script>
 		<script src="js/available-tournaments.js"></script>
 		<script src="js/tournament-info.js"></script>
+		<script src="js/user-profile.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>

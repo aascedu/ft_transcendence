@@ -1,0 +1,133 @@
+/* general info */
+
+.user-profile {
+	top: 20vh;
+	padding-left: 2.5vw;
+	padding-right: 1.25vw;
+	padding-bottom: 2.5vw;
+	height: 80vh;
+}
+
+.user-profile-container {
+	height: 100%;
+	padding: 16px;
+}
+
+.user-profile-general-info {
+	min-height: fit-content;
+}
+
+.user-profile-picture {
+	padding-top: 8px;
+	padding-left: 8px;
+}
+
+.user-profile-picture img {
+	border-radius: 80px;
+	outline-width: 12px;
+	outline-offset: -6px;
+	outline-style: solid;
+	outline-color: white;
+	height: 160px;
+}
+
+.user-profile-name {
+	flex-grow: 1;
+	font-size: 48pt;
+	font-weight: 700;
+	color: #7300E6;
+}
+
+.user-profile-general-info
+.category-icon {
+	top: 16px;
+	right: 16px;
+}
+
+.user-profile-general-info
+.category-icon img {
+	height: 20px;
+	margin-left: 1px;
+}
+
+.user-profile-general-info
+.category-icon img:first-child {
+	margin-left: 0;
+}
+
+.user-profile-add-icon img {
+	margin-left: 2px;
+}
+
+/* history / stats */
+
+.user-profile-history {
+	margin-top: 32px;
+	min-height: fit-content;
+}
+
+.user-profile-history .content-card,
+.user-profile-statistics .content-card {
+	width: calc((100% - 32px) / 3);
+	color: #7300E6;
+}
+
+.user-profile-history-card-color {
+	left: 12px;
+	height: 60%;
+	width: 3px;
+	background-color: #46DB00;
+	border-radius: 1.5px;
+	border-width: 0;
+}
+
+.user-profile-history-card-result,
+.user-profile-stats-card-stat {
+	font-size: 18pt;
+	font-weight: 700;
+	margin-right: 16px;
+}
+
+.user-profile-history-card-event {
+	font-size: 14pt;
+	font-weight: 500;
+}
+
+.user-profile-history-card-event b {
+	font-size: 14pt;
+	font-weight: 700;
+}
+
+.user-profile-empty-history img {
+	width: 30%;
+	opacity: 50%;
+	margin-top: 32px;
+	margin-right: 16px;
+	margin-bottom: 16px;
+}
+
+.user-profile-empty-history p {
+	font-size: 14pt;
+	font-weight: 400;
+}
+
+/* stats */
+
+.user-profile-statistics {
+	margin-top: 16px;
+	min-height: fit-content;
+}
+
+.user-profile-statistics
+.content-card:last-child {
+	width: 100%;
+}
+
+.user-profile-stats-card-context {
+	font-size: 13pt;
+	font-weight: 400;
+}
+
+.user-profile-stats-graph {
+	margin-top: 16px;
+}
