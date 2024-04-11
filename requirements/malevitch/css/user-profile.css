@@ -47,11 +47,12 @@
 .user-profile-general-info
 .category-icon img {
 	height: 20px;
+	margin-left: 1px;
 }
 
 .user-profile-general-info
-.category-icon img:last-child {
-	height: 18px;
+.category-icon img:first-child {
+	margin-left: 0;
 }
 
 .user-profile-add-icon img {
