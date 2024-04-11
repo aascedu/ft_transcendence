@@ -188,7 +188,7 @@ services:
     image: alfred_db
     container_name: alfred_db
     build:
-      context: ./requirements/alfred/alfred_db/
+      context: ./requirements/alfred_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: alfred_db
@@ -483,7 +483,7 @@ services:
     image: mnemosine_db
     container_name: mnemosine_db
     build:
-      context: ./requirements/mnemosine/mnemosine_db/
+      context: ./requirements/mnemosine_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: mnemosine_db
@@ -531,7 +531,7 @@ services:
     image: petrus_db
     container_name: petrus_db
     build:
-      context: ./requirements/petrus/petrus_db/
+      context: ./requirements/petrus_db/
       dockerfile: Dockerfile
     environment:
       POSTGRES_DB: petrus_db

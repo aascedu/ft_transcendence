@@ -34,9 +34,11 @@ if [ $? -eq 2 ]; then
     vault kv put -mount=secret env/kpw KPW=$KIBANA_PASSWORD
     vault kv put -mount=secret env/epw EPW=$ELASTIC_PASSWORD
     vault kv put -mount=secret env/gpw GPW=$GRAFANA_PASSWD
-    priv=`openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048`
+    mkdir /key
+    ssh-keygen -t rsa -b 4096 -N "" -f /key/key
+    priv=$(cat /key/key)
     vault kv put -mount=secret shared/priv private_key="$priv"
-    pub=$(echo "$priv" | openssl rsa -pubout -outform PEM -in /dev/stdin)
+    pub=$(cat /key/key.pub)
     vault kv put -mount=secret shared/pub public_key="$pub"
 else
     KEY=`cat /tokens/tutum.txt | head -n 1`
