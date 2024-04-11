@@ -58,6 +58,7 @@ COPY    conf/aegis-whitelist.conf /etc/nginx/modsec/aegis-whitelist.conf
 COPY    conf/mnemosine-whitelist.conf /etc/nginx/modsec/mnemosine-whitelist.conf
 COPY    conf/alfred-whitelist.conf /etc/nginx/modsec/alfred-whitelist.conf
 COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
+COPY    conf/iris-whitelist.conf /etc/nginx/modsec/iris-whitelist.conf
 COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
 COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
 
