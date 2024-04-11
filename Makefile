@@ -119,6 +119,7 @@ aether:
 
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	rm -rf `find . | grep migrations | grep -v env`
 	rm -rf $(VOLUMES_PATH)/* || true
 #	rm -rf ./requirements/aegis/ModSecurity || true
 	rm -rf ./tokens || true
@@ -140,7 +141,6 @@ prune:
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
-	rm -rf `find . | grep migrations | grep -v env`
 
 db_reset: db_suppr migrate
 
