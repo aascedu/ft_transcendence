@@ -2,8 +2,11 @@ from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import JsonResponse
+from django.conf import settings
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from shared.error_management import report_error
+from django.utils import timezone
+import os
 
 
 class userInfoView(View):
@@ -155,11 +158,38 @@ class avatarView(View):
             avatar = request.FILES['avatar']
         except BaseException as e:
             return JsonResponse({"Err": f"missing file : {e.__str__()}"})
-        client = Client.objects.get(unique_id=request.user.id)
+        try:
+            client = Client.objects.get(unique_id=request.user.id)
+        except BaseException as e:
+            return JsonResponse({"Err": f"bad request user id {e.__str__()}"})
+        avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
         client.avatar = avatar
-        client.save()
-        return JsonResponse({})
+        try:
+            client.save()
+        except BaseException as e:
+            return JsonResponse({"Err": f"an error occured {e.__str__()}"})
+        return JsonResponse({"Success": "avatar successfully updated"})
 
+def serve_avatar(request, filename):
+    if request.method != 'GET':
+        return JsonResponse({"Err": "Bad Method"}, status=403)
+
+    file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
+
+    if request.user.is_autenticated is False:
+        return JsonResponse({"Err": "Not authorised"}, status=403)
+
+    try:
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type="image/png")
+            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            return response
+    except FileNotFoundError:
+        return JsonResponse({"Err": "File not found."}, status=404)
+    except PermissionError:
+        return JsonResponse({"Err": "no permission to access"}, status=403)
+    except OSError as e:
+        return JsonResponse({"Err": f"An error occurred: {e}"}, status=500)
 
 @csrf_exempt
 def createUser(request):
