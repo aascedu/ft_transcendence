@@ -13,3 +13,15 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });
+
+// Load user profile page when clicking on a friend
+
+document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
+	item.addEventListener('click', function () {
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.user-profile';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	});
+});
