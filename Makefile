@@ -11,6 +11,8 @@ else ifeq ($(WHO), bpoumeau)
 DOCKER_FILE		=	docker-compose-nologs.yml
 else ifeq ($(WHO), ccrottie)
 DOCKER_FILE		=	docker-compose-nologs.yml
+else ifeq ($(WHO), hgeffroy)
+DOCKER_FILE		=	docker-compose-nologs.yml
 else
 DOCKER_FILE		=	docker-compose.yml
 endif

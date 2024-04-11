@@ -99,11 +99,11 @@ services:
       - "HTTP_HOST: '0.0.0.0'"
       - "XPACK_MONITORING_ELASTICSEARCH_HOSTS: [ 'http://apollo:9200' ]"
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-    ports:
-      - "5044:5044/udp"
     networks:
-      - aegis guard
+      - sentinel
     restart: on-failure
+    # ports:
+    #   - "5044:5044/udp"
 
 # Elastisearch container
   apollo:
@@ -115,13 +115,10 @@ services:
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
-      - certificates:/usr/share/elasticsearch/config/certs
+      - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
@@ -162,11 +159,8 @@ services:
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
-    ports:
-      - "5601:5601"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
@@ -222,8 +216,8 @@ services:
       - "ELASTIC_USER=${ELASTIC_USER}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTIC_HOSTS=https://apollo:9200"
-    ports:
-      - "5044:5044"
+    networks:
+      - sentinel
 
 # ELK setup container
   setup:
@@ -240,8 +234,7 @@ services:
     user: "0"
     command: ./tools/setup.sh
     networks:
-      - aegis guard
-      - atlas
+      - sentinel
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
       interval: 1s
