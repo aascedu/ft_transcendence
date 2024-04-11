@@ -25,6 +25,7 @@ tutorial
 .env
 youpi
 sources.txt
+**/media/
 
 # volumes & env
 **/shared
