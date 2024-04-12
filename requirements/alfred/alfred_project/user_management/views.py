@@ -141,8 +141,12 @@ class friendView(View):
 
 class avatarView(View):
     def get(self, request, id: int):
-        client = Client.objects.get(unique_id=id)
-        return JsonResponse({f'avatar_url {id}': client.avatar.url})
+        try:
+            client = Client.objects.get(unique_id=id)
+            url = client.avatar.url
+        except ObjectDoesNotExist as e:
+            url = settings.DEFAULT_AVATAR_URL
+        return JsonResponse({f'avatar_url {id}': url})
 
     def post(self, request, id: int):
         try:
