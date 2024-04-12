@@ -1,4 +1,5 @@
 #!/bin/bash
+
 COLOR_RED='\e[1;31m'
 COLOR_GREEN='\e[1;32m'
 COLOR_BLUE='\e[1;34m'

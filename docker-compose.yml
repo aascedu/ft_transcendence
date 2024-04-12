@@ -48,7 +48,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       alfred:
@@ -86,6 +86,9 @@ services:
     build:
       context: ./requirements/aegis
       dockerfile: Dockerfile
+      args:
+        PROXY_CONF: $PROXY_CONF
+    env_file: .env
     ports:
       # - "80:80"
       # - "443:443"
@@ -94,7 +97,6 @@ services:
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
       - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
-      # - certificates:/usr/share/kibana/config/certs
     networks:
       - aegis guard
       - atlas
@@ -110,7 +112,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Data exporter container
+# # Data exporter container
   aegis_exporter:
     depends_on:
       aegis:
@@ -126,7 +128,7 @@ services:
       - atlas
     restart: on-failure
 
-# Logstash container
+# # Logstash container
   aether:
     depends_on:
       apollo:
@@ -144,20 +146,20 @@ services:
       - ./requirements/aether/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
     environment:
       - "NODE_NAME=logstash"
-      - "xpack.monitoring.enabled=false"
+      - "XPACK_MONITORING_ENABLED=false"
       - "ELASTIC_USER=${ELASTIC_USER}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTIC_HOSTS=https://apollo:9200"
-      - "http.host: '0.0.0.0'"
-      - "xpack.monitoring.elasticsearch.hosts: [ 'http://apollo:9200' ]"
+      - "HTTP_HOST: '0.0.0.0'"
+      - "XPACK_MONITORING_ELASTICSEARCH_HOSTS: [ 'http://apollo:9200' ]"
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-    ports:
-      - "5044:5044/udp"
     networks:
-      - aegis guard
+      - sentinel
     restart: on-failure
+    # ports:
+    #   - "5044:5044/udp"
 
-# Profil container
+# # Profil container
   alfred:
     container_name: alfred
     image: alfred
@@ -184,6 +186,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Profil database container
   alfred_db:
     depends_on:
       tutum:
@@ -205,7 +208,7 @@ services:
     networks:
       - alfred_network
 
-# Elastisearch container
+# # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -215,13 +218,10 @@ services:
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
-      - certificates:/usr/share/elasticsearch/config/certs
+      - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
@@ -248,7 +248,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Tournament container
+# # Tournament container
   coubertin:
     container_name: coubertin
     image: coubertin
@@ -268,7 +268,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Matchmaking container
+# # Matchmaking container
   cupidon:
     container_name: cupidon
     image: cupidon
@@ -306,7 +306,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Notification container
+# # Notification container
   hermes:
     container_name: hermes
     image: hermes
@@ -326,7 +326,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Kibana container
+# # Kibana container
   iris:
     depends_on:
       apollo:
@@ -340,11 +340,8 @@ services:
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
-    ports:
-      - "5601:5601"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
@@ -369,7 +366,7 @@ services:
     #  timeout: 10s
     #  retries: 120
 
-# Auth inter-container container
+# # Auth inter-container container
   lovelace:
     container_name: lovelace
     image: lovelace
@@ -389,7 +386,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Game container
+# # Game container
   ludo:
     container_name: ludo
     image: ludo
@@ -409,7 +406,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -424,7 +421,7 @@ services:
       - atlas
     restart: on-failure
 
-# Prometheus container
+# # Prometheus container
   mensura:
     container_name: mensura
     image: mensura
@@ -482,6 +479,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Stats database container
   mnemosine_db:
     depends_on:
       tutum:
@@ -503,7 +501,7 @@ services:
     networks:
       - mnemosine_network
 
-# Filebeat container
+# # Filebeat container
   orion:
     container_name: orion
     image: orion
@@ -519,10 +517,10 @@ services:
       - "ELASTIC_USER=${ELASTIC_USER}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTIC_HOSTS=https://apollo:9200"
-    ports:
-      - "5044:5044"
+    networks:
+      - sentinel
 
-# Authentification container
+# # Authentification container
   petrus:
     container_name: petrus
     image: petrus
@@ -549,6 +547,7 @@ services:
       - petrus_network
     restart: on-failure
 
+# # Authentification database container
   petrus_db:
     depends_on:
       tutum:
@@ -570,6 +569,7 @@ services:
     networks:
       - petrus_network
 
+# # Vault container
   tutum:
     container_name: tutum
     image: tutum
@@ -596,7 +596,7 @@ services:
       timeout: 5s
       retries: 120
 
-# Websocket container
+# # Websocket container
   redis:
     container_name: redis
     image: 'bitnami/redis:latest'
@@ -606,7 +606,7 @@ services:
       - atlas
     restart: on-failure
 
-# ELK setup container
+# # ELK setup container
   setup:
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
@@ -621,8 +621,7 @@ services:
     user: "0"
     command: ./tools/setup.sh
     networks:
-      - aegis guard
-      - atlas
+      - sentinel
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
       interval: 1s

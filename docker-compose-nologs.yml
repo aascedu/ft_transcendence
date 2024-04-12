@@ -36,7 +36,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       alfred:
@@ -88,7 +88,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Profil container
+# # Profil container
   alfred:
     container_name: alfred
     image: alfred
@@ -101,6 +101,7 @@ services:
       ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -114,7 +115,11 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Profil database container
   alfred_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: alfred_db
     container_name: alfred_db
     build:
@@ -132,7 +137,7 @@ services:
     networks:
       - alfred_network
 
-# Tournament container
+# # Tournament container
   coubertin:
     container_name: coubertin
     image: coubertin
@@ -141,6 +146,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -151,7 +157,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Matchmaking container
+# # Matchmaking container
   cupidon:
     container_name: cupidon
     image: cupidon
@@ -160,6 +166,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -170,7 +177,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Notification container
+# # Notification container
   hermes:
     container_name: hermes
     image: hermes
@@ -179,6 +186,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -189,7 +197,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Auth inter-container container
+# # Auth inter-container container
   lovelace:
     container_name: lovelace
     image: lovelace
@@ -198,6 +206,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/lovelace/lovelace_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8005:8005"
@@ -208,7 +217,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Game container
+# # Game container
   ludo:
     container_name: ludo
     image: ludo
@@ -218,6 +227,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
+      - ./tokens/shared:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -227,7 +237,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -251,6 +261,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
+      - ./tokens/shared:/app/tokens
       - shared_code:/app/shared
     environment:
       MNEMOSINE_USER: mnemosine
@@ -268,7 +279,11 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Stats database container
   mnemosine_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: mnemosine_db
     container_name: mnemosine_db
     build:
@@ -286,7 +301,7 @@ services:
     networks:
       - mnemosine_network
 
-# Authentification container
+# # Authentification container
   petrus:
     container_name: petrus
     image: petrus
@@ -300,6 +315,7 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
+      - ./tokens/petrus:/app/tokens
     ports:
       - "8009:8009"
     depends_on:
@@ -312,7 +328,11 @@ services:
       - petrus_network
     restart: on-failure
 
+# # Authentification database container
   petrus_db:
+    depends_on:
+      tutum:
+        condition: service_healthy
     image: petrus_db
     container_name: petrus_db
     build:
@@ -330,6 +350,7 @@ services:
     networks:
       - petrus_network
 
+# # Vault container
   tutum:
     container_name: tutum
     image: tutum
@@ -343,7 +364,7 @@ services:
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./tokens:/tokens
-      - shared_code:/tokens/shared
+      #- shared_code:/tokens/shared
     ports:
       - "8200:8200"
     networks:
@@ -356,7 +377,7 @@ services:
       timeout: 5s
       retries: 120
 
-# Websocket container
+# # Websocket container
   redis:
     container_name: redis
     image: 'bitnami/redis:latest'

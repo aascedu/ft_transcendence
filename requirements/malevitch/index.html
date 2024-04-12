@@ -468,7 +468,10 @@
 						<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
 					<p class="unselectable">Tournoi 1</p>
-					<div class="tournament-info-leave-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<div class="tournament-info-join-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/general/join.svg" alt="join icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<div class="tournament-info-leave-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/leave.svg" alt="leave icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
 				</div>
@@ -669,6 +672,39 @@
 								</div>
 							</div>
 						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- TOURNAMENT INFO CONFIRMATION ALERTS -->
+		<!-- CONFIRM JOIN -->
+		<div class="tournament-info-join-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="confirm-join">
+					Do you want to join this tournament ?
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm">
+						Confirm
+					</div>
+					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel">
+						Cancel
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- CONFIRM LEAVE -->
+		<div class="tournament-info-leave-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="confirm-leave">
+					Do you want to leave this tournament ?
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm">
+						Confirm
+					</div>
+					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel">
+						Cancel
 					</div>
 				</div>
 			</div>
