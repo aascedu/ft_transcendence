@@ -50,24 +50,17 @@ class userInfoView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         data = request.data
-        email = data.get('mail', None)
-        nickname = data.get('nick', None)
-        unique_id = data.get('id', None)
-        print(email, nickname, unique_id)
-        if email is None:
-            return JsonResponse({"Err": "email not filled"})
-        if nickname is None:
-            return JsonResponse({"Err": "nick not filled"})
-        if unique_id is None:
-            return JsonResponse({"Err": "field not filled"})
+        client = Client()
         try:
-            Client.objects.create(
-                unique_id=unique_id,
-                email=email,
-                nick=nickname
-            )
+            client.email = data['mail']
+            client.nick = data['nick']
+            client.unique_id = data['id']
+        except KeyError as e:
+            return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
+        try:
+            client.save()
         except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
+            return JsonResponse({"Err": e.__str__()}, status=409)
         return JsonResponse({"Client": "created"})
 
 
