@@ -81,8 +81,13 @@ services:
         condition: service_healthy
       iris:
         condition: service_started
+      # orion:
+      #   condition: service_started
     container_name: aether
     image: docker.elastic.co/logstash/logstash:8.12.2
+    build:
+      context: ./requirements/aether
+      dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: logstash
     user: root
@@ -155,10 +160,10 @@ services:
     labels:
       co.elastic.logs/module: kibana
     volumes:
-      - ./requirements/aegis:/usr/share/nginx/html
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
+      # - ./requirements/aegis:/usr/share/nginx/html
     networks:
       - sentinel
     environment:
@@ -202,6 +207,13 @@ services:
 
 # # Filebeat container
   orion:
+    depends_on:
+      aether:
+        condition: service_started
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_started
     container_name: orion
     image: orion
     labels:
@@ -209,15 +221,16 @@ services:
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
+      args:
+        ELASTIC_USER: $ELASTIC_USER
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+    env_file: .env
     volumes:
       - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
     user: "root"
-    environment:
-      - "ELASTIC_USER=${ELASTIC_USER}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "ELASTIC_HOSTS=https://apollo:9200"
     networks:
       - sentinel
+    restart: on-failure
 
 # # ELK setup container
   setup:

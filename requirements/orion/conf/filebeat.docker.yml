@@ -11,7 +11,21 @@ filebeat.autodiscover:
 processors:
 - add_cloud_metadata: ~
 
-output.elasticsearch:
-  hosts: '${ELASTICSEARCH_HOSTS:https://apollo:9200}'
-  username: '${ELASTICSEARCH_USERNAME:${ELASTIC_USER}}'
-  password: '${ELASTICSEARCH_PASSWORD:${ELASTIC_PASSWORD}}'
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /logs/*.log
+   
+setup.kibana:
+  host: "iris:5601"
+  username: "elastic"
+  password: "elastic123"
+ 
+output.logstash:
+  hosts: ["aether:5044"]
+
+# output.elasticsearch:
+#   hosts: '${ELASTICSEARCH_HOSTS:https://apollo:9200}'
+#   username: '${ELASTICSEARCH_USERNAME:${ELASTIC_USER}}'
+#   password: '${ELASTICSEARCH_PASSWORD:${ELASTIC_PASSWORD}}'
