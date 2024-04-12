@@ -38,6 +38,18 @@ class Consumer(AsyncWebsocketConsumer):
         self.me = Player(id, elo)
         waitingList[id] = self.me # Get player name with the token here
 
+    async def SendToGame(self, event):
+        if (event['player1'] == self.me.id or event['player2'] == self.me.id):
+            await self.send(json.dumps({
+                    "action": "redirect", 
+                    "url": "https://localhost:8000/ludo/pong/"
+                            + str(waitingList[event['player1']])
+                            + "-"
+                            + str(waitingList[event['player2']])
+                            + "/"
+                    }))
+        pass
+
     async def Ping(self, event):
         global waitingList
         
@@ -47,11 +59,10 @@ class Consumer(AsyncWebsocketConsumer):
             if (id != self.me.id and
                 waitingList[id].elo > self.me.elo - self.me.margin and
                 waitingList[id].elo < self.me.elo + self.me.margin):
-                    await self.send(json.dumps({
-                            "action": "redirect", 
-                            "url": "https://localhost:8000/ludo/pong/"
-                                    + str(waitingList[self.me.id])
-                                    + "-"
-                                    + str(waitingList[id])
-                                    + "/"
-                            }))
+                    await self.channel_layer.group_send(
+                        "matchmakingRoom", {
+                            'type': "SendToGame",
+                            'player1': waitingList[self.me.id],
+                            'player2': waitingList[id],
+                        }
+                    )
