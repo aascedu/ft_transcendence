@@ -30,7 +30,7 @@ volumes:
     driver: local
 
 services:
-# Reverse proxy container
+# # Reverse proxy container
   aegis:
     depends_on:
       aether:
@@ -74,7 +74,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Logstash container
+# # Logstash container
   aether:
     depends_on:
       apollo:
@@ -99,13 +99,13 @@ services:
       - "HTTP_HOST: '0.0.0.0'"
       - "XPACK_MONITORING_ELASTICSEARCH_HOSTS: [ 'http://apollo:9200' ]"
     command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-    ports:
-      - "5044:5044/udp"
     networks:
-      - aegis guard
+      - sentinel
+    # ports:
+    #   - "5044:5044/udp"
     restart: on-failure
 
-# Elastisearch container
+# # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -115,13 +115,10 @@ services:
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
-      - certificates:/usr/share/elasticsearch/config/certs
+      - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
@@ -148,7 +145,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Kibana container
+# # Kibana container
   iris:
     depends_on:
       apollo:
@@ -162,11 +159,8 @@ services:
       - certificates:/usr/share/kibana/config/certs
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
-    ports:
-      - "5601:5601"
     networks:
-      - atlas
-      - aegis guard
+      - sentinel
     environment:
       - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
@@ -191,7 +185,7 @@ services:
     #  timeout: 10s
     #  retries: 120
 
-# Front container
+# # Front container
   malevitch:
     container_name: malevitch
     image: malevitch
@@ -206,7 +200,7 @@ services:
       - atlas
     restart: on-failure
 
-# Filebeat container
+# # Filebeat container
   orion:
     container_name: orion
     image: orion
@@ -222,10 +216,10 @@ services:
       - "ELASTIC_USER=${ELASTIC_USER}"
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "ELASTIC_HOSTS=https://apollo:9200"
-    ports:
-      - "5044:5044"
+    networks:
+      - sentinel
 
-# ELK setup container
+# # ELK setup container
   setup:
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
@@ -240,8 +234,7 @@ services:
     user: "0"
     command: ./tools/setup.sh
     networks:
-      - aegis guard
-      - atlas
+      - sentinel
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
       interval: 1s

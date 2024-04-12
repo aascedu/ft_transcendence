@@ -89,9 +89,3 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
             -keyout /etc/nginx/ssl/elastic.key                         \
             -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
             { echo "SSL elastic certification failed"; exit 1; }
-            #  &&    \
-        # openssl req -x509 -nodes                                       \
-        #     -out /etc/nginx/ssl/kibana.crt                             \
-        #     -keyout /etc/nginx/ssl/kibana.key                          \
-        #     -subj "/C=FR/L=Lyon/CN=kibana.test.me" ||                  \
-        #     { echo "SSL kibana certification failed"; exit 1; }
