@@ -11,10 +11,13 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -50,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'shared.Middleware.RawJsonToDataGetMiddleware',
     'shared.Middleware.JWTIdentificationMiddleware',
-    'shared.Middleware.ensureIdentificationMiddleware',
+    # 'shared.Middleware.ensureIdentificationMiddleware',
 ]
 
 ROOT_URLCONF = 'alfred_project.urls'
@@ -79,8 +82,12 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.environ['ALFRED_DB'],
+        'USER': os.environ['ALFRED_USER'],
+        'PASSWORD': os.environ['ALFRED_PASSWORD'],
+        'HOST': 'alfred_db',
+        'PORT': '5432',
     }
 }
 

@@ -8,12 +8,23 @@ let	g_refreshToken;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
+
+
+	// A ENLEVER APRES
+
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
+
+	//
 }
 
 window.history.replaceState(g_state, null, "");
@@ -206,10 +217,10 @@ function togglePasswordView(container) {
 
 document.querySelectorAll('.font-size-input').forEach(function(item) {
 	item.addEventListener('input', function () {
-			var	newSize = this.value;
+		var	newSize = this.value;
 
-			updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
-			g_prevFontSize = newSize;
+		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
+		g_prevFontSize = newSize;
 	});
 });
 
@@ -269,4 +280,7 @@ function hideEveryPage() {
 	document.querySelector('.homepage-game').classList.add('visually-hidden');
 	document.querySelector('.friends-list').classList.add('visually-hidden');
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
+	document.querySelector('.available-tournaments').classList.add('visually-hidden');
+	document.querySelector('.tournament-info').classList.add('visually-hidden');
+	document.querySelector('.user-profile').classList.add('visually-hidden');
 }
