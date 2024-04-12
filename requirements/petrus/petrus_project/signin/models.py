@@ -1,6 +1,7 @@
 from django.db import models
 from django.core import validators
 from django.core.exceptions import ValidationError
+from shared.validators import NickNameValidator
 import re
 
 
@@ -16,8 +17,7 @@ class Client(models.Model):
     nick = models.CharField(
             unique=True,
             validators=[
-                validators.MaxLengthValidator(16),
-
+                NickNameValidator,
             ],
     )
 
