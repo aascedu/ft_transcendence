@@ -38,7 +38,7 @@ class Consumer(AsyncWebsocketConsumer):
         self.me = Player(id, elo)
         waitingList[id] = self.me # Get player name with the token here
 
-    async def SendToGame(self, event):
+    async def SendToGame(self, event): # Will need to delete players from the waitingList here
         if (event['player1'] == self.me.id or event['player2'] == self.me.id):
             await self.send(json.dumps({
                     "action": "redirect", 
@@ -48,7 +48,6 @@ class Consumer(AsyncWebsocketConsumer):
                             + str(waitingList[event['player2']])
                             + "/"
                     }))
-        pass
 
     async def Ping(self, event):
         global waitingList
