@@ -15,16 +15,13 @@ function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
-
-	// A ENLEVER APRES
-
-	var	homepageHeader = document.querySelector('.homepage-header');
-	homepageHeader.classList.remove('visually-hidden');
-
-	var	homepagePicture = document.querySelector('.homepage-game-picture');
-	homepagePicture.classList.remove('visually-hidden');
-
-	//
+	if (g_state.pageToDisplay == '.homepage-game') {
+		var	homepageHeader = document.querySelector('.homepage-header');
+		homepageHeader.classList.remove('visually-hidden');
+	
+		var	homepagePicture = document.querySelector('.homepage-game-picture');
+		homepagePicture.classList.remove('visually-hidden');
+	}
 }
 
 window.history.replaceState(g_state, null, "");
@@ -283,4 +280,5 @@ function hideEveryPage() {
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
 	document.querySelector('.user-profile').classList.add('visually-hidden');
+	document.querySelector('.victory-defeat').classList.add('visually-hidden');
 }
