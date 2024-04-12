@@ -3,7 +3,20 @@
 #---- variables -------------------------------------------------------#
 
 ENV_FILE		=	.env
+
+WHO				=	$(shell whoami)
+ifeq ($(WHO), twang)
+DOCKER_FILE		=	docker-compose-twang.yml
+else ifeq ($(WHO), bpoumeau)
+DOCKER_FILE		=	docker-compose-nologs.yml
+else ifeq ($(WHO), ccrottie)
+DOCKER_FILE		=	docker-compose-nologs.yml
+else ifeq ($(WHO), hgeffroy)
+DOCKER_FILE		=	docker-compose-nologs.yml
+else
 DOCKER_FILE		=	docker-compose.yml
+endif
+
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data
@@ -41,6 +54,9 @@ build: | migrate volumes modsec
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
 
+restart:
+	$(COMPOSE_F) $(DOCKER_FILE) restart
+
 reset: | db_reset
 	make debug
 
@@ -60,6 +76,10 @@ modsec:
 aegis:
 	$(COMPOSE) up -d aegis
 	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
+
+aether:
+	$(COMPOSE) up -d aether
+	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
 
 alfred:
 	$(COMPOSE) up -d alfred
@@ -109,16 +129,19 @@ mnemosine:
 	$(COMPOSE) up -d mnemosine
 	$(COMPOSE_F) $(DOCKER_FILE) exec mnemosine bash
 
+orion:
+	$(COMPOSE) up -d orion
+	$(COMPOSE_F) $(DOCKER_FILE) exec orion /bin/bash
+
 petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
-aether:
-	$(COMPOSE) up -d aether
-	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash# pour la prod: remettre all
+#---- clean ----#
 
 clean: down
 	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	rm -rf `find . | grep migrations | grep -v env`
 	rm -rf $(VOLUMES_PATH)/* || true
 #	rm -rf ./requirements/aegis/ModSecurity || true
 	rm -rf ./tokens || true
@@ -140,7 +163,6 @@ prune:
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
-	rm -rf `find . | grep migrations | grep -v env`
 
 db_reset: db_suppr migrate
 
