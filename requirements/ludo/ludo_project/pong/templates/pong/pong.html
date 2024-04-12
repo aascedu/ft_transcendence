@@ -28,7 +28,8 @@
         <div class="ball"></div>
         <div class="score" id="score1"></div>
         <div classe="score" id="score2"></div>
-        {{ roomName|json_script:"roomName", id|json_script:"id" }}
+        {{ roomName|json_script:"roomName" }}
+        {{ id|json_script:"id" }}
         <script>
 
 
@@ -317,10 +318,10 @@ function gameLoop() {
     // Send info to back
     // sendData("gameState", me.up, me.down);
     if (i % nbframes == 0) {
+        console.log("Data sent to back");
         sendData("gameState", frames);
         frames = {};
     }
-    console.log("Data sent to back");
     
     // Update front
     htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
