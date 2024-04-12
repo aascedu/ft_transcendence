@@ -68,11 +68,11 @@ class userInfoView(View):
         try:
             client = Client.objects.get(unique_id=id)
         except BaseException:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "Ressource not found"}, status=404)
         try:
             client.delete()
         except BaseException:
-            return JsonResponse({"Err": "internal database error"})
+            return JsonResponse({"Err": "internal database error"}, status=500)
         return JsonResponse({"Client": "suppressed"})
 
 
@@ -135,7 +135,7 @@ class friendView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "ressource not found"}, status=404)
         return FriendshipRequest.deleteFriendship(emiter, target)
 
 
@@ -158,7 +158,7 @@ class avatarView(View):
         try:
             client.save()
         except BaseException as e:
-            return JsonResponse({"Err": f"an error occured {e.__str__()}"})
+            return JsonResponse({"Err": f"an error occured {e.__str__()}"}, status=500)
         return JsonResponse({"Success": "avatar successfully updated"})
 
 def serve_avatar(request, filename):
