@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+from shared.settings import MIDDLEWARE as shared_middleware
 
 from pathlib import Path
 
@@ -42,14 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.middleware.common.CommonMiddleware",
-
-    'shared.Middleware.RawJsonToDataGetMiddleware',
-    'shared.Middleware.JWTIdentificationMiddleware',
-    # 'shared.Middleware.ensureIdentificationMiddleware',
-]
+MIDDLEWARE = [] + shared_middleware
 
 ROOT_URLCONF = 'ludo_project.urls'
 

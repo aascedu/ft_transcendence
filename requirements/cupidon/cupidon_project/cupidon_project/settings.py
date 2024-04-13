@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from shared.settings import MIDDLEWARE as shared_middleware
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -36,14 +38,7 @@ INSTALLED_APPS = [
     'channels',
 ]
 
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.middleware.common.CommonMiddleware",
-
-    'shared.Middleware.RawJsonToDataGetMiddleware',
-    'shared.Middleware.JWTIdentificationMiddleware',
-    # 'shared.Middleware.ensureIdentificationMiddleware',
-]
+MIDDLEWARE = [] + shared_middleware
 
 ROOT_URLCONF = 'cupidon_project.urls'
 
