@@ -1,23 +1,34 @@
+# logging.level: debug
+# logging.to_files: true
+# logging.files:
+#   path: /var/log/filebeat
+#   name: filebeat
+#   keepfiles: 7
+#   permissions: 0600
+# filebeat.config:
+#   modules:
+#     path: ${path.config}/modules.d/*.yml
+#     reload.enabled: false
+
+# filebeat.inputs:
+# - type: container
+#   paths:
+#     - /var/lib/docker/containers/*/*.log
+#   multiline.type: pattern
+#   multiline.pattern: '^[[:space:]]+(at|\.{3})[[:space:]]+\b|^java.lang.RuntimeException:'
+#   multiline.negate: false
+#   multiline.match: after
+#   multiline.max_lines: 200  
+#   encoding: utf-8
+
 filebeat.inputs:
-  - type: docker
-    containers.ids: '*'
-    processors:
-      - add_docker_metadata: ~
+- type: filestream 
+  id: my-filestream-id
+  paths:
+    - /var/log/system.log
+    - /var/log/wifi.log
 
-# output.elasticsearch:
-# hosts: ["https://apollo:9200"]
-# username: "${ELASTIC_USER}"
-# password: "${ELASTIC_PASSWORD}"
+#------Logstash Output------#
 
-setup.kibana:
-  host: "iris:5601" 
-  username: "kibana_system"
-  password: "kibana123"
-
-output.elasticsearch:
-  hosts: ["https://apollo:9200"]
-  username: "orion"
-  password: "elastic123" 
-  ssl:
-    enabled: true
-    ca_trusted_fingerprint: "b9a10bbe64ee9826abeda6546fc988c8bf798b41957c33d05db736716513dc9c" 
+output.logstash:
+   hosts: ["aether:5400"]

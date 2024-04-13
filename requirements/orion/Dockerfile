@@ -10,7 +10,8 @@ ARG     ELASTIC_PASSWORD
 RUN     export ELASTIC_PASSWORD=ELASTIC_PASSWORD                    && \
         export ELASTIC_USER=ELASTIC_USER
 
+
 #---- config ----------------------------------------------------------#
 
-COPY    conf/filebeat.docker.yml /usr/share/filebeat/filebeat.docker.yml
+# COPY    conf/filebeat.docker.yml /usr/share/filebeat/filebeat.docker.yml
 COPY    conf/filebeat.yml /usr/share/filebeat/filebeat.yml

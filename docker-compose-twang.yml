@@ -76,38 +76,19 @@ services:
 
 # # Logstash container
   aether:
-    depends_on:
-      apollo:
-        condition: service_healthy
-      iris:
-        condition: service_started
-      # orion:
-      #   condition: service_started
     container_name: aether
-    image: docker.elastic.co/logstash/logstash:8.12.2
+    image: aether
     build:
-      context: ./requirements/aether
+      context: ./requirements/aether/
       dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: logstash
     user: root
     volumes:
-      - certificates:/usr/share/logstash/certs
+      - certificates:/usr/share/elasticsearch/config/certs:ro
       - logstash_data:/usr/share/logstash/data
-      - ./requirements/aether/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-    environment:
-      - "NODE_NAME=logstash"
-      - "XPACK_MONITORING_ENABLED=false"
-      - "ELASTIC_USER=${ELASTIC_USER}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "ELASTIC_HOSTS=https://apollo:9200"
-      - "HTTP_HOST: '0.0.0.0'"
-      - "XPACK_MONITORING_ELASTICSEARCH_HOSTS: [ 'http://apollo:9200' ]"
-    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
     networks:
       - sentinel
-    # ports:
-    #   - "5044:5044/udp"
     restart: on-failure
 
 # # Elastisearch container
@@ -210,10 +191,6 @@ services:
     depends_on:
       aether:
         condition: service_started
-      apollo:
-        condition: service_healthy
-      iris:
-        condition: service_started
     container_name: orion
     image: orion
     labels:
@@ -225,10 +202,11 @@ services:
         ELASTIC_USER: $ELASTIC_USER
         ELASTIC_PASSWORD: $ELASTIC_PASSWORD
     env_file: .env
-    volumes:
-      - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
+    # volumes:
+    #   - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
     user: "root"
     networks:
+      - atlas
       - sentinel
     restart: on-failure
 
