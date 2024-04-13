@@ -43,7 +43,7 @@ class JWT:
     except Exception as e:
         print("An unexpected error occurred:", str(e))
     algo = algo
-    expiration_acccess_token = timedelta(minutes=2)
+    expiration_acccess_token = timedelta(minutes=15)
     expiration_refresh_token = timedelta(days=1)
 
     @staticmethod
