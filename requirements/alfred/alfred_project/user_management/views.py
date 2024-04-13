@@ -145,7 +145,7 @@ class avatarView(View):
             client = Client.objects.get(unique_id=id)
             url = client.avatar.url
         except ObjectDoesNotExist as e:
-            url = settings.DEFAULT_AVATAR_URL
+            return JsonResponse({"Err": "ressource not found", status=404}
         return JsonResponse({f'avatar_url {id}': url})
 
     def post(self, request, id: int):
