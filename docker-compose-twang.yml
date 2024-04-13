@@ -76,11 +76,17 @@ services:
 
 # # Logstash container
   aether:
+    depends_on:
+      apollo:
+        condition: service_healthy
     container_name: aether
     image: aether
     build:
       context: ./requirements/aether/
       dockerfile: Dockerfile
+      args:
+        ELASTIC_USER: $ELASTIC_USER
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
     labels:
       co.elastic.logs/module: logstash
     user: root
@@ -141,10 +147,9 @@ services:
     labels:
       co.elastic.logs/module: kibana
     volumes:
-      - certificates:/usr/share/kibana/config/certs
+      - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
-      # - ./requirements/aegis:/usr/share/nginx/html
     networks:
       - sentinel
     environment:
@@ -165,7 +170,7 @@ services:
     #  test:
     #    [
     #      "CMD-SHELL",
-    #      "curl -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+    #      "curl -I https://localhost:8000/iris/ | grep -q 'HTTP/1.1 302 Found'",
     #    ]
     #  interval: 10s
     #  timeout: 10s
@@ -198,12 +203,6 @@ services:
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
-      args:
-        ELASTIC_USER: $ELASTIC_USER
-        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
-    env_file: .env
-    # volumes:
-    #   - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
     user: "root"
     networks:
       - atlas

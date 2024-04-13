@@ -13,5 +13,4 @@ RUN     export ELASTIC_PASSWORD=ELASTIC_PASSWORD                    && \
 
 #---- config ----------------------------------------------------------#
 
-# COPY    conf/filebeat.docker.yml /usr/share/filebeat/filebeat.docker.yml
 COPY    conf/filebeat.yml /usr/share/filebeat/filebeat.yml
