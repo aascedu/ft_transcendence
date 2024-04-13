@@ -19,7 +19,7 @@ class JWTIdentificationMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if 'auth' not in request.COOKIES:
-            request.user = User(error="No JWT provided")
+            request.client = User(error="No JWT provided")
             print("JWT: request with no jwt")
             return None
 
@@ -28,11 +28,11 @@ class JWTIdentificationMiddleware:
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
-            request.user = User(error=e.__str__())
+            request.client = User(error=e.__str__())
             print("JWT: Warning: ", e.__str__())
             return None
 
-        request.user = User(nick=decodedJWT.get('nick'),
+        request.client = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
         print("JWT: User:", str(User))
@@ -53,8 +53,8 @@ class ensureIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if not request.user.is_autenticated:
-            return JsonResponse({"Err": request.user.error})
+        if not request.client.is_autenticated:
+            return JsonResponse({"Err": request.client.error})
         return None
 
 

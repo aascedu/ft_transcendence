@@ -85,14 +85,14 @@ class playerView(View):
         queries = request.GET.getlist('query')
         if 'personal' in queries:
             try:
-                personal_player = Player.objects.get(id=request.user.id)
+                personal_player = Player.objects.get(id=request.client.id)
                 return_json |= {"Perso" : personal_player.to_dict()}
             except BaseException as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friend' in queries:
             try:
-                response = requests.get(f"http://alfred:8001/user/friends/{request.user.id}")
+                response = requests.get(f"http://alfred:8001/user/friends/{request.client.id}")
                 friends_ids = response.json().get("Friends")
                 if id in friends_ids:
                     friend = Player.objects.get(id=id)

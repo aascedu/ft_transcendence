@@ -9,7 +9,7 @@ from memory.views import (
 from memory.models import Player, Game
 
 def view_db(request):
-    return JsonResponse({"Id": request.user.id, "Players":
+    return JsonResponse({"Id": request.client.id, "Players":
                     [e.to_dict() for e in Player.objects.all()]
                          })
 
