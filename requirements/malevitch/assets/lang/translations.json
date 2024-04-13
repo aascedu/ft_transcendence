@@ -58,7 +58,12 @@
 		"winrate": "Win rate",
 		"points-conceded": "Average conceded points",
 		"match-duration": "Average match duration",
-		"current-shape": "Current shape"
+		"current-shape": "Current shape",
+		"victory": "VICTORY",
+		"defeat": "DEFEAT",
+		"home": "Home",
+		"play-again": "Play again",
+		"see-tournament": "See tournament"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -119,7 +124,12 @@
 		"winrate": "Taux de victoire",
 		"points-conceded": "Moyenne de points concédés",
 		"match-duration": "Temps de partie moyen",
-		"current-shape": "Forme actuelle"
+		"current-shape": "Forme actuelle",
+		"victory": "VICTOIRE",
+		"defeat": "DÉFAITE",
+		"home": "Accueil",
+		"play-again": "Rejouer",
+		"see-tournament": "Voir le tournoi"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -180,7 +190,12 @@
 		"winrate": "赢率",
 		"points-conceded": "平均失分",
 		"match-duration": "平均比赛时长",
-		"current-shape": "当前形状"
+		"current-shape": "当前形状",
+		"victory": "胜利",
+		"defeat": "打败",
+		"home": "主页",
+		"play-again": "再玩一次",
+		"see-tournament": "看比赛"
 	}
 }
 
