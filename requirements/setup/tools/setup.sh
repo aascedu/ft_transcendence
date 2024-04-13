@@ -4,6 +4,8 @@ COLOR_GREEN='\e[1;32m'
 COLOR_BLUE='\e[1;34m'
 COLOR_RESET='\e[0m'
 
+set -e
+
 # Check if the CA certificate exists, create if not
 if [ ! -f config/certs/ca.zip ]; then
   echo -e "${COLOR_GREEN}Creating CA${COLOR_RESET}";
@@ -19,6 +21,12 @@ if [ ! -f config/certs/certs.zip ]; then
   "  - name: apollo\n"\
   "    dns:\n"\
   "      - apollo\n"\
+  "      - localhost\n"\
+  "    ip:\n"\
+  "      - 127.0.0.1\n"\
+  "  - name: aether\n"\
+  "    dns:\n"\
+  "      - aether\n"\
   "      - localhost\n"\
   "    ip:\n"\
   "      - 127.0.0.1\n"\
@@ -38,6 +46,9 @@ echo -e "${COLOR_GREEN}Setting file permissions${COLOR_RESET}"
 chown -R root:root config/certs;
 find . -type d -exec chmod 750 {} \;
 find . -type f -exec chmod 640 {} \;
+
+echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
+openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
 
 # Wait for Elasticsearch availability
 echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability${COLOR_RESET}";

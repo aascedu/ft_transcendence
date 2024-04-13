@@ -1,10 +1,11 @@
 filebeat.inputs:
-  - type: docker
-    containers.ids: '*'
-    processors:
-      - add_docker_metadata: ~
+- type: filestream 
+  id: my-filestream-id
+  paths:
+    - /var/log/system.log
+    - /var/log/wifi.log
 
-output.elasticsearch:
-hosts: ["https://apollo:9200"]
-username: "${ELASTIC_USER}"
-password: "${ELASTIC_PASSWORD}"
+#------Logstash Output------#
+
+output.logstash:
+   hosts: ["aether:5400"]
