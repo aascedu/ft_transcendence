@@ -27,7 +27,7 @@ COPY    ModSecurity /ModSecurity
 
 #---- ModSecurity connector -------------------------------------------#
 
-RUN if ["${CI}" = "ci"]; then apk update && \
+RUN if ["${CI}" != "ci"]; then apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
         make install -C /ModSecurity && \
@@ -52,6 +52,7 @@ RUN if ["${CI}" = "ci"]; then apk update && \
         rm v4.0.0.tar.gz && \
         cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; \
         else \
+            mkdir conf; \
             touch conf/modsec-config.conf; \
             touch conf/modsecurity.conf; \
         fi
