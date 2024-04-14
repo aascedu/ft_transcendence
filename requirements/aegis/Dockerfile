@@ -10,7 +10,6 @@ RUN     export PROXY_CONF=PROXY_CONF
 #---- ModSecurity -----------------------------------------------------#
 
 COPY    requirements.txt /requirements.txt
-RUN if ["${CI}" = "ci"]; then  mkdir ModSecurity; fi
 COPY    ModSecurity /ModSecurity
 
 #RUN     apk update && \
