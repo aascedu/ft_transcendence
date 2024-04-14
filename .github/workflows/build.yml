@@ -29,6 +29,7 @@ jobs:
           GRAFANA_PASSWD=grafana
           PROXY_CONF=proxy.conf
           CI=ci"
+          mkdir requirements/aegis/Modsecurity
 
     - name: Build containers
       run: |
