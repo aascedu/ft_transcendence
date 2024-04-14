@@ -10,6 +10,7 @@ RUN     export PROXY_CONF=PROXY_CONF
 #---- ModSecurity -----------------------------------------------------#
 
 COPY    requirements.txt /requirements.txt
+RUN if ["${CI}" = "ci"]; then  mkdir ModSecurity; fi
 COPY    ModSecurity /ModSecurity
 
 #RUN     apk update && \
@@ -52,8 +53,8 @@ RUN if ["${CI}" = "ci"]; then apk update && \
         rm v4.0.0.tar.gz && \
         cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; \
         else \
-        touch conf/modsec-config.conf; \
-        touch conf/modsecurity.conf; \
+            touch conf/modsec-config.conf; \
+            touch conf/modsecurity.conf; \
         fi
 
 #---- config ----------------------------------------------------------#
