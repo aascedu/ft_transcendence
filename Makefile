@@ -4,6 +4,8 @@
 
 ENV_FILE		=	.env
 
+include .env
+
 WHO				=	$(shell whoami)
 ifeq ($(WHO), twang)
 DOCKER_FILE		=	docker-compose-twang.yml
@@ -48,8 +50,13 @@ all: | migrate volumes modsec
 up: | migrate volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
+ifeq ($(CI), ci)
+build: | migrate volumes
+	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
+else
 build: | migrate volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
+endif
 
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down

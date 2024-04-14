@@ -27,7 +27,7 @@ COPY    ModSecurity /ModSecurity
 
 #---- ModSecurity connector -------------------------------------------#
 
-RUN     apk update && \
+RUN if ["${CI}" = "ci"]; then apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
         make install -C /ModSecurity && \
@@ -50,7 +50,7 @@ RUN     apk update && \
         wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.0.0.tar.gz && \
         tar -xvf v4.0.0.tar.gz && \
         rm v4.0.0.tar.gz && \
-        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf
+        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; fi
 
 #---- config ----------------------------------------------------------#
 
