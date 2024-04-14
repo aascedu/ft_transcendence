@@ -50,7 +50,11 @@ RUN if ["${CI}" = "ci"]; then apk update && \
         wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.0.0.tar.gz && \
         tar -xvf v4.0.0.tar.gz && \
         rm v4.0.0.tar.gz && \
-        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; fi
+        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; \
+        else \
+        touch conf/modsec-config.conf; \
+        touch conf/modsecurity.conf; \
+        fi
 
 #---- config ----------------------------------------------------------#
 
