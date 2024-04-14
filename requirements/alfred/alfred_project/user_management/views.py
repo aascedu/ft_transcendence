@@ -12,12 +12,12 @@ import os
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
         try:
-            client = Client.objects.get(unique_id=request.client.id)
+            client = Client.objects.get(unique_id=request.user.id)
         except BaseException as e:
             response = JsonResponse({"Err": e.__str__()})
             response.delete_cookie('aut')
             return response
-        if id == 0 or id == request.client.id:
+        if id == 0 or id == request.user.id:
             return JsonResponse(client.personal_dict())
         try:
             target = Client.objects.get(unique_id=id)
@@ -29,7 +29,7 @@ class userInfoView(View):
 
     def patch(self, request, id: int) -> JsonResponse:
         try:
-            client = Client.objects.get(unique_id=request.client.id)
+            client = Client.objects.get(unique_id=request.user.id)
         except BaseException as e:
             response = JsonResponse({"Err": e.__str__()})
             response.delete_cookie('aut')
@@ -79,9 +79,9 @@ class userInfoView(View):
 class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
         if id == 0:
-            emiter = Client.objects.get(unique_id=request.client.id)
+            emiter = Client.objects.get(unique_id=request.user.id)
             return JsonResponse({
-                "id": request.client.id,
+                "id": request.user.id,
                 "friends": [
                     {"id": object.unique_id,
                      "nick": object.nick,
@@ -121,8 +121,8 @@ class friendView(View):
             })
 
     def post(self, request, id: int) -> JsonResponse:
-        sender = Client.objects.get(unique_id=request.client.id)
-        if id == request.client.id:
+        sender = Client.objects.get(unique_id=request.user.id)
+        if id == request.user.id:
             return JsonResponse({"Err": "invalid id"})
         try:
             receiver = Client.objects.get(unique_id=id)
@@ -131,7 +131,7 @@ class friendView(View):
         return FriendshipRequest.processRequest(receiver, sender)
 
     def delete(self, request, id: int) -> JsonResponse:
-        emiter = Client.objects.get(unique_id=request.client.id)
+        emiter = Client.objects.get(unique_id=request.user.id)
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
@@ -154,7 +154,7 @@ class avatarView(View):
         except BaseException as e:
             return JsonResponse({"Err": f"missing file : {e.__str__()}"})
         try:
-            client = Client.objects.get(unique_id=request.client.id)
+            client = Client.objects.get(unique_id=request.user.id)
         except BaseException as e:
             return JsonResponse({"Err": f"bad request user id {e.__str__()}"})
         avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
@@ -171,7 +171,7 @@ def serve_avatar(request, filename):
 
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
-    if request.client.is_autenticated is False:
+    if request.user.is_autenticated is False:
         return JsonResponse({"Err": "Not authorised"}, status=403)
 
     try:
