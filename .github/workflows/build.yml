@@ -32,9 +32,6 @@ jobs:
 
     - name: Build containers
       run: |
-          python3 -m venv ci_env
-          source ci_env/bin/activate
-          pip install -r global_requirements.txt
           make build
 
     #- name: Health Check Mensura
