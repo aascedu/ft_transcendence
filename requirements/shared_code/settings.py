@@ -8,4 +8,4 @@ SHARED_MIDDLEWARE = [
 ]
 
 def add_prometheused_middleware(middlewares):
-    return "'django_prometheus.middleware.PrometheusBeforeMiddleware'," + middlewares + "'django_prometheus.middleware.PrometheusAfterMiddleware',"
+    return middlewares

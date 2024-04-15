@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from shared.settings import MIDDLEWARE as shared_middleware
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 
 from pathlib import Path
 
@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'channels',
 ]
 
-MIDDLEWARE = [] + shared_middleware
+PROJECT_OWN_MIDDLEWARE = []
+
+MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
 ROOT_URLCONF = 'hermes_project.urls'
 

@@ -10,9 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from shared.settings import MIDDLEWARE as shared_middleware
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from pathlib import Path
-from pathlib import os
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     'memory',
 ]
 
-MIDDLEWARE = [] + shared_middleware
+PROJECT_OWN_MIDDLEWARE = []
+
+MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
 ROOT_URLCONF = 'mnemosine_project.urls'
 
@@ -65,9 +67,9 @@ WSGI_APPLICATION = 'mnemosine_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['MNEMOSINE_DB'],
-        'USER': os.environ['MNEMOSINE_USER'],
-        'PASSWORD': os.environ['MNEMOSINE_PASSWORD'],
+        'NAME': os.environ.get('MNEMOSINE_DB', 'default'),
+        'USER': os.environ.get('MNEMOSINE_USER', 'default'),
+        'PASSWORD': os.environ.get('MNEMOSINE_PASSWORD', 'default'),
         'HOST': 'mnemosine_db',
         'PORT': '5432',
     }

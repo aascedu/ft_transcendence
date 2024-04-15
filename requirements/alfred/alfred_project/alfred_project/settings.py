@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-from shared.settings import MIDDLEWARE as shared_middleware
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from pathlib import Path
 import os
 
@@ -34,12 +34,12 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'alfred']
 # Application definition
 
 INSTALLED_APPS = [
-    'user_management'
+    'user_management',
 ]
 
-MIDDLEWARE = [] + shared_middleware
+PROJECT_OWN_MIDDLEWARE = []
 
-ROOT_URLCONF = 'alfred_project.urls'
+MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
 TEMPLATES = [
     {
@@ -66,9 +66,9 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['ALFRED_DB'],
-        'USER': os.environ['ALFRED_USER'],
-        'PASSWORD': os.environ['ALFRED_PASSWORD'],
+        'NAME': os.environ.get('ALFRED_DB', 'default'),
+        'USER': os.environ.get('ALFRED_USER', 'default'),
+        'PASSWORD': os.environ.get('ALFRED_PASSWORD', 'default'),
         'HOST': 'alfred_db',
         'PORT': '5432',
     }
