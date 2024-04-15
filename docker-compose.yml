@@ -168,32 +168,23 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
-      iris:
-        condition: service_started
     container_name: aether
-    image: docker.elastic.co/logstash/logstash:8.12.2
+    image: aether
+    build:
+      context: ./requirements/aether/
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_USER: $ELASTIC_USER
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
     labels:
       co.elastic.logs/module: logstash
     user: root
     volumes:
-      - certificates:/usr/share/logstash/certs
+      - certificates:/usr/share/elasticsearch/config/certs:ro
       - logstash_data:/usr/share/logstash/data
-      - ./requirements/aether/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-    environment:
-      - "NODE_NAME=logstash"
-      - "XPACK_MONITORING_ENABLED=false"
-      - "ELASTIC_USER=${ELASTIC_USER}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "ELASTIC_HOSTS=https://apollo:9200"
-      - "HTTP_HOST: '0.0.0.0'"
-      - "XPACK_MONITORING_ELASTICSEARCH_HOSTS: [ 'http://apollo:9200' ]"
-    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
     networks:
       - sentinel
     restart: on-failure
-    # ports:
-    #   - "5044:5044/udp"
->>>>>>> 28b68c756f723b470847406fd37d3516b1f0d851
 
 # # Profil container
   alfred:
@@ -461,8 +452,7 @@ services:
     labels:
       co.elastic.logs/module: kibana
     volumes:
-      - ./requirements/aegis:/usr/share/nginx/html
-      - certificates:/usr/share/kibana/config/certs
+      - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
     networks:
@@ -485,7 +475,7 @@ services:
     #  test:
     #    [
     #      "CMD-SHELL",
-    #      "curl -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+    #      "curl -I https://localhost:8000/iris/ | grep -q 'HTTP/1.1 302 Found'",
     #    ]
     #  interval: 10s
     #  timeout: 10s
@@ -629,6 +619,9 @@ services:
 
 # # Filebeat container
   orion:
+    depends_on:
+      aether:
+        condition: service_started
     container_name: orion
     image: orion
     labels:
@@ -636,15 +629,11 @@ services:
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
-    volumes:
-      - ./requirements/orion/conf/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
     user: "root"
-    environment:
-      - "ELASTIC_USER=${ELASTIC_USER}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "ELASTIC_HOSTS=https://apollo:9200"
     networks:
+      - atlas
       - sentinel
+    restart: on-failure
 
 # # Authentification container
   petrus:

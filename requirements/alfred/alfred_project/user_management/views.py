@@ -50,24 +50,17 @@ class userInfoView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         data = request.data
-        email = data.get('mail', None)
-        nickname = data.get('nick', None)
-        unique_id = data.get('id', None)
-        print(email, nickname, unique_id)
-        if email is None:
-            return JsonResponse({"Err": "email not filled"})
-        if nickname is None:
-            return JsonResponse({"Err": "nick not filled"})
-        if unique_id is None:
-            return JsonResponse({"Err": "field not filled"})
+        client = Client()
         try:
-            Client.objects.create(
-                unique_id=unique_id,
-                email=email,
-                nick=nickname
-            )
+            client.email = data['mail']
+            client.nick = data['nick']
+            client.unique_id = data['id']
+        except KeyError as e:
+            return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
+        try:
+            client.save()
         except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
+            return JsonResponse({"Err": e.__str__()}, status=409)
         return JsonResponse({"Client": "created"})
 
 
@@ -75,11 +68,11 @@ class userInfoView(View):
         try:
             client = Client.objects.get(unique_id=id)
         except BaseException:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "Ressource not found"}, status=404)
         try:
             client.delete()
         except BaseException:
-            return JsonResponse({"Err": "internal database error"})
+            return JsonResponse({"Err": "internal database error"}, status=500)
         return JsonResponse({"Client": "suppressed"})
 
 
@@ -92,8 +85,7 @@ class friendView(View):
                 "friends": [
                     {"id": object.unique_id,
                      "nick": object.nick,
-                     "mail": object.email,
-                     "avatar": object.avatar}
+                     "mail": object.email}
                     for object
                     in emiter
                     .friends
@@ -101,8 +93,7 @@ class friendView(View):
                 ],
                 "requests": [
                     {"id": object.sender.unique_id,
-                     "nick": object.sender.nick,
-                     "avatar": object.sender.avatar}
+                     "nick": object.sender.nick}
                     for object in list(
                         FriendshipRequest
                         .objects
@@ -144,14 +135,18 @@ class friendView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "ressource not found"}, status=404)
         return FriendshipRequest.deleteFriendship(emiter, target)
 
 
 class avatarView(View):
     def get(self, request, id: int):
-        client = Client.objects.get(unique_id=id)
-        return JsonResponse({f'avatar_url {id}': client.avatar.url})
+        try:
+            client = Client.objects.get(unique_id=id)
+            url = client.avatar.url
+        except ObjectDoesNotExist as e:
+            return JsonResponse({"Err": "ressource not found", status=404}
+        return JsonResponse({f'avatar_url {id}': url})
 
     def post(self, request, id: int):
         try:
@@ -167,7 +162,7 @@ class avatarView(View):
         try:
             client.save()
         except BaseException as e:
-            return JsonResponse({"Err": f"an error occured {e.__str__()}"})
+            return JsonResponse({"Err": f"an error occured {e.__str__()}"}, status=500)
         return JsonResponse({"Success": "avatar successfully updated"})
 
 def serve_avatar(request, filename):

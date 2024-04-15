@@ -36,10 +36,12 @@ if [ $? -eq 2 ]; then
     mkdir -p tokens/shared
     vault policy write shared /shared-policy.hcl
     mkdir /key
-    ssh-keygen -t rsa -b 4096 -N "" -f /key/key
-    priv=$(cat /key/key)
+    openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+    priv=$(cat /private_key.pem)
+    openssl rsa -pubout -in private_key.pem -out public_key.pem
+    pub=$(cat /public_key.pem)
+
     vault kv put -mount=secret shared/priv private_key="$priv"
-    pub=$(cat /key/key.pub)
     vault kv put -mount=secret shared/pub public_key="$pub"
 
     # ALFRED DB

@@ -1,0 +1,55 @@
+.victory-defeat {
+	top: 20vh;
+	padding-left: 2.5vw;
+	padding-right: 2.5vw;
+	padding-bottom: 2.5vw;
+	height: 80vh;
+}
+
+.victory-defeat-container {
+	height: 100%;
+}
+
+.victory-defeat-score {
+	color: #7300E6;
+	font-size: 80pt;
+	font-weight: 700;
+}
+
+.victory-defeat-message {
+	color: #7300E6;
+	font-size: 96pt;
+	font-weight: 800;
+}
+
+.victory-defeat-buttons-container {
+	margin-top: 96px;
+}
+
+.victory-defeat-button {
+	border-radius: 12px;
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
+	background-color: white;
+	padding: 16px 24px;
+	margin-right: 16px;
+}
+
+.victory-defeat-button:last-child {
+	margin-right: 0;
+}
+
+.victory-defeat-button:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.victory-defeat-button img {
+	height: 24px;
+	margin-right: 20px;
+}
+
+.victory-defeat-button p {
+	font-weight: 400;
+}
