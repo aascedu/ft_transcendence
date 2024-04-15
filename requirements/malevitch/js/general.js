@@ -295,6 +295,25 @@ function goToHomepageGame(previous) {
 	render(g_state);
 }
 
+// 
+
+function leaveTournamentEditMode() {
+	// Switch button appearance
+	document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
+
+	// Hide kick buttons
+	document.querySelectorAll('.tournament-kick-player').forEach(item => {
+		item.classList.add('visually-hidden');
+	});
+
+	// Hide edit tournament name
+	document.querySelector('.tournament-info-name-input-container').classList.add('visually-hidden');
+
+	// Show tournament name
+	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+}
+
 //
 
 function hideEveryPage() {
@@ -303,6 +322,10 @@ function hideEveryPage() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
+	// Leave tournament info edit mode
+	if (!document.querySelector('.tournament-info-name-input-container').classList.contains('visually-hidden')) {
+		leaveTournamentEditMode();
+	}
 	document.querySelector('.user-profile').classList.add('visually-hidden');
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
 }
