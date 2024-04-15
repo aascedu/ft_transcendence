@@ -44,17 +44,17 @@ SYSTEM		=	docker system
 debug: | volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
 
-all: | migrate volumes modsec
+all: | copyfile volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build
 
-up: | migrate volumes
+up: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
 ifeq ($(CI), ci)
-build: | migrate volumes
+build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | migrate volumes modsec
+build: | copyfile volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
@@ -72,8 +72,8 @@ reset: | db_reset
 volumes:
 	mkdir -p $(VOLUMES)
 
-migrate:
-	./tools/migrate.sh $(DJANGO_CTT)
+copyfile:
+	./tools/copyfile.sh $(DJANGO_CTT)
 
 modsec:
 	./tools/modsec.sh
@@ -173,7 +173,7 @@ prune:
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
 
-db_reset: db_suppr migrate
+db_reset: db_suppr copyfile
 
 #---- re ----#
 
@@ -188,6 +188,6 @@ endif
 
 .SILENT:
 .DEFAULT: debug # pour la prod: remettre all
-.PHONY: all up build down volumes migrate debug clean fclean prune re \
+.PHONY: all up build down volumes copyfile debug clean fclean prune re \
 aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
 ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset
