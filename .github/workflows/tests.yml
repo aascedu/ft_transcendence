@@ -1,0 +1,21 @@
+name: Django tests launching
+
+on:
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout code
+      uses: actions/checkout@v4
+
+    - name: Create virtual environement
+      run: |
+          python3 -m venv ci_env
+          source ci_env/bin/activate
+          pip install -r global_requirements.txt
+          make test
+

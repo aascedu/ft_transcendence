@@ -80,6 +80,9 @@ modsec:
 
 #---- debug ----#
 
+test:
+	./tools/test.sh $(DJANGO_CTT)
+
 aegis:
 	$(COMPOSE) up -d aegis
 	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
