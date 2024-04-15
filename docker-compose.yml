@@ -53,10 +53,10 @@ services:
     depends_on:
       alfred:
         condition: service_started
-      #aether:
-      #  condition: service_started
-      #apollo:
-      #  condition: service_healthy
+      aether:
+        condition: service_started
+      apollo:
+        condition: service_healthy
       coubertin:
         condition: service_started
       cupidon:
@@ -65,8 +65,8 @@ services:
         condition: service_started
       hermes:
         condition: service_started
-      #iris:
-      #  condition: service_started
+      iris:
+        condition: service_started
       ludo:
         condition: service_started
       malevitch:
@@ -160,7 +160,7 @@ services:
       dockerfile: Dockerfile
     environment:
       ALFRED_USER: alfred
-      ALFRED_PASSWORD: alfred_pass
+      ALFRED_PASSWORD: 'alfred_pass'
       ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
@@ -173,7 +173,7 @@ services:
       - alfred_network
     depends_on:
       alfred_db:
-        condition: service_healthy
+        condition: service_started
     restart: on-failure
 
 # # Profil database container
@@ -186,22 +186,15 @@ services:
     build:
       context: ./requirements/alfred_db/
       dockerfile: Dockerfile
-    #environment:
-      #POSTGRES_USER: alfred_user
-      #POSTGRES_PASSWORD: alfred_password
-      #ALFRED_USER: alfred
-      #ALFRED_PASSWORD: alfred_pass
-      #ALFRED_DB: user_management
+    environment:
+      POSTGRES_DB: alfred_db
+      POSTGRES_USER: alfred_user
+      POSTGRES_PASSWORD: alfred_password
     volumes:
       - alfred_data:/var/lib/postgresql/data
       - ./tokens/alfred-db:/tokens
     networks:
       - alfred_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
  # Elastisearch container
   apollo:
@@ -469,8 +462,6 @@ services:
     depends_on:
       mnemosine_db:
         condition: service_started
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Stats database container
@@ -487,10 +478,8 @@ services:
       POSTGRES_DB: mnemosine_db
       POSTGRES_USER: mnemosine_user
       POSTGRES_PASSWORD: mnemosine_password
-      MNEMOSINE_USER: mnemosine
-      MNEMOSINE_PASSWORD: 'mnemosine_pass'
-      MNEMOSINE_DB: memory_management
     volumes:
+      - ./tokens/mnemosine-db:/tokens
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
@@ -554,10 +543,8 @@ services:
       POSTGRES_DB: petrus_db
       POSTGRES_USER: petrus_user
       POSTGRES_PASSWORD: petrus_password
-      PETRUS_USER: petrus
-      PETRUS_PASSWORD: 'petrus_pass'
-      PETRUS_DB: auth_management
     volumes:
+      - ./tokens/petrus-db:/tokens
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
@@ -583,6 +570,8 @@ services:
       - atlas
       - sentinel
       - alfred_network
+      - mnemosine_network
+      - petrus_network
     restart: on-failure
     healthcheck:
       test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]

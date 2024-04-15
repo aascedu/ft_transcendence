@@ -4,28 +4,30 @@ ENV         VAULT_ADDR=http://0.0.0.0:8200/
 ARG         ELASTIC_PASSWORD
 ARG         KIBANA_PASSWORD
 ARG         GRAFANA_PASSWD
-ARG         POSTGRES_DB
-ARG         POSTGRES_USER
-ARG         POSTGRES_PASSWORD
 ARG         ALFRED_DB
 ARG         ALFRED_USER
 ARG         ALFRED_PASSWORD
+ARG         MNEMOSINE_DB
+ARG         MNEMOSINE_USER
+ARG         MNEMOSINE_PASSWORD
+ARG         PETRUS_DB
+ARG         PETRUS_USER
+ARG         PETRUS_PASSWORD
 
 RUN         export ELASTIC_PASSWORD=ELASTIC_PASSWORD && \
             export KIBANA_PASSWORD=KIBANA_PASSWORD && \
             export GRAFANA_PASSWD=GRAFANA_PASSWD && \
-            export POSTGRES_DB=POSTGRES_DB && \
-            export POSTGRES_USER=POSTGRES_USER && \
-            export POSTGRES_PASSWORD=POSTGRES_PASSWORD && \
             export ALFRED_DB=ALFRED_DB && \
             export ALFRED_USER=ALFRED_USER && \
-            export ALFRED_PASSWORD=ALFRED_PASSWORD
+            export ALFRED_PASSWORD=ALFRED_PASSWORD && \
+            export MNEMOSINE_DB=MNEMOSINE_DB && \
+            export MNEMOSINE_USER=MNEMOSINE_USER && \
+            export MNEMOSINE_PASSWORD=MNEMOSINE_PASSWORD && \
+            export PETRUS_DB=PETRUS_DB && \
+            export PETRUS_USER=PETRUS_USER && \
+            export PETRUS_PASSWORD=PETRUS_PASSWORD
 
-COPY        conf/config.hcl /config.hcl
-COPY        conf/env-policy.hcl /env-policy.hcl
-COPY        conf/shared-policy.hcl /shared-policy.hcl
-COPY        conf/petrus-policy.hcl /petrus-policy.hcl
-COPY        conf/alfred-db-policy.hcl /alfred-db-policy.hcl
+COPY        conf/ /
 
 RUN         apt update -y && \
             apt upgrade -y && \
