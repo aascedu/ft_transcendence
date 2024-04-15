@@ -65,13 +65,8 @@ services:
         condition: service_started
       hermes:
         condition: service_started
-<<<<<<< HEAD
       #iris:
-      #  condition: service_healthy
-=======
-      iris:
-        condition: service_started
->>>>>>> 28b68c756f723b470847406fd37d3516b1f0d851
+      #  condition: service_started
       ludo:
         condition: service_started
       malevitch:
@@ -133,36 +128,6 @@ services:
       - atlas
     restart: on-failure
 
-<<<<<<< HEAD
-# Logstash container
-  #aether:
-  #  depends_on:
-  #    apollo:
-  #      condition: service_healthy
-  #    iris:
-  #      condition: service_healthy
-  #  container_name: aether
-  #  image: docker.elastic.co/logstash/logstash:8.12.2
-  #  labels:
-  #    co.elastic.logs/module: logstash
-  #  user: root
-  #  volumes:
-  #    - certificates:/usr/share/logstash/certs
-  #    - logstash_data:/usr/share/logstash/data
-  #    - ./requirements/aether/config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
-  #  environment:
-  #    - "NODE_NAME=logstash"
-  #    - "xpack.monitoring.enabled=false"
-  #    - "ELASTIC_USER=${ELASTIC_USER}"
-  #    - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-  #    - "ELASTIC_HOSTS=https://apollo:9200"
-  #  command: logstash -f /usr/share/logstash/pipeline/logstash.conf
-  #  ports:
-  #    - "9600:9600"
-  #  networks:
-  #    - atlas
-  #    - aegis guard
-=======
 # # Logstash container
   aether:
     depends_on:
@@ -238,51 +203,7 @@ services:
       timeout: 5s
       retries: 5
 
-<<<<<<< HEAD
-## Elastisearch container
-  #apollo:
-  #  depends_on:
-  #    setup:
-  #      condition: service_healthy
-  #  container_name: apollo
-  #  image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
-  #  labels:
-  #    co.elastic.logs/module: elasticsearch
-  #  volumes:
-  #    - certificates:/usr/share/elasticsearch/config/certs
-  #    - elastic_data:/usr/share/elasticsearch/data
-  #  ports:
-  #    - "9200:9200"
-  #  networks:
-  #    - atlas
-  #    - aegis guard
-  #  environment:
-  #    - "discovery.type=single-node"
-  #    - "cluster.name=${CLUSTER_NAME}"
-  #    - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-  #    - "network.host=0.0.0.0"
-  #    - "xpack.security.enabled=true"
-  #    - "xpack.security.http.ssl.enabled=true"
-  #    - "xpack.security.http.ssl.key=certs/apollo/apollo.key"
-  #    - "xpack.security.http.ssl.certificate=certs/apollo/apollo.crt"
-  #    - "xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt"
-  #    - "xpack.security.transport.ssl.enabled=true"
-  #    - "xpack.security.transport.ssl.key=certs/apollo/apollo.key"
-  #    - "xpack.security.transport.ssl.certificate=certs/apollo/apollo.crt"
-  #    - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
-  #    - "xpack.security.transport.ssl.verification_mode=certificate"
-  #    - "xpack.license.self_generated.type=${LICENSE}"
-  #  healthcheck:
-  #    test:
-  #      [
-  #        "CMD-SHELL",
-  #        "curl --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
-  #      ]
-  #    interval: 10s
-  #    timeout: 10s
-  #    retries: 120
-=======
-# # Elastisearch container
+ # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -321,7 +242,6 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
->>>>>>> 28b68c756f723b470847406fd37d3516b1f0d851
 
 # # Tournament container
   coubertin:
@@ -401,47 +321,6 @@ services:
         condition: service_healthy
     restart: on-failure
 
-<<<<<<< HEAD
-# Kibana container
-  #iris:
-  #  depends_on:
-  #    apollo:
-  #      condition: service_healthy
-  #  container_name: iris
-  #  image: docker.elastic.co/kibana/kibana:8.12.2
-  #  labels:
-  #    co.elastic.logs/module: kibana
-  #  volumes:
-  #    - certificates:/usr/share/kibana/config/certs
-  #    - kibana_data:/usr/share/kibana/data
-  #    - ./tokens:/vault
-  #  ports:
-  #    - "5601:5601"
-  #  networks:
-  #    - atlas
-  #    - aegis guard
-  #  environment:
-  #    - "SERVERNAME=kibana"
-  #    - "ELASTICSEARCH_HOSTS=https://apollo:9200"
-  #    - "ELASTICSEARCH_USERNAME=kibana_system"
-  #    - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
-  #    - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-  #    # - "XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-  #    # - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-  #    # - "XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}"
-  #    # - "server.rewriteBasePath=true"
-  #    # - "server.publicBaseUrl="
-  #    # - "server.basePath="
-  #  healthcheck:
-  #   test:
-  #     [
-  #       "CMD-SHELL",
-  #       "curl -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
-  #     ]
-  #   interval: 10s
-  #   timeout: 10s
-  #   retries: 120
-=======
 # # Kibana container
   iris:
     depends_on:
@@ -480,7 +359,6 @@ services:
     #  interval: 10s
     #  timeout: 10s
     #  retries: 120
->>>>>>> 28b68c756f723b470847406fd37d3516b1f0d851
 
 # # Auth inter-container container
   lovelace:
@@ -722,68 +600,6 @@ services:
       - atlas
     restart: on-failure
 
-<<<<<<< HEAD
-# ELK setup container
-  #setup:
-  #  container_name: setup
-  #  image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
-  #  volumes:
-  #    - certificates:/usr/share/elasticsearch/config/certs
-  #  user: "0"
-  #  command: >
-  #    bash -c '
-  #      if [ x${ELASTIC_PASSWORD} == x ]; then
-  #        echo "Set the ELASTIC_PASSWORD environment variable in the .env file";
-  #        exit 1;
-  #      elif [ x${KIBANA_PASSWORD} == x ]; then
-  #        echo "Set the KIBANA_PASSWORD environment variable in the .env file";
-  #        exit 1;
-  #      fi;
-  #      if [ ! -f config/certs/ca.zip ]; then
-  #        echo "Creating CA";
-  #        bin/elasticsearch-certutil ca --silent --pem -out config/certs/ca.zip;
-  #        unzip config/certs/ca.zip -d config/certs;
-  #      fi;
-  #      if [ ! -f config/certs/certs.zip ]; then
-  #        echo "Creating certs";
-  #        echo -ne \
-  #        "instances:\n"\
-  #        "  - name: apollo\n"\
-  #        "    dns:\n"\
-  #        "      - apollo\n"\
-  #        "      - localhost\n"\
-  #        "    ip:\n"\
-  #        "      - 127.0.0.1\n"\
-  #        "  - name: iris\n"\
-  #        "    dns:\n"\
-  #        "      - iris\n"\
-  #        "      - localhost\n"\
-  #        "    ip:\n"\
-  #        "      - 127.0.0.1\n"\
-  #        > config/certs/instances.yml;
-  #        bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
-  #        unzip config/certs/certs.zip -d config/certs;
-  #      fi;
-  #      echo "Setting file permissions"
-  #      chown -R root:root config/certs;
-  #      find . -type d -exec chmod 750 \{\} \;;
-  #      find . -type f -exec chmod 640 \{\} \;;
-  #      echo "Waiting for Elasticsearch availability";
-  #      until curl --cacert config/certs/ca/ca.crt https://apollo:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
-  #      echo "Setting kibana_system password";
-  #      until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
-  #      echo "All done!";
-  #    '
-  #  healthcheck:
-  #    test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
-  #    interval: 1s
-  #    timeout: 5s
-  #    retries: 120
-
-  #  networks:
-  #    - atlas
-  #    - aegis guard
-=======
 # # ELK setup container
   setup:
     container_name: setup
@@ -805,4 +621,3 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
->>>>>>> 28b68c756f723b470847406fd37d3516b1f0d851
