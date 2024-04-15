@@ -80,7 +80,7 @@ modsec:
 
 #---- debug ----#
 
-test:
+test: copyfile
 	./tools/test.sh $(DJANGO_CTT)
 
 aegis:

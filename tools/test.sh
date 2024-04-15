@@ -10,6 +10,7 @@ set -e
 for django_service in "$@"
 do
     echo -e "${COLOR_GREEN}Executing migrations for : ${COLOR_RESET}$django_service"
+    export DJANGO_SETTINGS_MODULE="$django_service"_project.test_settings
     python3 ./requirements/$django_service/*/manage.py test
     echo -e -n "\n"
 done

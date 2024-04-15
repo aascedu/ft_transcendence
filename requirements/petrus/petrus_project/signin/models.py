@@ -19,6 +19,7 @@ class Client(models.Model):
             validators=[
                 NickNameValidator,
             ],
+            max_length=16,
     )
 
     objects = models.Manager()
