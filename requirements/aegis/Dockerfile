@@ -27,7 +27,7 @@ COPY    ModSecurity /ModSecurity
 
 #---- ModSecurity connector -------------------------------------------#
 
-RUN if ["${CI}" != "ci"]; then apk update && \
+RUN apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
         make install -C /ModSecurity && \
@@ -50,27 +50,24 @@ RUN if ["${CI}" != "ci"]; then apk update && \
         wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.0.0.tar.gz && \
         tar -xvf v4.0.0.tar.gz && \
         rm v4.0.0.tar.gz && \
-        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf; \
-        else \
-            mkdir conf; \
-            touch conf/modsec-config.conf; \
-            touch conf/modsecurity.conf; \
-        fi
+        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf;
 
 #---- config ----------------------------------------------------------#
 
-COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
-COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
 
 COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
 
-COPY    conf/aegis-whitelist.conf /etc/nginx/modsec/aegis-whitelist.conf
-COPY    conf/mnemosine-whitelist.conf /etc/nginx/modsec/mnemosine-whitelist.conf
-COPY    conf/alfred-whitelist.conf /etc/nginx/modsec/alfred-whitelist.conf
-COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
-COPY    conf/iris-whitelist.conf /etc/nginx/modsec/iris-whitelist.conf
-COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
-COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
+COPY conf/ /etc/nginx/modsec
+
+# COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
+# COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
+# COPY    conf/aegis-whitelist.conf /etc/nginx/modsec/aegis-whitelist.conf
+# COPY    conf/mnemosine-whitelist.conf /etc/nginx/modsec/mnemosine-whitelist.conf
+# COPY    conf/alfred-whitelist.conf /etc/nginx/modsec/alfred-whitelist.conf
+# COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
+# COPY    conf/iris-whitelist.conf /etc/nginx/modsec/iris-whitelist.conf
+# COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
+# COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
 
 COPY    conf/${PROXY_CONF} /etc/nginx/nginx.conf
 COPY    errorPages /usr/share/nginx/html
