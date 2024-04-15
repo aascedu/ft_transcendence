@@ -27,6 +27,17 @@
 	height: 20px;
 }
 
+.tournament-info-name-input-box {
+	padding: 8px;
+	margin: 0;
+}
+
+.tournament-info-name-input-warning {
+	margin-top: 4px;
+	margin-bottom: 8px;
+	font-size: 12pt;
+}
+
 .tournament-info-edit-icon,
 .tournament-info-check-icon {
 	right: 68px;
@@ -75,7 +86,7 @@
 .tournament-info-card-container {
 	padding: 16px;
 	padding-top: 0;
-	margin-top: 58px;
+	margin-top: 80px;
 	flex-grow: 1;
 }
 

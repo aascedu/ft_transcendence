@@ -180,6 +180,30 @@ function warnInvalidNickname(nickname, element) {
 	return true;
 }
 
+// Tournament name checking functions
+
+function tournamentValidChar(name) {
+	console.log(name);
+	let regex = /[^A-Za-z0-9_ ]/g;
+	return !regex.test(name);
+}
+
+function warnInvalidTournamentName(name, element) {
+	if (!tournamentValidChar(name)) {
+		element.setAttribute('data-language', 'tournament-name-invalid-char');
+		return false;
+	}
+	else if (name.length < 3) {
+		element.setAttribute('data-language', 'tournament-name-too-short');
+		return false;
+	}
+	else if (name.length > 23) {
+		element.setAttribute('data-language', 'tournament-name-too-long');
+		return false;
+	}
+	return true;
+}
+
 //
 
 function addInfoToElement(info, element) {

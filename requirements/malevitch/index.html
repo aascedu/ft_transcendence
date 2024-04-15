@@ -464,11 +464,18 @@
 		<!-- TOURNAMENT INFO -->
 		<div class="tournament-info w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
 			<div class="tournament-info-container category w-100 d-flex flex-column align-items-center purple-shadow">
-				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
+				<div class="category-title w-100 d-flex justify-content-center position-absolute">
 					<div class="tournament-info-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
-					<p class="unselectable">Tournoi 1</p>
+					<p class="tournament-info-name unselectable">Tournoi 1</p>
+					<div class="tournament-info-name-input-container w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
+						<div class="tournament-info-name-input-box input-box w-50 bg-white purple-shadow">
+							<label for="tournament-name-input" data-language="tournament-name" class="visually-hidden">Enter a tournament name...</label>
+							<input id="tournament-name-input" type="text" name="tournament-name" label="tournament-name" data-language="tournament-name" placeholder="Enter a tournament name..." autocomplete="off" class="tournament-info-name-input input w-100 border-0 text-center">
+						</div>
+						<div class="tournament-info-name-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-tournament-name">Invalid tournament name.</div>
+					</div>
 					<div class="tournament-info-edit-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/edit.svg" alt="edit tournament" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
