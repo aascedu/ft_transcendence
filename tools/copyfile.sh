@@ -8,7 +8,9 @@ COLOR_RESET='\e[0m'
 for container in "$@"
 do
      echo -e "${COLOR_BLUE}Copying shared_code : ${COLOR_RESET}$container"
-     cp ./requirements/shared_code/* ./requirements/$container/*/shared/
+     cp -r ./requirements/shared_code/ ./requirements/$container/${container}_project/shared/
+     cp -r ./requirements/shared_code/* ./requirements/$container/${container}_project/shared/
+     cp ./requirements/shared_code/test_settings.py ./requirements/$container/${container}_project/${container}_project/
 done
 
 echo -e -n "\n"

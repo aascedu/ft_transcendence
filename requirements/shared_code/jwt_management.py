@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
 from jwt import encode, decode
 from .var import algo
-from tokens.token import vault_token
+try:
+    from tokens.token import vault_token
+except ModuleNotFoundError:
+    print("Warn vault_token not found")
 
 import hvac
 

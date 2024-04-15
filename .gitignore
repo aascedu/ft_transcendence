@@ -27,6 +27,7 @@ tutorial
 youpi
 sources.txt
 **/media/
+**/*project/test_settings.py
 
 # volumes & env
 **/shared
