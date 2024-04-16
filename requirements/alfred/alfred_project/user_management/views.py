@@ -1,10 +1,12 @@
+from django.db import IntegrityError
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from shared.error_management import report_error
+from shared.utils import save_response
 from django.utils import timezone
 import os
 
@@ -30,8 +32,8 @@ class userInfoView(View):
     def patch(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            response = JsonResponse({"Err": e.__str__()})
+        except ObjectDoesNotExist as e:
+            response = JsonResponse({"Err": e.__str__()}, status=404)
             response.delete_cookie('aut')
             return response
         data = request.data
@@ -40,12 +42,7 @@ class userInfoView(View):
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
-        try:
-            client.save()
-        except BaseException as e:
-            report_error(request, e.__str__())
-            return JsonResponse({"Err", e.__str__()})
-        return JsonResponse({"Client": "updated"})
+        return save_response(client)
 
 
     def post(self, request, id: int) -> JsonResponse:
@@ -57,11 +54,7 @@ class userInfoView(View):
             client.unique_id = data['id']
         except KeyError as e:
             return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
-        try:
-            client.save()
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()}, status=409)
-        return JsonResponse({"Client": "created"})
+        return save_response(client)
 
 
     def delete(self, request, id: int) -> JsonResponse:
