@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from shared.error_management import report_error
-from shared.utils import save_response
+from shared.utils import save_response, delete_response
 from django.utils import timezone
 import os
 
@@ -60,13 +60,9 @@ class userInfoView(View):
     def delete(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=id)
-        except BaseException:
+        except ObjectDoesNotExist:
             return JsonResponse({"Err": "Ressource not found"}, status=404)
-        try:
-            client.delete()
-        except BaseException:
-            return JsonResponse({"Err": "internal database error"}, status=500)
-        return JsonResponse({"Client": "suppressed"})
+        return delete_response(client)
 
 
 class friendView(View):
