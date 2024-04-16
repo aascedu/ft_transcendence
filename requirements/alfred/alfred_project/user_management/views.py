@@ -135,24 +135,20 @@ class avatarView(View):
             url = client.avatar.url
         except ObjectDoesNotExist as e:
             return JsonResponse({"Err": "ressource not found"}, status=404)
-        return JsonResponse({f'avatar_url {id}': url})
+        return JsonResponse({id: url})
 
     def post(self, request, id: int):
         try:
             avatar = request.FILES['avatar']
-        except BaseException as e:
-            return JsonResponse({"Err": f"missing file : {e.__str__()}"})
+        except KeyError as e:
+            return JsonResponse({"Err": f"missing file : {e.__str__()}"}, status=400)
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            return JsonResponse({"Err": f"bad request user id {e.__str__()}"})
+        except ObjectDoesNotExist as e:
+            return JsonResponse({"Err": f"bad request user id {e.__str__()}"}, status=404)
         avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
         client.avatar = avatar
-        try:
-            client.save()
-        except BaseException as e:
-            return JsonResponse({"Err": f"an error occured {e.__str__()}"}, status=500)
-        return JsonResponse({"Success": "avatar successfully updated"})
+        return save_response(client)
 
 def serve_avatar(request, filename):
     if request.method != 'GET':
