@@ -183,7 +183,6 @@ function warnInvalidNickname(nickname, element) {
 // Tournament name checking functions
 
 function tournamentValidChar(name) {
-	console.log(name);
 	let regex = /[^A-Za-z0-9_ ]/g;
 	return !regex.test(name);
 }
@@ -313,6 +312,17 @@ function leaveTournamentEditMode() {
 	// Show tournament name
 	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
 }
+
+// Hide alerts when clicking outside
+
+document.querySelectorAll('.alert').forEach(function(item) {
+	item.addEventListener('click', function(event) {
+		if (this !== event.target) {
+			return ;
+		}
+		item.classList.add('visually-hidden');
+	});
+});
 
 //
 
