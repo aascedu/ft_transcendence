@@ -13,8 +13,8 @@ class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            response = JsonResponse({"Err": e.__str__()})
+        except ObjectDoesNotExist as e:
+            response = JsonResponse({"Err": e.__str__()}, status=404)
             response.delete_cookie('aut')
             return response
         if id == 0 or id == request.user.id:
@@ -22,7 +22,7 @@ class userInfoView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err", "invalid id"})
+            return JsonResponse({"Err", "ressource not found"}, status=404)
         if client in target.friends.all():
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
