@@ -171,15 +171,6 @@ def serve_avatar(request, filename):
     except OSError as e:
         return JsonResponse({"Err": f"An error occurred: {e}"}, status=500)
 
-@csrf_exempt
-def createUser(request):
-    nick = "arthur"
-    request = request
-    mail = "delafforest@gmail.com"
-    client = Client.objects.create(nick=nick, email=mail)
-    client.save()
-    return JsonResponse({nick: mail})
-
 
 @csrf_exempt
 def view_db(request):
