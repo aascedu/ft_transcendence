@@ -1,4 +1,4 @@
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.views import View
@@ -39,27 +39,26 @@ class signinView(View):
 
     def post(self, request, string: str) -> JsonResponse:
         data = request.data
-        id = data.get('Id', None)
-        password = data.get('Pass', None)
-        if id is None:
-            return JsonResponse({"Err": "no id provided"})
+        try:
+            id = data['Id']
+            password = data['Pass']
+        except KeyError as e:
+            return JsonResponse({"Err": f"no {str(e)} provided"}, status=400)
 
-        if password is None:
-            return JsonResponse({"Err": "no password provided"})
-        client = Client.objects.filter(unique_id=id).first()
-        if client is None:
-            return JsonResponse({"Err": "invalid id provided"})
+        try:
+            client = Client.objects.get(unique_id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"Err": "invalid id provided"}, status=400)
 
         if not bcrypt.checkpw(password.encode('utf-8'),
                           client.hashed_password.encode('utf-8')):
-            return JsonResponse({"Err": "invalid password"})
-        response = JsonResponse({})
+            return JsonResponse({"Err": "invalid password"}, status=403)
         try:
             refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
             jwt = JWT.objectToAccessToken(client)
         except BaseException as e:
             return JsonResponse({"Err": e.__str__()})
-        response.set_cookie("ref", refresh_token)
+        response = JsonResponse({"ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 
