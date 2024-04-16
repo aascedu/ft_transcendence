@@ -1,9 +1,8 @@
 #! /bin/bash
 TOKEN=$(cat /tokens/mnemosine-token.txt)
-echo TOKEN = $TOKEN
-export MNEMOSINE_DB=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/db/mnemosine_db | jq -r '.data.data.db')
-export MNEMOSINE_USER=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/db/mnemosine_user | jq -r '.data.data.user')
-export MNEMOSINE_PASSWORD=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/db/mnemosine_password | jq -r '.data.data.password')
+export MNEMOSINE_DB=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/mnemosine_db | jq -r '.data.data.db')
+export MNEMOSINE_USER=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/mnemosine_user | jq -r '.data.data.user')
+export MNEMOSINE_PASSWORD=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/mnemosine/mnemosine_password | jq -r '.data.data.password')
 
 set -e
 

@@ -164,7 +164,7 @@ services:
       ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/alfred:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -173,7 +173,7 @@ services:
       - alfred_network
     depends_on:
       alfred_db:
-        condition: service_started
+        condition: service_healthy
     restart: on-failure
 
 # # Profil database container
@@ -195,6 +195,10 @@ services:
       - ./tokens/alfred-db:/tokens
     networks:
       - alfred_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
+      interval: 10s
+      retries: 5
 
  # Elastisearch container
   apollo:
@@ -245,7 +249,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -265,7 +269,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -303,7 +307,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -362,7 +366,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/lovelace/lovelace_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8005:8005"
@@ -383,7 +387,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -448,7 +452,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/alfred:/app/tokens
       - shared_code:/app/shared
     environment:
       MNEMOSINE_USER: mnemosine
@@ -461,7 +465,7 @@ services:
       - mnemosine_network
     depends_on:
       mnemosine_db:
-        condition: service_started
+        condition: service_healthy
     restart: on-failure
 
 # # Stats database container
@@ -483,6 +487,10 @@ services:
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
+      interval: 10s
+      retries: 5
 
 # # Filebeat container
   orion:
@@ -521,8 +529,6 @@ services:
       - "8009:8009"
     depends_on:
       petrus_db:
-        condition: service_started
-      tutum:
         condition: service_healthy
     networks:
       - atlas
@@ -548,6 +554,10 @@ services:
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
+      interval: 10s
+      retries: 5
 
 # # Vault container
   tutum:

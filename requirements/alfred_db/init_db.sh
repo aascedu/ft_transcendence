@@ -1,9 +1,9 @@
 #! /bin/bash
 
 TOKEN=$(cat /tokens/alfred-token.txt)
-export ALFRED_DB=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/db/alfred_db | jq -r '.data.data.db')
-export ALFRED_USER=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/db/alfred_user | jq -r '.data.data.user')
-export ALFRED_PASSWORD=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/db/alfred_password | jq -r '.data.data.password')
+export ALFRED_DB=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/alfred_db | jq -r '.data.data.db')
+export ALFRED_USER=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/alfred_user | jq -r '.data.data.user')
+export ALFRED_PASSWORD=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/alfred/alfred_password | jq -r '.data.data.password')
 
 set -e
 

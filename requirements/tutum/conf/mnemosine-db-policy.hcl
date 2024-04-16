@@ -1,3 +1,3 @@
-path "secret/data/mnemosine/db/*" {
+path "secret/data/mnemosine/*" {
   capabilities = [ "read" ]
 }
