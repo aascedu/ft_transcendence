@@ -10,11 +10,11 @@ def save_response(object_to_save):
         object_to_save.save()
         return JsonResponse({"Ressource": "updated"})
     except IntegrityError as e:
-        return JsonResponse({"Err", e.__str__()}, status=409)
+        return JsonResponse({"Err": e.__str__()}, status=409)
     except ValidationError as e:
-        return JsonResponse({"Err", e.__str__()}, status=422)
+        return JsonResponse({"Err": e.__str__()}, status=422)
     except BaseException as e:
-        return JsonResponse({"Err", e.__str__()}, status=500)
+        return JsonResponse({"Err": e.__str__()}, status=500)
 
 
 def delete_response(object_to_delete):
@@ -22,9 +22,9 @@ def delete_response(object_to_delete):
         object_to_delete.delete()
         return JsonResponse({"Ressource": "deleted"})
     except ProtectedError as e:
-        return JsonResponse({"Err", e.__str__()}, status=422)
+        return JsonResponse({"Err": e.__str__()}, status=422)
     except IntegrityError as e:
-        return JsonResponse({"Err", e.__str__()}, status=409)
+        return JsonResponse({"Err": e.__str__()}, status=409)
     except BaseException as e:
-        return JsonResponse({"Err", e.__str__()}, status=500)
+        return JsonResponse({"Err": e.__str__()}, status=500)
 
