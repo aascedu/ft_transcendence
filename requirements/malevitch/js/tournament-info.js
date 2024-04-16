@@ -87,23 +87,28 @@ document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
 	item.addEventListener('click', function(event) {
 		event.stopPropagation();
 
+		var playerToHide = item.parentNode;
+
 		// Show alert
 		document.querySelector('.tournament-info-kick-alert').classList.remove('visually-hidden');
 
 		// Confirm the kick
-		document.querySelector('.tournament-info-kick-alert .alert-confirm-button').addEventListener('click', function() {
+		document.querySelector('.tournament-info-kick-alert .alert-confirm-button').addEventListener('click', function () {
 			// Hide alert
 			document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
 
-			var playerToHide = item.parentNode;
-
-			playerToHide.parentNode.removeChild(playerToHide);
+			// Remove player
+			if (playerToHide) {
+				playerToHide.parentNode.removeChild(playerToHide);
+			}
 		});
 
 		// Cancel the kick
-		document.querySelector('.tournament-info-kick-alert .alert-cancel-button').addEventListener('click', function() {
+		document.querySelector('.tournament-info-kick-alert .alert-cancel-button').addEventListener('click', function () {
 			// Hide alert
 			document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
+
+			playerToHide = null;
 		});
 	});
 });
@@ -133,22 +138,11 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 
-	// Switch button appearance
-	document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
-	document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
-
-	// Hide kick buttons
-	document.querySelectorAll('.tournament-kick-player').forEach(item => {
-		item.classList.add('visually-hidden');
-	});
-
-	// Hide edit tournament name
-	document.querySelector('.tournament-info-name-input-container').classList.add('visually-hidden');
-
-	// Show new tournament name
+	// Update tournament name
 	var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
 	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
-	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+
+	leaveTournamentEditMode();
 });
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
