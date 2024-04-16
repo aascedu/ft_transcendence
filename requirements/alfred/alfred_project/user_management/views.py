@@ -1,10 +1,12 @@
+from django.db import IntegrityError
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from shared.error_management import report_error
+from shared.utils import save_response, delete_response
 from django.utils import timezone
 import os
 
@@ -13,8 +15,8 @@ class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            response = JsonResponse({"Err": e.__str__()})
+        except ObjectDoesNotExist as e:
+            response = JsonResponse({"Err": e.__str__()}, status=404)
             response.delete_cookie('aut')
             return response
         if id == 0 or id == request.user.id:
@@ -22,7 +24,7 @@ class userInfoView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err", "invalid id"})
+            return JsonResponse({"Err", "ressource not found"}, status=404)
         if client in target.friends.all():
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
@@ -30,8 +32,8 @@ class userInfoView(View):
     def patch(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            response = JsonResponse({"Err": e.__str__()})
+        except ObjectDoesNotExist as e:
+            response = JsonResponse({"Err": e.__str__()}, status=404)
             response.delete_cookie('aut')
             return response
         data = request.data
@@ -40,12 +42,7 @@ class userInfoView(View):
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
-        try:
-            client.save()
-        except BaseException as e:
-            report_error(request, e.__str__())
-            return JsonResponse({"Err", e.__str__()})
-        return JsonResponse({"Client": "updated"})
+        return save_response(client)
 
 
     def post(self, request, id: int) -> JsonResponse:
@@ -57,23 +54,15 @@ class userInfoView(View):
             client.unique_id = data['id']
         except KeyError as e:
             return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
-        try:
-            client.save()
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()}, status=409)
-        return JsonResponse({"Client": "created"})
+        return save_response(client)
 
 
     def delete(self, request, id: int) -> JsonResponse:
         try:
             client = Client.objects.get(unique_id=id)
-        except BaseException:
+        except ObjectDoesNotExist:
             return JsonResponse({"Err": "Ressource not found"}, status=404)
-        try:
-            client.delete()
-        except BaseException:
-            return JsonResponse({"Err": "internal database error"}, status=500)
-        return JsonResponse({"Client": "suppressed"})
+        return delete_response(client)
 
 
 class friendView(View):
@@ -146,24 +135,20 @@ class avatarView(View):
             url = client.avatar.url
         except ObjectDoesNotExist as e:
             return JsonResponse({"Err": "ressource not found"}, status=404)
-        return JsonResponse({f'avatar_url {id}': url})
+        return JsonResponse({id: url})
 
     def post(self, request, id: int):
         try:
             avatar = request.FILES['avatar']
-        except BaseException as e:
-            return JsonResponse({"Err": f"missing file : {e.__str__()}"})
+        except KeyError as e:
+            return JsonResponse({"Err": f"missing file : {e.__str__()}"}, status=400)
         try:
             client = Client.objects.get(unique_id=request.user.id)
-        except BaseException as e:
-            return JsonResponse({"Err": f"bad request user id {e.__str__()}"})
+        except ObjectDoesNotExist as e:
+            return JsonResponse({"Err": f"bad request user id {e.__str__()}"}, status=404)
         avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
         client.avatar = avatar
-        try:
-            client.save()
-        except BaseException as e:
-            return JsonResponse({"Err": f"an error occured {e.__str__()}"}, status=500)
-        return JsonResponse({"Success": "avatar successfully updated"})
+        return save_response(client)
 
 def serve_avatar(request, filename):
     if request.method != 'GET':
@@ -185,15 +170,6 @@ def serve_avatar(request, filename):
         return JsonResponse({"Err": "no permission to access"}, status=403)
     except OSError as e:
         return JsonResponse({"Err": f"An error occurred: {e}"}, status=500)
-
-@csrf_exempt
-def createUser(request):
-    nick = "arthur"
-    request = request
-    mail = "delafforest@gmail.com"
-    client = Client.objects.create(nick=nick, email=mail)
-    client.save()
-    return JsonResponse({nick: mail})
 
 
 @csrf_exempt

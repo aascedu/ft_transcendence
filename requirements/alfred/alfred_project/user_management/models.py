@@ -87,12 +87,12 @@ class FriendshipRequest(models.Model):
     @staticmethod
     def processRequest(sender, receiver) -> JsonResponse:
         if receiver in sender.friends.all():
-            return JsonResponse({"Err": "friendship already established"})
+            return JsonResponse({"Err": "friendship already established"}, status=400)
 
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
         if redondantRequest is not None:
-            return JsonResponse({"Err": "redondant request"})
+            return JsonResponse({"Err": "redondant request"}, status=400)
 
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
@@ -126,4 +126,4 @@ class FriendshipRequest(models.Model):
             oldRequest.delete()
             return JsonResponse({"Friendship": "aborted"})
 
-        return JsonResponse({"Err": "nothing to get deleted"})
+        return JsonResponse({"Err": "nothing to get deleted"}, status=404)
