@@ -11,7 +11,8 @@ requirements/tutum/vault
 /vendor/
 *.log
 requirements/shared_code/shared_token.py
-
+*.crt
+*.key
 # development files
 **/__pycache__/**
 **/__init__.py
@@ -25,6 +26,8 @@ tutorial
 .env
 youpi
 sources.txt
+**/media/
+**/*project/test_settings.py
 
 # volumes & env
 **/shared
@@ -32,6 +35,7 @@ sources.txt
 **/env
 **/env_**
 /tokens
+**/media/
 
 # temporary
 elastic-agent.yml

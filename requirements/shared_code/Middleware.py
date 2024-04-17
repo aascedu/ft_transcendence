@@ -1,17 +1,16 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
-from shared.jwt_management import JWT
-from .var import public_key
+from .jwt_management import JWT
 from .common_classes import User
-import os
 import json
+import information
 
 
 class JWTIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
+        key = JWT.publicKey
         if not key:
             raise Error("publicKey is not defined")
         self.publicKey = key
@@ -23,6 +22,7 @@ class JWTIdentificationMiddleware:
     def process_view(self, request, view_func, view_args, view_kwargs):
         if 'auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
+            print("JWT: request with no jwt")
             return None
 
         autorisationJWT = request.COOKIES['auth']
@@ -31,12 +31,23 @@ class JWTIdentificationMiddleware:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
+            print("JWT: Warning: ", e.__str__())
             return None
 
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
 
+        if "MAIN_MODEL" in information.__dict__:
+            print("Service has a model")
+            try:
+                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+            except ObjectDoesNotExist as e:
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
+                response.delete_cookie('auth')
+                return response
+
+        print("JWT: User:", str(User))
         return None
 
 

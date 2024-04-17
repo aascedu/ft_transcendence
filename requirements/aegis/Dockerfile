@@ -2,6 +2,11 @@
 
 FROM    nginx:1-alpine3.18
 
+#---- variables -------------------------------------------------------#
+
+ARG     PROXY_CONF
+RUN     export PROXY_CONF=PROXY_CONF
+
 #---- ModSecurity -----------------------------------------------------#
 
 COPY    requirements.txt /requirements.txt
@@ -22,7 +27,7 @@ COPY    ModSecurity /ModSecurity
 
 #---- ModSecurity connector -------------------------------------------#
 
-RUN     apk update && \
+RUN apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
         make install -C /ModSecurity && \
@@ -45,18 +50,26 @@ RUN     apk update && \
         wget https://github.com/coreruleset/coreruleset/archive/refs/tags/v4.0.0.tar.gz && \
         tar -xvf v4.0.0.tar.gz && \
         rm v4.0.0.tar.gz && \
-        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf
+        cp coreruleset-4.0.0/crs-setup.conf.example coreruleset-4.0.0/crs-setup.conf;
 
-COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
-COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
+#---- config ----------------------------------------------------------#
+
+
 COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
-COPY    conf/aegis-whitelist.conf /etc/nginx/modsec/aegis-whitelist.conf
-COPY    conf/mnemosine-whitelist.conf /etc/nginx/modsec/mnemosine-whitelist.conf
-COPY    conf/alfred-whitelist.conf /etc/nginx/modsec/alfred-whitelist.conf
-COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
-COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
-COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
-COPY    conf/proxy.conf /etc/nginx/nginx.conf
+
+COPY conf/ /etc/nginx/modsec
+
+# COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
+# COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf
+# COPY    conf/aegis-whitelist.conf /etc/nginx/modsec/aegis-whitelist.conf
+# COPY    conf/mnemosine-whitelist.conf /etc/nginx/modsec/mnemosine-whitelist.conf
+# COPY    conf/alfred-whitelist.conf /etc/nginx/modsec/alfred-whitelist.conf
+# COPY    conf/petrus-whitelist.conf /etc/nginx/modsec/petrus-whitelist.conf
+# COPY    conf/iris-whitelist.conf /etc/nginx/modsec/iris-whitelist.conf
+# COPY    conf/davinci_whitelist.conf /etc/nginx/modsec/davinci_whitelist.conf
+# COPY    conf/mensura_whitelist.conf /etc/nginx/modsec/mensura_whitelist.conf
+
+COPY    conf/${PROXY_CONF} /etc/nginx/nginx.conf
 COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
@@ -71,5 +84,10 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
         openssl req -x509 -nodes                                       \
             -out /etc/nginx/ssl/ft_transcendence.crt                   \
             -keyout /etc/nginx/ssl/ft_transcendence.key                \
-            -subj "/C=FR/L=Lyon/CN=batch42.me" || \
-            { echo "SSL certification failed"; exit 1; }
+            -subj "/C=FR/L=Lyon/CN=batch42.me" ||                      \
+            { echo "SSL certification failed"; exit 1; } &&            \
+        openssl req -x509 -nodes                                       \
+            -out /etc/nginx/ssl/elastic.crt                            \
+            -keyout /etc/nginx/ssl/elastic.key                         \
+            -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
+            { echo "SSL elastic certification failed"; exit 1; }
