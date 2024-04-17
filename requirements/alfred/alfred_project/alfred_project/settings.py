@@ -34,12 +34,14 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'alfred']
 # Application definition
 
 INSTALLED_APPS = [
-    'user_management',
+    'user_management'
 ]
 
 PROJECT_OWN_MIDDLEWARE = []
 
 MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
+
+ROOT_URLCONF = 'alfred_project.urls'
 
 TEMPLATES = [
     {

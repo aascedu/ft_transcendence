@@ -8,6 +8,7 @@ import bcrypt
 
 from signin.models import Client
 from shared.jwt_management import JWT
+from shared.utils import save_response
 
 
 def view_db(request: HttpRequest) -> JsonResponse:
@@ -83,7 +84,7 @@ class signupView(View):
             bcrypt.gensalt()).decode('utf-8')
 
         response = save_response(client)
-        if "Err" in response.content:
+        if response.status_code != 200:
             return response
 
         try:
