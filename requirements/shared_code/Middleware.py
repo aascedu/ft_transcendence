@@ -1,8 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
 from .jwt_management import JWT
 from .common_classes import User
 import json
+import information
 
 
 class JWTIdentificationMiddleware:
@@ -35,6 +37,16 @@ class JWTIdentificationMiddleware:
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
+
+        if "MAIN_MODEL" in information.__dict__:
+            print("Service has a model")
+            try:
+                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+            except ObjectDoesNotExist as e:
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
+                response.delete_cookie('auth')
+                return response
+
         print("JWT: User:", str(User))
         return None
 

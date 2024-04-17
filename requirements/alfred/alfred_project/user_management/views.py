@@ -1,11 +1,9 @@
-from django.db import IntegrityError
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
-from django.http import HttpRequest, HttpResponse, JsonResponse
-from shared.error_management import report_error
+from django.http import HttpResponse, JsonResponse
 from shared.utils import save_response, delete_response
 from django.utils import timezone
 import os
@@ -13,12 +11,7 @@ import os
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
-        try:
-            client = Client.objects.get(unique_id=request.user.id)
-        except ObjectDoesNotExist as e:
-            response = JsonResponse({"Err": e.__str__()}, status=404)
-            response.delete_cookie('aut')
-            return response
+        client = request.model
         if id == 0 or id == request.user.id:
             return JsonResponse(client.personal_dict())
         try:
@@ -30,12 +23,7 @@ class userInfoView(View):
         return JsonResponse(target.public_dict())
 
     def patch(self, request, id: int) -> JsonResponse:
-        try:
-            client = Client.objects.get(unique_id=request.user.id)
-        except ObjectDoesNotExist as e:
-            response = JsonResponse({"Err": e.__str__()}, status=404)
-            response.delete_cookie('aut')
-            return response
+        client = request.model
         data = request.data
         client.avatar = data.get("Avatar", client.avatar)
         client.lang = data.get("Lang", client.lang)
@@ -58,17 +46,13 @@ class userInfoView(View):
 
 
     def delete(self, request, id: int) -> JsonResponse:
-        try:
-            client = Client.objects.get(unique_id=id)
-        except ObjectDoesNotExist:
-            return JsonResponse({"Err": "Ressource not found"}, status=404)
-        return delete_response(client)
+        return delete_response(request.model)
 
 
 class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
         if id == 0:
-            emiter = Client.objects.get(unique_id=request.user.id)
+            emiter = request.model
             return JsonResponse({
                 "id": request.user.id,
                 "friends": [
@@ -110,7 +94,7 @@ class friendView(View):
             })
 
     def post(self, request, id: int) -> JsonResponse:
-        sender = Client.objects.get(unique_id=request.user.id)
+        sender = request.model
         if id == request.user.id:
             return JsonResponse({"Err": "invalid id"})
         try:
@@ -120,7 +104,7 @@ class friendView(View):
         return FriendshipRequest.processRequest(receiver, sender)
 
     def delete(self, request, id: int) -> JsonResponse:
-        emiter = Client.objects.get(unique_id=request.user.id)
+        emiter = request.model
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
@@ -133,7 +117,7 @@ class avatarView(View):
         try:
             client = Client.objects.get(unique_id=id)
             url = client.avatar.url
-        except ObjectDoesNotExist as e:
+        except ObjectDoesNotExist:
             return JsonResponse({"Err": "ressource not found"}, status=404)
         return JsonResponse({id: url})
 
@@ -142,10 +126,7 @@ class avatarView(View):
             avatar = request.FILES['avatar']
         except KeyError as e:
             return JsonResponse({"Err": f"missing file : {e.__str__()}"}, status=400)
-        try:
-            client = Client.objects.get(unique_id=request.user.id)
-        except ObjectDoesNotExist as e:
-            return JsonResponse({"Err": f"bad request user id {e.__str__()}"}, status=404)
+        client = request.model
         avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
         client.avatar = avatar
         return save_response(client)
