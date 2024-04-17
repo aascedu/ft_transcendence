@@ -1,6 +1,7 @@
 class Tournament:
-    def __init__(self, name, nbPlayers):
+    def __init__(self, name, nbPlayers, id):
         self.nbPlayers = nbPlayers
+        self.id = id
         self.name = name
         self.state = 0 # 0 = inscritpion, 1 = en cours, 2 = termine
         self.onGoingGames = 0

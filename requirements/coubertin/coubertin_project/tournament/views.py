@@ -14,7 +14,12 @@ class createTournament(View):
             return JsonResponse({'Err': "tournamentName or nbPlayers not provided"})
         tournamentName = data['tournamentName']
         nbPlayers = data['nbPlayers']
-        tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
+
+        id = 0
+        while id in tournaments:
+            id += 1
+
+        tournaments[id] = Tournament(tournamentName, nbPlayers, id)
         return JsonResponse({}) # Redirect on the tournament url ?
 
 class joinTournament(View):
@@ -24,10 +29,10 @@ class joinTournament(View):
         try:
             playerId = request.user.id
             data = request.data
-            tournamentName = data['tournamentName']
-            if (tournamentName not in tournaments):
+            tournamentId = data['tournamentId']
+            if (tournamentId not in tournaments):
                 return JsonResponse({'Err': "tournament does not exists"})
-            tournaments[tournamentName].addPlayer(playerId)
+            tournaments[tournamentId].addPlayer(playerId)
             
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
@@ -45,12 +50,12 @@ class gameResult(View): # We need to remove the loser from the player list
         global tournaments
 
         data = request.data
-        if 'tournamentName' not in data or 'game' not in data:
-            return JsonResponse({'Err': "tournamentName or game not provided"})
+        if 'tournamentId' not in data or 'game' not in data:
+            return JsonResponse({'Err': "tournamentId or game not provided"})
         printData(data)
-        tournament = tournaments[data['tournamentName']]
+        tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game']) # Game is a dictionnary
         return JsonResponse({})
 
-def tournamentHome(request, tournamentName):
-    return render(request, 'tournament/home.html', {'tournamentName': tournamentName})
+def tournamentHome(request, tournamentId):
+    return render(request, 'tournament/home.html', {'tournamentId': tournamentId})

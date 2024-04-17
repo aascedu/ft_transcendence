@@ -91,21 +91,14 @@ class Consumer(AsyncWebsocketConsumer):
             "isPlayer": self.isPlayer,
         }))
 
-    async def updateScore(self, event):
-        await self.send (text_data=json.dumps({
-            "type": "updateScore",
-            "myScore": self.myMatch.score[self.id],
-            "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        }))
-
     async def gameEnd(self, event):
         # Si game de tournoi, envoyer au tournoi, sinon envoyer a la db.
         print("This is gameEnd function")
         if (self.roomName.count('-') == 2 and self.id == 0): # N'envoyer qu'avec l'hote
             requests.post(
                 f'http://coubertin:8002/tournament/gameResult/',
-                json={'tournamentName': 'test',
-                      'game': self.myMatch.toDict()}) # A tester (print dans la view de coubertin)
+                json={'tournamentId': 'test',
+                      'game': self.myMatch.toDict()}) # Allo faut recuperer l'id ici Henri !!
         elif (self.id == 0):
             requests.post(
                 f'http://mnemosine:8008/memory/pong/match/0/',
@@ -124,6 +117,13 @@ class Consumer(AsyncWebsocketConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
+
+    async def updateScore(self, event):
+        await self.send (text_data=json.dumps({
+            "type": "updateScore",
+            "myScore": self.myMatch.score[self.id],
+            "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+        }))
 
     async def gameLogic(self, frames, id):
         global matches
