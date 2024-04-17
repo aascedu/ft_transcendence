@@ -13,9 +13,7 @@ if [ $? -eq 2 ]; then
     vault operator unseal $KEY
     vault secrets enable -path=secret kv-v2
 
-    vault kv put -mount=secret env/kpw KPW=$KIBANA_PASSWORD
-    vault kv put -mount=secret env/epw EPW=$ELASTIC_PASSWORD
-
+    # GENERATE PUB/PRIV KEY
     openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
     priv=$(cat /private_key.pem)
     openssl rsa -pubout -in private_key.pem -out public_key.pem
@@ -81,6 +79,12 @@ if [ $? -eq 2 ]; then
     vault policy write davinci /davinci-policy.hcl
     vault token create -policy=davinci | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/davinci/davinci-token.txt
     vault kv put -mount=secret env/gpw GPW=$GRAFANA_PASSWD
+
+    # LOGSTASH
+    #mkdir -p tokens/aether
+    #vault policy write aether /aether-policy.hcl
+    #vault token create -policy=aether | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/aether/aether-token.txt
+    vault kv put -mount=secret env/epw EPW=$ELASTIC_PASSWORD1
 
 else
     KEY=`cat /tokens/tutum.txt | head -n 1`

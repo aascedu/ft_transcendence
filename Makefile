@@ -42,7 +42,12 @@ SYSTEM		=	docker system
 
 #---- base ----#
 debug: | volumes modsec
-	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
+	. ./tools/init.sh
+#	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
+
+.PHONY: init
+init:
+	. ./tools/init.sh
 
 all: | copyfile volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build

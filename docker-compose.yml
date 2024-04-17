@@ -566,14 +566,10 @@ services:
     build:
       context: ./requirements/tutum
       dockerfile: Dockerfile
-      args:
-        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
-        KIBANA_PASSWORD: $KIBANA_PASSWORD
     env_file: .env
     volumes:
       - ./requirements/tutum/vault:/opt/vault
       - ./tokens:/tokens
-      #- shared_code:/tokens/shared
     ports:
       - "8200:8200"
     networks:
@@ -601,6 +597,9 @@ services:
 
 # # ELK setup container
   setup:
+    depends_on:
+      tutum:
+        condition: service_healthy
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     environment:
