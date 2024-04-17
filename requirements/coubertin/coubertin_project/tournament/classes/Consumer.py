@@ -9,14 +9,13 @@ class Consumer(AsyncWebsocketConsumer):
 
         # Join room group
         self.tournamentName = self.scope["url_route"]["kwargs"]["tournamentName"]
-        self.myTournament = tournaments[self.tournamentName]
 
         self.admin = False
-        if (len(self.myTournament.players) == 0):
+        if (len(tournaments[self.tournamentName].players) == 0):
             self.admin = True # Do we let the admin chose if he plays or not ?
 
-        self.id = len(self.myTournament.players) # We want it to be his place in the players array
-        self.myName = len(self.myTournament.players) # I will need the id of the player.
+        self.id = len(tournaments[self.tournamentName].players) # We want it to be his place in the players array
+        self.myName = len(tournaments[self.tournamentName].players) # I will need the id of the player.
         print ("Tournament room name is " + self.tournamentName)
 
         await self.channel_layer.group_add(self.tournamentName, self.channel_name)
@@ -29,20 +28,24 @@ class Consumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
+        global tournaments
 
+        text_data_json = json.loads(text_data)
         type = text_data_json['Type']
 
-        # Send message to room group
-        await self.channel_layer.group_send(
-            self.tournamentName, {
-                'Type': type
-            }
-        )
+        if type == "removePlayer" and self.admin == True:
+            tournaments[self.tournamentName].removePlayer(text_data_json['Target'])
+
+        else:
+            await self.channel_layer.group_send(
+                self.tournamentName, {
+                    'Type': type
+                }
+            )
 
     async def Ready(self, event): # When someone on the tournament page
 
-        if (self.myTournament.state > 0 and self.myTournament.onGoingGames == 0):
+        if (tournaments[self.tournamentName].state > 0 and tournaments[self.tournamentName].onGoingGames == 0):
             await self.channel_layer.group_send(
                 self.tournamentName, {
                     'Type': "StartRound",
@@ -54,7 +57,7 @@ class Consumer(AsyncWebsocketConsumer):
         if (self.admin == False):
             return
 
-        self.myTournament.state += 1
+        tournaments[self.tournamentName].state += 1
         await self.channel_layer.group_send(
                 self.tournamentName, {
                     'Type': "StartRound",
@@ -64,30 +67,35 @@ class Consumer(AsyncWebsocketConsumer):
         global tournaments
 
         if (self.admin):
-            self.myTournament.onGoingGames = len(self.myTournament.players) / 2 # Check this in case of disconnected participants
-            self.myTournament.currentRound += 1
+            tournaments[self.tournamentName].onGoingGames = len(tournaments[self.tournamentName].players) / 2 # Check this in case of disconnected participants
+            tournaments[self.tournamentName].currentRound += 1
 
             # Check tournament end
-            if (self.myTournament.players == 1):
-                self.myTournament.state += 1
+            if (tournaments[self.tournamentName].players == 1):
+                tournaments[self.tournamentName].state += 1
                 requests.post(
                         f'http://mnemosine:8008/memory/pong/tournaments/0',
-                        json=self.myTournament.toDict())
+                        json=tournaments[self.tournamentName].toDict())
                 return
 
 
         await self.send(json.dumps({
                 'Action': "startMatch",
-                'TournamentName': self.myTournament.name,
-                'Player1': self.myTournament.players[self.id - self.id % 2],
-                'Player2': self.myTournament.players[self.id + (1 - self.id % 2)],
+                'TournamentName': tournaments[self.tournamentName].name,
+                'Player1': tournaments[self.tournamentName].players[self.id - self.id % 2],
+                'Player2': tournaments[self.tournamentName].players[self.id + (1 - self.id % 2)],
                 }))
 
     async def TournamentState(self, event):
         await self.send(json.dumps({
             'Action': "tournamentState",
-            'Tournament': self.myTournament.toDict(),
+            'Tournament': tournaments[self.tournamentName].toDict(),
             }))
+        
+        
+# To do
+# Remove someone from tournament if admin
+# Rename tournament, WARNING: need to change everywhere !!!
 
 # Parcours utilisateur
 # Creation du tournoi -> view correspondante, puis redirection automatique sur la page d'accueil

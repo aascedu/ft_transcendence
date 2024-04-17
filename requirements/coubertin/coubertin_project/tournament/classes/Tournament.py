@@ -24,5 +24,11 @@ class Tournament:
             'Players': self.players,
             'Games': self.gameHistory,
         }
+    
+    def removePlayer(self, playerId):
+        if self.state == 0:
+            self.players.remove(playerId)
+        else: # Debug
+            print("you tried to remove a player during a tournament")
 
 tournaments = {}
