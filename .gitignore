@@ -21,7 +21,6 @@ composer.phar
 
 # parasites docs
 tutorial
-**/migrations/**
 .env
 youpi
 sources.txt
