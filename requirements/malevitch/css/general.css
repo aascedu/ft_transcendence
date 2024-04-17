@@ -338,7 +338,8 @@ body {
 	font-size: 14pt;
 }
 
-.alert-buttons-container > *:hover {
+.alert-buttons-container > *:hover,
+.alert-buttons-container > *:focus {
 	cursor: pointer;
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
