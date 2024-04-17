@@ -1,17 +1,14 @@
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
 from .jwt_management import JWT
-from .var import public_key
 from .common_classes import User
-import os
 import json
 
 
 class JWTIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
+        key = JWT.publicKey
         if not key:
             raise Error("publicKey is not defined")
         self.publicKey = key
@@ -38,7 +35,7 @@ class JWTIdentificationMiddleware:
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
-        print("JWT: User:", User)
+        print("JWT: User:", str(User))
         return None
 
 

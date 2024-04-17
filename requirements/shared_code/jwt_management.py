@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from jwt import encode, decode
+from .var import algo
+try:
+    from tokens.token import vault_token
+except ModuleNotFoundError:
+    print("Warn vault_token not found")
 
 import hvac
-
-vault_token = ""
-
-from tokens.token import vault_token
-from .var import algo, public_key, private_key
 
 class AuthenticationError(Exception):
     pass
@@ -34,7 +34,7 @@ class JWT:
     except AuthenticationError:
         print("Failed to authenticate with Vault. Check your token.")
     except VaultInteractionError:
-        print("Warning private_key : Error interacting with Vault. Please check Vault status.")
+        print("Warning private_key : Ignore this warning if this service don't need the private key.")
     except Exception as e:
         print("An unexpected error occurred:", str(e))
     try:
@@ -62,15 +62,11 @@ class JWT:
 
     @staticmethod
     def jwtToPayload(token: str, key: str):
-        """
-        token is the jwt
-        TODO : mettre les key dans l'env
-        key is the str :
-            -- access -> JWT.publicKey
-            -- refresh -> JWT.refreshPublicKey
-        Return True and the payload | False and the error
-        """
         return decode(token, key, algorithms=[JWT.algo])
+
+    @staticmethod
+    def jwtToPayloadNoExp(token: str, key: str):
+        return decode(token, key, algorithms=[JWT.algo], options={'verify_exp': False})
 
     @staticmethod
     def peremptionDict() -> dict:
