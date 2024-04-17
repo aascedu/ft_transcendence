@@ -23,5 +23,5 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ludo_project.settings')
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
     "websocket": AllowedHostsOriginValidator(
-        AuthMiddlewareStack(URLRouter(websocket_urlpatterns))),
+        URLRouter(websocket_urlpatterns)),
 })

@@ -35,8 +35,6 @@ INSTALLED_APPS = [
     'daphne',
     'pong',
     'channels',
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
 ]
 
 PROJECT_OWN_MIDDLEWARE = []
