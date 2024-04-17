@@ -181,6 +181,7 @@ const roomName = JSON.parse(document.getElementById('roomName').textContent);
 const id = JSON.parse(document.getElementById('id').textContent);
 console.log(roomName);
 const socket = new WebSocket('wss://localhost:8000/ludo/pong/ws/' + roomName + '/'); // Probably add room name
+console.log('wss://localhost:8000/ludo/pong/ws/' + roomName + '/')
 
 socket.onopen = function(event) {
     console.log("Socket opened in the front");
