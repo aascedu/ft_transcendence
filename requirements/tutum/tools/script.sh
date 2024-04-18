@@ -81,9 +81,9 @@ if [ $? -eq 2 ]; then
     vault kv put -mount=secret env/gpw GPW=$GRAFANA_PASSWD
 
     # LOGSTASH
-    #mkdir -p tokens/aether
-    #vault policy write aether /aether-policy.hcl
-    #vault token create -policy=aether | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/aether/aether-token.txt
+    mkdir -p tokens/aether
+    vault policy write aether /aether-policy.hcl
+    vault token create -policy=aether | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/aether/aether-token.txt
     vault kv put -mount=secret env/epw EPW=$ELASTIC_PASSWORD1
 
 else
