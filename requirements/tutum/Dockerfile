@@ -2,7 +2,7 @@ FROM        debian:bookworm
 
 ENV         VAULT_ADDR=http://0.0.0.0:8200/
 ARG         ELASTIC_PASSWORD1
-ARG         KIBANA_PASSWORD
+ARG         KIBANA_PASSWORD1
 ARG         GRAFANA_PASSWD
 ARG         ALFRED_DB
 ARG         ALFRED_USER
@@ -15,7 +15,7 @@ ARG         PETRUS_USER
 ARG         PETRUS_PASSWORD
 
 RUN         export ELASTIC_PASSWORD1=ELASTIC_PASSWORD1 && \
-            export KIBANA_PASSWORD=KIBANA_PASSWORD && \
+            export KIBANA_PASSWORD1=KIBANA_PASSWORD1 && \
             export GRAFANA_PASSWD=GRAFANA_PASSWD && \
             export ALFRED_DB=ALFRED_DB && \
             export ALFRED_USER=ALFRED_USER && \

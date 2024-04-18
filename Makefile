@@ -41,12 +41,7 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | volumes modsec
-	. ./tools/init.sh
-#	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
-
-.PHONY: init
-init:
+debug: | volumes modsec tutum
 	. ./tools/init.sh
 
 all: | copyfile volumes modsec
@@ -152,6 +147,10 @@ petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
+.PHONY: tutum
+tutum:
+	$(COMPOSE) up -d tutum
+
 #---- clean ----#
 
 clean: down
@@ -161,7 +160,6 @@ clean: down
 	- rm -rf ./tokens || true
 	- rm -rf ./requirements/tutum/vault || true
 #	- rm -rf ./requirements/aegis/ModSecurity || true
-#	- rm ./requirements/shared_code/shared_token.py || true
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
