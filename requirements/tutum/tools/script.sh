@@ -22,6 +22,14 @@ if [ $? -eq 2 ]; then
     vault kv put -mount=secret shared/priv private_key="$priv"
     vault kv put -mount=secret shared/pub public_key="$pub"
 
+    openssl genpkey -algorithm RSA -out private_key.pem -pkeyopt rsa_keygen_bits:2048
+    refresh_priv=$(cat /private_key.pem)
+    openssl rsa -pubout -in private_key.pem -out public_key.pem
+    refresh_pub=$(cat /public_key.pem)
+
+    vault kv put -mount=secret shared/refresh_priv private_key="$refresh_priv"
+    vault kv put -mount=secret shared/refresh_pub public_key="$refresh_pub"
+
     # ALFRED DB
     mkdir -p tokens/alfred-db
     vault policy write alfred-db /alfred-db-policy.hcl
