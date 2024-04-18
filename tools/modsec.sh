@@ -7,7 +7,7 @@ COLOR_RESET='\e[0m'
 
 echo -e "\n\t${COLOR_GREEN}Building ModSecurity...${COLOR_RESET}\n"; \
 old_image_id=$(docker images -q modsec)
-#docker build -t modsec -f ./modsec/Dockerfile .
+docker build -t modsec -f ./modsec/Dockerfile .
 new_image_id=$(docker images -q modsec); \
 if [ "$old_image_id" != "$new_image_id" ]; then \
     echo -e "\n\t${COLOR_GREEN}Cleaning ModSecurity folder in local...${COLOR_RESET}\n"; \
