@@ -4,6 +4,7 @@ let	g_userNick;
 let	g_prevFontSize = 0;
 let	g_jwt;
 let	g_refreshToken;
+let	g_translations = null;
 
 // History routing.
 
@@ -49,28 +50,36 @@ function hideEveryPage() {
 // Translation functions.
 
 function loadTranslations() {
+	if (g_translations) {
+	   return Promise.resolve(g_translations);
+	}
+   
 	return fetch('./assets/lang/translations.json')
-	  .then(response => response.json())
-	  .catch(error => console.error(error));
+	   .then(response => response.json())
+	   .then(data => {
+		 g_translations = data;
+		 return g_translations;
+	   })
+	   .catch(error => console.error(error));
 }
-
+   
 function switchLanguageAttr(locale, newAttr) {
 	loadTranslations().then(translations => {
-	  document.querySelectorAll('[data-language]').forEach(element => {
-		const key = element.getAttribute('data-language');
-		if (element.hasAttribute(newAttr)) {
+		document.querySelectorAll('[data-language]').forEach(element => {
+			const key = element.getAttribute('data-language');
+			if (element.hasAttribute(newAttr)) {
 			element.setAttribute(newAttr, translations[locale][key]);
-		}
-	  });
+			}
+		});
 	});
 }
 
 function switchLanguageContent(locale) {
 	loadTranslations().then(translations => {
-	  document.querySelectorAll('[data-language]').forEach(element => {
-		const key = element.getAttribute('data-language');
-		if (element.textContent.trim() !== '') {
-			var	info;
+		document.querySelectorAll('[data-language]').forEach(element => {
+			const key = element.getAttribute('data-language');
+			if (element.textContent.trim() !== '') {
+			var info;
 			if (element.querySelector('b') !== null) {
 				info = element.querySelector('b').innerHTML;
 				info = info.replace(/\&nbsp;/g, '');
@@ -79,8 +88,8 @@ function switchLanguageContent(locale) {
 			if (info && info.trim() !== '') {
 				addInfoToElement(info, element);
 			}
-		}
-	  });
+			}
+		});
 	});
 }
 
