@@ -35,6 +35,11 @@ class Consumer(AsyncWebsocketConsumer):
 
         if type == "removePlayer" and self.admin == True:
             tournaments[self.tournamentId].removePlayer(text_data_json['Target'])
+            await self.channel_layer.group_send(
+                self.tournamentId, {
+                    'Type': "tournamentState",
+                }
+            )
 
         else:
             await self.channel_layer.group_send(
