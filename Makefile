@@ -7,17 +7,7 @@ ENV_FILE		=	.env
 include .env
 
 WHO				=	$(shell whoami)
-ifeq ($(WHO), twang)
-DOCKER_FILE		=	docker-compose-twang.yml
-else ifeq ($(WHO), bpoumeau)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else ifeq ($(WHO), ccrottie)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else ifeq ($(WHO), hgeffroy)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else
 DOCKER_FILE		=	docker-compose.yml
-endif
 
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
@@ -159,7 +149,7 @@ clean: down
 	- rm -rf $(VOLUMES_PATH)/* || true
 	- rm -rf ./tokens || true
 	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
+	- rm -rf ./requirements/aegis/ModSecurity || true
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
@@ -171,7 +161,7 @@ prune:
 	- $(STOP) $$(docker ps -qa)
 	- $(SYSTEM) prune -af
 	- $(VOLUME) prune -af
-#	- rm -rf ./requirements/aegis/ModSecurity/
+	- rm -rf ./requirements/aegis/ModSecurity/
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
@@ -190,7 +180,7 @@ endif
 #---- settings --------------------------------------------------------#
 
 .SILENT:
-.DEFAULT: debug # pour la prod: remettre all
+.DEFAULT: all # pour la prod: remettre all
 .PHONY: all up build down volumes copyfile debug clean fclean prune re \
 aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
 ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset
