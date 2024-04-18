@@ -4,7 +4,7 @@ let	g_userNick;
 let	g_prevFontSize = 0;
 let	g_jwt;
 let	g_refreshToken;
-let	g_translations;
+let	g_translations = null;
 
 // History routing.
 
