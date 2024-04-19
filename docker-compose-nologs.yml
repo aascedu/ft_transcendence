@@ -101,7 +101,7 @@ services:
       ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/alfred:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -133,6 +133,7 @@ services:
       ALFRED_PASSWORD: alfred_pass
       ALFRED_DB: user_management
     volumes:
+      - ./tokens/alfred-db:/tokens
       - alfred_data:/var/lib/postgresql/data
     networks:
       - alfred_network
@@ -146,7 +147,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -166,7 +167,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -186,7 +187,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -206,7 +207,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/lovelace/lovelace_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8005:8005"
@@ -227,7 +228,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
-      - ./tokens/shared:/app/tokens
+      - ./tokens/shared-django:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -261,7 +262,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/shared:/app/tokens
+      - ./tokens/mnemosine:/app/tokens
       - shared_code:/app/shared
     environment:
       MNEMOSINE_USER: mnemosine
@@ -297,6 +298,7 @@ services:
       MNEMOSINE_PASSWORD: 'mnemosine_pass'
       MNEMOSINE_DB: memory_management
     volumes:
+      - ./tokens/mnemosine-db:/tokens
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
@@ -346,6 +348,7 @@ services:
       PETRUS_PASSWORD: 'petrus_pass'
       PETRUS_DB: auth_management
     volumes:
+      - ./tokens/petrus-db:/tokens
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
@@ -370,6 +373,9 @@ services:
     networks:
       - atlas
       - sentinel
+      - alfred_network
+      - mnemosine_network
+      - petrus_network
     restart: on-failure
     healthcheck:
       test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
