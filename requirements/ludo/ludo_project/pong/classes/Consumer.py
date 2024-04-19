@@ -159,8 +159,6 @@ class Consumer(AsyncWebsocketConsumer):
     async def myState(self, event):
         global matches
 
-        print('yolo')
-
         # Received from me
         if (event["id"] == self.id):
             await self.gameLogic(event["frames"], self.id)
