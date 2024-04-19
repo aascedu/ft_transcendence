@@ -11,14 +11,16 @@ document.querySelector('.tournament-info-icon').addEventListener('click', functi
 // Load user profile page when clicking on a player
 
 document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', function () {
-		hideEveryPage();
-
-		g_state.pageToDisplay = '.user-profile';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
-	});
+	item.addEventListener('click', loadUserProfile);
 });
+
+function loadUserProfile() {
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.user-profile';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+}
 
 // Ask for confirmation when joining tournament
 
@@ -239,3 +241,144 @@ document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEv
 		document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	}
 });
+
+// Open list of friends to invite
+
+document.querySelector('.tournament-info-invite-icon').addEventListener('click', function () {
+	document.querySelector('.tournament-info-invite-box').classList.toggle('visually-hidden');
+});
+
+// Close friends list on click outside
+
+function isFriendsList(target) {
+	var	temp = target;
+	if (target.classList && target.classList.contains('tournament-info-invite-box')) {
+		return true;
+	}
+	while(target.parentNode && target.parentNode.nodeName.toLowerCase() != 'body') {
+		var	parentClassList = target.parentNode.classList;
+		if (parentClassList && parentClassList.contains('tournament-info-invite-box')) {
+			return true;
+		}
+		target = target.parentNode;
+	}
+	target = temp;
+	if (target.classList && target.classList.contains('tournament-info-invite-icon')) {
+		return true;
+	}
+	while(target.parentNode && target.parentNode.nodeName.toLowerCase() != 'body') {
+		var	parentClassList = target.parentNode.classList;
+		if (parentClassList && parentClassList.contains('tournament-info-invite-icon')) {
+			return true;
+		}
+		target = target.parentNode;
+	}
+	target = temp;
+	if (target.classList && target.classList.contains('tournament-info-invite-alert')) {
+		return true;
+	}
+	while(target.parentNode && target.parentNode.nodeName.toLowerCase() != 'body') {
+		var	parentClassList = target.parentNode.classList;
+		if (parentClassList && parentClassList.contains('tournament-info-invite-alert')) {
+			return true;
+		}
+		target = target.parentNode;
+	}
+	return false;
+}
+
+window.addEventListener('click', function ({target}){
+	if (!isFriendsList(target)) {
+		document.querySelector('.tournament-info-invite-box').classList.add('visually-hidden');
+	}
+});
+
+// Invite a friend in the list
+
+document.querySelectorAll('.tournament-info-invite .content-card').forEach(function(item) {
+	item.addEventListener('click', function () {
+		var invitedNick = item.querySelector('.user-card-name').textContent;
+		var	invitedPic = item.querySelector('.user-card-picture img').getAttribute('src');
+
+		// Show alert
+		document.querySelector('.tournament-info-invite-alert').classList.remove('visually-hidden');
+		document.querySelector('.tournament-info-invite-alert .alert-confirm-button').focus();
+
+		// Confirm the invite
+		document.querySelector('.tournament-info-invite-alert .alert-confirm-button').addEventListener('click', function () {
+			if (invitedNick) {
+				addInvitedPlayerToTournament(invitedNick, invitedPic);
+				invitedNick = null;
+
+				removeItemFromFriendsList(item);
+			}
+		});
+		document.querySelector('.tournament-info-invite-alert .alert-confirm-button').addEventListener('keypress', function (event) {
+			if (event.key === 'Enter' && invitedNick) {
+				addInvitedPlayerToTournament(invitedNick, invitedPic);
+				invitedNick = null;
+
+				removeItemFromFriendsList(item);
+			}
+		});
+
+		// Cancel the invite
+		document.querySelector('.tournament-info-invite-alert .alert-cancel-button').addEventListener('click', function () {
+			// Hide alert
+			document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
+
+			invitedNick = null;
+		});
+		document.querySelector('.tournament-info-invite-alert .alert-cancel-button').addEventListener('keypress', function (event) {
+			if (event.key === 'Enter') {
+				// Hide alert
+				document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
+	
+				invitedNick = null;
+			}
+		});
+
+		// Click outside the alert to cancel
+		document.querySelector('.tournament-info-invite-alert').addEventListener('click', function (event) {
+			if (this !== event.target) {
+				return ;
+			}
+			invitedNick = null;
+		});
+	});
+});
+
+function addInvitedPlayerToTournament(nick, pic) {
+	// Hide alert
+	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
+
+	var playersList = document.querySelector('.tournament-info-players');
+	
+	playersList.insertAdjacentHTML('beforeend', `\
+    <div class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
+        <div class="d-flex flex-nowrap align-items-center">
+            <div class="user-card-name unselectable">`+ nick + `</div>
+            <div class="user-card-pending" data-language="pending">(pending...)</div>
+        </div>
+        <div class="user-card-picture">
+            <img src="` + pic + `" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+        </div>
+        <div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
+            <img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+        </div>
+    </div>`);
+
+	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		item.addEventListener('click', loadUserProfile);
+	});
+}
+
+function removeItemFromFriendsList(item) {
+	if (item.parentNode.children.length == 2) {
+		document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
+		document.querySelector('.tournament-info-invite-box').style.minHeight = "40vh";
+		document.querySelector('.tournament-info-invite').style.minHeight = "40vh";
+		document.querySelector('.tournament-info-invite-box').classList.add('visually-hidden');
+	}
+	item.parentNode.removeChild(item);
+}

@@ -1,7 +1,7 @@
-path "secret/data/petrus/*" {
+path "secret/data/env/epw" {
   capabilities = [ "read" ]
 }
 
-path "secret/data/shared/*" {
+path "secret/data/env/kpw" {
   capabilities = [ "read" ]
 }
