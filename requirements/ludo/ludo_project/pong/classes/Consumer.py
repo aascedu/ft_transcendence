@@ -92,24 +92,17 @@ class Consumer(AsyncWebsocketConsumer):
             "isPlayer": self.isPlayer,
         }))
 
-    async def updateScore(self, event):
-        await self.send (text_data=json.dumps({
-            "type": "updateScore",
-            "myScore": self.myMatch.score[self.id],
-            "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        }))
-
     async def gameEnd(self, event):
         # Si game de tournoi, envoyer au tournoi, sinon envoyer a la db.
         print("This is gameEnd function")
         if (self.roomName.count('-') == 2 and self.id == 0): # N'envoyer qu'avec l'hote
             requests.post(
-                f'http://coubertin:8002/tournament/gameResult/',
-                json={'tournamentName': 'test',
-                      'game': self.myMatch.toDict()})
+                'http://coubertin:8002/tournament/gameResult/',
+                json={'tournamentId': 'test',
+                      'game': self.myMatch.toDict()}) # Allo faut recuperer l'id ici Henri !!
         elif (self.id == 0):
             requests.post(
-                f'http://mnemosine:8008/memory/pong/match/0/',
+                'http://mnemosine:8008/memory/pong/match/0/',
                 json={self.myMatch.to_mnemosine()})
         # requests.post() # Poster direct a la db
 
@@ -126,6 +119,13 @@ class Consumer(AsyncWebsocketConsumer):
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
 
+    async def updateScore(self, event):
+        await self.send (text_data=json.dumps({
+            "type": "updateScore",
+            "myScore": self.myMatch.score[self.id],
+            "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+        }))
+
     async def gameLogic(self, frames, id):
         global matches
 
@@ -136,8 +136,8 @@ class Consumer(AsyncWebsocketConsumer):
 
             # Ball and score management
             if (len(self.myMatch.players) > 1):
-                if (self.myMatch.gameStarted == False):
-                    self.myMatch.gameStarted == True
+                if self.myMatch.gameStarted is False:
+                    self.myMatch.gameStarted = True
                     time.sleep(3)
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
                 if (pointWinner != -1):
