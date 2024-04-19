@@ -1,5 +1,5 @@
 import math as m
-# import time
+import time
 
 # La balle est dans le repere de l'hote
 class Ball:
@@ -15,6 +15,7 @@ class Ball:
         self.speed = gameSettings.screenWidth / 2000
         self.angle = m.pi
         self.size = gameSettings.ballSize
+        time.sleep(3)
 
     def isPlayerCollision(self, player): # Identifier les joueurs par id (si pair, ils sont hotes sinon clients)
         if (self.pos[1] > player.pos - (player.height / 2) and
