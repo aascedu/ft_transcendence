@@ -1,4 +1,10 @@
-#!/bin/bash
+#! /bin/bash
+
+TOKEN=$(cat /tokens/petrus-token.txt)
+export PETRUS_DB=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/petrus/petrus_db | jq -r '.data.data.db')
+export PETRUS_USER=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/petrus/petrus_user | jq -r '.data.data.user')
+export PETRUS_PASSWORD=$(curl -s --header "X-Vault-Token: $TOKEN" http://tutum:8200/v1/secret/data/petrus/petrus_password | jq -r '.data.data.password')
+
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL

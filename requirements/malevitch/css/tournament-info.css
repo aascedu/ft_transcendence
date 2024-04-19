@@ -40,7 +40,7 @@
 
 .tournament-info-edit-icon,
 .tournament-info-check-icon {
-	right: 68px;
+	right: 120px;
 }
 
 .tournament-info-edit-icon img {
@@ -50,6 +50,48 @@
 .tournament-info-check-icon img {
 	margin-right: 1px;
 	height: 16px;
+}
+
+.tournament-info-invite-icon {
+	right: 68px;
+}
+
+.tournament-info-invite-icon img {
+	height: 20px;
+	margin-left: 3px;
+}
+
+.tournament-info-invite-box {
+	z-index: 999;
+	top: 64px;
+	right: 0;
+	width: 20vw;
+	max-height: 40vh;
+	border-radius: 16px;
+	background-color: white;
+}
+
+.tournament-info-invite {
+	max-height: 40vh;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-bottom: 16px;
+}
+
+.tournament-info-invite .content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.tournament-info-no-friends img {
+	width: 40%;
+	opacity: 50%;
+}
+
+.tournament-info-no-friends p {
+	font-size: 14pt;
+	font-weight: 400;
+	margin-top: 16px;
 }
 
 .tournament-info-join-icon,
@@ -68,7 +110,7 @@
 }
 
 .tournament-info-container
-.category-title p {
+.category-title > p {
 	font-weight: 700;
 }
 
@@ -122,6 +164,21 @@
 .content-card:hover {
 	cursor: pointer;
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.invite-pending {
+	background-color: rgba(115, 0, 230, 0.1);
+}
+
+.invite-pending img {
+	filter: grayscale(100%);
+}
+
+.user-card-pending {
+	font-size: 14pt;
+	font-weight: 400;
+	color: #7300E6;
+	margin-left: 16px;
 }
 
 .tournament-kick-player {
