@@ -61,6 +61,7 @@ class Consumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.roomName, {
                     "type": self.type,
+                    "id": gameDataJson["id"]
                 }
             )
 
@@ -80,7 +81,7 @@ class Consumer(AsyncWebsocketConsumer):
 
         self.myMatch.players.append(Player(self.id, self.gameSettings)) # A check avec le viewer !!
         self.myMatch.ball = Ball(self.gameSettings)
-        # self.lastRefreshTime = time.time()
+        self.myMatch.playersId[self.id] = event["id"]
 
         await self.send (text_data=json.dumps({
             "type": "gameParameters",
@@ -96,12 +97,12 @@ class Consumer(AsyncWebsocketConsumer):
         print("This is gameEnd function")
         if (self.roomName.count('-') == 2 and self.id == 0): # N'envoyer qu'avec l'hote
             requests.post(
-                f'http://coubertin:8002/tournament/gameResult/',
+                'http://coubertin:8002/tournament/gameResult/',
                 json={'tournamentId': 'test',
                       'game': self.myMatch.toDict()}) # Allo faut recuperer l'id ici Henri !!
         elif (self.id == 0):
             requests.post(
-                f'http://mnemosine:8008/memory/pong/match/0/',
+                'http://mnemosine:8008/memory/pong/match/0/',
                 json={self.myMatch.to_mnemosine()})
         # requests.post() # Poster direct a la db
 
@@ -135,9 +136,9 @@ class Consumer(AsyncWebsocketConsumer):
 
             # Ball and score management
             if (len(self.myMatch.players) > 1):
-                if (self.myMatch.gameStarted == False):
-                    self.myMatch.gameStarted == True
-                    # self.myMatch.startTime = time.time()
+                if self.myMatch.gameStarted is False:
+                    self.myMatch.gameStarted = True
+                    time.sleep(3)
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
                 if (pointWinner != -1):
                     self.myMatch.score[pointWinner] += 1
@@ -203,5 +204,4 @@ class Consumer(AsyncWebsocketConsumer):
                 }))
 
 
-# Quand je recois une requete : je get le time, je verifie le temps qui s'est ecoule depuis la requete precedente.
-# Si c'est plus de 10 ms, good, sinon non.
+# Keep this id (as gameId) and add the id of the player incoming. For the time of the game use gameId, when sending result use the real id.

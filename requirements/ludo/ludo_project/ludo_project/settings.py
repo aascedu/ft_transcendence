@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from pathlib import Path
 
@@ -34,8 +35,6 @@ INSTALLED_APPS = [
     'daphne',
     'pong',
     'channels',
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
 ]
 
 PROJECT_OWN_MIDDLEWARE = []
@@ -65,6 +64,7 @@ WSGI_APPLICATION = 'ludo_project.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+
 
 
 # Password validation
