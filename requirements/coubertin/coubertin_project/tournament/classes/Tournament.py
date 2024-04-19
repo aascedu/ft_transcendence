@@ -26,6 +26,7 @@ class Tournament:
             'Players': self.playersMap,
             'Games': self.gameHistory,
         }
+        return (tournamentDict)
     
     def removePlayer(self, playerId):
         if self.state == 0:
