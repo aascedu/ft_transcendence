@@ -129,9 +129,6 @@ services:
       POSTGRES_DB: alfred_db
       POSTGRES_USER: alfred_user
       POSTGRES_PASSWORD: alfred_password
-      ALFRED_USER: alfred
-      ALFRED_PASSWORD: alfred_pass
-      ALFRED_DB: user_management
     volumes:
       - ./tokens/alfred-db:/tokens
       - alfred_data:/var/lib/postgresql/data
@@ -294,9 +291,6 @@ services:
       POSTGRES_DB: mnemosine_db
       POSTGRES_USER: mnemosine_user
       POSTGRES_PASSWORD: mnemosine_password
-      MNEMOSINE_USER: mnemosine
-      MNEMOSINE_PASSWORD: 'mnemosine_pass'
-      MNEMOSINE_DB: memory_management
     volumes:
       - ./tokens/mnemosine-db:/tokens
       - mnemosine_data:/var/lib/postgresql/data
@@ -344,9 +338,6 @@ services:
       POSTGRES_DB: petrus_db
       POSTGRES_USER: petrus_user
       POSTGRES_PASSWORD: petrus_password
-      PETRUS_USER: petrus
-      PETRUS_PASSWORD: 'petrus_pass'
-      PETRUS_DB: auth_management
     volumes:
       - ./tokens/petrus-db:/tokens
       - petrus_data:/var/lib/postgresql/data
