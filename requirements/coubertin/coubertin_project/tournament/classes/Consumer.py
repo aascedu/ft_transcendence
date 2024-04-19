@@ -39,6 +39,14 @@ class Consumer(AsyncWebsocketConsumer):
                     'Type': "tournamentState",
                 }
             )
+        
+        elif type == "renameTournament" and self.admin == True:
+            tournaments[self.tournamentId].name = text_data_json['NewName']
+            await self.channel_layer.group_send(
+                self.tournamentId, {
+                    'Type': "tournamentState",
+                }
+            )
 
         else:
             await self.channel_layer.group_send(
@@ -47,7 +55,7 @@ class Consumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def Ready(self, event): # When someone on the tournament page
+    async def Ready(self, event): # When someone is ready to play his next round
         if (tournaments[self.tournamentId].state > 0 and tournaments[self.tournamentId].onGoingGames == 0):
             await self.channel_layer.group_send(
                 self.tournamentId, {
@@ -55,7 +63,7 @@ class Consumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def Start(self, event): # Only for admin
+    async def Start(self, event): # Only for admin, to start tournament
         global tournaments
         if (self.admin == False):
             return
@@ -66,7 +74,8 @@ class Consumer(AsyncWebsocketConsumer):
                     'Type': "StartRound",
                 }
             )
-    async def StartRound(self, event): # Sent by every single players
+        
+    async def StartRound(self, event): # To start a round (Will redirect every player etc...)
         global tournaments
 
         if (self.admin):
@@ -90,13 +99,13 @@ class Consumer(AsyncWebsocketConsumer):
                 'Player2': tournaments[self.tournamentId].players[tmpId + (1 - tmpId % 2)],
                 }))
 
-    async def TournamentState(self, event):
+    async def TournamentState(self, event): # Update the state of a tournament for the front
         await self.send(json.dumps({
             'Action': "tournamentState",
             'Tournament': tournaments[self.tournamentId].toDict(),
             }))
         
-        
+    
 # To do
 # Remove someone from tournament if admin
 # Rename tournament, Implement ids for tournaments
@@ -107,6 +116,3 @@ class Consumer(AsyncWebsocketConsumer):
 # L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
 # Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
 # Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
-
-# 
-            
