@@ -29,6 +29,7 @@
         <div class="score" id="score1"></div>
         <div classe="score" id="score2"></div>
         {{ roomName|json_script:"roomName" }}
+        {{ id|json_script:"id" }}
         <script>
 
 
@@ -177,8 +178,10 @@ gameArea.addEventListener("keyup", (e) => { // Booleans with on press and on rel
 /***************************************** Websockets *****************************************/
 
 const roomName = JSON.parse(document.getElementById('roomName').textContent);
+const id = JSON.parse(document.getElementById('id').textContent);
 console.log(roomName);
 const socket = new WebSocket('wss://localhost:8000/ludo/pong/ws/' + roomName + '/'); // Probably add room name
+console.log('wss://localhost:8000/ludo/pong/ws/' + roomName + '/')
 
 socket.onopen = function(event) {
     console.log("Socket opened in the front");
@@ -244,6 +247,7 @@ function sendStartGameData(type) {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
     const gameData = {
       type: type,
+      id: id,
     };
   
     // Send the msg object as a JSON-formatted string.
@@ -315,10 +319,10 @@ function gameLoop() {
     // Send info to back
     // sendData("gameState", me.up, me.down);
     if (i % nbframes == 0) {
+        console.log("Data sent to back");
         sendData("gameState", frames);
         frames = {};
     }
-    console.log("Data sent to back");
     
     // Update front
     htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
@@ -351,10 +355,6 @@ if (me.isPlayer) {
 }
 
 // requestAnimationFrame()
-
-// Need a function which take the positions from the server.
-
-
 
 
 
