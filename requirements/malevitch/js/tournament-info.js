@@ -95,11 +95,6 @@ document.querySelector('.tournament-info-edit-icon').addEventListener('click', f
 	document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-check-icon').classList.remove('visually-hidden');
 
-	// Reveal kick buttons
-	document.querySelectorAll('.tournament-kick-player').forEach(item => {
-		item.classList.remove('visually-hidden');
-	});
-
 	// Hide tournament name
 	document.querySelector('.tournament-info-name').classList.add('visually-hidden');
 
