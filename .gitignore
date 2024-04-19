@@ -16,13 +16,11 @@ requirements/shared_code/shared_token.py
 # development files
 **/__pycache__/**
 **/__init__.py
-**/migrations
 **/*.sqlite3
 composer.phar
 
 # parasites docs
 tutorial
-**/migrations/**
 .env
 youpi
 sources.txt
