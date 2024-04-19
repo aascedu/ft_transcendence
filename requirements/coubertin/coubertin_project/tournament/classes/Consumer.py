@@ -15,7 +15,6 @@ class Consumer(AsyncWebsocketConsumer):
             self.admin = True # Do we let the admin chose if he plays or not ?
 
         self.id = len(tournaments[self.tournamentId].players) # We want it to be his place in the players array
-        self.myName = len(tournaments[self.tournamentId].players) # I will need the id of the player.
         print ("Tournament room name is " + self.tournamentId)
 
         await self.channel_layer.group_add(self.tournamentId, self.channel_name)
@@ -33,7 +32,7 @@ class Consumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         type = text_data_json['Type']
 
-        if type == "removePlayer" and self.admin == True:
+        if type == "removePlayer" and self.admin == True: # Redirect the target ?
             tournaments[self.tournamentId].removePlayer(text_data_json['Target'])
             await self.channel_layer.group_send(
                 self.tournamentId, {
@@ -49,7 +48,6 @@ class Consumer(AsyncWebsocketConsumer):
             )
 
     async def Ready(self, event): # When someone on the tournament page
-
         if (tournaments[self.tournamentId].state > 0 and tournaments[self.tournamentId].onGoingGames == 0):
             await self.channel_layer.group_send(
                 self.tournamentId, {
@@ -83,12 +81,13 @@ class Consumer(AsyncWebsocketConsumer):
                         json=tournaments[self.tournamentId].toDict())
                 return
 
+        tmpId = tournaments[self.tournamentId].players.index(self.id)
 
         await self.send(json.dumps({
                 'Action': "startMatch",
                 'TournamentName': tournaments[self.tournamentId].name,
-                'Player1': tournaments[self.tournamentId].players[self.id - self.id % 2],
-                'Player2': tournaments[self.tournamentId].players[self.id + (1 - self.id % 2)],
+                'Player1': tournaments[self.tournamentId].players[tmpId - tmpId % 2],
+                'Player2': tournaments[self.tournamentId].players[tmpId + (1 - tmpId % 2)],
                 }))
 
     async def TournamentState(self, event):
@@ -108,4 +107,6 @@ class Consumer(AsyncWebsocketConsumer):
 # L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
 # Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
 # Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
+
+# 
             

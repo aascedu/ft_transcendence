@@ -20,7 +20,7 @@ class createTournament(View):
             id += 1
 
         tournaments[id] = Tournament(tournamentName, nbPlayers, id)
-        return JsonResponse({}) # Redirect on the tournament url ?
+        return JsonResponse({}) # Redirect on the tournament url, or join URL ?
 
 class joinTournament(View):
     def post(self, request):

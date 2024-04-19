@@ -23,27 +23,28 @@
 
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/coubertin/matchmaking/ws/'); // Probably add room name
+const tournamentSocket = new WebSocket('wss://localhost:8000/coubertin/matchmaking/ws/'); // Probably add room name
 
-exampleSocket.onopen = function(event) {
+tournamentSocket.onopen = function(event) {
     console.log("Socket opened in the front");
     sendData("Ready");
 };
 
-exampleSocket.onclose = function() {
+tournamentSocket.onclose = function() {
     console.log("Socket closed in the front");
     sendData("Leaving")
 }
 
-exampleSocket.onerror = function(event) {
+tournamentSocket.onerror = function(event) {
     console.log("Socket error");
 }
 
-exampleSocket.onmessage = (event) => {
+tournamentSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
+
     if (data.Action === "startMatch") {
         window.location.href = "http://localhost:8000/ludo/pong/"
-                                + data.TournamentName
+                                + data.TournamentId
                                 + '-'
                                 + data.Player1
                                 + '-'
@@ -56,6 +57,8 @@ exampleSocket.onmessage = (event) => {
     }
 };
 
+// 
+
 function sendData(state) {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
     const data = {
@@ -63,7 +66,7 @@ function sendData(state) {
     };
   
     // Send the msg object as a JSON-formatted string.
-    exampleSocket.send(JSON.stringify(data));
+    tournamentSocket.send(JSON.stringify(data));
 }
 
 
