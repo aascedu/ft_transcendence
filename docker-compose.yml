@@ -187,9 +187,9 @@ services:
       context: ./requirements/alfred_db/
       dockerfile: Dockerfile
     environment:
-      POSTGRES_DB: alfred_db
-      POSTGRES_USER: alfred_user
-      POSTGRES_PASSWORD: alfred_password
+      POSTGRES_DB: $POSTGRES_ALFRED_DB
+      POSTGRES_USER: $POSTGRES_ALFRED_USER
+      POSTGRES_PASSWORD: $POSTGRES_ALFRED_PASSWORD
     volumes:
       - alfred_data:/var/lib/postgresql/data
       - ./tokens/alfred-db:/tokens
@@ -479,9 +479,9 @@ services:
       context: ./requirements/mnemosine_db/
       dockerfile: Dockerfile
     environment:
-      POSTGRES_DB: mnemosine_db
-      POSTGRES_USER: mnemosine_user
-      POSTGRES_PASSWORD: mnemosine_password
+      POSTGRES_DB: $POSTGRES_MNEMOSINE_DB
+      POSTGRES_USER: $POSTGRES_MNEMOSINE_USER
+      POSTGRES_PASSWORD: $POSTGRES_MNEMOSINE_PASSWORD
     volumes:
       - ./tokens/mnemosine-db:/tokens
       - mnemosine_data:/var/lib/postgresql/data
@@ -546,9 +546,9 @@ services:
       context: ./requirements/petrus_db/
       dockerfile: Dockerfile
     environment:
-      POSTGRES_DB: petrus_db
-      POSTGRES_USER: petrus_user
-      POSTGRES_PASSWORD: petrus_password
+      POSTGRES_DB: $POSTGRES_PETRUS_DB
+      POSTGRES_USER: $POSTGRES_PETRUS_USER
+      POSTGRES_PASSWORD: $POSTGRES_PETRUS_PASSWORD
     volumes:
       - ./tokens/petrus-db:/tokens
       - petrus_data:/var/lib/postgresql/data
