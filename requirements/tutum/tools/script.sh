@@ -89,11 +89,20 @@ if [ $? -eq 2 ]; then
     vault kv put -mount=secret env/gpw GPW=$GRAFANA_PASSWD
 
     # LOGSTASH
-    mkdir -p tokens/elk
-    vault policy write elk /elk-policy.hcl
-    vault token create -policy=elk | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/elk/elk-token.txt
+    mkdir -p tokens/env
+    vault policy write env /env-policy.hcl
+    vault token create -policy=env | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/env/env-token.txt
     vault kv put -mount=secret env/epw EPW=$ELASTIC_PASSWORD1
     vault kv put -mount=secret env/kpw KPW=$KIBANA_PASSWORD1
+    vault kv put -mount=secret alfred/db/db db=$T_POSTGRES_ALFRED_DB
+    vault kv put -mount=secret alfred/db/user user=$T_POSTGRES_ALFRED_USER
+    vault kv put -mount=secret alfred/db/password password=$T_POSTGRES_ALFRED_PASSWORD
+    vault kv put -mount=secret mnemosine/db/db db=$T_POSTGRES_MNEMOSINE_DB
+    vault kv put -mount=secret mnemosine/db/user user=$T_POSTGRES_MNEMOSINE_USER
+    vault kv put -mount=secret mnemosine/db/password password=$T_POSTGRES_MNEMOSINE_PASSWORD
+    vault kv put -mount=secret petrus/db/db db=$T_POSTGRES_PETRUS_DB
+    vault kv put -mount=secret petrus/db/user user=$T_POSTGRES_PETRUS_USER
+    vault kv put -mount=secret petrus/db/password password=$T_POSTGRES_PETRUS_PASSWORD
 
 else
     KEY=`cat /tokens/tutum.txt | head -n 1`
