@@ -171,6 +171,7 @@ services:
     networks:
       - atlas
       - alfred_network
+      - aegis guard
     depends_on:
       alfred_db:
         condition: service_healthy

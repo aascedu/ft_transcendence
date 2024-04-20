@@ -21,7 +21,7 @@ endif
 
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
-					mnemosine_data petrus_data
+					mnemosine_data petrus_data filebeat_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
@@ -60,6 +60,9 @@ endif
 
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
+
+down_restart:
+	$(COMPOSE_F) $(DOCKER_FILE) down -v
 
 restart:
 	$(COMPOSE_F) $(DOCKER_FILE) restart
@@ -147,19 +150,19 @@ petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
-.PHONY: tutum
 tutum:
 	$(COMPOSE) up -d tutum
 
 #---- clean ----#
 
 clean: down
+	- $(STOP) $$(docker ps -qa)
 	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	- rm -rf `find . | grep migrations | grep -v env`
-	- rm -rf $(VOLUMES_PATH)/* || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
+	- rm -rf $(VOLUMES_PATH)/*
+	- rm -rf ./tokens
+	- rm -rf ./requirements/tutum/vault
+#	- rm -rf ./requirements/aegis/ModSecurity
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
@@ -193,4 +196,5 @@ endif
 .DEFAULT: debug # pour la prod: remettre all
 .PHONY: all up build down volumes copyfile debug clean fclean prune re \
 aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
-ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset
+ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset \
+tutum
