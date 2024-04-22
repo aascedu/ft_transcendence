@@ -62,18 +62,13 @@ class JWTIdentificationMiddleware:
 class ensureIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
-        if not key:
-            raise Error("publicKey is not defined")
-        self.publicKey = key
 
     def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if not request.user.is_autenticated:
+        if request.user.error is not None:
             return JsonResponse({"Err": request.user.error})
         return None
 
