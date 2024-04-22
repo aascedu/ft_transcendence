@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from pathlib import Path
 import os
 
@@ -18,6 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+DEFAULT_AVATAR_URL = ""
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -33,31 +34,12 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'alfred']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    "django_prometheus",
     'user_management'
 ]
 
-MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
-    'django.views.decorators.csrf.csrf_exempt',
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'shared.Middleware.RawJsonToDataGetMiddleware',
-    'shared.Middleware.JWTIdentificationMiddleware',
-    # 'shared.Middleware.ensureIdentificationMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
-]
+PROJECT_OWN_MIDDLEWARE = []
+
+MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
 ROOT_URLCONF = 'alfred_project.urls'
 
@@ -86,9 +68,9 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ['ALFRED_DB'],
-        'USER': os.environ['ALFRED_USER'],
-        'PASSWORD': os.environ['ALFRED_PASSWORD'],
+        'NAME': os.environ.get('ALFRED_DB', 'default'),
+        'USER': os.environ.get('ALFRED_USER', 'default'),
+        'PASSWORD': os.environ.get('ALFRED_PASSWORD', 'default'),
         'HOST': 'alfred_db',
         'PORT': '5432',
     }

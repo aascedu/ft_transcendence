@@ -1,3 +1,5 @@
+/* general */
+
 * {
 	font-family: "Syne", sans-serif;
 	font-size: 0pt;
@@ -152,7 +154,7 @@ body {
 	width: 100%;
 }
 
-/* Chrome, Safari, Edge */
+/* range input - Chrome, Safari, Edge */
 .range-input::-webkit-slider-runnable-track {
 	background: #B77DEE;
 	border-radius: 2px;
@@ -181,7 +183,7 @@ body {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.8));
 }
    
-/* Firefox */
+/* range input - Firefox */
 .range-input::-moz-range-track {
 	background: #B77DEE;
 	border-radius: 2px;
@@ -301,4 +303,57 @@ body {
 .empty-list-content {
 	margin-top: 24px;
 	opacity: 60%;
+}
+
+/* alerts */
+
+.alert {
+	width: 100vw;
+	height: 100vh;
+	z-index: 9999;
+	background-color: rgba(115, 0, 230, 0.2);
+	backdrop-filter: blur(3px);
+}
+
+.alert-window {
+	border-radius: 16px;
+	background-color: white;
+	padding: 32px;
+}
+
+.alert-message {
+	font-size: 15pt;
+	font-weight: 600;
+	color: #7300E6;
+}
+
+.alert-buttons-container {
+	margin-top: 32px;
+}
+
+.alert-buttons-container > * {
+	border-radius: 12px;
+	padding: 16px;
+	width: 48%;
+	font-size: 14pt;
+}
+
+.alert-buttons-container > *:hover,
+.alert-buttons-container > *:focus {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.alert-confirm-button {
+	background-color: #7300E6;
+	color: white;
+	font-weight: 500;
+}
+
+.alert-cancel-button {
+	background-color: white;
+	border-style: solid;
+	border-width: 2px;
+	color: #7300E6;
+	font-size: 400;
 }

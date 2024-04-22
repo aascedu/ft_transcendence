@@ -14,26 +14,29 @@ class createTournament(View):
             return JsonResponse({'Err': "tournamentName or nbPlayers not provided"})
         tournamentName = data['tournamentName']
         nbPlayers = data['nbPlayers']
-        tournaments[tournamentName] = Tournament(tournamentName, nbPlayers)
-        return JsonResponse({}) # Redirect on the tournament url ?
+
+        id = 0
+        while id in tournaments:
+            id += 1
+
+        tournaments[id] = Tournament(tournamentName, nbPlayers, id)
+        return JsonResponse({}) # Redirect on the tournament url, or join URL ?
 
 class joinTournament(View):
     def post(self, request):
         global tournaments
         
-        data = request.data
-        tournamentName = data['tournamentName']
-        if (tournamentName not in tournaments):
-            return JsonResponse({'Err': 'tournament does not exists'})
-        if (tournaments[tournamentName].nbPlayers == len(tournaments[tournamentName].players)):
-            return JsonResponse({'Err': 'tournament is already full'})
         try:
-            if 'playerName' in data:
-                tournaments[tournamentName].addPlayer(data['playerName'])
-            else:
-                return JsonResponse({'Err': "no player name provided"})
+            playerId = request.user.id
+            data = request.data
+            tournamentId = data['tournamentId']
+            if (tournamentId not in tournaments):
+                return JsonResponse({'Err': "tournament does not exists"})
+            tournaments[tournamentId].addPlayer(playerId)
+            
         except Exception as e:
-            return JsonResponse({'Err': e.__str__})
+            return JsonResponse({'Err': e.__str__()})
+
         return JsonResponse({})
 
 def printData(data):
@@ -47,12 +50,12 @@ class gameResult(View): # We need to remove the loser from the player list
         global tournaments
 
         data = request.data
-        if 'tournamentName' not in data or 'game' not in data:
-            return JsonResponse({'Err': "tournamentName or game not provided"})
+        if 'tournamentId' not in data or 'game' not in data:
+            return JsonResponse({'Err': "tournamentId or game not provided"})
         printData(data)
-        tournament = tournaments[data['tournamentName']]
+        tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game']) # Game is a dictionnary
         return JsonResponse({})
 
-def tournamentHome(request, tournamentName):
-    return render(request, 'tournament/home.html', {'tournamentName': tournamentName})
+def tournamentHome(request, tournamentId):
+    return render(request, 'tournament/home.html', {'tournamentId': tournamentId})

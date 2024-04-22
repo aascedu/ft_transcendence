@@ -4,27 +4,25 @@ let	g_userNick;
 let	g_prevFontSize = 0;
 let	g_jwt;
 let	g_refreshToken;
+let	g_translations = null;
 
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
-
-	// A ENLEVER APRES
-
-	// var	homepageHeader = document.querySelector('.homepage-header');
-	// homepageHeader.classList.remove('visually-hidden');
-
-	// var	homepagePicture = document.querySelector('.homepage-game-picture');
-	// homepagePicture.classList.remove('visually-hidden');
-
-	//
+	if (g_state.pageToDisplay == '.homepage-game') {
+		var	homepageHeader = document.querySelector('.homepage-header');
+		homepageHeader.classList.remove('visually-hidden');
+	
+		var	homepagePicture = document.querySelector('.homepage-game-picture');
+		homepagePicture.classList.remove('visually-hidden');
+	}
 }
 
 window.history.replaceState(g_state, null, "");
@@ -52,28 +50,36 @@ function hideEveryPage() {
 // Translation functions.
 
 function loadTranslations() {
+	if (g_translations) {
+	   return Promise.resolve(g_translations);
+	}
+   
 	return fetch('./assets/lang/translations.json')
-	  .then(response => response.json())
-	  .catch(error => console.error(error));
+	   .then(response => response.json())
+	   .then(data => {
+		 g_translations = data;
+		 return g_translations;
+	   })
+	   .catch(error => console.error(error));
 }
-
+   
 function switchLanguageAttr(locale, newAttr) {
 	loadTranslations().then(translations => {
-	  document.querySelectorAll('[data-language]').forEach(element => {
-		const key = element.getAttribute('data-language');
-		if (element.hasAttribute(newAttr)) {
+		document.querySelectorAll('[data-language]').forEach(element => {
+			const key = element.getAttribute('data-language');
+			if (element.hasAttribute(newAttr)) {
 			element.setAttribute(newAttr, translations[locale][key]);
-		}
-	  });
+			}
+		});
 	});
 }
 
 function switchLanguageContent(locale) {
 	loadTranslations().then(translations => {
-	  document.querySelectorAll('[data-language]').forEach(element => {
-		const key = element.getAttribute('data-language');
-		if (element.textContent.trim() !== '') {
-			var	info;
+		document.querySelectorAll('[data-language]').forEach(element => {
+			const key = element.getAttribute('data-language');
+			if (element.textContent.trim() !== '') {
+			var info;
 			if (element.querySelector('b') !== null) {
 				info = element.querySelector('b').innerHTML;
 				info = info.replace(/\&nbsp;/g, '');
@@ -82,8 +88,8 @@ function switchLanguageContent(locale) {
 			if (info && info.trim() !== '') {
 				addInfoToElement(info, element);
 			}
-		}
-	  });
+			}
+		});
 	});
 }
 
@@ -183,6 +189,29 @@ function warnInvalidNickname(nickname, element) {
 	return true;
 }
 
+// Tournament name checking functions
+
+function tournamentValidChar(name) {
+	let regex = /[^A-Za-z0-9_ ]/g;
+	return !regex.test(name);
+}
+
+function warnInvalidTournamentName(name, element) {
+	if (!tournamentValidChar(name)) {
+		element.setAttribute('data-language', 'tournament-name-invalid-char');
+		return false;
+	}
+	else if (name.length < 3) {
+		element.setAttribute('data-language', 'tournament-name-too-short');
+		return false;
+	}
+	else if (name.length > 23) {
+		element.setAttribute('data-language', 'tournament-name-too-long');
+		return false;
+	}
+	return true;
+}
+
 //
 
 function addInfoToElement(info, element) {
@@ -274,6 +303,36 @@ function goToHomepageGame(previous) {
 	render(g_state);
 }
 
+// 
+
+function leaveTournamentEditMode() {
+	// Switch button appearance
+	document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
+
+	// Hide kick buttons
+	document.querySelectorAll('.tournament-kick-player').forEach(item => {
+		item.classList.add('visually-hidden');
+	});
+
+	// Hide edit tournament name
+	document.querySelector('.tournament-info-name-input-container').classList.add('visually-hidden');
+
+	// Show tournament name
+	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+}
+
+// Hide alerts when clicking outside
+
+document.querySelectorAll('.alert').forEach(function(item) {
+	item.addEventListener('click', function(event) {
+		if (this !== event.target) {
+			return ;
+		}
+		item.classList.add('visually-hidden');
+	});
+});
+
 //
 
 function hideEveryPage() {
@@ -282,4 +341,10 @@ function hideEveryPage() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
+	// Leave tournament info edit mode
+	if (!document.querySelector('.tournament-info-name-input-container').classList.contains('visually-hidden')) {
+		leaveTournamentEditMode();
+	}
+	document.querySelector('.user-profile').classList.add('visually-hidden');
+	document.querySelector('.victory-defeat').classList.add('visually-hidden');
 }

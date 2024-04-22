@@ -1,5 +1,6 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+from shared.validators import NickNameValidator
 
 
 class Client(models.Model):
@@ -7,7 +8,8 @@ class Client(models.Model):
     languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
     avatar = models.ImageField(upload_to='avatars/', blank=True)
     unique_id = models.BigAutoField(primary_key=True)
-    nick = models.CharField(max_length=16, unique=True)
+    nick = models.CharField(max_length=16, unique=True,
+                    validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
     font = models.IntegerField(choices=font_size_choices, default=0)
@@ -85,12 +87,12 @@ class FriendshipRequest(models.Model):
     @staticmethod
     def processRequest(sender, receiver) -> JsonResponse:
         if receiver in sender.friends.all():
-            return JsonResponse({"Err": "friendship already established"})
+            return JsonResponse({"Err": "friendship already established"}, status=400)
 
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
         if redondantRequest is not None:
-            return JsonResponse({"Err": "redondant request"})
+            return JsonResponse({"Err": "redondant request"}, status=400)
 
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
@@ -124,4 +126,4 @@ class FriendshipRequest(models.Model):
             oldRequest.delete()
             return JsonResponse({"Friendship": "aborted"})
 
-        return JsonResponse({"Err": "nothing to get deleted"})
+        return JsonResponse({"Err": "nothing to get deleted"}, status=404)

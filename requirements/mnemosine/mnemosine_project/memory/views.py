@@ -110,18 +110,16 @@ class playerView(View):
 
     def post(self, request, id: int = 0):
         data = request.data
-        if 'Id' not in data:
-            return JsonResponse({"Err": "no id provided"})
-        if 'Elo' not in data:
-            data['Elo'] = 500
         player = Player()
-        player.id = data['Id']
-        player.elo = data['Elo']
+        try:
+            player.id = data['Id']
+        except KeyError as e:
+            return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
         try:
             player.save()
         except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-        return JsonResponse({"Player": player.to_dict()})
+            return JsonResponse({"Err": e.__str__()}, status=409)
+        return JsonResponse({"Player": "created"})
 
     def delete(self, request, id: int = 0):
         data = request.data

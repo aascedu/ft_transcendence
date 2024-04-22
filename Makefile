@@ -3,7 +3,9 @@
 #---- variables -------------------------------------------------------#
 
 ENV_FILE		=	.env
-DOCKER_FILE		=	docker-compose.yml
+
+include .env
+
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data
@@ -26,20 +28,28 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | volumes modsec
-	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up --build
+debug: | volumes modsec tutum
+	. ./tools/init.sh
 
-all: | migrate volumes modsec
+all: | copyfile volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build
 
-up: | migrate volumes
+up: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
-build: | migrate volumes modsec
+ifeq ($(CI), ci)
+build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
+else
+build: | copyfile volumes modsec
+	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
+endif
 
 down:
 	$(COMPOSE_F) $(DOCKER_FILE) down
+
+restart:
+	$(COMPOSE_F) $(DOCKER_FILE) restart
 
 reset: | db_reset
 	make debug
@@ -49,17 +59,24 @@ reset: | db_reset
 volumes:
 	mkdir -p $(VOLUMES)
 
-migrate:
-	./tools/migrate.sh $(DJANGO_CTT)
+copyfile:
+	./tools/copyfile.sh $(DJANGO_CTT)
 
 modsec:
 	./tools/modsec.sh
 
 #---- debug ----#
 
+test: copyfile
+	./tools/test.sh $(DJANGO_CTT)
+
 aegis:
 	$(COMPOSE) up -d aegis
 	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
+
+aether:
+	$(COMPOSE) up -d aether
+	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
 
 alfred:
 	$(COMPOSE) up -d alfred
@@ -109,51 +126,58 @@ mnemosine:
 	$(COMPOSE) up -d mnemosine
 	$(COMPOSE_F) $(DOCKER_FILE) exec mnemosine bash
 
+orion:
+	$(COMPOSE) up -d orion
+	$(COMPOSE_F) $(DOCKER_FILE) exec orion /bin/bash
+
 petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
-aether:
-	$(COMPOSE) up -d aether
-	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash# pour la prod: remettre all
+.PHONY: tutum
+tutum:
+	$(COMPOSE) up -d tutum
+
+#---- clean ----#
 
 clean: down
-	$(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
-	rm -rf $(VOLUMES_PATH)/*
-	rm -rf ./requirements/aegis/ModSecurity || true
-	rm -rf ./tokens || true
-	rm -rf ./requirements/tutum/vault || true
-	rm ./requirements/shared_code/shared_token.py || true
+	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	- rm -rf `find . | grep migrations | grep -v env`
+	- rm -rf $(VOLUMES_PATH)/* || true
+	- rm -rf ./tokens || true
+	- rm -rf ./requirements/tutum/vault || true
+#	- rm -rf ./requirements/aegis/ModSecurity || true
 
 fclean: clean
 	- $(STOP) $$(docker ps -qa)
 	- $(RM) $$(docker ps -qa)
 	- $(RM_IMG) $$(docker images -qa)
 	- $(NETWORK) rm $$(docker network ls -q) 2>/dev/null
-	- docker rmi $$(docker images -qa)
 
 prune:
 	- $(STOP) $$(docker ps -qa)
 	- $(SYSTEM) prune -af
 	- $(VOLUME) prune -af
-	rm -rf ./requirements/aegis/ModSecurity/
+#	- rm -rf ./requirements/aegis/ModSecurity/
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
-	rm -rf `find . | grep migrations | grep -v env`
 
-db_reset: db_suppr migrate
+db_reset: db_suppr copyfile
 
 #---- re ----#
 
+ifeq ($(WHO), twang)
+re: fclean debug
+else
 re: down debug
-
+endif
 # pour la prod: remettre up
 
 #---- settings --------------------------------------------------------#
 
 .SILENT:
 .DEFAULT: debug # pour la prod: remettre all
-.PHONY: all up build down volumes migrate debug clean fclean prune re \
+.PHONY: all up build down volumes copyfile debug clean fclean prune re \
 aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
 ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset

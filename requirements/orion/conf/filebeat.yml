@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: filestream 
+  id: my-filestream-id
+  paths:
+    - /var/log/system.log
+    - /var/log/wifi.log
+
+#------Logstash Output------#
+
+output.logstash:
+   hosts: ["aether:5400"]

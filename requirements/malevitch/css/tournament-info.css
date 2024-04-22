@@ -27,17 +27,90 @@
 	height: 20px;
 }
 
+.tournament-info-name-input-box {
+	padding: 8px;
+	margin: 0;
+}
+
+.tournament-info-name-input-warning {
+	margin-top: 4px;
+	margin-bottom: 8px;
+	font-size: 12pt;
+}
+
+.tournament-info-edit-icon,
+.tournament-info-check-icon {
+	right: 120px;
+}
+
+.tournament-info-edit-icon img {
+	height: 18px;
+}
+
+.tournament-info-check-icon img {
+	margin-right: 1px;
+	height: 16px;
+}
+
+.tournament-info-invite-icon {
+	right: 68px;
+}
+
+.tournament-info-invite-icon img {
+	height: 20px;
+	margin-left: 3px;
+}
+
+.tournament-info-invite-box {
+	z-index: 999;
+	top: 64px;
+	right: 0;
+	width: 20vw;
+	max-height: 40vh;
+	border-radius: 16px;
+	background-color: white;
+}
+
+.tournament-info-invite {
+	max-height: 40vh;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-bottom: 16px;
+}
+
+.tournament-info-invite .content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.tournament-info-no-friends img {
+	width: 40%;
+	opacity: 50%;
+}
+
+.tournament-info-no-friends p {
+	font-size: 14pt;
+	font-weight: 400;
+	margin-top: 16px;
+}
+
+.tournament-info-join-icon,
 .tournament-info-leave-icon {
 	right: 16px;
 }
 
+.tournament-info-join-icon img {
+	height: 21px;
+	margin-right: 4px;
+}
+
 .tournament-info-leave-icon img {
-	height: 20px;
+	height: 21px;
 	margin-left: 2px;
 }
 
 .tournament-info-container
-.category-title p {
+.category-title > p {
 	font-weight: 700;
 }
 
@@ -55,7 +128,7 @@
 .tournament-info-card-container {
 	padding: 16px;
 	padding-top: 0;
-	margin-top: 58px;
+	margin-top: 80px;
 	flex-grow: 1;
 }
 
@@ -91,6 +164,49 @@
 .content-card:hover {
 	cursor: pointer;
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.invite-pending {
+	background-color: rgba(115, 0, 230, 0.1);
+}
+
+.invite-pending img {
+	filter: grayscale(100%);
+}
+
+.user-card-pending {
+	font-size: 14pt;
+	font-weight: 400;
+	color: #7300E6;
+	margin-left: 16px;
+}
+
+.tournament-kick-player {
+	top: -7px;
+	right: -11px;
+	width: 22px;
+	height: 22px;
+	border-radius: 11px;
+	background-color: #E2123C;
+	z-index: 999;
+}
+
+.tournament-kick-player img {
+	height: 10px;
+	filter: invert(1);
+}
+
+.tournament-kick-player:hover {
+	cursor: pointer;
+	background-color: white;
+	outline-offset: -1px;
+	outline-width: 2px;
+	outline-style: solid;
+	outline-color: #E2123C;
+}
+
+.tournament-kick-player:hover img {
+	filter: invert(15%) sepia(65%) saturate(5623%) hue-rotate(340deg) brightness(93%) contrast(98%);
 }
 
 .tournament-info-empty img {
