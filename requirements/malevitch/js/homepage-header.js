@@ -122,3 +122,18 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });
+
+//
+
+document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.create-tournament';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+	document.querySelector('.create-tournament-name-input').focus();
+});
