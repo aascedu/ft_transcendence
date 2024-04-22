@@ -1,6 +1,3 @@
-from collections.abc import KeysView
-
-
 class User:
     nick: str
     error: str
@@ -9,7 +6,7 @@ class User:
     is_service: bool
     id: int
 
-    def __init__(self, nick='', error='', is_admin=False, is_service=False, is_autenticated=False, id=-1):
+    def __init__(self, nick=None, error=None, is_admin=False, is_service=False, is_autenticated=False, id=None):
         self.nick = nick
         self.error = error
         self.is_autenticated = is_autenticated
