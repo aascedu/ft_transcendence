@@ -5,6 +5,15 @@ COLOR_BLUE='\e[1;34m'
 COLOR_RESET='\e[0m'
 
 set -e
+echo -e "\n${COLOR_GREEN}-${ELASTIC_PASSWORD}- && -${KIBANA_PASSWORD}-${COLOR_RESET}\n"
+
+if [ x${ELASTIC_PASSWORD} == x ]; then
+  echo "${COLOR_GREEN}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
+  exit 1;
+elif [ x${KIBANA_PASSWORD} == x ]; then
+  echo "${COLOR_GREEN}Set the KIBANA_PASSWORD environment variable in the .env file${COLOR_RESET}";
+  exit 1;
+fi;
 
 # Check if the CA certificate exists, create if not
 if [ ! -f config/certs/ca.zip ]; then
@@ -47,8 +56,8 @@ chown -R root:root config/certs;
 find . -type d -exec chmod 750 {} \;
 find . -type f -exec chmod 640 {} \;
 
-echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
-openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+# echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
+# openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
 
 # Wait for Elasticsearch availability
 echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability${COLOR_RESET}";

@@ -16,6 +16,18 @@ DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
 
 #---- docker commands -------------------------------------------------#
 
+WHO                =    $(shell whoami)
+ifeq ($(WHO), twang)
+DOCKER_FILE        =    docker-compose-twang.yml
+else ifeq ($(WHO), bpoumeau)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else ifeq ($(WHO), ccrottie)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else ifeq ($(WHO), hgeffroy)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else
+DOCKER_FILE        =    docker-compose.yml
+endif
 COMPOSE		=	docker compose
 COMPOSE_F	=	docker compose -f
 STOP		=	docker stop
@@ -143,7 +155,7 @@ tutum:
 
 #---- clean ----#
 
-clean: down -v
+clean: down
 	- $(STOP) $$(docker ps -qa)
 	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	- rm -rf `find . | grep migrations | grep -v env`
