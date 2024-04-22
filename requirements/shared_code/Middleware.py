@@ -24,6 +24,8 @@ class JWTIdentificationMiddleware:
         if 'X-External-Request' not in request.headers:
             print("Info : Internal request")
             request.user = User.header_to_user(request.headers)
+            print("Info: Service :", str(request.user))
+            return None
 
 
         if 'auth' not in request.COOKIES:
