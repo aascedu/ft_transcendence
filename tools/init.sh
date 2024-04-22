@@ -1,9 +1,9 @@
 #! /bin/bash
 
-USERNAME=$(cat .env | grep 'PROXY_CONF' | awk -F '=' '{print $2}')
-if [ "$USERNAME" = "proxy-twang.conf" ]; then
+COMPOSE=$(cat .env | grep 'PROXY_CONF' | awk -F '=' '{print $2}')
+if [ "$COMPOSE" = "proxy-twang.conf" ]; then
     DOCKER_FILE="docker-compose-twang.yml"
-elif [ "$USERNAME" = "proxy.conf" ]; then
+elif [ "$COMPOSE" = "proxy.conf" ]; then
     DOCKER_FILE="docker-compose.yml"
 else
     DOCKER_FILE="docker-compose-nologs.yml"
