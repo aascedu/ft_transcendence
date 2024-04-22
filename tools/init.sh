@@ -1,5 +1,15 @@
 #! /bin/bash
 
+USERNAME=$(whoami)
+
+if [ "$USERNAME" = "twang" ]; then
+    DOCKER_FILE="docker-compose-twang.yml"
+elif [ "$USERNAME" = "aascedu" ]; then
+    DOCKER_FILE="docker-compose.yml"
+else
+    DOCKER_FILE="docker-compose-nologs.yml"
+fi
+
 sleep 10
 
 export ELASTIC_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=EPW env/epw' | tr -cd '[:alnum:]_-')"
@@ -13,4 +23,4 @@ export POSTGRES_MNEMOSINE_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_
 export POSTGRES_PETRUS_DB="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=db petrus/db/db' | tr -cd '[:alnum:]_-')"
 export POSTGRES_PETRUS_USER="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=user petrus/db/user' | tr -cd '[:alnum:]_-')"
 export POSTGRES_PETRUS_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=password petrus/db/password' | tr -cd '[:alnum:]_-')"
-docker compose -f docker-compose.yml --env-file .env up --build
+docker compose -f $DOCKER_FILE --env-file .env up --build
