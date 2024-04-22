@@ -51,47 +51,44 @@ class userInfoView(View):
 
 class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
-        if id == 0:
-            emiter = request.model
+        if request.user.is_service:
+            try:
+                requestee = Client.objects.get(unique_id=id)
+            except BaseException as e:
+                return JsonResponse({"Err": e.__str__()})
             return JsonResponse({
-                "id": request.user.id,
-                "friends": [
-                    {"id": object.unique_id,
-                     "nick": object.nick,
-                     "mail": object.email}
-                    for object
-                    in emiter
-                    .friends
-                    .all()
-                ],
-                "requests": [
-                    {"id": object.sender.unique_id,
-                     "nick": object.sender.nick}
-                    for object in list(
-                        FriendshipRequest
-                        .objects
-                        .filter(receiver=emiter)
-                    )
-                ],
-            })
+                    "Id": id,
+                    "Friends": [
+                        object.unique_id
+                        for object
+                        in requestee
+                        .friends
+                        .all()
+                    ],
+                })
 
-        # view pour l'intra service
-        # Securiser que seul les services peuvent faire
-
-        try:
-            requestee = Client.objects.get(unique_id=id)
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
+        emiter = request.model
         return JsonResponse({
-                "Id": id,
-                "Friends": [
-                    object.unique_id
-                    for object
-                    in requestee
-                    .friends
-                    .all()
-                ],
-            })
+            "id": request.user.id,
+            "friends": [
+                {"id": object.unique_id,
+                 "nick": object.nick,
+                 "mail": object.email}
+                for object
+                in emiter
+                .friends
+                .all()
+            ],
+            "requests": [
+                {"id": object.sender.unique_id,
+                 "nick": object.sender.nick}
+                for object in list(
+                    FriendshipRequest
+                    .objects
+                    .filter(receiver=emiter)
+                )
+            ],
+        })
 
     def post(self, request, id: int) -> JsonResponse:
         sender = request.model
