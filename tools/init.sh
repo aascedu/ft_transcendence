@@ -12,8 +12,6 @@ fi
 
 sleep 10
 
-echo $DOCKER_FILE
-
 export ELASTIC_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=EPW env/epw' | tr -cd '[:alnum:]_-')"
 export KIBANA_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=KPW env/kpw' | tr -cd '[:alnum:]_-')"
 export POSTGRES_ALFRED_DB="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=db alfred/db/db' | tr -cd '[:alnum:]_-')"
@@ -25,5 +23,4 @@ export POSTGRES_MNEMOSINE_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_
 export POSTGRES_PETRUS_DB="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=db petrus/db/db' | tr -cd '[:alnum:]_-')"
 export POSTGRES_PETRUS_USER="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=user petrus/db/user' | tr -cd '[:alnum:]_-')"
 export POSTGRES_PETRUS_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=password petrus/db/password' | tr -cd '[:alnum:]_-')"
-export
 docker compose -f $DOCKER_FILE --env-file .env up --build
