@@ -136,7 +136,7 @@ petrus:
 
 .PHONY: tutum
 tutum:
-	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
+	$(COMPOSE) up -d tutum
 
 #---- clean ----#
 
