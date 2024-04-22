@@ -28,7 +28,7 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | volumes modsec tutum
+debug: | copyfile volumes modsec tutum
 	. ./tools/init.sh
 
 all: | copyfile volumes modsec
@@ -52,6 +52,9 @@ restart:
 	$(COMPOSE_F) $(DOCKER_FILE) restart
 
 reset: | db_reset
+	make debug
+
+re: down
 	make debug
 
 #---- setups ----#
