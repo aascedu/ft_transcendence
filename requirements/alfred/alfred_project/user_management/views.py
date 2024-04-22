@@ -11,6 +11,12 @@ import os
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
+        if request.user.is_service is True or request.user.is_admin is True:
+            try:
+                return JsonResponse(Client.objects.get(unique_id=id).personal_dict())
+            except ObjectDoesNotExist:
+                return JsonResponse({"Err", "ressource not found"}, status=404)
+
         client = request.model
         if id == 0 or id == request.user.id:
             return JsonResponse(client.personal_dict())
@@ -23,7 +29,14 @@ class userInfoView(View):
         return JsonResponse(target.public_dict())
 
     def patch(self, request, id: int) -> JsonResponse:
-        client = request.model
+        if request.user.is_service is False and request.user.is_admin is False:
+            try:
+                client = Client.objects.get(id=id)
+            except ObjectDoesNotExist:
+                return JsonResponse({"Err": "Ressource doesn't exist"}, status=404)
+        else:
+            client = request.model
+
         data = request.data
         client.avatar = data.get("Avatar", client.avatar)
         client.lang = data.get("Lang", client.lang)
@@ -34,6 +47,8 @@ class userInfoView(View):
 
 
     def post(self, request, id: int) -> JsonResponse:
+        if request.user.is_service is not True or request.user.nick != "petrus":
+            return JsonResponse({"Err": "Only petrus can create a user"}, status=403)
         data = request.data
         client = Client()
         try:
@@ -46,31 +61,42 @@ class userInfoView(View):
 
 
     def delete(self, request, id: int) -> JsonResponse:
-        return delete_response(request.model)
+        if request.user.is_service is not True or request.user.nick != "petrus":
+            return JsonResponse({"Err": "Only petrus can delete a user"}, status=403)
+        try:
+            to_delete = Client.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"Err": "Ressource doesn't exist"}, status=404)
+
+        return delete_response(to_delete)
 
 
 class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
-        if request.user.is_service:
+        if request.user.is_service is True or request.user.is_admin is True:
             try:
                 requestee = Client.objects.get(unique_id=id)
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return JsonResponse({"Err": e.__str__()})
-            return JsonResponse({
-                    "Id": id,
-                    "Friends": [
-                        object.unique_id
-                        for object
-                        in requestee
-                        .friends
-                        .all()
-                    ],
-                })
+
+            if request.user.is_service is True:
+                return JsonResponse({
+                        "Id": id,
+                        "Friends": requestee.list_friends(),
+                    })
+            else:
+                return JsonResponse({
+                        "Id": id,
+                        "Nick": requestee.nick,
+                        "Friends": requestee.list_friends(),
+                        "Received": requestee.list_received_requests(),
+                        "Sent": requestee.list_sent_requests(),
+                    })
 
         emiter = request.model
         return JsonResponse({
-            "id": request.user.id,
-            "friends": [
+            "Id": request.user.id,
+            "Friends": [
                 {"id": object.unique_id,
                  "nick": object.nick,
                  "mail": object.email}
@@ -79,7 +105,7 @@ class friendView(View):
                 .friends
                 .all()
             ],
-            "requests": [
+            "Requests": [
                 {"id": object.sender.unique_id,
                  "nick": object.sender.nick}
                 for object in list(
@@ -91,13 +117,15 @@ class friendView(View):
         })
 
     def post(self, request, id: int) -> JsonResponse:
+        if request.user.is_autenticated is False:
+            return JsonResponse({"Err": "Only user can add FriendshipRequest for themself"}, status = 403)
         sender = request.model
         if id == request.user.id:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "invalid id"}, status=400)
         try:
             receiver = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "invalid id"})
+            return JsonResponse({"Err": "Ressource not found"}, status=404)
         return FriendshipRequest.processRequest(receiver, sender)
 
     def delete(self, request, id: int) -> JsonResponse:
