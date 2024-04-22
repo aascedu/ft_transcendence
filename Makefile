@@ -6,19 +6,6 @@ ENV_FILE		=	.env
 
 include .env
 
-WHO				=	$(shell whoami)
-ifeq ($(WHO), twang)
-DOCKER_FILE		=	docker-compose-twang.yml
-else ifeq ($(WHO), bpoumeau)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else ifeq ($(WHO), ccrottie)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else ifeq ($(WHO), hgeffroy)
-DOCKER_FILE		=	docker-compose-nologs.yml
-else
-DOCKER_FILE		=	docker-compose.yml
-endif
-
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data filebeat_data
@@ -59,6 +46,7 @@ build: | copyfile volumes modsec
 endif
 
 down:
+	echo -e "$(COMPOSE_F) $(DOCKER_FILE)\n"
 	$(COMPOSE_F) $(DOCKER_FILE) down
 
 down_restart:
@@ -155,7 +143,7 @@ tutum:
 
 #---- clean ----#
 
-clean: down
+clean: down -v
 	- $(STOP) $$(docker ps -qa)
 	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
 	- rm -rf `find . | grep migrations | grep -v env`
