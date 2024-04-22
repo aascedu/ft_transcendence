@@ -20,9 +20,15 @@ class JWTIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+
+        if 'X-External-Request' not in request.headers:
+            print("Info : Internal request")
+            request.user = User.header_to_user(request.headers)
+
+
         if 'auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
-            print("JWT: request with no jwt")
+            print("Info : request with no jwt")
             return None
 
         autorisationJWT = request.COOKIES['auth']
@@ -31,7 +37,7 @@ class JWTIdentificationMiddleware:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
-            print("JWT: Warning: ", e.__str__())
+            print("Warning: ", e.__str__())
             return None
 
         request.user = User(nick=decodedJWT.get('nick'),
@@ -47,7 +53,7 @@ class JWTIdentificationMiddleware:
                 response.delete_cookie('auth')
                 return response
 
-        print("JWT: User:", str(User))
+        print("Info: request_user=", str(request.user))
         return None
 
 
