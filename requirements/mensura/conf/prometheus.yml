@@ -78,11 +78,11 @@ scrape_configs:
     static_configs:
       - targets: ['ludo:8006']
 
-  - job_name: 'mnemonine'
+  - job_name: 'mnemonise'
     metrics_path: /metrics/metrics
     scrape_interval:     60s
     static_configs:
-      - targets: ['mnemonine:8008']
+      - targets: ['mnemonise:8008']
 
   - job_name: 'petrus'
     metrics_path: /metrics/metrics
