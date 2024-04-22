@@ -1,10 +1,9 @@
 #! /bin/bash
 
-USERNAME=$(whoami)
-
-if [ "$USERNAME" = "twang" ]; then
+PROXY_CONF=$(cat .env | grep 'PROXY_CONF' | awk -F '=' '{print $2}')
+if [ "$PROXY_CONF" = "proxy-twang.conf" ]; then
     DOCKER_FILE="docker-compose-twang.yml"
-elif [ "$USERNAME" = "aascedu" ]; then
+elif [ "$PROXY_CONF" = "proxy.conf" ]; then
     DOCKER_FILE="docker-compose.yml"
 else
     DOCKER_FILE="docker-compose-nologs.yml"
