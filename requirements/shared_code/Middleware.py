@@ -20,7 +20,6 @@ class JWTIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-
         if 'X-External-Request' not in request.headers:
             print("Info : Internal request")
             request.user = User.header_to_user(request.headers)
@@ -51,7 +50,7 @@ class JWTIdentificationMiddleware:
             try:
                 request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')
                 return response
 
@@ -69,7 +68,7 @@ class ensureIdentificationMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if request.user.error is not None:
-            return JsonResponse({"Err": request.user.error})
+            return JsonResponse({"Err": f"request can't be authentified {request.user.error}."}, status=401)
         return None
 
 
