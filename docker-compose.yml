@@ -447,6 +447,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9093:9093"
+    depends_on:
+      mensura:
+        condition: service_started
     networks:
       - aegis guard
       - sentinel
