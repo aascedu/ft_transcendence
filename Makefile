@@ -8,7 +8,7 @@ include .env
 
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
-					mnemosine_data petrus_data
+					mnemosine_data petrus_data filebeat_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
@@ -16,10 +16,22 @@ DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
 
 #---- docker commands -------------------------------------------------#
 
+WHO                =    $(shell whoami)
+ifeq ($(WHO), twang)
+DOCKER_FILE        =    docker-compose-twang.yml
+else ifeq ($(WHO), bpoumeau)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else ifeq ($(WHO), ccrottie)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else ifeq ($(WHO), hgeffroy)
+DOCKER_FILE        =    docker-compose-nologs.yml
+else
+DOCKER_FILE        =    docker-compose.yml
+endif
 COMPOSE		=	docker compose
 COMPOSE_F	=	docker compose -f
-STOP		=	docker stop
-RM			=	docker rm
+STOP		=	docker compose stop
+RM			=	docker compose rm
 RM_IMG		=	docker rmi
 VOLUME		=	docker volume
 NETWORK		=	docker network
@@ -31,10 +43,10 @@ SYSTEM		=	docker system
 debug: | volumes modsec tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes modsec
-	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build
+all: | copyfile volumes modsec tutum
+	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
-up: | copyfile volumes
+up: | copyfile volumes tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
 ifeq ($(CI), ci)
@@ -46,10 +58,22 @@ build: | copyfile volumes modsec
 endif
 
 down:
-	$(COMPOSE_F) $(DOCKER_FILE) down
+	$(COMPOSE) down
+
+down_restart:
+	$(COMPOSE) down -v
+
+watch:
+	$(COMPOSE) watch
+
+dry_run:
+	$(COMPOSE) --dry-run up --build -d
+
+kill:
+	$(COMPOSE) kill
 
 restart:
-	$(COMPOSE_F) $(DOCKER_FILE) restart
+	$(COMPOSE) restart
 
 reset: | db_reset
 	make debug
@@ -67,6 +91,7 @@ modsec:
 
 #---- debug ----#
 
+#  ??
 test: copyfile
 	./tools/test.sh $(DJANGO_CTT)
 
@@ -134,28 +159,28 @@ petrus:
 	$(COMPOSE) up -d petrus
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
-.PHONY: tutum
 tutum:
-	$(COMPOSE) up -d tutum
+	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
 
 #---- clean ----#
 
 clean: down
-	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	- $(STOP) $$(docker compose ps -qa)
+	- $(COMPOSE) down --rmi all --volumes --remove-orphans
 	- rm -rf `find . | grep migrations | grep -v env`
-	- rm -rf $(VOLUMES_PATH)/* || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
+	- rm -rf $(VOLUMES_PATH)/*
+	- rm -rf ./tokens
+	- rm -rf ./requirements/tutum/vault
+#	- rm -rf ./requirements/aegis/ModSecurity
 
 fclean: clean
-	- $(STOP) $$(docker ps -qa)
-	- $(RM) $$(docker ps -qa)
-	- $(RM_IMG) $$(docker images -qa)
+	- $(STOP) $$(docker compose ps -qa)
+	- $(RM) $$(docker compose ps -qa)
+	- $(RM_IMG) $$(docker compose images -qa)
 	- $(NETWORK) rm $$(docker network ls -q) 2>/dev/null
 
 prune:
-	- $(STOP) $$(docker ps -qa)
+	- $(STOP) $$(docker compose ps -qa)
 	- $(SYSTEM) prune -af
 	- $(VOLUME) prune -af
 #	- rm -rf ./requirements/aegis/ModSecurity/
@@ -180,4 +205,5 @@ endif
 .DEFAULT: debug # pour la prod: remettre all
 .PHONY: all up build down volumes copyfile debug clean fclean prune re \
 aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
-ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset
+ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset \
+tutum

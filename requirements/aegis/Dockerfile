@@ -57,7 +57,7 @@ RUN apk update && \
 
 COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
 
-COPY conf/ /etc/nginx/modsec
+COPY    conf/ /etc/nginx/modsec
 
 # COPY    conf/modsec-config.conf /etc/nginx/modsec/modsec-config.conf
 # COPY    conf/modsecurity.conf /etc/nginx/modsec/modsecurity.conf

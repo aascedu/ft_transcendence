@@ -1,5 +1,3 @@
-#version: '3.8'
-
 networks:
   aegis guard: {}
 
@@ -29,20 +27,21 @@ volumes:
   logstash_data:
     driver: local
 
+  filebeat_data:
+    driver: local
+
 services:
 # # Reverse proxy container
   aegis:
     depends_on:
-      aether:
-        condition: service_started
       apollo:
         condition: service_healthy
       iris:
         condition: service_started
       malevitch:
         condition: service_started
-      orion:
-        condition: service_started
+      tutum:
+        condition: service_healthy
     container_name: aegis
     image: aegis
     build:
@@ -68,39 +67,47 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl http://localhost:8000 | echo -e 'cannot curl'",
+          "curl -k https://localhost:8000",
         ]
       interval: 10s
       timeout: 10s
       retries: 120
 
 # # Logstash container
-  aether:
-    depends_on:
-      apollo:
-        condition: service_healthy
-    container_name: aether
-    image: aether
-    build:
-      context: ./requirements/aether/
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_USER: $ELASTIC_USER
-        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
-    labels:
-      co.elastic.logs/module: logstash
-    user: root
-    volumes:
-      - certificates:/usr/share/elasticsearch/config/certs:ro
-      - logstash_data:/usr/share/logstash/data
-    networks:
-      - sentinel
-    restart: on-failure
+  # aether:
+  #   depends_on:
+  #     apollo:
+  #       condition: service_healthy
+  #   container_name: aether
+  #   image: aether
+  #   build:
+  #     context: ./requirements/aether/
+  #     dockerfile: Dockerfile
+  #     args:
+  #       ELASTIC_USER: $ELASTIC_USER
+  #       ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
+  #   labels:
+  #     co.elastic.logs/module: logstash
+  #   user: root
+  #   volumes:
+  #     - certificates:/usr/share/elasticsearch/config/certs:ro
+  #     - logstash_data:/usr/share/logstash/data
+  #     - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+  #   environment:
+  #    xpack.monitoring.enabled: false
+  #    ELASTIC_USER: elastic
+  #    ELASTIC_PASSWORD: ${ELASTIC_PASSWORD1}
+  #    ELASTIC_HOSTS: https://apollo:9200
+  #   networks:
+  #     - sentinel
+  #   restart: on-failure
 
 # # Elastisearch container
   apollo:
     depends_on:
       setup:
+        condition: service_healthy
+      tutum:
         condition: service_healthy
     container_name: apollo
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
@@ -112,21 +119,28 @@ services:
     networks:
       - sentinel
     environment:
-      - "discovery.type=single-node"
-      - "cluster.name=${CLUSTER_NAME}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "network.host=0.0.0.0"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.http.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.transport.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.verification_mode=certificate"
-      - "xpack.license.self_generated.type=${LICENSE}"
+      node.name: elasticsearch
+      discovery.type: single-node
+      cluster.name: ${CLUSTER_NAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      network.host: 0.0.0.0
+      xpack.security.enabled: true
+      xpack.security.http.ssl.enabled: true
+      xpack.security.http.ssl.key: certs/apollo/apollo.key
+      xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.enabled: true
+      xpack.security.transport.ssl.key: certs/apollo/apollo.key
+      xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.license.self_generated.type: ${LICENSE}
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
     healthcheck:
       test:
         [
@@ -142,6 +156,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: iris
     image: docker.elastic.co/kibana/kibana:8.12.2
     labels:
@@ -150,31 +166,32 @@ services:
       - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
+    environment:
+      SERVERNAME: iris
+      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      SERVER_SSL_ENABLED: false
+      XPACK_REPORTING_ROLES_ENABLED: false
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+      SERVER_REWRITEBASEPATH: true
+      SERVER_BASEPATH: /iris
+      SERVER_PUBLICBASEURL: https://localhost:8000/iris
+    mem_limit: ${KB_MEM_LIMIT}
     networks:
       - sentinel
-    environment:
-      - "SERVERNAME=https://localhost:8000/iris/"
-      - "ELASTICSEARCH_HOSTS=https://apollo:9200"
-      - "ELASTICSEARCH_USERNAME=kibana_system"
-      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-      - "SERVER_SSL_ENABLED=false"
-      - "XPACK_REPORTING_ROLES_ENABLED=false"
-      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}"
-      - "XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}"
-      - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
-      - "SERVER_REWRITEBASEPATH=true"
-      - "SERVER_BASEPATH=/iris"
-      - "SERVER_PUBLICBASEURL=https://localhost:8000/iris"
-    # healthcheck:
-    #  test:
-    #    [
-    #      "CMD-SHELL",
-    #      "curl -I https://localhost:8000/iris/ | grep -q 'HTTP/1.1 302 Found'",
-    #    ]
-    #  interval: 10s
-    #  timeout: 10s
-    #  retries: 120
+    healthcheck:
+     test:
+       [
+         "CMD-SHELL",
+         "curl -k https://localhost:8000/iris/",
+       ]
+     interval: 10s
+     timeout: 10s
+     retries: 120
 
 # # Front container
   malevitch:
@@ -194,16 +211,29 @@ services:
 # # Filebeat container
   orion:
     depends_on:
-      aether:
-        condition: service_started
+      apollo:
+        condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: orion
     image: orion
     labels:
       co.elastic.logs/module: filebeat
+    volumes:
+      - certificates:/usr/share/filebeat/config/certs
+      - filebeat_data:/usr/share/filebeat/data
+      - "/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/run/docker.sock:/var/run/docker.sock:ro"
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
-    user: "root"
+    user: root
+    environment:
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+      ELASTIC_HOSTS: https://apollo:9200
+      KIBANA_HOSTS: http://iris:5601
+      LOGSTASH_HOSTS: http://aether:9600
     networks:
       - atlas
       - sentinel
@@ -227,6 +257,27 @@ services:
       - sentinel
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+  tutum:
+    container_name: tutum
+    image: tutum
+    build:
+      context: ./requirements/tutum
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./requirements/tutum/vault:/opt/vault
+      - ./tokens:/tokens
+    ports:
+      - "8200:8200"
+    networks:
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
       interval: 1s
       timeout: 5s
       retries: 120
