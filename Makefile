@@ -46,10 +46,10 @@ SYSTEM		=	docker system
 debug: | volumes modsec tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes modsec
+all: | copyfile volumes modsec tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
-up: | copyfile volumes
+up: | copyfile volumes tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
 ifeq ($(CI), ci)
@@ -163,7 +163,7 @@ petrus:
 	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
 
 tutum:
-	$(COMPOSE) up -d tutum
+	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
 
 #---- clean ----#
 
