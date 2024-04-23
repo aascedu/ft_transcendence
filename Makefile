@@ -66,6 +66,9 @@ down_restart:
 watch:
 	$(COMPOSE) watch
 
+dry_run:
+	$(COMPOSE) --dry-run up --build -d
+
 kill:
 	$(COMPOSE) kill
 
