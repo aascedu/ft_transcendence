@@ -8,6 +8,8 @@ from shared.utils import save_response, delete_response
 from django.utils import timezone
 import os
 
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden
+
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
@@ -15,7 +17,7 @@ class userInfoView(View):
             try:
                 return JsonResponse(Client.objects.get(unique_id=id).personal_dict())
             except ObjectDoesNotExist:
-                return JsonResponse({"Err", "ressource not found"}, status=404)
+                return JsonErrResponse("ressource not found", status=404)
 
         client = request.model
         if id == 0 or id == request.user.id:
@@ -23,7 +25,7 @@ class userInfoView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err", "ressource not found"}, status=404)
+            return JsonErrResponse("ressource not found", status=404)
         if client in target.friends.all():
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
@@ -33,7 +35,7 @@ class userInfoView(View):
             try:
                 client = Client.objects.get(id=id)
             except ObjectDoesNotExist:
-                return JsonResponse({"Err": "Ressource doesn't exist"}, status=404)
+                return JsonErrResponse("Ressource doesn't exist", status=404)
         else:
             client = request.model
 
@@ -48,7 +50,7 @@ class userInfoView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         if request.user.is_service is not True or request.user.nick != "petrus":
-            return JsonResponse({"Err": "Only petrus can create a user"}, status=403)
+            return JsonForbiden("Only petrus can create a user")
         data = request.data
         client = Client()
         try:
@@ -56,17 +58,17 @@ class userInfoView(View):
             client.nick = data['nick']
             client.unique_id = data['id']
         except KeyError as e:
-            return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
+            return JsonBadRequest(f"Key : {str(e)} not provided.")
         return save_response(client)
 
 
     def delete(self, request, id: int) -> JsonResponse:
         if request.user.is_service is not True or request.user.nick != "petrus":
-            return JsonResponse({"Err": "Only petrus can delete a user"}, status=403)
+            return JsonForbiden("Only petrus can delete a user")
         try:
             to_delete = Client.objects.get(id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "Ressource doesn't exist"}, status=404)
+            return JsonErrResponse("Ressource doesn't exist", status=404)
 
         return delete_response(to_delete)
 
@@ -77,7 +79,7 @@ class friendView(View):
             try:
                 requestee = Client.objects.get(unique_id=id)
             except ObjectDoesNotExist as e:
-                return JsonResponse({"Err": e.__str__()})
+                return JsonErrResponse(e.__str__(), status=404)
 
             if request.user.is_service is True:
                 return JsonResponse({
@@ -118,14 +120,14 @@ class friendView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         if request.user.is_autenticated is False:
-            return JsonResponse({"Err": "Only user can add FriendshipRequest for themself"}, status = 403)
+            return JsonForbiden("Only user can add FriendshipRequest for themself")
         sender = request.model
         if id == request.user.id:
-            return JsonResponse({"Err": "invalid id"}, status=400)
+            return JsonBadRequest("invalid id")
         try:
             receiver = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "Ressource not found"}, status=404)
+            return JsonErrResponse("Ressource not found", status=404)
         return FriendshipRequest.processRequest(receiver, sender)
 
     def delete(self, request, id: int) -> JsonResponse:
@@ -133,7 +135,7 @@ class friendView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "ressource not found"}, status=404)
+            return JsonErrResponse("ressource not found", status=404)
         return FriendshipRequest.deleteFriendship(emiter, target)
 
 
@@ -143,14 +145,14 @@ class avatarView(View):
             client = Client.objects.get(unique_id=id)
             url = client.avatar.url
         except ObjectDoesNotExist:
-            return JsonResponse({"Err": "ressource not found"}, status=404)
+            return JsonErrResponse("ressource not found", status=404)
         return JsonResponse({id: url})
 
     def post(self, request, id: int):
         try:
             avatar = request.FILES['avatar']
         except KeyError as e:
-            return JsonResponse({"Err": f"missing file : {e.__str__()}"}, status=400)
+            return JsonBadRequest(f"missing file : {e.__str__()}")
         client = request.model
         avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
         client.avatar = avatar
@@ -158,12 +160,12 @@ class avatarView(View):
 
 def serve_avatar(request, filename):
     if request.method != 'GET':
-        return JsonResponse({"Err": "Bad Method"}, status=403)
+        return JsonForbiden("Bad Method")
 
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
     if request.user.is_autenticated is False:
-        return JsonResponse({"Err": "Not authorised"}, status=403)
+        return JsonForbiden("Not authorised")
 
     try:
         with open(file_path, 'rb') as f:
@@ -171,11 +173,11 @@ def serve_avatar(request, filename):
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
     except FileNotFoundError:
-        return JsonResponse({"Err": "File not found."}, status=404)
+        return JsonErrResponse("File not found.", status=404)
     except PermissionError:
-        return JsonResponse({"Err": "no permission to access"}, status=403)
+        return JsonForbiden("no permission to access")
     except OSError as e:
-        return JsonResponse({"Err": f"An error occurred: {e}"}, status=500)
+        return JsonErrResponse(f"An error occurred: {e}", status=500)
 
 
 @csrf_exempt

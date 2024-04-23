@@ -20,11 +20,18 @@ def save_response(object_to_save):
 def delete_response(object_to_delete):
     try:
         object_to_delete.delete()
-        return JsonResponse({"Ressource": "deleted"})
     except ProtectedError as e:
         return JsonResponse({"Err": e.__str__()}, status=422)
     except IntegrityError as e:
         return JsonResponse({"Err": e.__str__()}, status=409)
-    except BaseException as e:
-        return JsonResponse({"Err": e.__str__()}, status=500)
+    return JsonResponse({"Ressource": "deleted"})
+
+def JsonErrResponse(error_message, status):
+    return JsonResponse({"Err": error_message}, status=status)
+
+def JsonBadRequest(error_message):
+    return JsonErrResponse(error_message, status=400)
+
+def JsonForbiden(error_message):
+    return JsonErrResponse(error_message, status=403)
 
