@@ -14,3 +14,6 @@ RUN     export ELASTIC_PASSWORD=ELASTIC_PASSWORD                    && \
 #---- config ----------------------------------------------------------#
 
 COPY    conf/filebeat.yml /usr/share/filebeat/filebeat.yml
+# COPY    conf/filebeat.reference.yml /usr/share/filebeat/filebeat.reference.yml
+# COPY    conf/filebeat.reference.yml /usr/share/filebeat/filebeat.yml
+# CMD     ["modules", "list"]
