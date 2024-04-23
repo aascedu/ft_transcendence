@@ -81,13 +81,13 @@
 
 filebeat.inputs:
 - type: filestream
- id: default-filestream
- paths:
-   - ingest_data/*.log
+  id: default-filestream
+  paths:
+    - ingest_data/*.log
 
 
 filebeat.autodiscover:
- providers:
+  providers:
    - type: docker
      hints.enabled: true
 
@@ -107,7 +107,7 @@ output.elasticsearch:
  username: ${ELASTIC_USER}
  password: ${ELASTIC_PASSWORD}
  ssl.enabled: true
- ssl.certificate_authorities: "certificates/ca/ca.crt"
+ ssl.certificate_authorities: "config/certs/ca/ca.crt"
 
  # output.logstash:
 #    hosts: ["aether:5400"]
