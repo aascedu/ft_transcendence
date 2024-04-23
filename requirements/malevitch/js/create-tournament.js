@@ -129,7 +129,7 @@ document.querySelector('.create-tournament-alert .alert-confirm-button').addEven
 
 	// Send info to db
 	// Send invites to selected friends
-	// Display tournament page with info
+	displayCreatedTournament();
 });
 
 document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('keypress', function (event) {
@@ -139,7 +139,7 @@ document.querySelector('.create-tournament-alert .alert-confirm-button').addEven
 	
 		// Send info to db
 		// Send invites to selected friends
-		// Display tournament page with info
+		displayCreatedTournament();
 	}
 });
 
@@ -158,9 +158,62 @@ document.querySelector('.create-tournament-alert .alert-cancel-button').addEvent
 // Reset tournament creation
 
 function resetTournamentCreation() {
+	document.querySelector('.create-tournament').classList.add('visually-hidden');
+
 	document.querySelector('.create-tournament-name-input').value = "";
-	document.querySelector('.create-tournament-players-button-chosen').classList.remove('create-tournament-players-button-chosen');
+	var chosen = document.querySelector('.create-tournament-players-button-chosen');
+	if (chosen) {
+		chosen.classList.remove('create-tournament-players-button-chosen');
+	}
 	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
 		item.classList.remove('create-tournament-invited-friend');
 	});
+}
+
+// Display created tournament
+
+function displayCreatedTournament() {
+	var	tournamentName = document.querySelector('.create-tournament-name-input').value;
+	document.querySelector('.tournament-info-name').textContent = tournamentName;
+
+	var	numberOfPlayers = document.querySelector('.create-tournament-players-button-chosen').textContent;
+	document.querySelector('.tournament-info-players-num').textContent = "0/" + numberOfPlayers.trim();
+
+	// Parse invited friends in array
+	var	invitedFriends = [];
+	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
+		var	friendInfo = [];
+
+		friendInfo.push(item.querySelector('.user-card-name').textContent);
+		friendInfo.push(item.querySelector('.user-card-picture img').getAttribute('src'));
+
+		invitedFriends.push(friendInfo);
+	});
+
+	// Go through the array and create a content card for each friend
+	for(i = 0; i < invitedFriends.length; i++) {
+		var playersList = document.querySelector('.tournament-info-players');
+		var	nick = invitedFriends[i][0];
+		var	pic = invitedFriends[i][1];
+	
+		playersList.insertAdjacentHTML('beforeend', `\
+		<div class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
+			<div class="d-flex flex-nowrap align-items-center">
+				<div class="user-card-name unselectable">`+ nick + `</div>
+				<div class="user-card-pending" data-language="pending">(pending...)</div>
+			</div>
+			<div class="user-card-picture">
+				<img src="` + pic + `" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
+				<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+		</div>`);
+	}
+
+	// Render the tournament page
+	hideEveryPage();
+	g_state.pageToDisplay = '.tournament-info';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 }
