@@ -40,6 +40,8 @@ services:
         condition: service_started
       malevitch:
         condition: service_started
+      tutum:
+        condition: service_healthy
     container_name: aegis
     image: aegis
     build:
@@ -105,6 +107,8 @@ services:
     depends_on:
       setup:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: apollo
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     labels:
@@ -118,7 +122,7 @@ services:
       node.name: elasticsearch
       discovery.type: single-node
       cluster.name: ${CLUSTER_NAME}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD1}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       network.host: 0.0.0.0
       xpack.security.enabled: true
       xpack.security.http.ssl.enabled: true
@@ -152,6 +156,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: iris
     image: docker.elastic.co/kibana/kibana:8.12.2
     labels:
@@ -164,7 +170,7 @@ services:
       SERVERNAME: iris
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD1}
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
       SERVER_SSL_ENABLED: false
       XPACK_REPORTING_ROLES_ENABLED: false
@@ -207,6 +213,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: orion
     image: orion
     labels:
@@ -222,7 +230,7 @@ services:
     user: root
     environment:
       ELASTIC_USER: elastic
-      ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
       ELASTIC_HOSTS: https://apollo:9200
       KIBANA_HOSTS: http://iris:5601
       LOGSTASH_HOSTS: http://aether:9600
@@ -236,8 +244,8 @@ services:
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     environment:
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD1}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile
@@ -249,6 +257,27 @@ services:
       - sentinel
     healthcheck:
       test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+  tutum:
+    container_name: tutum
+    image: tutum
+    build:
+      context: ./requirements/tutum
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./requirements/tutum/vault:/opt/vault
+      - ./tokens:/tokens
+    ports:
+      - "8200:8200"
+    networks:
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
       interval: 1s
       timeout: 5s
       retries: 120
