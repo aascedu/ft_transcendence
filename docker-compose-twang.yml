@@ -222,15 +222,16 @@ services:
     volumes:
       - certificates:/usr/share/filebeat/config/certs
       - filebeat_data:/usr/share/filebeat/data
-      - "/lib/docker/containers:/var/lib/docker/containers:ro"
-      - "/run/docker.sock:/var/run/docker.sock:ro"
+      - ./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
     user: root
     environment:
       ELASTIC_USER: elastic
-      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       ELASTIC_HOSTS: https://apollo:9200
       KIBANA_HOSTS: http://iris:5601
       LOGSTASH_HOSTS: http://aether:9600
