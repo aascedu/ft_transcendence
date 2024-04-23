@@ -17,7 +17,10 @@ DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
 #---- docker commands -------------------------------------------------#
 
 WHO                =    $(shell whoami)
+
 ifeq ($(WHO), twang)
+DOCKER_FILE        =    docker-compose-twang.yml
+else ifeq ($(WHO), root)
 DOCKER_FILE        =    docker-compose-twang.yml
 else ifeq ($(WHO), bpoumeau)
 DOCKER_FILE        =    docker-compose-nologs.yml
