@@ -30,8 +30,8 @@ DOCKER_FILE        =    docker-compose.yml
 endif
 COMPOSE		=	docker compose
 COMPOSE_F	=	docker compose -f
-STOP		=	docker stop
-RM			=	docker rm
+STOP		=	docker compose stop
+RM			=	docker compose rm
 RM_IMG		=	docker rmi
 VOLUME		=	docker volume
 NETWORK		=	docker network
@@ -44,7 +44,7 @@ debug: | volumes modsec tutum
 	. ./tools/init.sh
 
 all: | copyfile volumes modsec
-	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build
+	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
 up: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
@@ -58,14 +58,19 @@ build: | copyfile volumes modsec
 endif
 
 down:
-	echo -e "$(COMPOSE_F) $(DOCKER_FILE)\n"
-	$(COMPOSE_F) $(DOCKER_FILE) down
+	$(COMPOSE) down
 
 down_restart:
-	$(COMPOSE_F) $(DOCKER_FILE) down -v
+	$(COMPOSE) down -v
+
+watch:
+	$(COMPOSE) watch
+
+kill:
+	$(COMPOSE) kill
 
 restart:
-	$(COMPOSE_F) $(DOCKER_FILE) restart
+	$(COMPOSE) restart
 
 reset: | db_reset
 	make debug
@@ -83,6 +88,7 @@ modsec:
 
 #---- debug ----#
 
+#  ??
 test: copyfile
 	./tools/test.sh $(DJANGO_CTT)
 
@@ -156,8 +162,8 @@ tutum:
 #---- clean ----#
 
 clean: down
-	- $(STOP) $$(docker ps -qa)
-	- $(COMPOSE_F) $(DOCKER_FILE) down --rmi all --volumes --remove-orphans
+	- $(STOP) $$(docker compose ps -qa)
+	- $(COMPOSE) down --rmi all --volumes --remove-orphans
 	- rm -rf `find . | grep migrations | grep -v env`
 	- rm -rf $(VOLUMES_PATH)/*
 	- rm -rf ./tokens
@@ -165,13 +171,13 @@ clean: down
 #	- rm -rf ./requirements/aegis/ModSecurity
 
 fclean: clean
-	- $(STOP) $$(docker ps -qa)
-	- $(RM) $$(docker ps -qa)
-	- $(RM_IMG) $$(docker images -qa)
+	- $(STOP) $$(docker compose ps -qa)
+	- $(RM) $$(docker compose ps -qa)
+	- $(RM_IMG) $$(docker compose images -qa)
 	- $(NETWORK) rm $$(docker network ls -q) 2>/dev/null
 
 prune:
-	- $(STOP) $$(docker ps -qa)
+	- $(STOP) $$(docker compose ps -qa)
 	- $(SYSTEM) prune -af
 	- $(VOLUME) prune -af
 #	- rm -rf ./requirements/aegis/ModSecurity/

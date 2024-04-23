@@ -5,7 +5,6 @@ COLOR_BLUE='\e[1;34m'
 COLOR_RESET='\e[0m'
 
 set -e
-echo -e "\n${COLOR_GREEN}-${ELASTIC_PASSWORD}- && -${KIBANA_PASSWORD}-${COLOR_RESET}\n"
 
 if [ x${ELASTIC_PASSWORD} == x ]; then
   echo "${COLOR_GREEN}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";

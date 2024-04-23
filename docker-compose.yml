@@ -104,7 +104,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl http://localhost:8000 | echo -e 'cannot curl'",
+          "curl -k https://localhost:8000",
         ]
       interval: 10s
       timeout: 10s
@@ -138,7 +138,7 @@ services:
       dockerfile: Dockerfile
       args:
         ELASTIC_USER: $ELASTIC_USER
-        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+        ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
     labels:
       co.elastic.logs/module: logstash
     user: root
@@ -216,7 +216,7 @@ services:
     environment:
       - "discovery.type=single-node"
       - "cluster.name=${CLUSTER_NAME}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}"
       - "network.host=0.0.0.0"
       - "xpack.security.enabled=true"
       - "xpack.security.http.ssl.enabled=true"
@@ -336,7 +336,7 @@ services:
       - "SERVERNAME=https://localhost:8000/iris/"
       - "ELASTICSEARCH_HOSTS=https://apollo:9200"
       - "ELASTICSEARCH_USERNAME=kibana_system"
-      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
+      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD1}"
       - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
       - "SERVER_SSL_ENABLED=false"
       - "XPACK_REPORTING_ROLES_ENABLED=false"
@@ -602,8 +602,8 @@ services:
     container_name: setup
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     environment:
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD1}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile

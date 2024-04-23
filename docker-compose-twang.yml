@@ -82,7 +82,7 @@ services:
   #     context: ./requirements/aether/
   #     dockerfile: Dockerfile
   #     args:
-  #       ELASTIC_USER: $ELASTIC_USER1
+  #       ELASTIC_USER: $ELASTIC_USER
   #       ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
   #   labels:
   #     co.elastic.logs/module: logstash
@@ -115,27 +115,27 @@ services:
     networks:
       - sentinel
     environment:
-      - "node.name: elasticsearch"
-      - "discovery.type=single-node"
-      - "cluster.name=${CLUSTER_NAME}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}"
-      - "network.host=0.0.0.0"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.http.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.transport.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.verification_mode=certificate"
-      - "xpack.license.self_generated.type=${LICENSE}"
-    # mem_limit: ${ES_MEM_LIMIT}
-    # ulimits:
-    #   memlock:
-    #     soft: -1
-    #     hard: -1
+      node.name: elasticsearch
+      discovery.type: single-node
+      cluster.name: ${CLUSTER_NAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD1}
+      network.host: 0.0.0.0
+      xpack.security.enabled: true
+      xpack.security.http.ssl.enabled: true
+      xpack.security.http.ssl.key: certs/apollo/apollo.key
+      xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.enabled: true
+      xpack.security.transport.ssl.key: certs/apollo/apollo.key
+      xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.license.self_generated.type: ${LICENSE}
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     restart: unless-stopped
     healthcheck:
       test:
@@ -161,30 +161,31 @@ services:
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
     environment:
-      - "SERVERNAME=https://localhost:8000/iris/"
-      - "ELASTICSEARCH_HOSTS=https://apollo:9200"
-      - "ELASTICSEARCH_USERNAME=kibana_system"
-      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD1}"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-      - "SERVER_SSL_ENABLED=false"
-      - "XPACK_REPORTING_ROLES_ENABLED=false"
-      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}"
-      - "XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}"
-      - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
-      - "SERVER_REWRITEBASEPATH=true"
-      - "SERVER_BASEPATH=/iris"
-      - "SERVER_PUBLICBASEURL=https://localhost:8000/iris"
+      SERVERNAME: iris
+      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD1}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      SERVER_SSL_ENABLED: false
+      XPACK_REPORTING_ROLES_ENABLED: false
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+      SERVER_REWRITEBASEPATH: true
+      SERVER_BASEPATH: /iris
+      SERVER_PUBLICBASEURL: https://localhost:8000/iris
+    mem_limit: ${KB_MEM_LIMIT}
     networks:
       - sentinel
-    # healthcheck:
-    #  test:
-    #    [
-    #      "CMD-SHELL",
-    #      "curl -k https://localhost:8000/iris/",
-    #    ]
-    #  interval: 10s
-    #  timeout: 10s
-    #  retries: 120
+    healthcheck:
+     test:
+       [
+         "CMD-SHELL",
+         "curl -k https://localhost:8000/iris/",
+       ]
+     interval: 10s
+     timeout: 10s
+     retries: 120
 
 # # Front container
   malevitch:
@@ -202,33 +203,33 @@ services:
     restart: on-failure
 
 # # Filebeat container
-  # orion:
-  #   depends_on:
-  #     apollo:
-  #       condition: service_healthy
-  #   container_name: orion
-  #   image: orion
-  #   labels:
-  #     co.elastic.logs/module: filebeat
-  #   volumes:
-  #     - certificates:/usr/share/filebeat/config/certs
-  #     - filebeat_data:/usr/share/filebeat/data
-  #     - "/lib/docker/containers:/var/lib/docker/containers:ro"
-  #     - "/run/docker.sock:/var/run/docker.sock:ro"
-  #   build:
-  #     context: ./requirements/orion/
-  #     dockerfile: Dockerfile
-  #   user: "root"
-  #   environment:
-  #     ELASTIC_USER: elastic
-  #     ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
-  #     ELASTIC_HOSTS: https://apollo:9200
-  #     KIBANA_HOSTS: http://iris:5601
-  #     LOGSTASH_HOSTS: http://aether:9600
-  #   networks:
-  #     - atlas
-  #     - sentinel
-  #   restart: on-failure
+  orion:
+    depends_on:
+      apollo:
+        condition: service_healthy
+    container_name: orion
+    image: orion
+    labels:
+      co.elastic.logs/module: filebeat
+    volumes:
+      - certificates:/usr/share/filebeat/config/certs
+      - filebeat_data:/usr/share/filebeat/data
+      - "/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/run/docker.sock:/var/run/docker.sock:ro"
+    build:
+      context: ./requirements/orion/
+      dockerfile: Dockerfile
+    user: root
+    environment:
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
+      ELASTIC_HOSTS: https://apollo:9200
+      KIBANA_HOSTS: http://iris:5601
+      LOGSTASH_HOSTS: http://aether:9600
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
 
 # # ELK setup container
   setup:
