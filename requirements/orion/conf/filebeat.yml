@@ -57,10 +57,6 @@
 
 # #------Logstash Output------#
 
-# output.logstash:
-#    hosts: ["aether:5400"]
-#   #  hosts: ["orion:5044"]
-
 # setup.kibana:
 #   host: "https://localhost:8000/iris/"
 #   username: "elastic"
@@ -68,6 +64,20 @@
 
 # logging.json: true
 # logging.metrics.enabled: false
+
+# filebeat.inputs:
+# - type: filestream
+#  id: default-filestream
+#  paths:
+#    - ingest_data/*.log
+
+
+# filebeat.autodiscover:
+#  providers:
+#    - type: docker
+#      hints.enabled: true
+
+# ----------------------------------------------------
 
 filebeat.inputs:
 - type: filestream
@@ -80,3 +90,24 @@ filebeat.autodiscover:
  providers:
    - type: docker
      hints.enabled: true
+
+
+processors:
+- add_docker_metadata: ~
+
+
+setup.kibana:
+ host: ${KIBANA_HOSTS}
+ username: ${ELASTIC_USER}
+ password: ${ELASTIC_PASSWORD}
+
+
+output.elasticsearch:
+ hosts: ${ELASTIC_HOSTS}
+ username: ${ELASTIC_USER}
+ password: ${ELASTIC_PASSWORD}
+ ssl.enabled: true
+ ssl.certificate_authorities: "certificates/ca/ca.crt"
+
+ # output.logstash:
+#    hosts: ["aether:5400"]
