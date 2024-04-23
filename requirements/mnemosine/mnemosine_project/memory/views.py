@@ -1,3 +1,5 @@
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db import IntegrityError
 from django.http import JsonResponse
 from django.views import View
 
@@ -30,12 +32,19 @@ class tournamentView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
+        if request.user.is_service is False \
+            or request.user.nick != "coubertin":
+            return JsonResponse({"Err": "Only Coubertin can create tournaments"}, status=403)
         data = request.data
         try:
-            tournament = Tournament.from_json_saved(data)
+            Tournament.from_json_saved(data)
+        except IntegrityError as e:
+            return JsonResponse({"Err": e.__str__()}, status=409)
+        except ValidationError as e:
+            return JsonResponse({"Err": e.__str__()}, status=422)
         except BaseException as e:
-            return JsonResponse({"Err": f"{e.__str__()}"})
-        return JsonResponse(tournament.to_dict())
+            return JsonResponse({"Err": e.__str__()}, status=500)
+        return JsonResponse({"Ressource": "updated"})
 
 
 class gameView(View):
@@ -48,8 +57,8 @@ class gameView(View):
             try:
                 player_id = int(player)
                 requestee = Player.objects.get(id=player_id)
-            except BaseException as e:
-                return JsonResponse({"Err": f"bad request: {e.__str__()}"})
+            except ObjectDoesNotExist as e:
+                return JsonResponse({"Err": f"{player}: {e.__str__()}"}, status=404)
             return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
                                  "Loses": [game.to_dict() for game in requestee.loses.all()]}}
 
@@ -64,18 +73,24 @@ class gameView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int=0):
+        if request.user.is_service is False \
+            or request.user.nick == "ludo":
+                return JsonResponse({"Err": "Only Ludo can post games"}, status=403)
         try:
             new_game = Game.from_json_saved(request.data)
-        except BaseException as e:
-            return JsonResponse({"Err": f"can't instantiate the game : {e.__str__()}"})
-        try:
             new_game.game_db_update()
+        except IntegrityError as e:
+            return JsonResponse({"Err": e.__str__()}, status=409)
+        except ValidationError as e:
+            return JsonResponse({"Err": e.__str__()}, status=422)
         except BaseException as e:
-            return JsonResponse({"Err": f"unexpected error ocured : {e.__str__()}"})
+            return JsonResponse({"Err": e.__str__()}, status=500)
         return JsonResponse(new_game.to_dict())
 
     def delete(self, request, id: int=0):
-        pass
+        if request.user.is_admin is False:
+            return JsonResponse({"Err": "Only admin can delete games"}, status=403)
+        return JsonResponse({"Err": "Not implemented delete"}, status=501)
 
 
 class playerView(View):
@@ -109,10 +124,13 @@ class playerView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
-        data = request.data
+        if request.user.is_service is False \
+                or request.user.nick != "petrus":
+                return JsonResponse({"Err": "Only petrus can create a player"}, status=401)
+
         player = Player()
         try:
-            player.id = data['Id']
+            player.id = request.data['Id']
         except KeyError as e:
             return JsonResponse({"Err": f"Key : {str(e)} not provided."}, status=400)
         try:
@@ -122,30 +140,36 @@ class playerView(View):
         return JsonResponse({"Player": "created"})
 
     def delete(self, request, id: int = 0):
-        data = request.data
-        if 'Id' not in data:
-            return JsonResponse({"Err": "no id provided"})
+        if request.user.is_service is False \
+            or request.user.nick != "petrus":
+            return JsonResponse({"Err": "Only petrus can delete a player"}, status=401)
         try:
-            player = Player.objects.get(id=data['Id'])
-        except BaseException:
-            return JsonResponse({"Err": "no player for the id"})
+            id = request.data['Id']
+        except KeyError as e:
+            return JsonResponse({"Err": f"misses value for key : {e.__str__()}"}, status=400)
+        try:
+            player = Player.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"Err": "no player for the id"}, status=404)
         try:
             player.delete()
-        except BaseException as e:
-            return JsonResponse({"Err": f"unexpected error : {e.__str__()}"})
+        except IntegrityError as e:
+            return JsonResponse({"Err": f"Unexpected error : {e.__str__()}"}, status=500)
         return JsonResponse({"Player suppressed": True})
 
     def patch(self, request, id: int = 0):
-        data = request.data
-        if 'Id' not in data:
-            return JsonResponse({"Err": "no id provided"})
+        if request.user.is_admin is False:
+            return JsonResponse({"Err": "Only admin can patch a player"}, status=401)
         try:
-            player = Player.objects.get(id=data['Id'])
-        except BaseException:
-            return JsonResponse({"Err": "no player for the id"})
-        if 'Elo' not in data:
-            return JsonResponse({"Err": "no elo provided"})
-        player.elo = data['Elo']
+            id = request.data['Id']
+            elo = request.data['Elo']
+        except KeyError as e:
+            return JsonResponse({"Err": f"misses value for key : {e.__str__()}"}, status=400)
+        try:
+            player = Player.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return JsonResponse({"Err": "no player for the id"}, status=404)
+        player.elo = elo
         try:
             player.save()
         except BaseException as e:
