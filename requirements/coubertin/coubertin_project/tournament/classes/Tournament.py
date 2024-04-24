@@ -12,8 +12,16 @@ class Tournament:
 
     def addPlayer(self, player):
         if (len(self.players) >= self.nbPlayers):
-            raise Exception('Too many players already')
+            raise Exception("Too many players already")
         self.players += player
+
+    def removePlayer(self, playerId):
+        if (playerId not in self.players):
+            raise Exception ("This player is not participating in this tournament")
+        if self.state == 0:
+            self.players.remove(playerId)
+        else: # Debug
+            print("you tried to remove a player during a tournament")
 
     def addGame(self, game):
         game['Round'] = self.currentRound
@@ -28,10 +36,5 @@ class Tournament:
         }
         return (tournamentDict)
     
-    def removePlayer(self, playerId):
-        if self.state == 0:
-            self.players.remove(playerId)
-        else: # Debug
-            print("you tried to remove a player during a tournament")
 
 tournaments = {}

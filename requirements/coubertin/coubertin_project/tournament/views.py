@@ -5,6 +5,25 @@ from tournament.classes.Tournament import Tournament, tournaments
 import json
 import io
 
+# Faire des fonctions quand on a juste un post.
+# Faire la fonction pour quitter un tournoi par soi-meme !
+
+class leaveTournament(View):
+    def post(self, request):
+        global tournaments
+
+        try:
+            playerId = request.user.id
+            data = request.data
+            tournamentId = data['tournamentId']
+            tournaments[tournamentId].removePlayer(playerId)
+            
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__()})
+
+        return JsonResponse({})
+        
+
 class createTournament(View): 
     def post(self, request): # Maybe we can set admin here instead.
         global tournaments
