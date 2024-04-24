@@ -20,7 +20,7 @@ document.querySelector('.user-profile-picture input').addEventListener('change',
 	if (file) {
 		if (file.size > maxSize) {
 			sendImageAlert("max-image-weight");
-			e.target.value = '';
+			event.target.value = '';
 		}
 		var	reader = new FileReader();
 		reader.onload = function(e) {
