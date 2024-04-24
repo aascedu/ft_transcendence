@@ -19,4 +19,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('user/', include("user_management.urls")),
+    path('metrics/', include('django_prometheus.urls')),
 ]

@@ -34,9 +34,12 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'mnemosine']
 
 INSTALLED_APPS = [
     'memory',
+    "django_prometheus",
 ]
 
-PROJECT_OWN_MIDDLEWARE = []
+PROJECT_OWN_MIDDLEWARE = [
+        'shared.Middleware.ensureIdentificationMiddleware',
+]
 
 MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
