@@ -4,6 +4,13 @@ from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
 
 # Faire des fonctions quand on a juste un post.
+# Invite someone to tournament
+# Get tournament name
+# Get tournament admin
+# Get number of players
+# Get player list
+# Online friends not yet subscribed to tournament
+# Get matches
 
 class createTournament(View): 
     def post(self, request): # Maybe we can set admin here instead.
@@ -54,7 +61,7 @@ class joinTournament(View):
 
         return JsonResponse({})
     
-class getTournament(View):
+class getTournaments(View):
     def get(self, request):
         response = {}
         for id in tournaments:
