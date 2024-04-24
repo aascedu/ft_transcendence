@@ -14,6 +14,15 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 	render(g_state);
 });
 
+document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', function() {
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.create-tournament';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+	document.querySelector('.create-tournament-name-input').focus();
+});
+
 // Load user profile page when clicking on a friend
 
 document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {

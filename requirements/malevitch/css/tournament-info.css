@@ -181,6 +181,18 @@
 	margin-left: 16px;
 }
 
+.tournament-info-no-players img {
+	margin-top: 16px;
+	width: 20%;
+	opacity: 50%;
+}
+
+.tournament-info-no-players p {
+	font-size: 14pt;
+	font-weight: 400;
+	margin-top: 16px;
+}
+
 .tournament-kick-player {
 	top: -7px;
 	right: -11px;
@@ -247,6 +259,17 @@
 	width: 30%;
 	justify-content: space-around;
 	align-content: center;
+}
+
+.bracket-round-one-four {
+	margin-left: 17.5%;
+}
+
+.bracket-round-three-four {
+	position: absolute;
+	left: 52.5%;
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 .bracket-match {
