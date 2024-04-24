@@ -215,6 +215,12 @@ function displayCreatedTournament() {
 	// Reveal "no players" if no friend was invited
 	if (invitedFriends.length === 0) {
 		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
+		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+			item.parentNode.removeChild(item);	
+		});
+	}
+	else {
+		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
 	}
 
 	// Modify the bracket if it's 4 players mode
