@@ -84,7 +84,9 @@
 		"home": "Home",
 		"play-again": "Play again",
 		"edit-picture": "Edit profile picture",
-		"ok": "OK"
+		"ok": "OK",
+		"accessibility": "Accessibility",
+		"contrast": "Contrast mode"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -171,7 +173,9 @@
 		"home": "Accueil",
 		"play-again": "Rejouer",
 		"edit-picture": "Changer de photo de profil",
-		"ok": "OK"
+		"ok": "OK",
+		"accessibility": "Accessibilité",
+		"contrast": "Mode contrasté"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -258,7 +262,9 @@
 		"home": "主页",
 		"play-again": "再玩一次",
 		"edit-picture": "编辑个人资料图片",
-		"ok": "好的"
+		"ok": "好的",
+		"accessibility": "可达性",
+		"contrast": "对比模式"
 	}
 }
 

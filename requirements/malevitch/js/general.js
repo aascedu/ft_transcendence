@@ -357,4 +357,5 @@ function hideEveryPage() {
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
+	document.querySelector('.accessibility').classList.add('visually-hidden');
 }

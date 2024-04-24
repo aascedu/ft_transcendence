@@ -147,3 +147,13 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });
+
+// Go to accessibility
+
+document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.accessibility';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
