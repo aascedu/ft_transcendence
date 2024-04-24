@@ -211,6 +211,27 @@ function displayCreatedTournament() {
 		</div>`);
 	}
 
+	// Reveal "no players" if no friend was invited
+	if (invitedFriends.length === 0) {
+		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
+	}
+
+	// Modify the bracket if it's 4 players mode
+	if (numberOfPlayers.trim() == '4') {
+		document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+		document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+		document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+		document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+		document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+	}
+	else if (document.querySelector('.bracket-round-one-four') != null) {
+		document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
+		document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
+		document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
+		document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
+		document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+	}
+
 	// Render the tournament page
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';

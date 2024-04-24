@@ -366,6 +366,10 @@ function addInvitedPlayerToTournament(nick, pic) {
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', loadUserProfile);
 	});
+
+	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
+		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+	}
 }
 
 function removeItemFromFriendsList(item) {

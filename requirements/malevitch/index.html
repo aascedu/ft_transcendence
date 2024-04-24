@@ -514,7 +514,7 @@
 						<img src="assets/general/leave.svg" alt="leave tournament" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
 				</div>
-				<div class="tournament-info-card-container w-100 d-flex align-items-start flex-wrap overflow-x-hidden overflow-y-auto">
+				<div class="tournament-info-card-container w-100 overflow-x-hidden overflow-y-auto">
 					<div class="tournament-info-players w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-players-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
 							<p data-language="players" class="unselectable">Players</p>
@@ -529,6 +529,10 @@
 								<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 						</div> -->
+						<div class="tournament-info-no-players w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
+							<img src="assets/general/no-friends.svg" alt="no players icon" draggable="false" (dragstart)="false;" class="unselectable">
+							<p data-language="no-players" class="text-center unselectable">No player yet...</p>
+						</div>
 					</div>
 					<div class="tournament-info-bracket w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-bracket-title tournament-info-title w-100">
@@ -539,41 +543,13 @@
 								<div class="bracket-round bracket-round-one">
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
+											<!-- <div class="bracket-player-picture">
 												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
 											</div>
 											<div class="bracket-player-name unselectable">Player1</div>
-											<div class="bracket-player-score unselectable">5</div>
-										</div>
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player2</div>
-											<div class="bracket-player-score unselectable">4</div>
-										</div>
-										<div class="bracket-match-lines">
-											<div class="bracket-match-line-one"></div>
-											<div class="bracket-match-line-two"></div>
-										</div>
-										<div class="bracket-match-lines-alt">
-											<div class="bracket-match-line-one"></div>
-										</div>
-									</div>
-									<div class="bracket-match">
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player3</div>
-											<div class="bracket-player-score unselectable">2</div>
+											<div class="bracket-player-score unselectable">5</div> -->
 										</div>
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player4</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
@@ -585,18 +561,8 @@
 									</div>
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player5</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player6</div>
-											<div class="bracket-player-score unselectable">1</div>
+										<div class="bracket-player bracket-winner">
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
@@ -608,18 +574,21 @@
 									</div>
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player7</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player8</div>
-											<div class="bracket-player-score unselectable">3</div>
+										<div class="bracket-player bracket-winner">
+										</div>
+										<div class="bracket-match-lines">
+											<div class="bracket-match-line-one"></div>
+											<div class="bracket-match-line-two"></div>
+										</div>
+										<div class="bracket-match-lines-alt">
+											<div class="bracket-match-line-one"></div>
+										</div>
+									</div>
+									<div class="bracket-match">
+										<div class="bracket-player bracket-winner">
+										</div>
+										<div class="bracket-player bracket-winner">
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
@@ -633,18 +602,8 @@
 								<div class="bracket-round bracket-round-two">
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player1</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player4</div>
-											<div class="bracket-player-score unselectable">3</div>
+										<div class="bracket-player bracket-winner">
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
@@ -656,18 +615,8 @@
 									</div>
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player5</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player7</div>
-											<div class="bracket-player-score unselectable">4</div>
+										<div class="bracket-player bracket-winner">
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
@@ -680,19 +629,9 @@
 								</div>
 								<div class="bracket-round bracket-round-three">
 									<div class="bracket-match">
-										<div class="bracket-player bracket-loser">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player1</div>
-											<div class="bracket-player-score unselectable">2</div>
+										<div class="bracket-player bracket-winner">
 										</div>
 										<div class="bracket-player bracket-winner">
-											<div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player5</div>
-											<div class="bracket-player-score unselectable">5</div>
 										</div>
 										<div class="bracket-match-lines">
 											<div class="bracket-match-line-one"></div>
