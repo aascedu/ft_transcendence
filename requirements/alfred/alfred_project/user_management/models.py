@@ -58,7 +58,25 @@ class Client(models.Model):
         }
 
     def list_friends(self):
-        return list([object.friends_dict() for object in self.friends.all()])
+        return [object.friends_dict()
+                for object
+                in self
+                    .friends
+                    .all()]
+
+    def list_received_requests(self):
+        return [object.sender.public_dict()
+                for object
+                in FriendshipRequest
+                    .objects
+                    .filter(receiver=self)]
+
+    def list_sent_requests(self):
+        return [object.receiver.public_dict()
+                for object
+                in FriendshipRequest
+                    .objects
+                    .filter(sender=self)]
 
 
 class FriendshipRequest(models.Model):
