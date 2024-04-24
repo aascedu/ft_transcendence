@@ -24,6 +24,7 @@ document.querySelector('.create-tournament-name-input').addEventListener('keypre
 		}
 		else {
 			document.querySelector('.create-tournament-players-button').focus();
+			tournamentInputWarning.classList.add('visually-hidden');
 		}
 
 	}
