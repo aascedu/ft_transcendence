@@ -6,7 +6,7 @@ from django.views import View
 import requests
 
 from memory.models import Tournament, Game, Player
-from shared.utils import delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
 def request_get_all(ids_str, key_name, model):
     return_json = {}
@@ -59,7 +59,7 @@ class gameView(View):
                 player_id = int(player)
                 requestee = Player.objects.get(id=player_id)
             except ObjectDoesNotExist as e:
-                return JsonErrResponse(f"{player}: {e.__str__()}", status=404)
+                return JsonNotFound(f"{player}: {e.__str__()}")
             return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
                                  "Loses": [game.to_dict() for game in requestee.loses.all()]}}
 
@@ -67,7 +67,7 @@ class gameView(View):
             try:
                 x = min(int(queryparams.get('latests', 10)), 10)
             except ValueError as e:
-                return JsonErrResponse(e.__str__()})
+                return JsonBadRequest(e.__str__())
             latest_games = Game.objects.order_by('-id').reverse()[:x]
             return_json |= {"latests": [game.to_dict() for game in latest_games]}
 

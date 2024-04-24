@@ -1,5 +1,4 @@
 from django.db.models import ProtectedError
-from django.db.models.lookups import In
 from django.http import JsonResponse
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
@@ -35,3 +34,5 @@ def JsonBadRequest(error_message):
 def JsonForbiden(error_message):
     return JsonErrResponse(error_message, status=403)
 
+def JsonNotFound(error_message):
+    return JsonErrResponse(error_message, status=404)
