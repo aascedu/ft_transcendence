@@ -27,7 +27,13 @@ volumes:
   logstash_data:
     driver: local
 
+  logstash_ingest_data:
+    driver: local
+
   filebeat_data:
+    driver: local
+
+  filebeat_ingest_data:
     driver: local
 
 services:
@@ -43,7 +49,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: aegis
-    image: aegis
     build:
       context: ./requirements/aegis
       dockerfile: Dockerfile
@@ -74,33 +79,34 @@ services:
       retries: 120
 
 # # Logstash container
-  # aether:
-  #   depends_on:
-  #     apollo:
-  #       condition: service_healthy
-  #   container_name: aether
-  #   image: aether
-  #   build:
-  #     context: ./requirements/aether/
-  #     dockerfile: Dockerfile
-  #     args:
-  #       ELASTIC_USER: $ELASTIC_USER
-  #       ELASTIC_PASSWORD: $ELASTIC_PASSWORD1
-  #   labels:
-  #     co.elastic.logs/module: logstash
-  #   user: root
-  #   volumes:
-  #     - certificates:/usr/share/elasticsearch/config/certs:ro
-  #     - logstash_data:/usr/share/logstash/data
-  #     - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-  #   environment:
-  #    xpack.monitoring.enabled: false
-  #    ELASTIC_USER: elastic
-  #    ELASTIC_PASSWORD: ${ELASTIC_PASSWORD1}
-  #    ELASTIC_HOSTS: https://apollo:9200
-  #   networks:
-  #     - sentinel
-  #   restart: on-failure
+  aether:
+    depends_on:
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_started
+    container_name: aether
+    build:
+      context: ./requirements/aether/
+      dockerfile: Dockerfile
+      args:
+        ELASTIC_USER: $ELASTIC_USER
+        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+    labels:
+      co.elastic.logs/module: logstash
+    user: root
+    volumes:
+      - certificates:/usr/share/elasticsearch/config/certs:ro
+      - logstash_data:/usr/share/logstash/data
+      - logstash_ingest_data:/usr/share/logstash/ingest_data/
+    environment:
+     xpack.monitoring.enabled: false
+     ELASTIC_USER: elastic
+     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+     ELASTIC_HOSTS: https://apollo:9200
+    networks:
+      - sentinel
+    restart: on-failure
 
 # # Elastisearch container
   apollo:
@@ -167,7 +173,8 @@ services:
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
     environment:
-      SERVERNAME: iris
+      SERVERNAME: kibana
+      # SERVERNAME: iris
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
@@ -180,18 +187,12 @@ services:
       SERVER_REWRITEBASEPATH: true
       SERVER_BASEPATH: /iris
       SERVER_PUBLICBASEURL: https://localhost:8000/iris
+      xpack.screenshotting.browser.chromium.disablesandbox: true
+      xpack.observability.aiassistant: disable
+      LICENSE: ${LICENSE}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - sentinel
-    healthcheck:
-     test:
-       [
-         "CMD-SHELL",
-         "curl -k https://localhost:8000/iris/",
-       ]
-     interval: 10s
-     timeout: 10s
-     retries: 120
 
 # # Front container
   malevitch:
@@ -220,11 +221,11 @@ services:
     labels:
       co.elastic.logs/module: filebeat
     volumes:
-      - certificates:/usr/share/filebeat/config/certs
+      - certificates:/usr/share/filebeat/config/certs:ro
       - filebeat_data:/usr/share/filebeat/data
-      - ./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - filebeat_ingest_data:/usr/share/filebeat/ingest_data/
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
     build:
       context: ./requirements/orion/
       dockerfile: Dockerfile
@@ -264,7 +265,6 @@ services:
 
   tutum:
     container_name: tutum
-    image: tutum
     build:
       context: ./requirements/tutum
       dockerfile: Dockerfile
