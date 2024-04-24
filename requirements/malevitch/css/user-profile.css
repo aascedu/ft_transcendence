@@ -29,6 +29,32 @@
 	outline-style: solid;
 	outline-color: white;
 	height: 160px;
+	width: 160px;
+	object-fit: cover;
+}
+
+.user-profile-picture label {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	height: 148px;
+	width: 148px;
+	border-radius: 74px;
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+.user-profile-picture label img {
+	height: 45%;
+	opacity: 75%;
+	outline-width: 0;
+	border-radius: 0;
+	object-fit: contain;
+}
+
+.user-profile-picture:hover,
+.user-profile-picture:focus {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 .user-profile-name {

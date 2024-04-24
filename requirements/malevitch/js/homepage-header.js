@@ -81,7 +81,7 @@ window.addEventListener('click', function ({target}){
 	}
 });
 
-//
+// Go to friends list
 
 document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
 	hideEveryPage();
@@ -95,7 +95,7 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 	render(g_state);
 });
 
-//
+// Go to my tournaments
 
 document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
 	hideEveryPage();
@@ -109,7 +109,7 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 	render(g_state);
 });
 
-//
+// Go to available tournaments
 
 document.querySelector('.homepage-header-available-tournaments').addEventListener('click', function() {
 	hideEveryPage();
@@ -119,6 +119,31 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 	});
 
 	g_state.pageToDisplay = '.available-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+// Go to new tournament
+
+document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.create-tournament';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+	document.querySelector('.create-tournament-name-input').focus();
+});
+
+// Go to profile
+
+document.querySelector('.homepage-header-profile').addEventListener('click', function() {
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.user-profile';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });

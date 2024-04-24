@@ -108,14 +108,28 @@ services:
       timeout: 10s
       retries: 120
 
-# # Data exporter container
-  aegis_exporter:
+# Data exporter container
+  aegis_stub_exporter:
     depends_on:
       aegis:
         condition: service_healthy
-    container_name: aegis_exporter
+    container_name: aegis_stub_exporter
     build:
-      context: ./requirements/mensura/aegis_exporter
+      context: ./requirements/mensura/aegis_stub_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9113:9113"
+    networks:
+      - atlas
+    restart: on-failure
+
+  aegis_vts_exporter:
+    depends_on:
+      aegis:
+        condition: service_healthy
+    container_name: aegis_vts_exporter
+    build:
+      context: ./requirements/mensura/aegis_vts_exporter
       dockerfile: Dockerfile
     ports:
       - "9913:9913"
@@ -178,6 +192,8 @@ services:
     build:
       context: ./requirements/alfred_db/
       dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: $POSTGRES_ALFRED_DB
       POSTGRES_USER: $POSTGRES_ALFRED_USER
@@ -409,7 +425,72 @@ services:
       - sentinel
     restart: on-failure
 
+  db_exporter_a:
+    container_name: db_exporter_a
+    image: db_exporter_a
+    build:
+      context: ./requirements/mensura/db_exporter_a
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - alfred_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+  db_exporter_m:
+    container_name: db_exporter_m
+    image: db_exporter_m
+    build:
+      context: ./requirements/mensura/db_exporter_m
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - mnemosine_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+  db_exporter_p:
+    container_name: db_exporter_p
+    image: db_exporter_p
+    build:
+      context: ./requirements/mensura/db_exporter_p
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - petrus_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
 # # Data exporter container
+  alertmanager:
+    container_name: alertmanager
+    image: alertmanager
+    build:
+      context: ./requirements/mensura/alertmanager
+      dockerfile: Dockerfile
+    ports:
+      - "9093:9093"
+    depends_on:
+      mensura:
+        condition: service_started
+    networks:
+      - aegis guard
+      - sentinel
+    restart: on-failure
+
+# Data exporter container
   mensura_exporter:
     depends_on:
       mensura:

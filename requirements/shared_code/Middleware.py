@@ -20,9 +20,16 @@ class JWTIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        if 'X-External-Request' not in request.headers:
+            print("Info : Internal request")
+            request.user = User.header_to_user(request.headers)
+            print("Info: Service :", str(request.user))
+            return None
+
+
         if 'auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
-            print("JWT: request with no jwt")
+            print("Info : request with no jwt")
             return None
 
         autorisationJWT = request.COOKIES['auth']
@@ -31,7 +38,7 @@ class JWTIdentificationMiddleware:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
-            print("JWT: Warning: ", e.__str__())
+            print("Warning: ", e.__str__())
             return None
 
         request.user = User(nick=decodedJWT.get('nick'),
@@ -43,30 +50,25 @@ class JWTIdentificationMiddleware:
             try:
                 request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')
                 return response
 
-        print("JWT: User:", str(User))
+        print("Info: request_user=", str(request.user))
         return None
 
 
 class ensureIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
-        if not key:
-            raise Error("publicKey is not defined")
-        self.publicKey = key
 
     def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if not request.user.is_autenticated:
-            return JsonResponse({"Err": request.user.error})
+        if request.user.error is not None:
+            return JsonResponse({"Err": f"request can't be authentified {request.user.error}."}, status=401)
         return None
 
 
