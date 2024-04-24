@@ -46,6 +46,7 @@
 		"tournament-invite": "Invite friends",
 		"create-tournament": "Create tournament",
 		"confirm-create-tournament": "Create the tournament ?",
+		"see-tournament": "See tournament",
 		"players": "Players",
 		"bracket": "Tournament bracket",
 		"confirm-join": "Do you want to join this tournament ?",
@@ -68,6 +69,9 @@
 		"add-friend": "Add a friend...",
 		"confirm-invite": "Do you confirm this invitation ?",
 		"confirm-remove": "Do you want to remove this friend ?",
+		"max-image-weight": "Image is too heavy. (10MB maximum)",
+		"max-image-size": "Image is too big. (2000 x 2000 maximum)",
+		"min-image-size": "Image is too small. (200 x 200 minimum)",
 		"confirm": "Confirm",
 		"cancel": "Cancel",
 		"stats": "Statistics",
@@ -79,7 +83,8 @@
 		"defeat": "DEFEAT",
 		"home": "Home",
 		"play-again": "Play again",
-		"see-tournament": "See tournament"
+		"edit-picture": "Edit profile picture",
+		"ok": "OK"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -128,6 +133,7 @@
 		"tournament-invite": "Inviter des amis",
 		"create-tournament": "Créer le tournoi",
 		"confirm-create-tournament": "Valider la création du tournoi ?",
+		"see-tournament": "Voir le tournoi",
 		"players": "Joueurs",
 		"bracket": "Arbre de tournoi",
 		"confirm-join": "Voulez-vous rejoindre ce tournoi ?",
@@ -150,6 +156,9 @@
 		"add-friend": "Ajouter un ami...",
 		"confirm-invite": "Confirmez-vous cette invitation ?",
 		"confirm-remove": "Voulez-vous supprimer cet ami ?",
+		"max-image-weight": "L'image est trop lourde. (10Mo maximum)",
+		"max-image-size": "L'image est trop grande. (2000 x 2000 maximum)",
+		"min-image-size": "L'image est trop petite. (200 x 200 minimum)",
 		"confirm": "Confirmer",
 		"cancel": "Annuler",
 		"stats": "Statistiques",
@@ -161,7 +170,8 @@
 		"defeat": "DÉFAITE",
 		"home": "Accueil",
 		"play-again": "Rejouer",
-		"see-tournament": "Voir le tournoi"
+		"edit-picture": "Changer de photo de profil",
+		"ok": "OK"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -210,6 +220,7 @@
 		"tournament-invite": "邀请朋友",
 		"create-tournament": "创建锦标赛",
 		"confirm-create-tournament": "创建锦标赛？",
+		"see-tournament": "看比赛",
 		"players": "玩家",
 		"bracket": "锦标赛支架",
 		"confirm-join": "你想参加这个锦标赛吗？",
@@ -232,6 +243,9 @@
 		"add-friend": "添加好友。。。",
 		"confirm-invite": "你确认这个邀请吗？",
 		"confirm-remove": "您想删除该好友吗？",
+		"max-image-weight": "图像太重（最大 10 MB）",
+		"max-image-size": "图像太大（最大 2000 x 2000）",
+		"min-image-size": "图像太小（至少 200 x 200）",
 		"confirm": "确认",
 		"cancel": "取消",
 		"stats": "统计数据",
@@ -243,7 +257,8 @@
 		"defeat": "打败",
 		"home": "主页",
 		"play-again": "再玩一次",
-		"see-tournament": "看比赛"
+		"edit-picture": "编辑个人资料图片",
+		"ok": "好的"
 	}
 }
 
