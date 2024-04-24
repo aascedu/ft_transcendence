@@ -34,6 +34,7 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'mnemosine']
 
 INSTALLED_APPS = [
     'memory',
+    "django_prometheus",
 ]
 
 PROJECT_OWN_MIDDLEWARE = [
