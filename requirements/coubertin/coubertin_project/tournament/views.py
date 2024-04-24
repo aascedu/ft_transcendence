@@ -1,28 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
-import json
-import io
 
 # Faire des fonctions quand on a juste un post.
-# Faire la fonction pour quitter un tournoi par soi-meme !
-
-class leaveTournament(View):
-    def post(self, request):
-        global tournaments
-
-        try:
-            playerId = request.user.id
-            data = request.data
-            tournamentId = data['tournamentId']
-            tournaments[tournamentId].removePlayer(playerId)
-            
-        except Exception as e:
-            return JsonResponse({'Err': e.__str__()})
-
-        return JsonResponse({})
-        
 
 class createTournament(View): 
     def post(self, request): # Maybe we can set admin here instead.
@@ -41,6 +22,21 @@ class createTournament(View):
         tournaments[id] = Tournament(tournamentName, nbPlayers, id)
         return JsonResponse({}) # Redirect on the tournament url, or join URL ?
 
+class leaveTournament(View):
+    def post(self, request):
+        global tournaments
+
+        try:
+            playerId = request.user.id
+            data = request.data
+            tournamentId = data['tournamentId']
+            tournaments[tournamentId].removePlayer(playerId)
+            
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__()})
+
+        return JsonResponse({})
+        
 class joinTournament(View):
     def post(self, request):
         global tournaments
@@ -57,12 +53,15 @@ class joinTournament(View):
             return JsonResponse({'Err': e.__str__()})
 
         return JsonResponse({})
+    
+class getTournament(View):
+    def get(self, request):
+        response = {}
+        for id in tournaments:
+            if tournaments[id].state == 0:
+                response[id] = tournaments[id].toDict()
+        return JsonResponse(response)
 
-def printData(data):
-    print('Tournament name: ', data['tournamentName'])
-    game = data['game']
-    print('Player ', game['Player1'], ' had a score of ', game['Score1'])
-    print('Player ', game['Player2'], ' had a score of ', game['Score2'])
 
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
@@ -78,3 +77,11 @@ class gameResult(View): # We need to remove the loser from the player list
 
 def tournamentHome(request, tournamentId):
     return render(request, 'tournament/home.html', {'tournamentId': tournamentId})
+
+
+############## Debug ##############
+def printData(data):
+    print('Tournament name: ', data['tournamentName'])
+    game = data['game']
+    print('Player ', game['Player1'], ' had a score of ', game['Score1'])
+    print('Player ', game['Player2'], ' had a score of ', game['Score2'])
