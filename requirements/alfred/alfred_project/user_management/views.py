@@ -32,12 +32,12 @@ class userInfoView(View):
 
     def patch(self, request, id: int) -> JsonResponse:
         if request.user.is_service is False and request.user.is_admin is False:
+            client = request.model         
+        else:
             try:
                 client = Client.objects.get(id=id)
             except ObjectDoesNotExist:
                 return JsonErrResponse("Ressource doesn't exist", status=404)
-        else:
-            client = request.model
 
         data = request.data
         client.avatar = data.get("Avatar", client.avatar)
