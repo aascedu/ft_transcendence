@@ -11,7 +11,7 @@ document.querySelector('.user-profile-picture').addEventListener('focusin', func
 // Upload an image and check its size
 document.querySelector('.user-profile-picture input').addEventListener('change', function(event) {
 	var	file = event.target.files[0];
-	var	maxSize = 1024 * 1024 * 10; // 20MB
+	var	maxSize = 1024 * 1024 * 10; // 10MB
 	var	maxWidth = 2000;
 	var	maxHeight = 2000;
 	var	minWidth = 200;
