@@ -13,6 +13,8 @@ RUN         apt update -y && \
 
 COPY        conf/grafana.ini /etc/grafana/grafana.ini
 COPY        conf/data-source.yaml /etc/grafana/provisioning/datasources/datasources.yaml
+COPY        conf/dashboard.yaml /etc/grafana/provisioning/dashboards/dashboard.yaml
+COPY        conf/dashboard.json /etc/grafana/dashboard/dashboard.json
 COPY        tools/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT  ["sh", "/entrypoint.sh"]
