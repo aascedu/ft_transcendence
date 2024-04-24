@@ -24,24 +24,24 @@ document.querySelector('.user-profile-picture input').addEventListener('change',
 		}
 		var	reader = new FileReader();
 		reader.onload = function(e) {
-            var img = new Image();
-            img.onload = function() {
+            		var img = new Image();
+            		img.onload = function() {
 				if (this.width > maxWidth || this.height > maxHeight) {
 					sendImageAlert("max-image-size");
-                    e.target.value = '';
-                }
+			                e.target.value = '';
+			        }
 				else if (this.width < minWidth || this.height < minHeight) {
 					sendImageAlert("min-image-size");
-                    e.target.value = '';
-                }
+                    			e.target.value = '';
+                		}
 				else {
 					var	url = reader.result;
-                    document.querySelector('.user-profile-picture > img').setAttribute('src', url);
+                    			document.querySelector('.user-profile-picture > img').setAttribute('src', url);
 					document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
-                }
-            };
-            img.src = e.target.result;
-        };
+                		}
+            		};
+            		img.src = e.target.result;
+        	};
         reader.readAsDataURL(file);
 	}
 });
