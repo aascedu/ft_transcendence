@@ -136,7 +136,7 @@ services:
       context: ./requirements/mensura/aegis_vts_exporter
       dockerfile: Dockerfile
     ports:
-      - "9113:9113"
+      - "9913:9913"
     networks:
       - atlas
     restart: on-failure
