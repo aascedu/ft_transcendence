@@ -36,7 +36,9 @@ INSTALLED_APPS = [
     'memory',
 ]
 
-PROJECT_OWN_MIDDLEWARE = []
+PROJECT_OWN_MIDDLEWARE = [
+        'shared.Middleware.ensureIdentificationMiddleware',
+]
 
 MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
