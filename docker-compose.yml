@@ -199,6 +199,8 @@ services:
     build:
       context: ./requirements/alfred_db/
       dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: $POSTGRES_ALFRED_DB
       POSTGRES_USER: $POSTGRES_ALFRED_USER
@@ -439,6 +441,55 @@ services:
       - sentinel
     restart: on-failure
 
+  db_exporter_a:
+    container_name: db_exporter_a
+    image: db_exporter_a
+    build:
+      context: ./requirements/mensura/db_exporter_a
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - alfred_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+  db_exporter_m:
+    container_name: db_exporter_m
+    image: db_exporter_m
+    build:
+      context: ./requirements/mensura/db_exporter_m
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - mnemosine_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+  db_exporter_p:
+    container_name: db_exporter_p
+    image: db_exporter_p
+    build:
+      context: ./requirements/mensura/db_exporter_p
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - petrus_network
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+# # Data exporter container
   alertmanager:
     container_name: alertmanager
     image: alertmanager
