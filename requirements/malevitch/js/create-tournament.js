@@ -1,7 +1,7 @@
 // Hide when clicking top left button
 
 document.querySelector('.create-tournament-icon').addEventListener('click', function() {
-	document.querySelector('.create-tournament').classList.add('visually-hidden');
+	hideEveryPage();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
