@@ -79,8 +79,6 @@ services:
         condition: service_started
       tutum:
         condition: service_started
-    container_name: aegis
-    image: aegis
     build:
       context: ./requirements/aegis
       dockerfile: Dockerfile
@@ -116,7 +114,6 @@ services:
       aegis:
         condition: service_healthy
     container_name: aegis_exporter
-    image: aegis_exporter
     build:
       context: ./requirements/mensura/aegis_exporter
       dockerfile: Dockerfile
@@ -132,7 +129,6 @@ services:
       apollo:
         condition: service_healthy
     container_name: aether
-    image: aether
     build:
       context: ./requirements/aether/
       dockerfile: Dockerfile
@@ -152,7 +148,6 @@ services:
 # # Profil container
   alfred:
     container_name: alfred
-    image: alfred
     build:
       context: ./requirements/alfred
       dockerfile: Dockerfile
@@ -179,7 +174,6 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: alfred_db
     container_name: alfred_db
     build:
       context: ./requirements/alfred_db/
@@ -241,7 +235,6 @@ services:
 # # Tournament container
   coubertin:
     container_name: coubertin
-    image: coubertin
     build:
       context: ./requirements/coubertin
       dockerfile: Dockerfile
@@ -261,7 +254,6 @@ services:
 # # Matchmaking container
   cupidon:
     container_name: cupidon
-    image: cupidon
     build:
       context: ./requirements/cupidon
       dockerfile: Dockerfile
@@ -281,7 +273,6 @@ services:
 # # Matchmaking container
   davinci:
     container_name: davinci
-    image: davinci
     build:
       context: ./requirements/davinci
       dockerfile: Dockerfile
@@ -299,7 +290,6 @@ services:
 # # Notification container
   hermes:
     container_name: hermes
-    image: hermes
     build:
       context: ./requirements/hermes
       dockerfile: Dockerfile
@@ -321,7 +311,6 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
-    container_name: iris
     image: docker.elastic.co/kibana/kibana:8.12.2
     labels:
       co.elastic.logs/module: kibana
@@ -358,7 +347,6 @@ services:
 # # Auth inter-container container
   lovelace:
     container_name: lovelace
-    image: lovelace
     build:
       context: ./requirements/lovelace
       dockerfile: Dockerfile
@@ -378,7 +366,6 @@ services:
 # # Game container
   ludo:
     container_name: ludo
-    image: ludo
     build:
       context: ./requirements/ludo
       dockerfile: Dockerfile
@@ -398,7 +385,6 @@ services:
 # # Front container
   malevitch:
     container_name: malevitch
-    image: malevitch
     build:
       context: ./requirements/malevitch
       dockerfile: Dockerfile
@@ -413,7 +399,6 @@ services:
 # # Prometheus container
   mensura:
     container_name: mensura
-    image: mensura
     build:
       context: ./requirements/mensura
       dockerfile: Dockerfile
@@ -444,7 +429,6 @@ services:
 # # Stats container
   mnemosine:
     container_name: mnemosine
-    image: mnemosine
     build:
       context: ./requirements/mnemosine
       dockerfile: Dockerfile
@@ -471,7 +455,6 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: mnemosine_db
     container_name: mnemosine_db
     build:
       context: ./requirements/mnemosine_db/
@@ -496,7 +479,6 @@ services:
       aether:
         condition: service_started
     container_name: orion
-    image: orion
     labels:
       co.elastic.logs/module: filebeat
     build:
@@ -511,7 +493,6 @@ services:
 # # Authentification container
   petrus:
     container_name: petrus
-    image: petrus
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
@@ -538,7 +519,6 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: petrus_db
     container_name: petrus_db
     build:
       context: ./requirements/petrus_db/
@@ -560,7 +540,6 @@ services:
 # # Vault container
   tutum:
     container_name: tutum
-    image: tutum
     build:
       context: ./requirements/tutum
       dockerfile: Dockerfile
