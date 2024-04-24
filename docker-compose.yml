@@ -110,18 +110,33 @@ services:
       timeout: 10s
       retries: 120
 
-# # Data exporter container
-  aegis_exporter:
+# Data exporter container
+  aegis_stub_exporter:
     depends_on:
       aegis:
         condition: service_healthy
-    container_name: aegis_exporter
-    image: aegis_exporter
+    container_name: aegis_stub_exporter
+    image: aegis_stub_exporter
     build:
-      context: ./requirements/mensura/aegis_exporter
+      context: ./requirements/mensura/aegis_stub_exporter
       dockerfile: Dockerfile
     ports:
-      - "9913:9913"
+      - "9113:9113"
+    networks:
+      - atlas
+    restart: on-failure
+
+  aegis_vts_exporter:
+    depends_on:
+      aegis:
+        condition: service_healthy
+    container_name: aegis_vts_exporter
+    image: aegis_vts_exporter
+    build:
+      context: ./requirements/mensura/aegis_vts_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9113:9113"
     networks:
       - atlas
     restart: on-failure
@@ -424,7 +439,23 @@ services:
       - sentinel
     restart: on-failure
 
-# # Data exporter container
+  alertmanager:
+    container_name: alertmanager
+    image: alertmanager
+    build:
+      context: ./requirements/mensura/alertmanager
+      dockerfile: Dockerfile
+    ports:
+      - "9093:9093"
+    depends_on:
+      mensura:
+        condition: service_started
+    networks:
+      - aegis guard
+      - sentinel
+    restart: on-failure
+
+# Data exporter container
   mensura_exporter:
     depends_on:
       mensura:

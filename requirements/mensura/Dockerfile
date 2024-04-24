@@ -4,6 +4,8 @@ RUN         apt update -y && \
             apt upgrade -y && \
             apt install -y prometheus
 
-COPY conf/prometheus.yml /etc/prometheus/prometheus.yml
+COPY        conf/prometheus.yml /etc/prometheus/prometheus.yml
+COPY        conf/alert.rules.yml /etc/prometheus/alert.rules.yml
+COPY        tools/entrypoint.sh /entrypoint.sh
 
-ENTRYPOINT  ["prometheus", "--config.file=/etc/prometheus/prometheus.yml", "--web.listen-address=0.0.0.0:8011", "--web.external-url=https://localhost:8000/mensura/", "--web.route-prefix=/"]
+ENTRYPOINT  ["sh", "entrypoint.sh"]
