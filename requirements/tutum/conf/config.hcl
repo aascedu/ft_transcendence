@@ -12,3 +12,4 @@ listener "tcp" {
 max_lease_ttl = "10h"
 default_lease_ttl = "10h"
 api_addr = "http://0.0.0.0:8200"
+disable_mlock = true
