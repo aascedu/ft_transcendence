@@ -225,10 +225,12 @@ function displayCreatedTournament() {
 
 	// Modify the bracket if it's 4 players mode
 	if (numberOfPlayers.trim() == '4') {
-		document.querySelector('.bracket-round-one').classList.add('visually-hidden');
-		document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
-		document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
-		document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+		if (document.querySelector('.bracket-round-two') != null) {
+			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+		}
 		document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
 	}
 	else if (document.querySelector('.bracket-round-one-four') != null) {
