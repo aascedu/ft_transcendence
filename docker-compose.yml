@@ -114,7 +114,7 @@ services:
   aegis_stub_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
+        condition: service_started
     container_name: aegis_stub_exporter
     image: aegis_stub_exporter
     build:
@@ -129,7 +129,7 @@ services:
   aegis_vts_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
+        condition: service_started
     container_name: aegis_vts_exporter
     image: aegis_vts_exporter
     build:
