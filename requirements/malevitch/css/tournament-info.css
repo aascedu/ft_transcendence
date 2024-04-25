@@ -297,6 +297,12 @@
 	padding: 8px;
 }
 
+.bracket-player-contrast {
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
+}
+
 .bracket-player:first-child {
 	margin-bottom: 12px;
 }

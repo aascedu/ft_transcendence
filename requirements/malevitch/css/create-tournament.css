@@ -96,6 +96,12 @@
 	padding-top: 0;
 }
 
+.create-tournament-invite-container-contrast {
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
+}
+
 .create-tournament-invite-container
 .content-card:hover {
 	cursor: pointer;
