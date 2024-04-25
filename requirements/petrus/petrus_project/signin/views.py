@@ -1,11 +1,14 @@
-from django.db import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.http import HttpRequest, JsonResponse
 from django.views import View
-from shared.jwt_management import JWT
+from requests.models import DecodeError
+from jwt import ExpiredSignatureError, InvalidTokenError
 import requests
 import bcrypt
 
 from signin.models import Client
+from shared.jwt_management import JWT
+from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbiden
 
 
 def view_db(request: HttpRequest) -> JsonResponse:
@@ -16,7 +19,6 @@ def view_db(request: HttpRequest) -> JsonResponse:
 
 class signinView(View):
     """ se login """
-
     def get(self, request, string: str):
         Ava: bool = True
         id: int = -1
@@ -32,31 +34,33 @@ class signinView(View):
             Ava = False
             id = by_nick.unique_id
             nick = by_nick.nick
-        return JsonResponse({"Ava": Ava, "Id": id, "Nick": nick}, status=200)
+        return JsonResponse({"Ava": Ava, "Id": id, "Nick": nick})
 
     def post(self, request, string: str) -> JsonResponse:
         data = request.data
-        id = data.get('Id', None)
-        password = data.get('Pass', None)
-        if id is None:
-            return JsonResponse({"Err": "no id provided"})
 
-        if password is None:
-            return JsonResponse({"Err": "no password provided"})
-        client = Client.objects.filter(unique_id=id).first()
-        if client is None:
-            return JsonResponse({"Err": "invalid id provided"})
+        try:
+            id = data['Id']
+            password = data['Pass']
+        except KeyError as e:
+            return JsonBadRequest(f"no {str(e)} provided")
+
+        try:
+            id = int(id)
+        except (ValueError, TypeError):
+            return JsonBadRequest(f"{id} is not a valid id")
+
+        try:
+            client = Client.objects.get(unique_id=id)
+        except ObjectDoesNotExist:
+            return JsonErrResponse("no user found for this id", status=404)
 
         if not bcrypt.checkpw(password.encode('utf-8'),
-                          client.password.encode('utf-8')):
-            return JsonResponse({"Err": "invalid password"})
-        response = JsonResponse({})
-        try:
-            refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
-            jwt = JWT.objectToAccessToken(client)
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-        response.set_cookie("ref", refresh_token)
+                          client.hashed_password.encode('utf-8')):
+            return JsonForbiden("invalid password")
+        refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
+        jwt = JWT.objectToAccessToken(client)
+        response = JsonResponse({"Client": "connected", "ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 
@@ -69,69 +73,78 @@ class signupView(View):
 
     def post(self, request):
         data = request.data
-        email = data.get('Email', None)
-        nickname = data.get('Nick', None)
-        password = data.get('Pass', None)
-        if password is None or nickname is None or email is None :
-            return JsonResponse(
-                {"Err": "all information must be filled"}, status=200)
-        hashed_password = bcrypt.hashpw(
-            password.encode('utf-8'),
+        client = Client()
+        try:
+            client.email = data['Email']
+            client.nick = data['Nick']
+            client.password = data['Pass']
+        except KeyError as e:
+            return JsonBadRequest(f"Key : {str(e)} not provided.")
+
+        try:
+            client.check_password()
+        except ValidationError as e:
+            return JsonErrResponse(e.__str__(), status=422)
+        client.hashed_password = bcrypt.hashpw(
+            client.password.encode('utf-8'),
             bcrypt.gensalt()).decode('utf-8')
-        if Client.objects.filter(email=email).exists():
-            return JsonResponse({"Err": "known email"})
-        if Client.objects.filter(nick=nickname).exists():
-            return JsonResponse({"Err": "nick unavalable"})
-        try:
-            client = Client.objects.create(
-                password=hashed_password, email=email, nick=nickname)
-        except IntegrityError as e:
-            print("An integrity error occured:", e)
-            return JsonResponse({"Err": e}, status=409)
 
-# checker si les requests sont successfull
-        request = requests.post(
-            f'http://alfred:8001/user/users/{client.unique_id}',
-            json=client.to_alfred())
-# checker si les requests sont successfull
-        request = requests.post(
-            "http://mnemosine:8008/memory/players/0",
-            json=client.to_mnemosine())
+        response = save_response(client)
+        if response.status_code != 200:
+            return response
 
         try:
-            refresh_token = JWT.objectToRefreshToken(client)
-            jwt = JWT.objectToAccessToken(client)
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-        response = JsonResponse({})
-        response.set_cookie("ref", refresh_token)
+            requests.post(
+                f'http://alfred:8001/user/users/{client.unique_id}',
+                json=client.to_alfred())
+            requests.post(
+                f"http://mnemosine:8008/memory/players/{client.unique_id}",
+                json=client.to_mnemosine())
+        except requests.RequestException:
+            client.delete()
+            print("Error : during creation of ressources :", client.__str__())
+            requests.delete(f'http://alfred:8001/user/users/{client.unique_id}')
+            requests.delete(f'http://mnemosine:8008/memory/players/{client.unique_id}')
+            return JsonErrResponse("Internal error", status=409)
+
+        refresh_token = JWT.objectToRefreshToken(client)
+        jwt = JWT.objectToAccessToken(client)
+        response = JsonResponse({"Client": "created", "ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 
 
 class refreshView(View):
-    def get(self, request):
-        data = request.COOKIES
-        if 'ref' not in data:
-            return JsonResponse({"Err": "no refresh_token provided key: Ref"})
+    def post(self, request):
+        try:
+            token = request.data['ref']
+            expired_token = request.COOKIES['auth']
+        except KeyError as e:
+            return JsonBadRequest(f"Key : {str(e)} not provided.")
 
-        token = data['ref']
         try:
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-
-        if 'id' not in decoded_token:
-            return JsonResponse({"Err": "no id in data"})
-
-        client = Client.objects.filter(unique_id=decoded_token['id'])
-        if not client.exists():
-            return JsonResponse({"Err": "invalid refresh_token"})
+            decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
+        except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
+            return JsonForbiden(e.__str__())
+        except DecodeError as e:
+            return JsonErrResponse(e.__str__(), status=500)
 
         try:
-            jwt = JWT.objectToAccessToken(client.first())
-        except BaseException as e:
-            return JsonResponse({"Err": e.__str__()})
-        response = JsonResponse({})
+            id = decoded_token['id']
+            expired_id = decoded_expired_token['id']
+        except KeyError:
+            return JsonForbiden("Ids not provided in tokens")
+
+        if id != expired_id:
+            return JsonForbiden("Ids aren't the same")
+
+        try:
+            client = Client.objects.get(unique_id=id)
+        except ObjectDoesNotExist:
+            return JsonErrResponse("Clients doesn't exist anymore", status=404)
+
+        jwt = JWT.objectToAccessToken(client)
+        response = JsonResponse({"Token": "refreshed"})
         response.set_cookie("auth", jwt)
         return response

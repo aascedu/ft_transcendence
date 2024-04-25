@@ -48,6 +48,17 @@ class Consumer(AsyncWebsocketConsumer):
         waitingList[id] = self.me # Get player name with the token here
         print("player data set")
 
+    async def SendToGame(self, event): # Will need to delete players from the waitingList here
+        if (event['player1'] == self.me.id or event['player2'] == self.me.id):
+            await self.send(json.dumps({
+                    "action": "redirect", 
+                    "url": "https://localhost:8000/ludo/pong/"
+                            + str(waitingList[event['player1']])
+                            + "-"
+                            + str(waitingList[event['player2']])
+                            + "/"
+                    }))
+
     async def Ping(self, event):
         global waitingList
         
@@ -57,14 +68,10 @@ class Consumer(AsyncWebsocketConsumer):
             if (id != self.me.id and
                 waitingList[id].elo > self.me.elo - self.me.margin and
                 waitingList[id].elo < self.me.elo + self.me.margin):
-                    await self.send(json.dumps({
-                            "action": "redirect", 
-                            "url": "https://localhost:8000/ludo/pong/"
-                                    + str(waitingList[self.me.id])
-                                    + "-"
-                                    + str(waitingList[id])
-                                    + "/"
-                            }))
-
-# Faire une vue joinWaitingRoom (dans laquelle j'ai donc acces a l'id du player)
-# Ensuite rediriger sur la page avec les websockets etc...
+                    await self.channel_layer.group_send(
+                        "matchmakingRoom", {
+                            'type': "SendToGame",
+                            'player1': waitingList[self.me.id],
+                            'player2': waitingList[id],
+                        }
+                    )

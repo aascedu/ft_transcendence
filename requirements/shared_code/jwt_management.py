@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from jwt import encode, decode
-
-from .shared_token import vault_token
-import hvac
-
-from .var import public_key
-from .var import private_key
 from .var import algo
+try:
+    from tokens.token import vault_token
+except ModuleNotFoundError:
+    print("Warn vault_token not found")
+
+import hvac
 
 class AuthenticationError(Exception):
     pass
@@ -14,28 +14,35 @@ class AuthenticationError(Exception):
 class VaultInteractionError(Exception):
     pass
 
-def get_key_from_vault(vault_token):
+def get_ressource_from_vault(vault_token, path, ressource):
     try:
+        print("get", ressource, "from vault at", path)
         client = hvac.Client(url='http://tutum:8200', token=vault_token)
         if not client.is_authenticated():
             raise AuthenticationError("Failed to authenticate with Vault")
-        
-        priv_response = client.secrets.kv.v2.read_secret_version(path='shared/priv')
-        pub_response = client.secrets.kv.v2.read_secret_version(path='shared/pub')
-        publicKey = pub_response['data']['data']['public_key']
-        privateKey = priv_response['data']['data']['private_key']
-        
-        return publicKey, privateKey
+
+        response = client.secrets.kv.v2.read_secret_version(path=path)
+        ressource  = response['data']['data'][ressource]
+
+        return ressource
     except Exception as e:
         raise VaultInteractionError("Error interacting with Vault") from e
 
 class JWT:
     try:
-        publicKey, privateKey = get_key_from_vault(vault_token)
+        privateKey: str = get_ressource_from_vault(vault_token, 'shared/priv', 'private_key')
     except AuthenticationError:
         print("Failed to authenticate with Vault. Check your token.")
     except VaultInteractionError:
-        print("Error interacting with Vault. Please check Vault status.")
+        print("Warning private_key : Ignore this warning if this service don't need the private key.")
+    except Exception as e:
+        print("An unexpected error occurred:", str(e))
+    try:
+        publicKey: str = get_ressource_from_vault(vault_token, 'shared/pub', 'public_key')
+    except AuthenticationError:
+        print("Failed to authenticate with Vault. Check your token.")
+    except VaultInteractionError:
+        print("Warning public_key: Error interacting with Vault. Please check Vault status.")
     except Exception as e:
         print("An unexpected error occurred:", str(e))
     algo = algo
@@ -55,15 +62,11 @@ class JWT:
 
     @staticmethod
     def jwtToPayload(token: str, key: str):
-        """
-        token is the jwt
-        TODO : mettre les key dans l'env
-        key is the str :
-            -- access -> JWT.publicKey
-            -- refresh -> JWT.refreshPublicKey
-        Return True and the payload | False and the error
-        """
         return decode(token, key, algorithms=[JWT.algo])
+
+    @staticmethod
+    def jwtToPayloadNoExp(token: str, key: str):
+        return decode(token, key, algorithms=[JWT.algo], options={'verify_exp': False})
 
     @staticmethod
     def peremptionDict() -> dict:

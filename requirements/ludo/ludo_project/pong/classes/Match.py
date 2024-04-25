@@ -4,6 +4,7 @@ from pong.classes.Ball import Ball
 # A init autrement
 class Match:
     def __init__(self):
+        self.playersId = [0, 0]
         self.players = []
         self.score = [0, 0]
         self.ball = Ball(gameSettings=gameSettings())

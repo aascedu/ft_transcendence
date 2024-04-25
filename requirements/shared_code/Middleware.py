@@ -1,17 +1,16 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
-from shared.jwt_management import JWT
-from .var import public_key
+from .jwt_management import JWT
 from .common_classes import User
-import os
 import json
+import information
 
 
 class JWTIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
+        key = JWT.publicKey
         if not key:
             raise Error("publicKey is not defined")
         self.publicKey = key
@@ -21,8 +20,16 @@ class JWTIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        if 'X-External-Request' not in request.headers:
+            print("Info : Internal request")
+            request.user = User.header_to_user(request.headers)
+            print("Info: Service :", str(request.user))
+            return None
+
+
         if 'auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
+            print("Info : request with no jwt")
             return None
 
         autorisationJWT = request.COOKIES['auth']
@@ -31,31 +38,37 @@ class JWTIdentificationMiddleware:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
+            print("Warning: ", e.__str__())
             return None
 
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
 
+        if "MAIN_MODEL" in information.__dict__:
+            print("Service has a model")
+            try:
+                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+            except ObjectDoesNotExist as e:
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
+                response.delete_cookie('auth')
+                return response
+
+        print("Info: request_user=", str(request.user))
         return None
 
 
 class ensureIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
-        if not key:
-            raise Error("publicKey is not defined")
-        self.publicKey = key
 
     def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if not request.user.is_autenticated:
-            return JsonResponse({"Err": request.user.error})
+        if request.user.error is not None:
+            return JsonResponse({"Err": f"request can't be authentified {request.user.error}."}, status=401)
         return None
 
 

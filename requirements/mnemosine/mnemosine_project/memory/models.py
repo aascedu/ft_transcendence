@@ -8,7 +8,6 @@ class baseModel(models.Model):
     class Meta:
         abstract = True
 
-
 class Player(baseModel):
     elo = models.IntegerField(default=define.dictionaire['default_player_elo'])
     win_count = models.IntegerField(
@@ -21,8 +20,27 @@ class Player(baseModel):
             "Id": self.id,
             "Elo": self.elo,
             "Win-Count": self.win_count,
-            "Lose-Count": self.win_count,
+            "Lose-Count": self.lose_count,
         }
+
+class Tournament(baseModel):
+    name = models.SlugField()
+    players = models.ManyToManyField(Player)
+
+    def to_dict(self):
+        return {
+            "TournamentName": self.name,
+            "Games": [a.to_dict() for a in self.games.all()],
+            "players": [player.to_dict() for player in self.players.all()],
+        }
+
+    @staticmethod
+    def from_json_saved(json):
+        tournament = Tournament.objects.create(name="Named")
+        games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
+        for game in games:
+            game.tournament = tournament
+        return tournament
 
 
 class Game(baseModel):
@@ -37,7 +55,6 @@ class Game(baseModel):
         related_name='loses')
     loser_score = models.IntegerField()
 
-
     def to_dict(self):
         return {
             "Id": self.id,
@@ -47,16 +64,16 @@ class Game(baseModel):
             "Loser-score": self.loser_score,
         }
 
-
     @staticmethod
-    def from_json(json):
+    def from_json_saved(json):
         created_game = Game()
         created_game.winner = Player.objects.get(id=json['Winner'])
         created_game.loser = Player.objects.get(id=json['Loser'])
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+        created_game.full_clean()
+        created_game.save()
         return created_game
-
 
     def game_db_update(self):
         rating1 = self.winner.elo
@@ -77,40 +94,28 @@ class Game(baseModel):
         self.loser.save()
 
 
-class Tournament(baseModel):
-    name = models.SlugField()
-    games = models.ManyToManyField(Game, through='TournamentGame', blank=True)
+
+class TournamentGame(baseModel):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE)
+    round = models.SmallIntegerField()
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='games')
+
+    @staticmethod
+    def from_json_saved(json, tournament):
+        game = TournamentGame()
+        game.game = Game.from_json_saved(json)
+        game.tournament = tournament
+        game.round = json['Round']
+        if (game.round == 1):
+            tournament.players.add(game.game.winner)
+            tournament.players.add(game.game.loser)
+        game.full_clean()
+        game.save()
+        return game
 
     def to_dict(self):
         return {
-            "TournamentName": self.name,
-            "Games": list([a.to_dict() for a in self.games.all()]),
+                "Id": self.id,
+                "Game": self.game.to_dict(),
+                "Round": self.round
         }
-
-    @staticmethod
-    def from_json(json):
-        created_tournament = Tournament()
-        game_array = [TournamentGame.from_json(game) for game in json['Games']]
-
-        for tournamentgame in game_array:
-            created_tournament.games.add(tournamentgame.game)
-        return created_tournament
-
-
-class TournamentParticipation(baseModel):
-    player = models.ForeignKey(Player, on_delete=models.CASCADE, related_name='tournaments')
-    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='participations')
-
-    class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
-        unique_together = ('player', 'tournament')
-
-
-class TournamentGame(baseModel):
-    participation = models.ForeignKey(TournamentParticipation,
-                                   on_delete=models.CASCADE,
-                                   related_name='games')
-    game = models.ForeignKey(Game, on_delete=models.CASCADE)
-
-    class Meta: # pyright: ignore [reportIncompatibleVariableOverride]
-        unique_together = ('tournament', 'game')
-
