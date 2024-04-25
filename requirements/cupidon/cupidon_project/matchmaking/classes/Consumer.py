@@ -48,7 +48,7 @@ class Consumer(AsyncWebsocketConsumer):
         waitingList[id] = self.me # Get player name with the token here
         print("player data set")
 
-    async def SendToGame(self, event): # Will need to delete players from the waitingList here
+    async def SendToGame(self, event): # Will need to delete players from the waitingList here + Rethink because not SPA
         if (event['player1'] == self.me.id or event['player2'] == self.me.id):
             await self.send(json.dumps({
                     "action": "redirect", 

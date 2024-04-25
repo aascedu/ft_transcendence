@@ -18,7 +18,7 @@ class Consumer(AsyncWebsocketConsumer):
     async def connect(self):
         global matches
 
-        self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
+        self.roomName = self.scope["url_route"]["kwargs"]["roomName"] # From the websocket URL !
         print("Room name is " + self.roomName)
 
         if (self.roomName not in matches):

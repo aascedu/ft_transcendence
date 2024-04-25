@@ -24,7 +24,7 @@
 
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Probably add room name
+const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/');
 const Id = JSON.parse(document.getElementById('Id').textContent);
 
 exampleSocket.onopen = function(event) {
@@ -44,7 +44,7 @@ exampleSocket.onerror = function(event) {
 exampleSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.action === "redirect") {
-        window.location.href = data.url;
+        window.location.href = data.url; // NON (Pas SPA)
     }
 };
 
