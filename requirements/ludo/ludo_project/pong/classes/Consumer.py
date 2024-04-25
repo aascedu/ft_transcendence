@@ -160,7 +160,7 @@ class Consumer(AsyncWebsocketConsumer):
         global matches
 
         # Received from me
-        if (event["id"] == self.id):
+        if (event["id"] == self.id): # Remplacer event["id"] par le check du JWT, cf Brieuc.
             await self.gameLogic(event["frames"], self.id)
             if (self.id % 2 == 0):
                 await self.send(text_data=json.dumps({

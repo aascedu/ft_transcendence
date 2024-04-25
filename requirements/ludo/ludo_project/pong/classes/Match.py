@@ -13,8 +13,8 @@ class Match:
 
     def toDict(self):
         return ({
-            'Player1': self.players[0].id,
-            'Player2': self.players[1].id,
+            'Player1': self.playersId[0],
+            'Player2': self.playersId[1],
             'Score1': self.score[0],
             'Score2': self.score[1],
         })
@@ -22,16 +22,16 @@ class Match:
     def to_mnemosine(self):
         if self.score[0] < self.score[1]:
             return ({
-                'Winner': self.players[1].id,
+                'Winner': self.playersId[1],
                 'Winner-score': self.score[1],
-                'Loser': self.players[0].id,
+                'Loser': self.playersId[0],
                 'Loser-score': self.score[0],
             })
         else:
             return ({
-                'Loser': self.players[1].id,
+                'Loser': self.playersId[1],
                 'Loser-score': self.score[1],
-                'Winner': self.players[0].id,
+                'Winner': self.playersId[0],
                 'Winner-score': self.score[0],
             })
 
