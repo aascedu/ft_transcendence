@@ -48,7 +48,7 @@
 .accessibility-title {
 	color: #7300E6;
 	font-size: 14pt;
-	font-weight: 500;
+	font-weight: 600;
 }
 
 /* Contrast mode switch */
@@ -113,4 +113,15 @@
 
 .accessibility-font-size-box {
 	margin-top: 64px;
+}
+
+.accessibility-references {
+	margin-top: 64px;
+}
+
+.accessibility-references ul li a {
+	color: #7300E6;
+	font-size: 14pt;
+	font-weight: 400;
+	margin-top: 16px;
 }

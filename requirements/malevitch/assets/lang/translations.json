@@ -86,7 +86,12 @@
 		"edit-picture": "Edit profile picture",
 		"ok": "OK",
 		"accessibility": "Accessibility",
-		"contrast": "Contrast mode"
+		"contrast": "Contrast mode",
+		"references": "References",
+		"rgaa": "General reference document to improve accessibility",
+		"falc": "European Norm - Easy to read",
+		"accessibility-checker": "Web accessibility checker",
+		"contrast-checker": "Web contrast checker (WCA / WCAA)"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -175,7 +180,12 @@
 		"edit-picture": "Changer de photo de profil",
 		"ok": "OK",
 		"accessibility": "Accessibilité",
-		"contrast": "Mode contrasté"
+		"contrast": "Mode contrasté",
+		"references": "Références",
+		"rgaa": "Référentiel Général d'Amélioration de l'Accessibilité",
+		"falc": "Norme FALC - Facile À Lire et Comprendre",
+		"accessibility-checker": "Contrôle de l'accessibilité web",
+		"contrast-checker": "Contrôle des contrastes colorés"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -264,7 +274,12 @@
 		"edit-picture": "编辑个人资料图片",
 		"ok": "好的",
 		"accessibility": "可达性",
-		"contrast": "对比模式"
+		"contrast": "对比模式",
+		"references": "参考",
+		"rgaa": "提高可访问性的一般参考文档",
+		"falc": "欧洲标准 - 易于阅读",
+		"accessibility-checker": "网络可访问性检查器",
+		"contrast-checker": "网页对比度检查器"
 	}
 }
 
