@@ -22,6 +22,7 @@
 		<link rel="stylesheet" href="css/user-profile.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/victory-defeat.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/create-tournament.css" type="text/css" media="all">
+		<link rel="stylesheet" href="css/accessibility.css" type="text/css" media="all">
 	</head>
 	<body class="dot-pattern">
 		<!-- HOMEPAGE-ID -->
@@ -218,7 +219,7 @@
 		<div class="homepage-header-open-tournaments homepage-header-open-menu w-25 d-flex flex-column justify-content-between align-items-center position-absolute start-50 translate-middle-x purple-shadow visually-hidden">
 			<div class="homepage-header-available-tournaments homepage-header-category w-100 d-flex justify-content-center align-items-center text-center purple-shadow">
 				<img src="assets/general/tournament.svg" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
-				<p data-language="tournaments" class="unselectable">Available tournaments</p>
+				<p data-language="tournaments" class="unselectable">Open tournaments</p>
 			</div>
 			<div class="homepage-header-my-tournaments homepage-header-category w-100 d-flex justify-content-center align-items-center text-center purple-shadow">
 				<img src="assets/general/trophy.svg" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
@@ -236,7 +237,7 @@
 			</div>
 			<div class="homepage-header-play-friend homepage-header-category w-100 d-flex justify-content-center align-items-center text-center purple-shadow">
 				<img src="assets/general/invite-friend.svg" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
-				<p data-language="play-friend" class="unselectable">Invite a friend to play</p>
+				<p data-language="play-friend" class="unselectable">Play with a friend</p>
 			</div>
 		</div>
 		<div class="homepage-header-open-friends homepage-header-open-menu w-25 d-flex flex-column justify-content-between align-items-center position-absolute start-50 translate-middle-x purple-shadow visually-hidden">
@@ -751,8 +752,8 @@
 						</div>
 						<div class="create-tournament-name-input-container w-50 d-flex flex-column justify-content-center align-items-center">
 							<div class="create-tournament-name-input-box input-box w-100 bg-white purple-shadow">
-								<label for="tournament-name-input" data-language="tournament-name" class="visually-hidden">Enter the tournament name...</label>
-								<input id="tournament-name-input" type="text" name="tournament-name" label="tournament-name" data-language="tournament-name" placeholder="Enter the tournament name..." autocomplete="off" class="create-tournament-name-input input w-100 border-0 text-center">
+								<label for="create-tournament-name-input" data-language="tournament-name" class="visually-hidden">Enter the tournament name...</label>
+								<input id="create-tournament-name-input" type="text" name="tournament-name" label="tournament-name" data-language="tournament-name" placeholder="Enter the tournament name..." autocomplete="off" class="create-tournament-name-input input w-100 border-0 text-center">
 							</div>
 							<div class="create-tournament-name-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-tournament-name">Invalid tournament name.</div>
 						</div>
@@ -964,6 +965,57 @@
 				</div>
 			</div>
 		</div>
+		<!-- ACCESSIBILITY -->
+		<div class="accessibility w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
+			<div class="accessibility-container category w-100 d-flex flex-column align-items-center purple-shadow">
+				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
+					<div class="accessibility-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/accessibility/accessibility.svg" alt="accessibility icon" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+					<p data-language="accessibility" class="unselectable">Accessibility</p>
+				</div>
+				<div class="accessibility-card-container w-100 d-flex flex-column align-items-center flex-wrap">
+					<div class="w-100 d-flex flex-column align-items-center">
+						<div class="accessibility-contrast w-50 d-flex justify-content-center align-items-center">
+							<div class="accessibility-title text-center unselectable" data-language="contrast">
+								Contrast mode
+							</div>
+							<label for="accessibility-switch" class="switch">
+								<input type="checkbox" name="accessibility-switch" id="accessibility-switch">
+								<span class="slider"></span>
+								Contrast mode switch
+							</label>
+						</div>
+					</div>
+					<div class="w-100 d-flex flex-column align-items-center">
+						<div class="accessibility-font-size-box font-size-box w-50 d-flex justify-content-center align-items-center">
+							<img src="assets/accessibility/font-size-purple.svg" alt="font size" draggable="false" (dragstart)="false;" class="font-size-icon purple-shadow unselectable">
+							<label for="accessibility-font-size" data-language="font-size" class="visually-hidden">Font size</label>
+							<input type="range" name="font-size" id="accessibility-font-size" class="accessibility-font-size font-size-input range-input" min="0" max="5" value="0">
+						</div>
+					</div>
+					<div class="accessibility-references w-100 d-flex flex-column align-items-center">
+						<div class="accessibility-title text-center unselectable" data-language="references">
+							References
+						</div>
+						<ul>
+							<li><a href="https://accessibilite.numerique.gouv.fr/" target="_blank" data-language="rgaa" class="d-flex justify-content-center text-center">
+								General reference document to improve accessibility
+							</a></li>
+							<li><a href="https://www.inclusion-europe.eu/wp-content/uploads/2017/06/EN_Information_for_all.pdf" target="_blank" data-language="falc" class="d-flex justify-content-center text-center">
+								European Norm - Easy to read
+							</a></li>
+							<li><a href="https://websiteaccessibilitychecker.com/checker/index.php" target="_blank" data-language="accessibility-checker" class="d-flex justify-content-center text-center">
+								Web accessibility checker
+							</a></li>
+							<li><a href="https://webaim.org/resources/contrastchecker/" target="_blank" data-language="contrast-checker" class="d-flex justify-content-center text-center">
+								Web contrast checker (WCA / WCAA)
+							</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
 		<script src="js/general.js"></script>
 		<script src="js/homepage-id.js"></script>
 		<script src="js/sign-in.js"></script>
@@ -977,6 +1029,7 @@
 		<script src="js/user-profile.js"></script>
 		<script src="js/victory-defeat.js"></script>
 		<script src="js/create-tournament.js"></script>
+		<script src="js/accessibility.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>

@@ -33,6 +33,10 @@
 	object-fit: cover;
 }
 
+.user-profile-picture-contrast img {
+	outline-color: #7300E6;
+}
+
 .user-profile-picture label {
 	position: absolute;
 	top: 14px;
