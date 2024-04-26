@@ -8,4 +8,4 @@ groups:
       severity: "critical"
     annotations:
       summary: "Endpoint {{ $labels.instance }} down"
-      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 30 seconds."
+      description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 60 seconds."

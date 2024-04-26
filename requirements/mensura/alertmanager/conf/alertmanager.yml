@@ -102,7 +102,7 @@ inhibit_rules:
 receivers:
   - name: 'team-X-mails'
     email_configs:
-      - to: 'brainisog@gmail.com, twang@student.42lyon.fr, delafforest.brieuc@gmail.com'
+      - to: 'brainisog@gmail.com' #, twang@student.42lyon.fr, delafforest.brieuc@gmail.com'
 
   #- name: 'team-X-pager'
   #  email_configs:

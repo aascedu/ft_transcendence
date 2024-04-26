@@ -112,7 +112,7 @@ services:
   aegis_stub_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
+        condition: service_started
     container_name: aegis_stub_exporter
     build:
       context: ./requirements/mensura/aegis_stub_exporter
@@ -126,7 +126,7 @@ services:
   aegis_vts_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
+        condition: service_started
     container_name: aegis_vts_exporter
     build:
       context: ./requirements/mensura/aegis_vts_exporter
