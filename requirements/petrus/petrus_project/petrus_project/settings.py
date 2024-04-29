@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
+from shared.settings import add_prometheused_apps
 from pathlib import Path
 from pathlib import os
 
@@ -30,10 +31,11 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'petrus']
 
 # Application definition
 
-INSTALLED_APPS = [
+PROJECT_APPS = [
     "signin",
-    "django_prometheus",
 ]
+
+INSTALLED_APPS = add_prometheused_apps(PROJECT_APPS)
 
 PROJECT_OWN_MIDDLEWARE = []
 

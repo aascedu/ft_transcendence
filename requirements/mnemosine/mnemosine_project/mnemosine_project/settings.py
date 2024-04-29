@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
+from shared.settings import add_prometheused_apps
 from pathlib import Path
 import os
 
@@ -32,10 +33,11 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'mnemosine']
 
 # Application definition
 
-INSTALLED_APPS = [
+PROJECT_APPS = [
     'memory',
-    "django_prometheus",
 ]
+
+INSTALLED_APPS = add_prometheused_apps(PROJECT_APPS)
 
 PROJECT_OWN_MIDDLEWARE = [
         'shared.Middleware.ensureIdentificationMiddleware',
