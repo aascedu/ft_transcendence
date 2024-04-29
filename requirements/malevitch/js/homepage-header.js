@@ -141,7 +141,9 @@ document.querySelector('.homepage-header-new-tournament').addEventListener('clic
 // Quick play
 
 document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
-	searchMatch();
+	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden') {
+		searchMatch();
+	}
 });
 
 // Go to profile
