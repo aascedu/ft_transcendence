@@ -8,4 +8,12 @@ SHARED_MIDDLEWARE = [
 ]
 
 def add_prometheused_middleware(middlewares):
-    return middlewares
+    BEFORE_PROMETHEUS = ["django_prometheus.middleware.PrometheusBeforeMiddleware"]
+    AFTER_PROMETHEUS = ["django_prometheus.middleware.PrometheusAfterMiddleware"]
+    COMBINED = BEFORE_PROMETHEUS + middlewares + AFTER_PROMETHEUS
+    return COMBINED
+
+def add_prometheused_apps(apps):
+    PROMETHEUS_APP = ["django_prometheus"]
+    COMBINED = PROMETHEUS_APP + apps
+    return COMBINED
