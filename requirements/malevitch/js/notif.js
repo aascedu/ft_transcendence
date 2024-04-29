@@ -199,18 +199,41 @@ function matchFound() {
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
 
 	// wait 5 seconds then close notif
-	countdown(5);
+	matchCountdown(5);
 }
 
-function countdown(seconds) {
+function matchCountdown(seconds) {
 	if (seconds > 0) {
 		document.querySelector('.notif-match-found .notif-info').textContent = seconds;
-		setTimeout(() => countdown(seconds - 1), 1000);
+		setTimeout(() => matchCountdown(seconds - 1), 1000);
 	}
 	else {
 		// close notif
 		document.querySelector('.notif-match-found').classList.add('visually-hidden');
 		
 		// start match
+	}
+}
+
+// Invite send
+
+function inviteSentNotif(invited) {
+	// update notif with invited nick
+	document.querySelector('.notif-invite-sent .notif-info').textContent = invited;
+
+	// show notif
+	document.querySelector('.notif-invite-sent').classList.remove('visually-hidden');
+
+	// wait 2 seconds and close notif
+	inviteSentCountdown(2);
+}
+
+function inviteSentCountdown(seconds) {
+	if (seconds > 0) {
+		setTimeout(() => inviteSentCountdown(seconds - 1), 1000);
+	}
+	else {
+		// close notif
+		document.querySelector('.notif-invite-sent').classList.add('visually-hidden');
 	}
 }

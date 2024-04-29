@@ -85,15 +85,17 @@ document.querySelector('.user-profile-add-icon').addEventListener('click', funct
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', function () {
 	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
 
+	inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-	document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
 });
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
 	
+		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
 	}
 });
 

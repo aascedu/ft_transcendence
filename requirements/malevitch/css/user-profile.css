@@ -86,7 +86,12 @@
 }
 
 .user-profile-add-icon img {
-	margin-left: 2px;
+	margin-left: 3px;
+}
+
+.user-profile-pending-icon:hover {
+	cursor: default;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.2));
 }
 
 /* history / stats */

@@ -6,6 +6,12 @@ document.querySelector('.homepage-game-content-friends-icon').addEventListener('
 	render(g_state);
 });
 
+document.querySelector('.homepage-game-content-play').addEventListener('click', function() {
+	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
+		searchMatch();
+	}
+});
+
 document.querySelector('.homepage-game-content-tournaments').addEventListener('click', function() {
 	hideEveryPage();
 

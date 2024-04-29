@@ -96,7 +96,8 @@
 		"notif-friend-invite": "has sent you a friend invite",
 		"notif-play-invite": "wants to play with you",
 		"notif-search-match": "Searching a match...",
-		"notif-match-found": "Match found ! Starting in"
+		"notif-match-found": "Match found ! Starting in",
+		"notif-invite-sent": "You have successfully invited"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -195,7 +196,8 @@
 		"notif-friend-invite": "vous a envoyé une demande d'ami",
 		"notif-play-invite": "veut jouer avec vous",
 		"notif-search-match": "Recherche de partie...",
-		"notif-match-found": "Partie trouvée ! Début dans"
+		"notif-match-found": "Partie trouvée ! Début dans",
+		"notif-invite-sent": "Invitation envoyée à"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -294,7 +296,8 @@
 		"notif-friend-invite": "已向您发送好友邀请",
 		"notif-play-invite": "想和你一起玩",
 		"notif-search-match": "寻找匹配项。。。",
-		"notif-match-found": "找到匹配项！ 后开始"
+		"notif-match-found": "找到匹配项！ 后开始",
+		"notif-invite-sent": "您已成功邀请"
 	}
 }
 

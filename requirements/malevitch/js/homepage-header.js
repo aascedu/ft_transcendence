@@ -76,6 +76,13 @@ window.addEventListener('click', function ({target}){
 		document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 			if (!item.classList.contains('visually-hidden')) {
 				item.classList.add('visually-hidden');
+
+				// play menu : close "play with a friend" panel
+				document.querySelector('.homepage-header-play-friend').classList.remove('homepage-header-category-clicked');
+				document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+					item.classList.add('visually-hidden');
+				});
+				document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
 			}
 		});
 	}
@@ -144,6 +151,40 @@ document.querySelector('.homepage-header-quick-play').addEventListener('click', 
 	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
 		searchMatch();
 	}
+});
+
+// Play with friend
+
+document.querySelector('.homepage-header-play-friend').addEventListener('click', function() {
+	this.classList.toggle('homepage-header-category-clicked');
+
+	// si des amis sont en ligne
+	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+		item.classList.toggle('visually-hidden');
+	});
+
+	// sinon
+	document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
+});
+
+document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+	item.addEventListener('click', function() {
+		// close header menu and toggle back invites
+		document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
+		document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+			item.classList.add('visually-hidden');
+		});
+		document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
+
+		// send invite
+
+		// remove invited friend from list
+		item.parentNode.removeChild(item);
+
+		// show notif 3 seconds to confirm invite
+		inviteSentNotif(item.querySelector('p').textContent);
+	});
 });
 
 // Go to profile
