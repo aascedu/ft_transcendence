@@ -109,21 +109,7 @@ services:
       timeout: 10s
       retries: 120
 
-# Data exporter container
-  aegis_stub_exporter:
-    depends_on:
-      aegis:
-        condition: service_started
-    container_name: aegis_stub_exporter
-    build:
-      context: ./requirements/mensura/aegis_stub_exporter
-      dockerfile: Dockerfile
-    ports:
-      - "9113:9113"
-    networks:
-      - atlas
-    restart: on-failure
-
+# Nginx exporter container
   aegis_vts_exporter:
     depends_on:
       aegis:
