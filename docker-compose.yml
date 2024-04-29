@@ -48,6 +48,7 @@ volumes:
 services:
 # # Reverse proxy container
   aegis:
+    container_name: aegis
     depends_on:
       alfred:
         condition: service_started
@@ -328,6 +329,7 @@ services:
       apollo:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:8.12.2
+    #container_name: iris
     labels:
       co.elastic.logs/module: kibana
     volumes:
