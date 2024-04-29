@@ -141,7 +141,7 @@ document.querySelector('.homepage-header-new-tournament').addEventListener('clic
 // Quick play
 
 document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
-	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden') {
+	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
 		searchMatch();
 	}
 });
