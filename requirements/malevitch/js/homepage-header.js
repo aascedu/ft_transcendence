@@ -138,6 +138,14 @@ document.querySelector('.homepage-header-new-tournament').addEventListener('clic
 	document.querySelector('.create-tournament-name-input').focus();
 });
 
+// Quick play
+
+document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
+	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
+		searchMatch();
+	}
+});
+
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
