@@ -5,6 +5,12 @@ class Consumer(AsyncWebsocketConsumer):
     async def connect(self):
 
         # Join room group
+
+        if "error" in self.scope:
+            print(self.scope['error'])
+            return self.close()
+
+        self.user = self.scope["user"]
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
         await self.accept()
         self.name = 'test'
@@ -19,7 +25,7 @@ class Consumer(AsyncWebsocketConsumer):
         type = text_data_json['type']
         source = text_data_json['source']
         target = text_data_json['target']
-        
+
         # Send message to room group
         await self.channel_layer.group_send(
             "notificationRoom", {
