@@ -138,6 +138,12 @@ document.querySelector('.homepage-header-new-tournament').addEventListener('clic
 	document.querySelector('.create-tournament-name-input').focus();
 });
 
+// Quick play
+
+document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
+	searchMatch();
+});
+
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
