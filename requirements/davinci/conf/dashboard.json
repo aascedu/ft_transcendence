@@ -1525,8 +1525,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "code",
-            "expr": "process_resident_memory_bytes",
+            "editorMode": "builder",
+            "expr": "process_resident_memory_bytes{job!~\"db_exporter_a|db_exporter_m|db_exporter_p\"}",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
