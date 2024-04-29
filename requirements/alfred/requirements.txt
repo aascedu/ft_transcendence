@@ -19,3 +19,5 @@ requests==2.31.0
 sqlparse==0.4.4
 typing_extensions==4.9.0
 urllib3==2.2.0
+nanoid==2.0.0
+
