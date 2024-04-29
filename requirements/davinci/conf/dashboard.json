@@ -366,7 +366,7 @@
         "gridPos": {
           "h": 2,
           "w": 2,
-          "x": 10,
+          "x": 8,
           "y": 1
         },
         "id": 14,
@@ -444,7 +444,7 @@
         "gridPos": {
           "h": 2,
           "w": 2,
-          "x": 12,
+          "x": 10,
           "y": 1
         },
         "id": 15,
@@ -488,81 +488,6 @@
           }
         ],
         "title": "Mnemosine DB",
-        "type": "stat"
-      },
-      {
-        "datasource": {},
-        "description": "",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "noValue": "n/a",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 2,
-          "w": 2,
-          "x": 15,
-          "y": 1
-        },
-        "id": 1,
-        "options": {
-          "colorMode": "background",
-          "graphMode": "area",
-          "justifyMode": "center",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "last"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "10.4.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "8011"
-            },
-            "disableTextWrap": false,
-            "editorMode": "builder",
-            "exemplar": false,
-            "expr": "up{job=~\"aegis_stub_exporter\"}",
-            "format": "time_series",
-            "fullMetaSearch": false,
-            "hide": false,
-            "includeNullMetadata": true,
-            "instant": true,
-            "interval": "",
-            "legendFormat": "__auto",
-            "range": false,
-            "refId": "A",
-            "useBackend": false
-          }
-        ],
-        "title": "Aegis Stub Exporter State",
         "type": "stat"
       },
       {
@@ -900,7 +825,7 @@
         "gridPos": {
           "h": 2,
           "w": 2,
-          "x": 10,
+          "x": 8,
           "y": 3
         },
         "id": 16,
@@ -975,7 +900,7 @@
         "gridPos": {
           "h": 2,
           "w": 2,
-          "x": 15,
+          "x": 10,
           "y": 3
         },
         "id": 3,
@@ -1029,6 +954,169 @@
           "x": 0,
           "y": 5
         },
+        "id": 20,
+        "panels": [],
+        "title": "Server Requests",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "8011"
+        },
+        "description": "in the last 5 minutes",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "percentage",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 70
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 6
+        },
+        "id": 21,
+        "options": {
+          "displayMode": "gradient",
+          "maxVizHeight": 300,
+          "minVizHeight": 16,
+          "minVizWidth": 8,
+          "namePlacement": "auto",
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "auto",
+          "valueMode": "color"
+        },
+        "pluginVersion": "10.4.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "8011"
+            },
+            "disableTextWrap": false,
+            "editorMode": "builder",
+            "expr": "irate(nginx_server_requests{code!=\"total\", host=\"*\"}[5m])",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{code}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "HTTP Response Code",
+        "type": "bargauge"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "8011"
+        },
+        "description": "in the last 5 minutes",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 1000,
+            "min": 0,
+            "thresholds": {
+              "mode": "percentage",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "decmbytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 6
+        },
+        "id": 22,
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "10.4.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "8011"
+            },
+            "disableTextWrap": false,
+            "editorMode": "builder",
+            "expr": "irate(nginx_server_bytes{host=\"*\"}[5m]) / 1000000",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{direction}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "Server Bytes (MB)",
+        "type": "gauge"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
         "id": 13,
         "panels": [],
         "title": "Database Metrics",
@@ -1039,6 +1127,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
+        "description": "Queries per second in the last 5 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1065,7 +1154,7 @@
           "h": 4,
           "w": 3,
           "x": 0,
-          "y": 6
+          "y": 15
         },
         "id": 12,
         "options": {
@@ -1093,7 +1182,7 @@
             },
             "disableTextWrap": false,
             "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"auth_management\"}[1m])",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"auth_management\"}[5m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1112,6 +1201,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
+        "description": "Queries per second in the last 5 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1138,7 +1228,7 @@
           "h": 4,
           "w": 3,
           "x": 3,
-          "y": 6
+          "y": 15
         },
         "id": 17,
         "options": {
@@ -1166,7 +1256,7 @@
             },
             "disableTextWrap": false,
             "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"memory_management\"}[1m])",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"memory_management\"}[5m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1185,6 +1275,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
+        "description": "Queries per second in the last 5 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1211,7 +1302,7 @@
           "h": 4,
           "w": 3,
           "x": 6,
-          "y": 6
+          "y": 15
         },
         "id": 18,
         "options": {
@@ -1239,7 +1330,7 @@
             },
             "disableTextWrap": false,
             "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"user_management\"}[1m])",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"user_management\"}[5m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1321,7 +1412,7 @@
           "h": 8,
           "w": 12,
           "x": 9,
-          "y": 6
+          "y": 15
         },
         "id": 19,
         "options": {
@@ -1361,6 +1452,92 @@
         ],
         "title": "Active Connections",
         "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 23
+        },
+        "id": 23,
+        "panels": [],
+        "title": "Memory Usage",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "8011"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 1000,
+            "thresholds": {
+              "mode": "percentage",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "decbytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 24,
+          "x": 0,
+          "y": 24
+        },
+        "id": 24,
+        "options": {
+          "minVizHeight": 75,
+          "minVizWidth": 75,
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true,
+          "sizing": "auto"
+        },
+        "pluginVersion": "10.4.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "8011"
+            },
+            "disableTextWrap": false,
+            "editorMode": "code",
+            "expr": "process_resident_memory_bytes",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{job}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "Resident Memory Use",
+        "type": "gauge"
       }
     ],
     "refresh": "",
@@ -1370,7 +1547,7 @@
       "list": []
     },
     "time": {
-      "from": "now-15m",
+      "from": "now-5m",
       "to": "now"
     },
     "timepicker": {},
