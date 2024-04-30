@@ -15,6 +15,7 @@ class Consumer(AsyncWebsocketConsumer):
         # Leave room group
         global waitingList
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
+        del waitingList[self.me.id]
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -39,7 +40,7 @@ class Consumer(AsyncWebsocketConsumer):
                 }
             )
 
-    async def SendToGame(self, event): # Will need to delete players from the waitingList here + Rethink because not SPA
+    async def SendToGame(self, event): # Rethink because not SPA
         if (event['player1'] == self.me.id or event['player2'] == self.me.id):
             await self.send(json.dumps({
                     "action": "redirect", 
@@ -49,6 +50,7 @@ class Consumer(AsyncWebsocketConsumer):
                             + str(waitingList[event['player2']])
                             + "/"
                     }))
+            self.disconnect()
 
     async def Ping(self, event):
         global waitingList
