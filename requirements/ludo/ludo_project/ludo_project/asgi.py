@@ -18,16 +18,13 @@ from pong.routing import websocket_urlpatterns
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ludo_project.settings')
 
-# import pong.routing
-
-
 application = ProtocolTypeRouter({
     "http": get_asgi_application(),
-    "websocket": socketJWTIdentificationMiddleware(
+    "websocket":
+        socketJWTIdentificationMiddleware(
         AllowedHostsOriginValidator(
             URLRouter(
                 websocket_urlpatterns
             )
-        )
-    ),
+        )),
 })
