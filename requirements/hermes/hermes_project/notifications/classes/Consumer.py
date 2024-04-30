@@ -10,7 +10,6 @@ class Consumer(OurBasicConsumer):
 
         self.identify_or_close()
 
-        self.user = self.scope["user"]
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
         await self.accept()
         self.name = 'test'
