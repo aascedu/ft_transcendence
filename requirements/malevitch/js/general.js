@@ -9,7 +9,7 @@ let	g_translations = null;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-game"
+	pageToDisplay: ".homepage-id"
 };
 
 function render() {
@@ -24,13 +24,13 @@ function render() {
 		homepagePicture.classList.remove('visually-hidden');
 	}
 
-	// A ENLEVER
+	// // A ENLEVER
 
-	var	homepageHeader = document.querySelector('.homepage-header');
-	homepageHeader.classList.remove('visually-hidden');
+	// var	homepageHeader = document.querySelector('.homepage-header');
+	// homepageHeader.classList.remove('visually-hidden');
 	
-	var	homepagePicture = document.querySelector('.homepage-game-picture');
-	homepagePicture.classList.remove('visually-hidden');
+	// var	homepagePicture = document.querySelector('.homepage-game-picture');
+	// homepagePicture.classList.remove('visually-hidden');
 }
 
 window.history.replaceState(g_state, null, "");

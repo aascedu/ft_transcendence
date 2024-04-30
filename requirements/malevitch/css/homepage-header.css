@@ -85,7 +85,7 @@
 	background: #7300E6;
 }
 
-.homepage-header-play-friend.homepage-header-category-clicked img {
+.homepage-header-category-clicked img {
 	content: url("../assets/general/invite-friend-white.svg");
 }
 
@@ -129,6 +129,35 @@
 
 .homepage-header-friends img {
 	margin-left: 1px;
+}
+
+.homepage-header-add-friend-input-box {
+	margin-right: 0;
+	margin-bottom: 16px;
+	min-height: 56px;
+	flex-grow: 1;
+}
+
+.homepage-header-add-friend-input-warning {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.homepage-header-add-friend-submit {
+	height: 56px;
+	width: 56px;
+	border-radius: 12px;
+	background-color: #7300E6;
+	margin-left: 16px;
+}
+
+.homepage-header-add-friend-submit img {
+	width: 18px;
+}
+
+.homepage-header-add-friend-submit:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 /* Options */

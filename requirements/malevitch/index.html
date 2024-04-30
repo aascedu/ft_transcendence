@@ -258,6 +258,16 @@
 				<img src="assets/general/invite-friend.svg" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
 				<p data-language="add-friend" class="unselectable">Add a friend...</p>
 			</div>
+			<div class="w-100 d-flex">
+				<div class="homepage-header-add-friend-input-box input-box d-flex justify-content-between align-items-center bg-white purple-shadow visually-hidden">
+					<label for="homepage-header-add-friend-input" data-language="friend-nickname" class="visually-hidden">Enter a nickname...</label>
+					<input id="homepage-header-add-friend-input" type="text" name="homepage-header-add-friend" label="homepage-header-add-friend" data-language="friend-nickname" placeholder="Enter a nickname..." autocomplete="off" class="homepage-header-add-friend-input input w-100 border-0 text-center">
+				</div>
+				<div class="homepage-header-add-friend-submit d-flex justify-content-center align-items-center purple-shadow visually-hidden">
+					<img src="assets/general/right-arrow-white.svg" alt="submit nickname" draggable="false" (dragstart)="false;" class="unselectable">
+				</div>
+			</div>
+			<div class="homepage-header-add-friend-input-warning input-warning w-100 visually-hidden text-center" data-language="unknown-user">User not found.</div>
 		</div>
 		<!-- HOMEPAGE-GAME -->
 		<div class="homepage-game w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
