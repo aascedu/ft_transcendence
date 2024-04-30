@@ -36,6 +36,10 @@
 	padding-right: 16px;
 }
 
+.homepage-header-open-play {
+	max-height: 448px;
+}
+
 .homepage-header-open-menu-contrast {
 	background-color: white;
 	backdrop-filter: none;
@@ -50,6 +54,7 @@
 	border-radius: 12px;
 	padding: 12px;
 	margin-bottom: 16px;
+	min-height: 56px;
 }
 
 .homepage-header-category-contrast {
@@ -76,6 +81,34 @@
 	color: #7300E6;
 }
 
+.homepage-header-category-clicked {
+	background: #7300E6;
+}
+
+.homepage-header-category-clicked img {
+	content: url("../assets/general/invite-friend-white.svg");
+}
+
+.homepage-header-category-clicked p {
+	color: white;
+}
+
+.homepage-header-no-friends {
+	margin-top: 16px;
+	margin-bottom: 24px;
+}
+
+.homepage-header-no-friends img {
+	width: 40%;
+	opacity: 50%;
+}
+
+.homepage-header-no-friends p {
+	color: #7300E6;
+	font-size: 14pt;
+	font-weight: 400;
+}
+
 .homepage-header-tournaments img {
 	margin-left: 3px;
 }
@@ -84,12 +117,47 @@
 	margin-left: 4px;
 }
 
+.homepage-header-play-friend-card img {
+	height: 32px;
+	width: 32px;
+	border-radius: 16px;
+}
+
 .homepage-header-friends {
 	margin-right: 0;
 }
 
 .homepage-header-friends img {
 	margin-left: 1px;
+}
+
+.homepage-header-add-friend-input-box {
+	margin-right: 0;
+	margin-bottom: 16px;
+	min-height: 56px;
+	flex-grow: 1;
+}
+
+.homepage-header-add-friend-input-warning {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.homepage-header-add-friend-submit {
+	height: 56px;
+	width: 56px;
+	border-radius: 12px;
+	background-color: #7300E6;
+	margin-left: 16px;
+}
+
+.homepage-header-add-friend-submit img {
+	width: 18px;
+}
+
+.homepage-header-add-friend-submit:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 /* Options */
