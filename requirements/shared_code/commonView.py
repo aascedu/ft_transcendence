@@ -2,7 +2,9 @@ from datetime import datetime
 from django.views import View
 from django.http import JsonResponse
 import nanoid
+
 from shared.utils import JsonForbiden
+
 
 identificators = {}
 
@@ -19,4 +21,4 @@ class socketConnectionView(View):
         identificators |= {key: request.user}
 
 
-        return JsonResponse({"Bigrement": "bien", "Key": key})
+        return JsonResponse({"Key": key})

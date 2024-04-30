@@ -18,6 +18,7 @@ class socketJWTIdentificationMiddleware:
 
     async def __call__(self, scope, receive, send):
         global identificators
+
         query_params = parse_qs(scope["query_string"].decode())
 
         if "token" not in query_params:
