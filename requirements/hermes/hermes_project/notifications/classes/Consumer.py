@@ -1,14 +1,14 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class Consumer(AsyncWebsocketConsumer):
+from shared.BasicConsumer import OurBasicConsumer
+
+class Consumer(OurBasicConsumer):
     async def connect(self):
 
         # Join room group
 
-        if "error" in self.scope:
-            print(self.scope['error'])
-            return self.close()
+        self.identify_or_close()
 
         self.user = self.scope["user"]
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
