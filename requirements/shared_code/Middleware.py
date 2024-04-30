@@ -48,7 +48,7 @@ class JWTIdentificationMiddleware:
         if "MAIN_MODEL" in information.__dict__:
             print("Service has a model")
             try:
-                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+                request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')

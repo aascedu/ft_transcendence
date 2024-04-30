@@ -16,15 +16,16 @@ class userInfoView(View):
 
         if request.user.is_service is True or request.user.is_admin is True:
             try:
-                return JsonResponse(Client.objects.get(unique_id=id).personal_dict())
+                return JsonResponse(Client.objects.get(id=id).personal_dict())
             except ObjectDoesNotExist:
                 return JsonNotFound("ressource not found")
 
         client = request.model
         if id == 0 or id == request.user.id:
+            print("client :", client.personal_dict())
             return JsonResponse(client.personal_dict())
         try:
-            target = Client.objects.get(unique_id=id)
+            target = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonNotFound("ressource not found")
         if client in target.friends.all():
@@ -50,14 +51,14 @@ class userInfoView(View):
 
 
     def post(self, request, id: int) -> JsonResponse:
-        if request.user.is_service is not True or request.user.nick != "petrus":
-            return JsonForbiden("Only petrus can create a user")
+        if request.user.is_service is not True:
+            return JsonForbiden("Only services can create a user")
         data = request.data
         client = Client()
         try:
             client.email = data['mail']
             client.nick = data['nick']
-            client.unique_id = data['id']
+            client.id = data['id']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
         return save_response(client)
@@ -78,7 +79,7 @@ class friendView(View):
     def get(self, request, id: int) -> JsonResponse:
         if request.user.is_service is True or request.user.is_admin is True:
             try:
-                requestee = Client.objects.get(unique_id=id)
+                requestee = Client.objects.get(id=id)
             except ObjectDoesNotExist as e:
                 return JsonErrResponse(e.__str__(), status=404)
 
@@ -100,7 +101,7 @@ class friendView(View):
         return JsonResponse({
             "Id": request.user.id,
             "Friends": [
-                {"id": object.unique_id,
+                {"id": object.id,
                  "nick": object.nick,
                  "mail": object.email}
                 for object
@@ -109,7 +110,7 @@ class friendView(View):
                 .all()
             ],
             "Requests": [
-                {"id": object.sender.unique_id,
+                {"id": object.sender.id,
                  "nick": object.sender.nick}
                 for object in list(
                     FriendshipRequest
@@ -126,7 +127,7 @@ class friendView(View):
         if id == request.user.id:
             return JsonBadRequest("invalid id")
         try:
-            receiver = Client.objects.get(unique_id=id)
+            receiver = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("Ressource not found", status=404)
         return FriendshipRequest.processRequest(receiver, sender)
@@ -134,7 +135,7 @@ class friendView(View):
     def delete(self, request, id: int) -> JsonResponse:
         emiter = request.model
         try:
-            target = Client.objects.get(unique_id=id)
+            target = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
         return FriendshipRequest.deleteFriendship(emiter, target)
@@ -143,7 +144,7 @@ class friendView(View):
 class avatarView(View):
     def get(self, request, id: int):
         try:
-            client = Client.objects.get(unique_id=id)
+            client = Client.objects.get(id=id)
             url = client.avatar.url
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
