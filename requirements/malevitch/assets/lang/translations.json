@@ -67,6 +67,8 @@
 		"no-friends": "You don't have any friend yet...",
 		"friends-list": "Friends list",
 		"add-friend": "Add a friend...",
+		"friend-nickname": "Enter a nickname...",
+		"unknown-user": "User not found.",
 		"confirm-invite": "Do you confirm this invitation ?",
 		"confirm-remove": "Do you want to remove this friend ?",
 		"max-image-weight": "Image is too heavy. (10MB maximum)",
@@ -91,7 +93,13 @@
 		"rgaa": "General reference document to improve accessibility",
 		"falc": "European Norm - Easy to read",
 		"accessibility-checker": "Web accessibility checker",
-		"contrast-checker": "Web contrast checker (WCA / WCAA)"
+		"contrast-checker": "Web contrast checker (WCA / WCAA)",
+		"notif-tournament-invite": "has invited you to",
+		"notif-friend-invite": "has sent you a friend invite",
+		"notif-play-invite": "wants to play with you",
+		"notif-search-match": "Searching a match...",
+		"notif-match-found": "Match found ! Starting in",
+		"notif-invite-sent": "You have successfully invited"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -161,6 +169,8 @@
 		"no-friends": "Vous n'avez pas encore d'ami...",
 		"friends-list": "Liste d'amis",
 		"add-friend": "Ajouter un ami...",
+		"friend-nickname": "Entrez un pseudonyme...",
+		"unknown-user": "Utilisateur introuvable.",
 		"confirm-invite": "Confirmez-vous cette invitation ?",
 		"confirm-remove": "Voulez-vous supprimer cet ami ?",
 		"max-image-weight": "L'image est trop lourde. (10Mo maximum)",
@@ -185,7 +195,13 @@
 		"rgaa": "Référentiel Général d'Amélioration de l'Accessibilité",
 		"falc": "Norme FALC - Facile À Lire et Comprendre",
 		"accessibility-checker": "Contrôle de l'accessibilité web",
-		"contrast-checker": "Contrôle des contrastes colorés"
+		"contrast-checker": "Contrôle des contrastes colorés",
+		"notif-tournament-invite": "vous a invité à",
+		"notif-friend-invite": "vous a envoyé une demande d'ami",
+		"notif-play-invite": "veut jouer avec vous",
+		"notif-search-match": "Recherche de partie...",
+		"notif-match-found": "Partie trouvée ! Début dans",
+		"notif-invite-sent": "Invitation envoyée à"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -255,6 +271,8 @@
 		"no-friends": "你还没有任何朋友。。。",
 		"friends-list": "好友列表",
 		"add-friend": "添加好友。。。",
+		"friend-nickname": "输入昵称。。。",
+		"unknown-user": "找不到用户",
 		"confirm-invite": "你确认这个邀请吗？",
 		"confirm-remove": "您想删除该好友吗？",
 		"max-image-weight": "图像太重（最大 10 MB）",
@@ -279,7 +297,13 @@
 		"rgaa": "提高可访问性的一般参考文档",
 		"falc": "欧洲标准 - 易于阅读",
 		"accessibility-checker": "网络可访问性检查器",
-		"contrast-checker": "网页对比度检查器"
+		"contrast-checker": "网页对比度检查器",
+		"notif-tournament-invite": "邀请您",
+		"notif-friend-invite": "已向您发送好友邀请",
+		"notif-play-invite": "想和你一起玩",
+		"notif-search-match": "寻找匹配项。。。",
+		"notif-match-found": "找到匹配项！ 后开始",
+		"notif-invite-sent": "您已成功邀请"
 	}
 }
 

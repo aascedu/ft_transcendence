@@ -36,6 +36,9 @@ document.querySelector('.accessibility .switch input').addEventListener('change'
 		document.querySelectorAll('.create-tournament-invite-container').forEach(function(item) {
 			item.classList.add('create-tournament-invite-container-contrast');
 		});
+		document.querySelectorAll('.notif').forEach(function(item) {
+			item.classList.add('notif-contrast');
+		});
 	}
 	else {
 		document.querySelectorAll('.category').forEach(function(item) {
@@ -61,6 +64,9 @@ document.querySelector('.accessibility .switch input').addEventListener('change'
 		});
 		document.querySelectorAll('.create-tournament-invite-container').forEach(function(item) {
 			item.classList.remove('create-tournament-invite-container-contrast');
+		});
+		document.querySelectorAll('.notif').forEach(function(item) {
+			item.classList.remove('notif-contrast');
 		});
 	}
 });
