@@ -24,6 +24,7 @@
 		<link rel="stylesheet" href="css/create-tournament.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/accessibility.css" type="text/css" media="all">
 		<link rel="stylesheet" href="css/notif.css" type="text/css" media="all">
+		<link rel="stylesheet" href="css/pong.css" type="text/css" media="all">
 	</head>
 	<body class="dot-pattern">
 		<!-- HOMEPAGE-ID -->
@@ -1112,6 +1113,14 @@
 			</div>
 			<div class="notif-info w-100 text-center unselectable">Friend</div>
 		</div>
+		<!-- GAME -->
+		<div class="game w-100 visually-hidden" id="test-target">
+			<div class="player purple-shadow" id="me"></div>
+			<div class="player purple-shadow" id="opponent"></div>
+			<div class="ball"></div>
+			<div class="score unselectable purple-shadow" id="score1"></div>
+			<div class="score unselectable purple-shadow" id="score2"></div>
+		</div>
 		<script src="js/general.js"></script>
 		<script src="js/homepage-id.js"></script>
 		<script src="js/sign-in.js"></script>
@@ -1127,6 +1136,7 @@
 		<script src="js/create-tournament.js"></script>
 		<script src="js/accessibility.js"></script>
 		<script src="js/notif.js"></script>
+		<script src="js/pong.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
