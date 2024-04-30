@@ -424,6 +424,8 @@ services:
     networks:
       - sentinel
       - alfred_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -440,6 +442,8 @@ services:
     networks:
       - sentinel
       - mnemosine_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -456,6 +460,8 @@ services:
     networks:
       - sentinel
       - petrus_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
