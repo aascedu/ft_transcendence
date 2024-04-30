@@ -6,13 +6,13 @@ class Ball:
 
     def __init__(self, gameSettings):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 2000
+        self.speed = gameSettings.screenWidth / 2000000
         self.angle = m.pi
         self.size = gameSettings.ballSize
 
     def newPoint(self, gameSettings):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 2000
+        self.speed = gameSettings.screenWidth / 2000000
         self.angle = m.pi
         self.size = gameSettings.ballSize
         time.sleep(3)
@@ -34,8 +34,8 @@ class Ball:
             impactToMid = ((self.pos[1] - client.pos) / (client.height * 0.5))
             self.angle = - (m.pi + (m.pi / 4) * impactToMid)
             self.speed *= 1.1 # Mettre une limite de speed pour eviter les tp.
-            if (self.speed > 20):
-                self.speed = 20
+            if (self.speed > 0.01):
+                self.speed = 0.01
             print(self.speed)
     
     def wallCollision(self, gameSettings):

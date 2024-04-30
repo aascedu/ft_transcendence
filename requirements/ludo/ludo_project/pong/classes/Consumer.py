@@ -167,19 +167,19 @@ class Consumer(OurBasicConsumer):
             if (self.id % 2 == 0):
                 await self.send(text_data=json.dumps({
                     "type": "myState",
-                    "mePos": self.myMatch.players[self.id].pos,
-                    "ballPosX": self.myMatch.ball.pos[0],
-                    "ballPosY": self.myMatch.ball.pos[1],
-                    "ballSpeed": self.myMatch.ball.speed,
+                    "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
+                    "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
+                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                    "ballSpeed": 100 * self.myMatch.ball.speed,
                     "ballAngle": self.myMatch.ball.angle,
                 }))
             else:
                 await self.send(text_data=json.dumps({
                     "type": "myState",
-                    "mePos": self.myMatch.players[self.id].pos,
-                    "ballPosX": self.gameSettings.screenWidth - self.myMatch.ball.pos[0],
-                    "ballPosY": self.myMatch.ball.pos[1],
-                    "ballSpeed": self.myMatch.ball.speed,
+                    "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
+                    "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
+                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                    "ballSpeed": 100 * self.myMatch.ball.speed,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
             }))
 
@@ -189,19 +189,19 @@ class Consumer(OurBasicConsumer):
             if (self.id % 2 == 0):
                 await self.send(text_data=json.dumps({
                     "type": "opponentState",
-                    "opponentPos": self.myMatch.players[(self.id + 1) % 2].pos,
-                    "ballPosX": self.myMatch.ball.pos[0],
-                    "ballPosY": self.myMatch.ball.pos[1],
-                    "ballSpeed": self.myMatch.ball.speed,
+                    "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+                    "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
+                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                    "ballSpeed": 100 * self.myMatch.ball.speed,
                     "ballAngle": self.myMatch.ball.angle,
                 }))
             else:
                 await self.send(text_data=json.dumps({
                     "type": "opponentState",
-                    "opponentPos": self.myMatch.players[(self.id + 1) % 2].pos,
-                    "ballPosX": self.gameSettings.screenWidth - self.myMatch.ball.pos[0],
-                    "ballPosY": self.myMatch.ball.pos[1],
-                    "ballSpeed": self.myMatch.ball.speed,
+                    "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+                    "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
+                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                    "ballSpeed": 100 * self.myMatch.ball.speed,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
                 }))
 
