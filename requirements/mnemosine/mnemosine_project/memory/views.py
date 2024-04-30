@@ -74,9 +74,8 @@ class gameView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int=0):
-        if request.user.is_service is False \
-            or request.user.nick == "ludo":
-                return JsonForbiden("Only Ludo can post games")
+        if request.user.is_service is False:
+            return JsonForbiden("Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
@@ -125,9 +124,8 @@ class playerView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
-        if request.user.is_service is False \
-                or request.user.nick != "petrus":
-                return JsonErrResponse("Only petrus can create a player", status=401)
+        if request.user.is_service is False:
+            return JsonErrResponse("Only services can create a player", status=401)
         player = Player()
         try:
             player.id = request.data['Id']
