@@ -1454,12 +1454,91 @@
         "type": "timeseries"
       },
       {
+        "datasource": {
+          "type": "prometheus",
+          "uid": "8011"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "fieldMinMax": false,
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "percentage",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            },
+            "unit": "decbytes"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 9,
+          "x": 0,
+          "y": 19
+        },
+        "id": 25,
+        "options": {
+          "displayMode": "gradient",
+          "maxVizHeight": 300,
+          "minVizHeight": 9,
+          "minVizWidth": 8,
+          "namePlacement": "auto",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true,
+          "sizing": "auto",
+          "text": {},
+          "valueMode": "text"
+        },
+        "pluginVersion": "10.4.0",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "8011"
+            },
+            "disableTextWrap": false,
+            "editorMode": "builder",
+            "exemplar": false,
+            "expr": "pg_database_size_bytes{datname=~\"auth_management|memory_management|user_management\"}",
+            "fullMetaSearch": false,
+            "includeNullMetadata": true,
+            "instant": false,
+            "legendFormat": "{{datname}}",
+            "range": true,
+            "refId": "A",
+            "useBackend": false
+          }
+        ],
+        "title": "Database Size",
+        "type": "bargauge"
+      },
+      {
         "collapsed": false,
         "gridPos": {
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 23
+          "y": 27
         },
         "id": 23,
         "panels": [],
@@ -1499,7 +1578,7 @@
           "h": 11,
           "w": 24,
           "x": 0,
-          "y": 24
+          "y": 28
         },
         "id": 24,
         "options": {

@@ -5,9 +5,9 @@ RUN     apt update -y && \
         apt install wget -y && \
         mkdir /opt/postgres_exporter && \
         cd /opt/postgres_exporter && \
-        wget https://github.com/wrouesnel/postgres_exporter/releases/download/v0.5.1/postgres_exporter_v0.5.1_linux-amd64.tar.gz && \
-        tar -xzvf postgres_exporter_v0.5.1_linux-amd64.tar.gz && \
-        cd postgres_exporter_v0.5.1_linux-amd64 && \
+        wget https://github.com/prometheus-community/postgres_exporter/releases/download/v0.15.0/postgres_exporter-0.15.0.linux-amd64.tar.gz && \
+        tar -xzvf postgres_exporter-0.15.0.linux-amd64.tar.gz && \
+        cd postgres_exporter-0.15.0.linux-amd64 && \
         cp postgres_exporter /usr/local/bin
 
 COPY        tools/entrypoint.sh /entrypoint.sh
