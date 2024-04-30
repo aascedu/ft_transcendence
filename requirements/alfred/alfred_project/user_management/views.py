@@ -1,12 +1,9 @@
-from user_management.models import Client, FriendshipRequest
+from user_management.models import Client
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.core.exceptions import ObjectDoesNotExist
-from django.conf import settings
-from django.http import HttpResponse, JsonResponse
-from shared.utils import save_response, delete_response
-from django.utils import timezone
+from django.http import JsonResponse
 import os
+from django.conf import settings
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound
 
@@ -32,6 +29,8 @@ class userInfoView(View):
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
 
+
+
     def patch(self, request, id: int) -> JsonResponse:
         if request.user.is_service is False and request.user.is_admin is False:
             client = request.model
@@ -39,7 +38,7 @@ class userInfoView(View):
             try:
                 client = Client.objects.get(id=id)
             except ObjectDoesNotExist:
-                return JsonErrResponse("Ressource doesn't exist", status=404)
+                return JsonNotFound("Ressource doesn't exist")
 
         data = request.data
         client.avatar = data.get("Avatar", client.avatar)
@@ -47,6 +46,7 @@ class userInfoView(View):
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
+        client.contrast_mode = data.get("contrast-mode", client.contrast_mode)
         return save_response(client)
 
 
@@ -182,7 +182,6 @@ def serve_avatar(request, filename):
         return JsonErrResponse(f"An error occurred: {e}", status=500)
 
 
-@csrf_exempt
 def view_db(request):
     request = request
     clients = [object.to_dict() for object in Client.objects.all()]

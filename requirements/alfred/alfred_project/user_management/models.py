@@ -12,6 +12,7 @@ class Client(models.Model):
                     validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
+    contrast_mode = models.BooleanField(blank=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
 
@@ -43,7 +44,6 @@ class Client(models.Model):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Email": self.email,
             "Pic": self.avatar.url if self.avatar else None,
         }
 
