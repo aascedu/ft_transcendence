@@ -1,10 +1,15 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-class Consumer(AsyncWebsocketConsumer):
+from shared.BasicConsumer import OurBasicConsumer
+
+class Consumer(OurBasicConsumer):
     async def connect(self):
 
         # Join room group
+
+        self.identify_or_close()
+
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
         await self.accept()
         self.name = 'test'
@@ -19,7 +24,7 @@ class Consumer(AsyncWebsocketConsumer):
         type = text_data_json['type']
         source = text_data_json['source']
         target = text_data_json['target']
-        
+
         # Send message to room group
         await self.channel_layer.group_send(
             "notificationRoom", {

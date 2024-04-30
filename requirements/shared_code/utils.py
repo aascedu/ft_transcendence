@@ -15,7 +15,6 @@ def save_response(object_to_save):
         return JsonResponse({"Err": e.__str__()}, status=409)
     return JsonResponse({"Ressource": "updated"})
 
-
 def delete_response(object_to_delete):
     try:
         object_to_delete.delete()
@@ -27,6 +26,9 @@ def delete_response(object_to_delete):
 
 def JsonErrResponse(error_message, status):
     return JsonResponse({"Err": error_message}, status=status)
+
+def JsonUnauthorized(error_message):
+    return JsonErrResponse(error_message, status=401)
 
 def JsonBadRequest(error_message):
     return JsonErrResponse(error_message, status=400)
