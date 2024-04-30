@@ -18,9 +18,8 @@ class socketJWTIdentificationMiddleware:
 
     async def __call__(self, scope, receive, send):
         global identificators
-        print(identificators)
+
         query_params = parse_qs(scope["query_string"].decode())
-        print(query_params)
 
         if "token" not in query_params:
             scope["error"] = "No key in params"
@@ -30,7 +29,8 @@ class socketJWTIdentificationMiddleware:
             scope["error"] = "Invalid key"
             return await self.application(scope, receive, send)
 
-        scope["user"] = identificators[query_params["token"][0]]
+        scope["user"]=identificators[query_params["token"][0]]
+        del identificators[query_params["token"][0]]
         return await self.application(scope, receive, send)
 
 
