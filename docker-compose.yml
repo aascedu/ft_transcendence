@@ -48,6 +48,7 @@ volumes:
 services:
 # # Reverse proxy container
   aegis:
+    container_name: aegis
     depends_on:
       alfred:
         condition: service_started
@@ -79,8 +80,6 @@ services:
         condition: service_started
       tutum:
         condition: service_started
-    container_name: aegis
-    image: aegis
     build:
       context: ./requirements/aegis
       dockerfile: Dockerfile
@@ -110,15 +109,14 @@ services:
       timeout: 10s
       retries: 120
 
-# # Data exporter container
-  aegis_exporter:
+# Nginx exporter container
+  aegis_vts_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
-    container_name: aegis_exporter
-    image: aegis_exporter
+        condition: service_started
+    container_name: aegis_vts_exporter
     build:
-      context: ./requirements/mensura/aegis_exporter
+      context: ./requirements/mensura/aegis_vts_exporter
       dockerfile: Dockerfile
     ports:
       - "9913:9913"
@@ -132,7 +130,6 @@ services:
       apollo:
         condition: service_healthy
     container_name: aether
-    image: aether
     build:
       context: ./requirements/aether/
       dockerfile: Dockerfile
@@ -152,7 +149,6 @@ services:
 # # Profil container
   alfred:
     container_name: alfred
-    image: alfred
     build:
       context: ./requirements/alfred
       dockerfile: Dockerfile
@@ -179,11 +175,12 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: alfred_db
     container_name: alfred_db
     build:
       context: ./requirements/alfred_db/
       dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: $POSTGRES_ALFRED_DB
       POSTGRES_USER: $POSTGRES_ALFRED_USER
@@ -241,7 +238,6 @@ services:
 # # Tournament container
   coubertin:
     container_name: coubertin
-    image: coubertin
     build:
       context: ./requirements/coubertin
       dockerfile: Dockerfile
@@ -261,7 +257,6 @@ services:
 # # Matchmaking container
   cupidon:
     container_name: cupidon
-    image: cupidon
     build:
       context: ./requirements/cupidon
       dockerfile: Dockerfile
@@ -281,7 +276,6 @@ services:
 # # Matchmaking container
   davinci:
     container_name: davinci
-    image: davinci
     build:
       context: ./requirements/davinci
       dockerfile: Dockerfile
@@ -299,7 +293,6 @@ services:
 # # Notification container
   hermes:
     container_name: hermes
-    image: hermes
     build:
       context: ./requirements/hermes
       dockerfile: Dockerfile
@@ -321,8 +314,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
-    container_name: iris
     image: docker.elastic.co/kibana/kibana:8.12.2
+    #container_name: iris
     labels:
       co.elastic.logs/module: kibana
     volumes:
@@ -358,7 +351,6 @@ services:
 # # Auth inter-container container
   lovelace:
     container_name: lovelace
-    image: lovelace
     build:
       context: ./requirements/lovelace
       dockerfile: Dockerfile
@@ -378,7 +370,6 @@ services:
 # # Game container
   ludo:
     container_name: ludo
-    image: ludo
     build:
       context: ./requirements/ludo
       dockerfile: Dockerfile
@@ -398,7 +389,6 @@ services:
 # # Front container
   malevitch:
     container_name: malevitch
-    image: malevitch
     build:
       context: ./requirements/malevitch
       dockerfile: Dockerfile
@@ -413,7 +403,6 @@ services:
 # # Prometheus container
   mensura:
     container_name: mensura
-    image: mensura
     build:
       context: ./requirements/mensura
       dockerfile: Dockerfile
@@ -424,27 +413,82 @@ services:
       - sentinel
     restart: on-failure
 
-# # Data exporter container
-  mensura_exporter:
+  db_exporter_a:
+    container_name: db_exporter_a
+    image: db_exporter_a
+    build:
+      context: ./requirements/mensura/db_exporter_a
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - alfred_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
-    container_name: mensura_exporter
-    image: quay.io/prometheus/node-exporter
-    volumes:
-      - "/:/host:ro,rslave"
+    restart: on-failure
+
+  db_exporter_m:
+    container_name: db_exporter_m
+    image: db_exporter_m
+    build:
+      context: ./requirements/mensura/db_exporter_m
+      dockerfile: Dockerfile
     ports:
-      - "9100:9100"
-    command: ["--path.rootfs=/host"]
+      - "9187:9187"
     networks:
-      - atlas
-    pid: "host"
+      - sentinel
+      - mnemosine_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+  db_exporter_p:
+    container_name: db_exporter_p
+    image: db_exporter_p
+    build:
+      context: ./requirements/mensura/db_exporter_p
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - petrus_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
+    depends_on:
+      mensura:
+        condition: service_started
+    restart: on-failure
+
+# # Data exporter container
+  alertmanager:
+    container_name: alertmanager
+    image: alertmanager
+    build:
+      context: ./requirements/mensura/alertmanager
+      dockerfile: Dockerfile
+    environment:
+      - "GOOGLE_PASS=${GOOGLE_PASS}"
+    ports:
+      - "9093:9093"
+    depends_on:
+      mensura:
+        condition: service_started
+    networks:
+      - aegis guard
+      - sentinel
     restart: on-failure
 
 # # Stats container
   mnemosine:
     container_name: mnemosine
-    image: mnemosine
     build:
       context: ./requirements/mnemosine
       dockerfile: Dockerfile
@@ -471,7 +515,6 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: mnemosine_db
     container_name: mnemosine_db
     build:
       context: ./requirements/mnemosine_db/
@@ -496,7 +539,6 @@ services:
       aether:
         condition: service_started
     container_name: orion
-    image: orion
     labels:
       co.elastic.logs/module: filebeat
     build:
@@ -511,7 +553,6 @@ services:
 # # Authentification container
   petrus:
     container_name: petrus
-    image: petrus
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
@@ -538,7 +579,6 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
-    image: petrus_db
     container_name: petrus_db
     build:
       context: ./requirements/petrus_db/
@@ -560,7 +600,6 @@ services:
 # # Vault container
   tutum:
     container_name: tutum
-    image: tutum
     build:
       context: ./requirements/tutum
       dockerfile: Dockerfile

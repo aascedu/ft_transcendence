@@ -26,21 +26,27 @@ if [ ! -f config/certs/certs.zip ]; then
   echo -e "${COLOR_GREEN}Creating certs${COLOR_RESET}";
   echo -ne \
   "instances:\n"\
-  "  - name: apollo\n"\
-  "    dns:\n"\
-  "      - apollo\n"\
-  "      - localhost\n"\
-  "    ip:\n"\
-  "      - 127.0.0.1\n"\
   "  - name: aether\n"\
   "    dns:\n"\
   "      - aether\n"\
   "      - localhost\n"\
   "    ip:\n"\
   "      - 127.0.0.1\n"\
+  "  - name: apollo\n"\
+  "    dns:\n"\
+  "      - apollo\n"\
+  "      - localhost\n"\
+  "    ip:\n"\
+  "      - 127.0.0.1\n"\
   "  - name: iris\n"\
   "    dns:\n"\
   "      - iris\n"\
+  "      - localhost\n"\
+  "    ip:\n"\
+  "      - 127.0.0.1\n"\
+  "  - name: orion\n"\
+  "    dns:\n"\
+  "      - orion\n"\
   "      - localhost\n"\
   "    ip:\n"\
   "      - 127.0.0.1\n"\
@@ -55,8 +61,8 @@ chown -R root:root config/certs;
 find . -type d -exec chmod 750 {} \;
 find . -type f -exec chmod 640 {} \;
 
-# echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
-# openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
+openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
 
 # Wait for Elasticsearch availability
 echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability${COLOR_RESET}";
