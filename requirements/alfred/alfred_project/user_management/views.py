@@ -8,16 +8,17 @@ from shared.utils import save_response, delete_response
 from django.utils import timezone
 import os
 
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound
 
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
+
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 return JsonResponse(Client.objects.get(unique_id=id).personal_dict())
             except ObjectDoesNotExist:
-                return JsonErrResponse("ressource not found", status=404)
+                return JsonNotFound("ressource not found")
 
         client = request.model
         if id == 0 or id == request.user.id:
@@ -25,14 +26,14 @@ class userInfoView(View):
         try:
             target = Client.objects.get(unique_id=id)
         except ObjectDoesNotExist:
-            return JsonErrResponse("ressource not found", status=404)
+            return JsonNotFound("ressource not found")
         if client in target.friends.all():
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
 
     def patch(self, request, id: int) -> JsonResponse:
         if request.user.is_service is False and request.user.is_admin is False:
-            client = request.model         
+            client = request.model
         else:
             try:
                 client = Client.objects.get(id=id)
