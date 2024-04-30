@@ -16,6 +16,7 @@ class Consumer(AsyncWebsocketConsumer):
         global waitingList
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
         del waitingList[self.me.id]
+        self.close()
 
     # Receive message from WebSocket
     async def receive(self, text_data):

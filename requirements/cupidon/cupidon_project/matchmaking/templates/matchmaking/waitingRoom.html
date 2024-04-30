@@ -24,7 +24,7 @@
 
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/');
+const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Cf ludo pour la secu
 const Id = JSON.parse(document.getElementById('Id').textContent);
 
 exampleSocket.onopen = function(event) {
@@ -75,7 +75,7 @@ function ping() {
 }
 
 exampleSocket.addEventListener('open', (event) => {
-    const intervalID = setInterval(ping, 10000);
+    const intervalID = setInterval(ping, 10000); // Juste envoyer sendData('ping') ?
 });
 
 
