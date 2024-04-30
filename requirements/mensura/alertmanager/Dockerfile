@@ -1,5 +1,7 @@
 FROM        debian:bookworm
 
+ARG         GOOGLE_PASS
+
 RUN         apt update -y && \
             apt upgrade -y && \
             apt install -y wget && \
@@ -9,7 +11,8 @@ RUN         apt update -y && \
             mv alertmanager-0.27.0.linux-amd64 alertmanager && \
             cp /alertmanager/alertmanager /usr/bin/alertmanager
 
-COPY        conf/alertmanager.yml /alertmanager/alertmanager.yml
+COPY        conf/alertmanager1.yml /alertmanager/alertmanager1.yml
+COPY        conf/alertmanager2.yml /alertmanager/alertmanager2.yml
 COPY        tools/entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT  ["sh", "entrypoint.sh"]
