@@ -48,6 +48,7 @@ volumes:
 services:
 # # Reverse proxy container
   aegis:
+    container_name: aegis
     depends_on:
       alfred:
         condition: service_started
@@ -108,25 +109,11 @@ services:
       timeout: 10s
       retries: 120
 
-# Data exporter container
-  aegis_stub_exporter:
-    depends_on:
-      aegis:
-        condition: service_healthy
-    container_name: aegis_stub_exporter
-    build:
-      context: ./requirements/mensura/aegis_stub_exporter
-      dockerfile: Dockerfile
-    ports:
-      - "9113:9113"
-    networks:
-      - atlas
-    restart: on-failure
-
+# Nginx exporter container
   aegis_vts_exporter:
     depends_on:
       aegis:
-        condition: service_healthy
+        condition: service_started
     container_name: aegis_vts_exporter
     build:
       context: ./requirements/mensura/aegis_vts_exporter
@@ -328,6 +315,7 @@ services:
       apollo:
         condition: service_healthy
     image: docker.elastic.co/kibana/kibana:8.12.2
+    #container_name: iris
     labels:
       co.elastic.logs/module: kibana
     volumes:
@@ -436,6 +424,8 @@ services:
     networks:
       - sentinel
       - alfred_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -452,6 +442,8 @@ services:
     networks:
       - sentinel
       - mnemosine_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -468,6 +460,8 @@ services:
     networks:
       - sentinel
       - petrus_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -480,6 +474,8 @@ services:
     build:
       context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile
+    environment:
+      - "GOOGLE_PASS=${GOOGLE_PASS}"
     ports:
       - "9093:9093"
     depends_on:
@@ -488,23 +484,6 @@ services:
     networks:
       - aegis guard
       - sentinel
-    restart: on-failure
-
-# Data exporter container
-  mensura_exporter:
-    depends_on:
-      mensura:
-        condition: service_started
-    container_name: mensura_exporter
-    image: quay.io/prometheus/node-exporter
-    volumes:
-      - "/:/host:ro,rslave"
-    ports:
-      - "9100:9100"
-    command: ["--path.rootfs=/host"]
-    networks:
-      - atlas
-    pid: "host"
     restart: on-failure
 
 # # Stats container

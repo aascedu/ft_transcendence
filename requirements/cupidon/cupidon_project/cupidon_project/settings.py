@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
-
+from shared.settings import add_prometheused_apps
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -32,11 +32,13 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'cupidon']
 
 # Application definition
 
-INSTALLED_APPS = [
+PROJECT_APPS = [
     'daphne',
     'matchmaking',
     'channels',
 ]
+
+INSTALLED_APPS = add_prometheused_apps(PROJECT_APPS)
 
 PROJECT_OWN_MIDDLEWARE = []
 

@@ -21,6 +21,7 @@
 
 .tournament-info-icon {
 	left: 16px;
+	top: 0;
 }
 
 .tournament-info-icon img {
@@ -294,6 +295,12 @@
 	background-color: rgba(115, 0, 230, 0.1);
 	filter: drop-shadow(2px 2px 4px rgba(115, 0, 230, 0.2));
 	padding: 8px;
+}
+
+.bracket-player-contrast {
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
 }
 
 .bracket-player:first-child {
