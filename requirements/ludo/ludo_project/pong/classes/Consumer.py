@@ -13,7 +13,9 @@ import requests
 
 # tester si c'est un viewer ou un joueur
 
-class Consumer(AsyncWebsocketConsumer):
+from shared.BasicConsumer import OurBasicConsumer
+
+class Consumer(OurBasicConsumer):
 
     async def connect(self):
         global matches

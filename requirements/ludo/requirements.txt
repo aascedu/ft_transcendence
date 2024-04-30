@@ -21,6 +21,7 @@ hyperlink==21.0.0
 idna==3.6
 incremental==22.10.0
 msgpack==1.0.7
+nanoid==2.0.0
 oauthlib==3.2.2
 packaging==23.2
 prometheus_client==0.20.0

@@ -33,5 +33,3 @@ class User:
             print("Error: Internal request badly Formated 'Service_Name' key misses")
             return User(error="Bad Internal request : 'Service_Name' key missing")
         return User(nick=host.split(':')[0], is_service=True)
-
-
