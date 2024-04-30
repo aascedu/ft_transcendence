@@ -18,18 +18,19 @@ class Consumer(AsyncWebsocketConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
+        global waitingList
+
         text_data_json = json.loads(text_data)
         type = text_data_json['type']
         
         # Send message to room group
         if (type == 'playerData'):
-            await self.channel_layer.group_send(
-                "matchmakingRoom", {
-                    'type': type,
-                    'id': text_data_json['id'],
-                    'elo': text_data_json['elo'],
-                }
-            )
+            print("player data gonna set")
+            id = text_data_json['id']
+            elo = text_data_json['elo'] # A get depuis la DB plutot !
+            self.me = Player(id, elo) 
+            waitingList[id] = self.me # Get player name with the token here
+            print("player data set")
 
         else:
             await self.channel_layer.group_send(
@@ -37,16 +38,6 @@ class Consumer(AsyncWebsocketConsumer):
                     'type': type,
                 }
             )
-
-    async def PlayerData(self, event):
-        global waitingList
-        
-        print("player data gonna set")
-        id = event['id']
-        elo = event['elo']
-        self.me = Player(id, elo)
-        waitingList[id] = self.me # Get player name with the token here
-        print("player data set")
 
     async def SendToGame(self, event): # Will need to delete players from the waitingList here + Rethink because not SPA
         if (event['player1'] == self.me.id or event['player2'] == self.me.id):
