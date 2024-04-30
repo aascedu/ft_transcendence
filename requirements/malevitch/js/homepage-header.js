@@ -97,6 +97,97 @@ window.addEventListener('click', function ({target}){
 	}
 });
 
+// --- TOURNAMENTS ---
+
+// Go to available tournaments
+
+document.querySelector('.homepage-header-available-tournaments').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.available-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+// Go to my tournaments
+
+document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.my-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+// Go to new tournament
+
+document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
+	hideEveryPage();
+
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+
+	g_state.pageToDisplay = '.create-tournament';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+	document.querySelector('.create-tournament-name-input').focus();
+});
+
+// --- PLAY ---
+
+// Quick play
+
+document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
+	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
+		searchMatch();
+	}
+});
+
+// Play with friend
+
+document.querySelector('.homepage-header-play-friend').addEventListener('click', function() {
+	this.classList.toggle('homepage-header-category-clicked');
+
+	// si des amis sont en ligne
+	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+		item.classList.toggle('visually-hidden');
+	});
+
+	// sinon
+	document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
+});
+
+document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+	item.addEventListener('click', function() {
+		// close header menu and toggle back invites
+		document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
+		document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+			item.classList.add('visually-hidden');
+		});
+		document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
+
+		// send invite
+
+		// remove invited friend from list
+		item.parentNode.removeChild(item);
+
+		// show notif 3 seconds to confirm invite
+		inviteSentNotif(item.querySelector('p').textContent);
+	});
+});
+
+// --- FRIENDS ---
+
 // Go to friends list
 
 document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
@@ -188,90 +279,7 @@ function addFriend() {
 		});
 }
 
-// Go to my tournaments
-
-document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
-	hideEveryPage();
-
-	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
-		item.classList.add('visually-hidden');
-	});
-
-	g_state.pageToDisplay = '.my-tournaments';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
-// Go to available tournaments
-
-document.querySelector('.homepage-header-available-tournaments').addEventListener('click', function() {
-	hideEveryPage();
-
-	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
-		item.classList.add('visually-hidden');
-	});
-
-	g_state.pageToDisplay = '.available-tournaments';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
-// Go to new tournament
-
-document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
-	hideEveryPage();
-
-	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
-		item.classList.add('visually-hidden');
-	});
-
-	g_state.pageToDisplay = '.create-tournament';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-	document.querySelector('.create-tournament-name-input').focus();
-});
-
-// Quick play
-
-document.querySelector('.homepage-header-quick-play').addEventListener('click', function() {
-	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
-		searchMatch();
-	}
-});
-
-// Play with friend
-
-document.querySelector('.homepage-header-play-friend').addEventListener('click', function() {
-	this.classList.toggle('homepage-header-category-clicked');
-
-	// si des amis sont en ligne
-	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-		item.classList.toggle('visually-hidden');
-	});
-
-	// sinon
-	document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
-});
-
-document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-	item.addEventListener('click', function() {
-		// close header menu and toggle back invites
-		document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
-		document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
-		document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-			item.classList.add('visually-hidden');
-		});
-		document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
-
-		// send invite
-
-		// remove invited friend from list
-		item.parentNode.removeChild(item);
-
-		// show notif 3 seconds to confirm invite
-		inviteSentNotif(item.querySelector('p').textContent);
-	});
-});
+// --- OTHER ---
 
 // Go to profile
 
