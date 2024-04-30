@@ -15,4 +15,4 @@ RUN     export ELASTIC_USER=ELASTIC_USER                            && \
 COPY    conf/logstash.conf /usr/share/logstash/config/logstash.conf
 COPY    conf/logstash.yml /usr/share/logstash/config/logstash.yml
 
-RUN     ./bin/logstash-plugin install logstash-input-rss
+# RUN     ./bin/logstash-plugin install logstash-input-rss

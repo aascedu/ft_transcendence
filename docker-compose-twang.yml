@@ -7,6 +7,9 @@ networks:
   sentinel:
     internal: true
 
+  internet_access:
+    internal: false
+
 volumes:
   shared_code:
     driver: local
@@ -174,7 +177,6 @@ services:
       - ./tokens:/vault
     environment:
       SERVERNAME: kibana
-      # SERVERNAME: iris
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
@@ -187,11 +189,13 @@ services:
       SERVER_REWRITEBASEPATH: true
       SERVER_BASEPATH: /iris
       SERVER_PUBLICBASEURL: https://localhost:8000/iris
-      xpack.screenshotting.browser.chromium.disablesandbox: true
-      xpack.observability.aiassistant: disable
-      LICENSE: ${LICENSE}
+      NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+      # xpack.screenshotting.browser.chromium.disablesandbox: true
+      # xpack.observability.aiassistant: disable
+      # LICENSE: ${LICENSE}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
+      - internet_access
       - sentinel
 
 # # Front container
