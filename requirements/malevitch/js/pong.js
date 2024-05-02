@@ -176,9 +176,9 @@ async function init_socket() {
 
         if (data.type == "myState" || data.type == "opponentState") {
             if (data.type == "myState") {
-                me.pos = data.mePos * ratio;
+                me.pos = data.mePos / 100 * screenHeight;
             } else {
-                opponent.pos = data.opponentPos * ratio;
+                opponent.pos = data.opponentPos / 100 * screenHeight;
             }
             // console.log("Pos of ball before back return: x=" + ball.pos['x'].toString() + " y=" + ball.pos['y'].toString());
             ball.pos['x'] = data.ballPosX * ratio;
@@ -241,6 +241,26 @@ async function init_socket() {
     let i = 1;
     let frames = {};
     let nbframes = 1;
+
+    function updateScreenSize() {
+        screenHeight = window.innerHeight;
+        screenWidth = window.innerWidth;
+        ratioHeight = screenHeight / 1080;
+        ratioWidth = screenWidth / 1920;
+        ratioBall = Math.min(ratioHeight, ratioWidth);
+        console.log("ratio height : " + ratioHeight.toString() + " / ratio width : " + ratioWidth.toString());
+        htmlme.style.height = 108 * ratioHeight + 'px';
+        htmlopponent.style.height = 108 * ratioHeight + 'px';
+        htmlme.style.width = 24 * ratioWidth + 'px';
+        htmlopponent.style.width = 24 * ratioWidth + 'px';
+        htmlBall.style.height = 36 * ratioBall + 'px';
+        htmlBall.style.width = 36 * ratioBall + 'px';
+    }
+
+window.addEventListener('resize', updateScreenSize());
+window.onresize = updateScreenSize;
+htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
+htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
     function gameLoop() {
         // End of point
