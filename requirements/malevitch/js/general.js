@@ -24,7 +24,7 @@ function render() {
 		homepagePicture.classList.remove('visually-hidden');
 	}
 
-	// // A ENLEVER
+	// A ENLEVER
 
 	// var	homepageHeader = document.querySelector('.homepage-header');
 	// homepageHeader.classList.remove('visually-hidden');
