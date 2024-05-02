@@ -170,7 +170,7 @@ class Consumer(OurBasicConsumer):
                     "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
                     "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "ballSpeed": 100 * self.myMatch.ball.speed,
+                    "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
                 }))
             else:
@@ -179,7 +179,7 @@ class Consumer(OurBasicConsumer):
                     "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
                     "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "ballSpeed": 100 * self.myMatch.ball.speed,
+                    "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
             }))
 
@@ -192,7 +192,7 @@ class Consumer(OurBasicConsumer):
                     "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
                     "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "ballSpeed": 100 * self.myMatch.ball.speed,
+                    "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
                 }))
             else:
@@ -201,7 +201,7 @@ class Consumer(OurBasicConsumer):
                     "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
                     "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "ballSpeed": 100 * self.myMatch.ball.speed,
+                    "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
                 }))
 
