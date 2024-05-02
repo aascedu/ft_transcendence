@@ -303,3 +303,24 @@ document.querySelector('.sign-up-sign-in button').addEventListener('click', func
 	document.querySelector('.sign-up-password-input').value = '';
 	document.querySelector('.sign-up-password-confirm-input').value = '';
 });
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	let isFw =!e.shiftKey;
+
+	if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
+		if (isFw) {
+			document.querySelector('.sign-up-nickname-input').focus();
+		}
+		else {
+			document.querySelector('.sign-up-sign-in button').focus();
+		}
+
+		e.preventDefault();
+	}
+	if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {
+		document.querySelector('.sign-up-nickname-input').focus();
+		e.preventDefault();
+	}
+});

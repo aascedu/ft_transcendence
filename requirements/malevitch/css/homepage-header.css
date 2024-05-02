@@ -3,6 +3,11 @@
 	padding: 2.5vw;
 }
 
+.homepage-header-logo {
+	background: 0;
+	border: 0;
+}
+
 .homepage-header-logo img {
 	height: 46px;
 }
@@ -173,6 +178,11 @@
 	border-radius: 25px;
 }
 
+.homepage-header-profile {
+	background: 0;
+	border: 0;
+}
+
 .homepage-header-profile img {
 	height: 46px;
 	width: 46px;
@@ -187,5 +197,11 @@
 .homepage-header-menus > *:hover,
 .homepage-header-options > *:not(:first-child):hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.homepage-header-logo:focus,
+.homepage-header-menus > *:focus,
+.homepage-header-options > *:not(:first-child):focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }

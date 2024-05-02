@@ -78,5 +78,29 @@ function submitNickname(nickname) {
 		.catch (error => {
 			console.error('Fetch problem:', error.message);
 		});
-
 }
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (e.key === 'Tab' && document.querySelector('.homepage-id-font-size') === document.activeElement) {
+		let isFw =!e.shiftKey;
+
+		if (isFw) {
+			document.querySelector('.homepage-id-language-selector button').focus();
+		}
+		else {
+			var	submit = document.querySelector('.homepage-id-submit');
+			var	submitStyle = window.getComputedStyle(submit);
+			var	submitVisibility = submitStyle.getPropertyValue('visibility');
+			if (submitVisibility == 'hidden') {
+				document.querySelector('.homepage-id-input').focus();
+			}
+			else {
+				document.querySelector('.homepage-id-submit').focus();
+			}
+		}
+
+		e.preventDefault();
+	}
+});

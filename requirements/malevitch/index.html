@@ -181,19 +181,19 @@
 		</div>
 		<!-- HOMEPAGE-HEADER -->
 		<div class="homepage-header w-100 d-flex justify-content-between align-items-center position-absolute visually-hidden">
-			<div class="homepage-header-logo d-flex justify-content-center align-items-center">
+			<button class="homepage-header-logo d-flex justify-content-center align-items-center">
 				<img src="assets/general/batch-purple-small.svg" alt="BATCH logo small" draggable="false" (dragstart)="false;" class="unselectable purple-shadow">
-			</div>
+			</button>
 			<div class="homepage-header-menus d-flex justify-content-between align-items-center position-absolute start-50 top-50 translate-middle purple-shadow">
-				<div class="homepage-header-tournaments homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
+				<button class="homepage-header-tournaments homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/general/tournament.svg" alt="tournament header button" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-				<div class="homepage-header-play homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
+				</button>
+				<button class="homepage-header-play homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/general/play.svg" alt="play header button" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-				<div class="homepage-header-friends homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
+				</button>
+				<button class="homepage-header-friends homepage-header-menu-button d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/general/friends.svg" alt="friends header button" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
+				</button>
 			</div>
 			<div class="homepage-header-options d-flex justify-content-between align-items-center">
 				<div class="homepage-header-language-selector language-selector purple-shadow">
@@ -209,12 +209,12 @@
 						</a></li>
 					</ul>
 				</div>
-				<div class="homepage-header-accessibility d-flex justify-content-center align-items-center purple-shadow">
+				<button class="homepage-header-accessibility d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/accessibility/accessibility.svg" alt="accessibility header button" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-				<div class="homepage-header-profile d-flex justify-content-center align-items-center purple-shadow">
+				</button>
+				<button class="homepage-header-profile d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/general/pong.png" alt="profile picture / profile header button" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
+				</button>
 			</div>
 		</div>
 		<!-- HOMEPAGE-HEADER MENUS -->
@@ -264,9 +264,9 @@
 					<label for="homepage-header-add-friend-input" data-language="friend-nickname" class="visually-hidden">Enter a nickname...</label>
 					<input id="homepage-header-add-friend-input" type="text" name="homepage-header-add-friend" label="homepage-header-add-friend" data-language="friend-nickname" placeholder="Enter a nickname..." autocomplete="off" class="homepage-header-add-friend-input input w-100 border-0 text-center">
 				</div>
-				<div class="homepage-header-add-friend-submit d-flex justify-content-center align-items-center purple-shadow visually-hidden">
+				<button class="homepage-header-add-friend-submit submit d-flex justify-content-center align-items-center purple-shadow">
 					<img src="assets/general/right-arrow-white.svg" alt="submit nickname" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
+				</button>
 			</div>
 			<div class="homepage-header-add-friend-input-warning input-warning w-100 visually-hidden text-center" data-language="unknown-user">User not found.</div>
 		</div>
@@ -818,10 +818,10 @@
 						</div>
 					</div>
 					<div class="w-100 d-flex flex-column align-items-center">
-						<div class="create-tournament-submit w-50 d-flex justify-content-center align-items-center purple-shadow" tabindex="0">
+						<button class="create-tournament-submit w-50 d-flex justify-content-center align-items-center purple-shadow">
 							<img src="assets/general/right-arrow-white.svg" alt="→" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
 							<p data-language="create-tournament" class="text-center unselectable">Create tournament</p>
-						</div>
+						</button>
 					</div>
 				</div>
 			</div>
@@ -1136,7 +1136,7 @@
 		<script src="js/create-tournament.js"></script>
 		<script src="js/accessibility.js"></script>
 		<script src="js/notif.js"></script>
-		<script src="js/pong.js"></script>
+		<!-- <script src="js/pong.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>

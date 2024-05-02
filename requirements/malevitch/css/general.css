@@ -113,7 +113,7 @@ body {
 }
 
 .submit img {
-	width: 16px;
+	min-width: 16px;
 }
 
 .input-container-focused .submit {
