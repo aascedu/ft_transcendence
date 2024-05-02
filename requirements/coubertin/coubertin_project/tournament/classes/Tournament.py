@@ -1,8 +1,9 @@
 class Tournament:
-    def __init__(self, name, nbPlayers, id):
-        self.nbPlayers = nbPlayers
+    def __init__(self, name, nbPlayers, id, admin):
         self.id = id
         self.name = name
+        self.admin = admin
+        self.nbPlayers = nbPlayers
         self.state = 0 # 0 = inscription, 1 = en cours, 2 = termine
         self.onGoingGames = 0
         self.currentRound = 0
@@ -33,6 +34,8 @@ class Tournament:
             'Name': self.name,
             'Players': self.playersMap,
             'Games': self.gameHistory,
+            'NbPlayers': self.nbPlayers,
+            'Admin': self.admin,
         }
         return (tournamentDict)
     

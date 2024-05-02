@@ -5,14 +5,10 @@ from tournament.classes.Tournament import Tournament, tournaments
 
 # Faire des fonctions quand on a juste un post.
 # Invite someone to tournament
-# Get tournament name
-# Get tournament admin
-# Get number of players
-# Get player list
-# Online friends not yet subscribed to tournament
+# Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
 
-class createTournament(View): 
+class tournamentManagement(View): #Faire un patch pour modif le nb de joueurs ou autre ?
     def post(self, request): # Maybe we can set admin here instead.
         global tournaments
 
@@ -26,11 +22,18 @@ class createTournament(View):
         while id in tournaments:
             id += 1
 
-        tournaments[id] = Tournament(tournamentName, nbPlayers, id)
+        tournaments[id] = Tournament(tournamentName, nbPlayers, id, 0) # 0 = admin id to get
         return JsonResponse({}) # Redirect on the tournament url, or join URL ?
+    
+    def get(self, request):
+        response = {}
+        for id in tournaments:
+            if tournaments[id].state == 0:
+                response[id] = tournaments[id].toDict()
+        return JsonResponse(response)
 
-class leaveTournament(View):
-    def post(self, request):
+class tournamentEntry(View):
+    def patch(self, request): # Leave
         global tournaments
 
         try:
@@ -43,9 +46,8 @@ class leaveTournament(View):
             return JsonResponse({'Err': e.__str__()})
 
         return JsonResponse({})
-        
-class joinTournament(View):
-    def post(self, request):
+    
+    def post(self, request): #Join
         global tournaments
         
         try:
@@ -60,16 +62,7 @@ class joinTournament(View):
             return JsonResponse({'Err': e.__str__()})
 
         return JsonResponse({})
-    
-class getTournaments(View):
-    def get(self, request):
-        response = {}
-        for id in tournaments:
-            if tournaments[id].state == 0:
-                response[id] = tournaments[id].toDict()
-        return JsonResponse(response)
-
-
+        
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments
