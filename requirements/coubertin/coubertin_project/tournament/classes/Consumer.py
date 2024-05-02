@@ -1,9 +1,10 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from tournament.classes.Tournament import tournaments
+from shared.BasicConsumer import OurBasicConsumer
 import requests
 
-class Consumer(AsyncWebsocketConsumer):
+class Consumer(OurBasicConsumer):
     async def connect(self):
         global tournaments
 
@@ -39,7 +40,7 @@ class Consumer(AsyncWebsocketConsumer):
                     'Type': "tournamentState",
                 }
             )
-        
+
         elif type == "renameTournament" and self.admin == True:
             tournaments[self.tournamentId].name = text_data_json['NewName']
             await self.channel_layer.group_send(
@@ -74,7 +75,7 @@ class Consumer(AsyncWebsocketConsumer):
                     'Type': "StartRound",
                 }
             )
-        
+
     async def StartRound(self, event): # To start a round (Will redirect every player etc...)
         global tournaments
 
@@ -104,8 +105,8 @@ class Consumer(AsyncWebsocketConsumer):
             'Action': "tournamentState",
             'Tournament': tournaments[self.tournamentId].toDict(),
             }))
-        
-    
+
+
 # To do
 # Remove someone from tournament if admin
 # Rename tournament, Implement ids for tournaments
