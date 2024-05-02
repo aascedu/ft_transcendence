@@ -3,6 +3,9 @@ from django.views import View
 from django.http import JsonResponse
 import nanoid
 
+from shared.utils import JsonForbiden
+
+
 identificators = {}
 
 class socketConnectionView(View):
@@ -10,18 +13,12 @@ class socketConnectionView(View):
     def get(self, request):
         global identificators
 
+        if request.user.is_autenticated is False:
+            return JsonForbiden(request.user.error)
+
         key = nanoid.generate()
         request.user.date = datetime.now()
         identificators |= {key: request.user}
 
-        #if request.user.is_autenticated is False:
-            #return JsonForbiden(request.user.error)
 
-        return JsonResponse({"Bigrement": "bien", "Key": key})
-
-    def checkWebSocketIdentificator(self, request):
-        global identificators
-        print(identificators[request.user.id])
-
-        return JsonResponse({"delete": "delete"})
-
+        return JsonResponse({"Key": key})
