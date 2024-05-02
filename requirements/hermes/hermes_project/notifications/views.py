@@ -4,4 +4,4 @@ from django.views import View
 # Create your views here.
 
 def notifications(request):
-    pass
+    return render(request, 'notifications/notifications.html')

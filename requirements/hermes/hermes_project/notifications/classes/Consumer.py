@@ -8,7 +8,7 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
 
-        self.identify_or_close()
+        #self.identify_or_close()
 
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
         await self.accept()
@@ -53,6 +53,13 @@ class Consumer(OurBasicConsumer):
         if event['target'] == self.name:
             await self.send (text_data=json.dumps({
             "type": "tournamentInvite",
+            "source": event['source'],
+        }))
+
+    async def GameStarting(self, event):
+        if event['target'] == self.name:
+            await self.send (text_data=json.dumps({
+            "type": "gameStarting",
             "source": event['source'],
         }))
 

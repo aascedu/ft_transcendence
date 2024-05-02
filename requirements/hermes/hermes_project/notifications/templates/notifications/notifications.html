@@ -7,8 +7,6 @@
         <script>
 
 
-            
-
 
 
 
@@ -23,11 +21,12 @@
 
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/hermes/ws/test'); // Ajouter le nom du user a la fin de l'URL
+const exampleSocket = new WebSocket('wss://localhost:8000/hermes/ws/test/'); // Ajouter le nom du user a la fin de l'URL
 
 exampleSocket.onopen = function(event) {
     console.log("Socket opened in the front");
 };
+
 
 exampleSocket.onclose = function() {
     console.log("Socket closed in the front");
@@ -38,6 +37,7 @@ exampleSocket.onerror = function(event) {
 }
 
 exampleSocket.onmessage = (event) => {
+    console.log("New message");
     // Pop the notification here
 };
 
@@ -53,6 +53,8 @@ function sendData(type, source, target) {
     exampleSocket.send(JSON.stringify(data));
 }
 
+//sendData('gameStarting', 'Tournoi1', 'player1');
+//sendData('gameStarting', 'Tournoi1', 'player2');
 
 
 
