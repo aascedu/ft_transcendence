@@ -46,7 +46,7 @@ services:
       apollo:
         condition: service_healthy
       iris:
-        condition: service_started
+        condition: service_healthy
       malevitch:
         condition: service_started
       tutum:
@@ -144,6 +144,7 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
+    # command: /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
@@ -197,6 +198,11 @@ services:
     networks:
       - internet_access
       - sentinel
+    healthcheck:
+      test: ["CMD-SHELL", "curl -k -u elastic -I https://apollo:9200"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 # # Front container
   malevitch:
