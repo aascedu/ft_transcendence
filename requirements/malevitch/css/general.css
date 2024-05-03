@@ -366,6 +366,7 @@ body {
 	padding: 16px;
 	width: 48%;
 	font-size: 14pt;
+	border: 0;
 }
 
 .alert-buttons-container > *:hover,

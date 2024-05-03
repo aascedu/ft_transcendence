@@ -241,13 +241,13 @@
 				<img src="assets/general/invite-friend.svg" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable position-absolute">
 				<p data-language="play-friend" class="unselectable">Play with a friend</p>
 			</button>
-			<!-- <div class="homepage-header-play-friend-card homepage-header-category w-100 d-flex justify-content-between align-items-center text-center purple-shadow visually-hidden">
-				<p class="unselectable">Ami1</p>
-				<img src="assets/general/friend.png" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable">
-			</div> -->
-			<button class="homepage-header-no-friends w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
+			<div class="homepage-header-no-friends w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
 				<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 				<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
+			</div>
+			<button class="homepage-header-play-friend-card homepage-header-category w-100 d-flex justify-content-between align-items-center text-center purple-shadow visually-hidden">
+				<p class="unselectable">Ami1</p>
+				<img src="assets/general/friend.png" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable">
 			</button>
 		</div>
 		<div class="homepage-header-open-friends homepage-header-open-menu w-25 d-flex flex-column justify-content-between align-items-center position-absolute start-50 translate-middle-x purple-shadow visually-hidden">
@@ -264,7 +264,7 @@
 					<label for="homepage-header-add-friend-input" data-language="friend-nickname" class="visually-hidden">Enter a nickname...</label>
 					<input id="homepage-header-add-friend-input" type="text" name="homepage-header-add-friend" label="homepage-header-add-friend" data-language="friend-nickname" placeholder="Enter a nickname..." autocomplete="off" class="homepage-header-add-friend-input input w-100 border-0 text-center">
 				</div>
-				<button class="homepage-header-add-friend-submit submit d-flex justify-content-center align-items-center purple-shadow">
+				<button class="homepage-header-add-friend-submit submit d-flex justify-content-center align-items-center purple-shadow visually-hidden">
 					<img src="assets/general/right-arrow-white.svg" alt="submit nickname" draggable="false" (dragstart)="false;" class="unselectable">
 				</button>
 			</div>
@@ -493,9 +493,9 @@
 		<div class="tournament-info w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
 			<div class="tournament-info-container category w-100 d-flex flex-column align-items-center purple-shadow">
 				<div class="category-title w-100 d-flex justify-content-center position-absolute">
-					<div class="tournament-info-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<button class="tournament-info-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 					<p class="tournament-info-name unselectable">Tournoi 1</p>
 					<div class="tournament-info-name-input-container w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
 						<div class="tournament-info-name-input-box input-box w-50 bg-white purple-shadow">
@@ -504,42 +504,42 @@
 						</div>
 						<div class="tournament-info-name-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-tournament-name">Invalid tournament name.</div>
 					</div>
-					<div class="tournament-info-edit-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<button class="tournament-info-edit-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/edit.svg" alt="edit tournament" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
-					<div class="tournament-info-check-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
+					</button>
+					<button class="tournament-info-check-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/check.svg" alt="validate edit" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
-					<div class="tournament-info-invite-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					</button>
+					<button class="tournament-info-invite-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/invite-friend.svg" alt="invite friend" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 					<div class="tournament-info-invite-box d-flex justify-content-center align-items-center position-absolute visually-hidden">
 						<div class="tournament-info-invite category w-100 d-flex flex-column purple-shadow overflow-x-hidden overflow-y-auto">
-							<!-- EXAMPLE OF ONLINE FRIEND -->
-							<div class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami7</div>
-								<div class="user-card-picture">
-									<img src="assets/general/pong.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</div>
-							<div class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami9</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</div>
 							<div class="tournament-info-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 							</div>
+							<!-- EXAMPLE OF ONLINE FRIEND -->
+							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
+								<div class="user-card-name unselectable">Ami7</div>
+								<div class="user-card-picture">
+									<img src="assets/general/pong.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+								</div>
+							</button>
+							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
+								<div class="user-card-name unselectable">Ami9</div>
+								<div class="user-card-picture">
+									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+								</div>
+							</button>
 						</div>
 					</div>
-					<div class="tournament-info-join-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<button class="tournament-info-join-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/join.svg" alt="join tournament" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
-					<div class="tournament-info-leave-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
+					</button>
+					<button class="tournament-info-leave-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/leave.svg" alt="leave tournament" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 				</div>
 				<div class="tournament-info-card-container w-100 overflow-x-hidden overflow-y-auto" tabindex="-1">
 					<div class="tournament-info-players w-100 d-flex flex-wrap align-items-center">
@@ -547,19 +547,19 @@
 							<p data-language="players" class="unselectable">Players</p>
 							<p class="tournament-info-players-num unselectable">2/8</p>
 						</div>
-						<!-- <div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="user-card-name unselectable">Ami1</div>
-							<div class="user-card-picture">
-								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
-								<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-						</div> -->
 						<div class="tournament-info-no-players w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
 							<img src="assets/general/no-friends.svg" alt="no players icon" draggable="false" (dragstart)="false;" class="unselectable">
 							<p data-language="no-players" class="text-center unselectable">No player yet...</p>
 						</div>
+						<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
+							<div class="user-card-name unselectable">Ami1</div>
+							<div class="user-card-picture">
+								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+							<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
+								<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+							</div>
+						</button>
 					</div>
 					<div class="tournament-info-bracket w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-bracket-title tournament-info-title w-100">
@@ -683,12 +683,12 @@
 					Do you want to join this tournament ?
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -702,12 +702,12 @@
 					This action is irreversible.
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</buttonbutton>
 				</div>
 			</div>
 		</div>
@@ -721,12 +721,12 @@
 					This action is irreversible.
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -737,12 +737,12 @@
 					End editing ?
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -753,12 +753,12 @@
 					Do you confirm this invitation ?
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -840,12 +840,12 @@
 					Create the tournament ?
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -855,25 +855,22 @@
 				<div class="user-profile-general-info w-100 d-flex justify-content-center align-items-center">
 					<div class="user-profile-picture d-flex justify-content-center align-items-center purple-shadow" >
 						<img src="assets/general/friend.png" alt="profile picture of user" draggable="false" (dragstart)="false;" class="unselectable">
-						<input type="file" id="user-profile-picture-input" accept="image/jpeg,image/jpg,image/png" class="visually-hidden">
+						<input type="file" id="user-profile-picture-input" accept="image/jpeg,image/jpg,image/png" class="user-profile-picture-input visually-hidden">
 						<label for="user-profile-picture-input" class="d-flex justify-content-center align-items-center visually-hidden">
 							<img src="assets/general/edit.svg" alt="edit profile picture">
 							<p class="visually-hidden" data-language="edit-picture">Edit profile picture</p>
 						</label>
 					</div>
 					<div class="user-profile-name text-center unselectable">user</div>
-					<div class="user-profile-edit-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
-						<img src="assets/general/edit.svg" alt="edit icon" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
-					<div class="user-profile-add-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<button class="user-profile-add-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/invite-friend.svg" alt="invite friend icon" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 					<div class="user-profile-pending-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/invite-friend-pending.svg" alt="invitation pending" draggable="false" (dragstart)="false;" class="unselectable">
 					</div>
-					<div class="user-profile-remove-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
+					<button class="user-profile-remove-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/remove-friend.svg" alt="remove icon" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 				</div>
 				<div class="user-profile-history w-100 d-flex flex-wrap justify-content-between align-items-center">
 					<div class="user-profile-history-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
@@ -920,12 +917,12 @@
 					Do you confirm this invitation ?
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
 						Confirm
-					</div>
-					<div class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
 						Cancel
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -955,9 +952,9 @@
 					Image is too heavy. (20MB maximum)
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<div class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="ok" >
+					<button class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="ok" >
 						OK
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
@@ -998,12 +995,12 @@
 		<div class="accessibility w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
 			<div class="accessibility-container category w-100 d-flex flex-column align-items-center purple-shadow">
 				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
-					<div class="accessibility-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+					<button class="accessibility-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/accessibility/accessibility.svg" alt="accessibility icon" draggable="false" (dragstart)="false;" class="unselectable">
-					</div>
+					</button>
 					<p data-language="accessibility" class="unselectable">Accessibility</p>
 				</div>
-				<div class="accessibility-card-container w-100 d-flex flex-column align-items-center flex-wrap" tabindex="-1">
+				<div class="accessibility-card-container w-100 overflow-x-hidden overflow-y-auto" tabindex="-1">
 					<div class="w-100 d-flex flex-column align-items-center">
 						<div class="accessibility-contrast w-50 d-flex justify-content-center align-items-center">
 							<div class="accessibility-title text-center unselectable" data-language="contrast">

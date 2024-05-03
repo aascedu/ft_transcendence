@@ -13,6 +13,8 @@ document.querySelector('.available-tournaments-icon').addEventListener('click', 
 
 document.querySelectorAll('.available-tournaments-card-container .content-card').forEach(function(item) {
 	item.addEventListener('click', function () {
+		document.querySelector('.tournament-info-icon').focus();
+
 		hideEveryPage();
 
 		g_state.pageToDisplay = '.tournament-info';

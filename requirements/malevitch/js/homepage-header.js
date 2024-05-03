@@ -175,13 +175,20 @@ document.querySelector('.homepage-header-quick-play').addEventListener('click', 
 document.querySelector('.homepage-header-play-friend').addEventListener('click', function() {
 	this.classList.toggle('homepage-header-category-clicked');
 
-	// si des amis sont en ligne
+	// put focus on first friend if there is one
+	if (document.querySelector('.homepage-header-play-friend-card')) {
+		document.querySelector('.homepage-header-play-friend-card').focus();
+	}
+
+	// if there are friends online
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
 		item.classList.toggle('visually-hidden');
 	});
 
-	// sinon
-	document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
+	// else
+	if (!document.querySelector('.homepage-header-open-play').lastElementChild.classList.contains('homepage-header-play-friend-card')) {
+		document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
+	}
 });
 
 document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
@@ -201,6 +208,9 @@ document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(
 
 		// show notif 3 seconds to confirm invite
 		inviteSentNotif(item.querySelector('p').textContent);
+
+		// put focus back on header
+		document.querySelector('.homepage-header-play').focus();
 	});
 });
 
@@ -226,6 +236,15 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 
 document.querySelector('.homepage-header-add-friend').addEventListener('click', function() {
 	this.classList.toggle('homepage-header-category-clicked');
+
+	if (this.classList.contains('homepage-header-category-clicked')) {
+		document.querySelector('.homepage-header-add-friend-input').focus();
+	}
+	else {
+		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input-warning').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input').value = '';
+	}
 
 	document.querySelector('.homepage-header-add-friend-input-box').classList.toggle('visually-hidden');
 });
@@ -260,7 +279,7 @@ function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	
 	// check if user is yourself
-	if (nickname == g_userNick) {
+	if (nickname == g_userNick || !nickname.length) {
 		return ;
 	}
 
@@ -276,7 +295,9 @@ function addFriend() {
 			if (data.Ava) {
 				// input warning
 				document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
+				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
 				document.querySelector('.homepage-header-add-friend-input').value = '';
+				document.querySelector('.homepage-header-add-friend-input').focus();
 			}
 			else {
 				// send invite
@@ -304,6 +325,8 @@ function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
+	document.querySelector('.user-profile-picture-input').focus();
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.user-profile';
@@ -314,6 +337,8 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 // Go to accessibility
 
 document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
+	document.querySelector('.accessibility-icon').focus();
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.accessibility';
@@ -342,6 +367,7 @@ document.addEventListener('keydown', function(e) {
 			if (!document.querySelector('.available-tournaments').classList.contains('visually-hidden')) {
 				document.querySelector('.available-tournaments-icon').focus();
 			}
+
 			e.preventDefault();
 		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-header-logo') === document.activeElement) {
@@ -371,20 +397,58 @@ document.addEventListener('keydown', function(e) {
 		}
 		// play menu
 		if (e.key === 'Tab' && isFw && document.querySelector('.homepage-header-play-friend') === document.activeElement) {
-			document.querySelector('.homepage-header-quick-play').focus();
-			e.preventDefault();
+			if (!document.querySelector('.homepage-header-open-play').lastElementChild.classList.contains('homepage-header-play-friend-card') ||
+				!document.querySelector('.homepage-header-play-friend').classList.contains('homepage-header-category-clicked')) {
+				document.querySelector('.homepage-header-quick-play').focus();
+				e.preventDefault();
+			}
+		}
+		if (e.key === 'Tab' && isFw && document.activeElement.classList.contains('homepage-header-play-friend-card')) {
+			if (document.activeElement === document.querySelector('.homepage-header-open-play').lastElementChild) {
+				document.querySelector('.homepage-header-quick-play').focus();
+				e.preventDefault();
+			}
 		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-header-quick-play') === document.activeElement) {
-			document.querySelector('.homepage-header-play-friend').focus();
+			if (document.querySelector('.homepage-header-open-play').lastElementChild.classList.contains('homepage-header-play-friend-card') &&
+				document.querySelector('.homepage-header-play-friend').classList.contains('homepage-header-category-clicked')) {
+				document.querySelector('.homepage-header-open-play').lastElementChild.focus();
+			}
+			else {
+				document.querySelector('.homepage-header-play-friend').focus();
+			}
 			e.preventDefault();
 		}
 		// friends menu
 		if (e.key === 'Tab' && isFw && document.querySelector('.homepage-header-add-friend') === document.activeElement) {
+			if (!document.querySelector('.homepage-header-add-friend').classList.contains('homepage-header-category-clicked')) {
+				document.querySelector('.homepage-header-friend-list').focus();
+				e.preventDefault();
+			}
+		}
+		if (e.key === 'Tab' && isFw && document.querySelector('.homepage-header-add-friend-submit') === document.activeElement) {
 			document.querySelector('.homepage-header-friend-list').focus();
 			e.preventDefault();
 		}
+		if (e.key === 'Tab' && isFw && document.querySelector('.homepage-header-add-friend-input') === document.activeElement) {
+			if (document.querySelector('.homepage-header-add-friend-submit').classList.contains('visually-hidden')) {
+				document.querySelector('.homepage-header-friend-list').focus();
+			}
+			else {
+				document.querySelector('.homepage-header-add-friend-submit').focus();
+			}
+			e.preventDefault();
+		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-header-friend-list') === document.activeElement) {
-			document.querySelector('.homepage-header-add-friend').focus();
+			if (!document.querySelector('.homepage-header-add-friend-submit').classList.contains('visually-hidden')) {
+				document.querySelector('.homepage-header-add-friend-submit').focus();
+			}
+			else if (!document.querySelector('.homepage-header-add-friend-input').classList.contains('visually-hidden')) {
+				document.querySelector('.homepage-header-add-friend-input').focus();
+			}
+			else {
+				document.querySelector('.homepage-header-add-friend').focus();
+			}
 			e.preventDefault();
 		}
 
@@ -405,5 +469,20 @@ document.addEventListener('keydown', function(e) {
 			}
 			e.preventDefault();
 		}
+	}
+});
+
+document.querySelector('.homepage-header-add-friend-input').addEventListener('keydown', function(e) {
+	if (e.key === 'Escape' && !this.classList.contains('visually-hidden')) {
+		// Reset input
+		document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
+		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input-warning').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input-box').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input').value = '';
+
+		document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-friends').focus();
+		e.preventDefault();
 	}
 });

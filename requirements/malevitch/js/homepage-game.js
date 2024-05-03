@@ -51,6 +51,8 @@ document.querySelector('.homepage-game-content-new-tournament').addEventListener
 
 document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
 	item.addEventListener('click', function () {
+		document.querySelector('.user-profile-remove-icon').focus();
+
 		hideEveryPage();
 
 		g_state.pageToDisplay = '.user-profile';

@@ -159,6 +159,9 @@
 	border-radius: 12px;
 	background-color: #7300E6;
 	margin-left: 16px;
+	visibility: visible;
+	opacity: 1;
+	border: 0;
 }
 
 .homepage-header-add-friend-submit img {
