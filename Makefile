@@ -199,7 +199,7 @@ db_reset: db_suppr copyfile
 #---- re ----#
 
 ifeq ($(WHO), twang)
-re: fclean debug
+re: prune debug
 else
 re: down debug
 endif
