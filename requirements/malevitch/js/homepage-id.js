@@ -83,24 +83,31 @@ function submitNickname(nickname) {
 // keyboard navigation
 
 document.addEventListener('keydown', function(e) {
-	if (e.key === 'Tab' && document.querySelector('.homepage-id-font-size') === document.activeElement) {
+	if (!document.querySelector('.homepage-id').classList.contains('visually-hidden')) {
 		let isFw =!e.shiftKey;
 
-		if (isFw) {
-			document.querySelector('.homepage-id-language-selector button').focus();
-		}
-		else {
-			var	submit = document.querySelector('.homepage-id-submit');
-			var	submitStyle = window.getComputedStyle(submit);
-			var	submitVisibility = submitStyle.getPropertyValue('visibility');
-			if (submitVisibility == 'hidden') {
-				document.querySelector('.homepage-id-input').focus();
+		if (e.key === 'Tab' && document.querySelector('.homepage-id-font-size') === document.activeElement) {
+	
+			if (isFw) {
+				document.querySelector('.homepage-id-language-selector button').focus();
 			}
 			else {
-				document.querySelector('.homepage-id-submit').focus();
+				var	submit = document.querySelector('.homepage-id-submit');
+				var	submitStyle = window.getComputedStyle(submit);
+				var	submitVisibility = submitStyle.getPropertyValue('visibility');
+				if (submitVisibility == 'hidden') {
+					document.querySelector('.homepage-id-input').focus();
+				}
+				else {
+					document.querySelector('.homepage-id-submit').focus();
+				}
 			}
+	
+			e.preventDefault();
 		}
-
-		e.preventDefault();
+		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-id-language-selector button') === document.activeElement) {
+			document.querySelector('.homepage-id-font-size').focus();
+			e.preventDefault();
+		}
 	}
 });

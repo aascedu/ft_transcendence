@@ -307,20 +307,22 @@ document.querySelector('.sign-up-sign-in button').addEventListener('click', func
 // keyboard navigation
 
 document.addEventListener('keydown', function(e) {
-	let isFw =!e.shiftKey;
-
-	if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
-		if (isFw) {
-			document.querySelector('.sign-up-nickname-input').focus();
+	if (!document.querySelector('.sign-up').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+	
+		if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
+			if (isFw) {
+				document.querySelector('.sign-up-nickname-input').focus();
+			}
+			else {
+				document.querySelector('.sign-up-sign-in button').focus();
+			}
+	
+			e.preventDefault();
 		}
-		else {
-			document.querySelector('.sign-up-sign-in button').focus();
+		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {
+			document.querySelector('.sign-up-font-size').focus();
+			e.preventDefault();
 		}
-
-		e.preventDefault();
-	}
-	if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {
-		document.querySelector('.sign-up-nickname-input').focus();
-		e.preventDefault();
 	}
 });

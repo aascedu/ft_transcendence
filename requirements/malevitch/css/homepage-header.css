@@ -60,6 +60,7 @@
 	padding: 12px;
 	margin-bottom: 16px;
 	min-height: 56px;
+	border: 0;
 }
 
 .homepage-header-category-contrast {
@@ -72,6 +73,10 @@
 
 .homepage-header-category:hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.homepage-header-category:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 

@@ -94,20 +94,22 @@ document.querySelector('.sign-in-other-nickname button').addEventListener('click
 // keyboard navigation
 
 document.addEventListener('keydown', function(e) {
-	let isFw =!e.shiftKey;
-
-	if (e.key === 'Tab' && document.querySelector('.sign-in-font-size') === document.activeElement) {
-		if (isFw) {
-			document.querySelector('.sign-in-language-selector button').focus();
+	if (!document.querySelector('.sign-in').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+	
+		if (e.key === 'Tab' && document.querySelector('.sign-in-font-size') === document.activeElement) {
+			if (isFw) {
+				document.querySelector('.sign-in-language-selector button').focus();
+			}
+			else {
+				document.querySelector('.sign-in-other-nickname button').focus();
+			}
+	
+			e.preventDefault();
 		}
-		else {
-			document.querySelector('.sign-in-other-nickname button').focus();
+		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-in-language-selector button') === document.activeElement) {
+			document.querySelector('.sign-in-font-size').focus();
+			e.preventDefault();
 		}
-
-		e.preventDefault();
-	}
-	if (e.key === 'Tab' && !isFw && document.querySelector('.sign-in-language-selector button') === document.activeElement) {
-		document.querySelector('.sign-in-language-selector button').focus();
-		e.preventDefault();
 	}
 });
