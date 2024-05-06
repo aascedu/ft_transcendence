@@ -5,12 +5,11 @@ from django.http import JsonResponse
 import os
 from django.conf import settings
 
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response
 
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
-
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 return JsonResponse(Client.objects.get(id=id).personal_dict())
