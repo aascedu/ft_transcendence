@@ -99,8 +99,8 @@ class friendView(View):
         return JsonResponse({
             "Id": request.user.id,
             "Friends": emiter.list_friends(),
-            "Requests": emiter.list_sent_requests(),
-            "Other": emiter.list_received_requests(),
+            "Requests": emiter.list_received_requests(),
+            "Sent": emiter.list_sent_requests(),
         })
 
     def post(self, request, id: int) -> JsonResponse:
