@@ -7,13 +7,15 @@ class Client(models.Model):
     font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
     languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
     avatar = models.ImageField(upload_to='avatars/', blank=True)
-    unique_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=16, unique=True,
                     validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
+    contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
+    online = models.BooleanField(default=False)
 
     objects = models.Manager()
 
@@ -21,12 +23,12 @@ class Client(models.Model):
         return f"""
                 ${self.nick.__str__()}
                 ${self.email.__str__()}
-                ${self.unique_id.__str__()}
+                ${self.id.__str__()}
                 """
 
     def to_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
             "Friends": self.list_friends(),
@@ -34,28 +36,38 @@ class Client(models.Model):
 
     def public_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
-            "Avatar": "avatar"
+            "Pic": self.avatar.url if self.avatar else None,
         }
 
     def friends_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
-            "Email": self.email,
-            "Avatar": "avatar"
+            "Pic": self.avatar.url if self.avatar else None,
+            "Online": self.online,
         }
 
     def personal_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
-            "Lang": self.lang,
+            "Lang": self.lang_state(),
             "Font": self.font,
-            "Avatar": "avatar",
+            "Pic": self.avatar.url if self.avatar else None,
+            "Contrast-mode": self.contrast_mode,
+            "Friends": self.list_friends(),
         }
+
+    def lang_state(self):
+        if self.lang == 1:
+            return "fr"
+        if self.lang == 2:
+            return "eng"
+        if self.lang == 3:
+            return "zh"
 
     def list_friends(self):
         return [object.friends_dict()
@@ -98,8 +110,8 @@ class FriendshipRequest(models.Model):
 
     def to_dict(self):
         return {
-            "sender": [self.sender.nick, self.sender.unique_id],
-            "receiver": [self.receiver.nick, self.receiver.unique_id],
+            "sender": [self.sender.nick, self.sender.id],
+            "receiver": [self.receiver.nick, self.receiver.id],
         }
 
     @staticmethod
