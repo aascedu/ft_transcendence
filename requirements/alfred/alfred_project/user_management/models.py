@@ -12,10 +12,10 @@ class Client(models.Model):
                     validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
-    contrast_mode = models.BooleanField(blank=False)
+    contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
-    online = models.BooleanField(blank=False)
+    online = models.BooleanField(default=False)
 
     objects = models.Manager()
 
