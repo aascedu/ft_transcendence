@@ -152,10 +152,6 @@ services:
     build:
       context: ./requirements/alfred
       dockerfile: Dockerfile
-    environment:
-      ALFRED_USER: alfred
-      ALFRED_PASSWORD: 'alfred_pass'
-      ALFRED_DB: user_management
     volumes:
       - ./requirements/alfred/alfred_project:/app
       - ./tokens/alfred:/app/tokens
@@ -424,6 +420,8 @@ services:
     networks:
       - sentinel
       - alfred_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -440,6 +438,8 @@ services:
     networks:
       - sentinel
       - mnemosine_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -456,6 +456,8 @@ services:
     networks:
       - sentinel
       - petrus_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -488,12 +490,8 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/alfred:/app/tokens
+      - ./tokens/mnemosine:/app/tokens
       - shared_code:/app/shared
-    environment:
-      MNEMOSINE_USER: mnemosine
-      MNEMOSINE_PASSWORD: 'mnemosine_pass'
-      MNEMOSINE_DB: memory_management
     ports:
       - "8008:8008"
     networks:
@@ -550,10 +548,6 @@ services:
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
-    environment:
-      PETRUS_USER: petrus
-      PETRUS_PASSWORD: 'petrus_pass'
-      PETRUS_DB: auth_management
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared

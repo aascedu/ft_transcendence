@@ -1,81 +1,3 @@
-{% load static %}
-<!DOCTYPE html>
-<html>
-    <head>
-        <style>
-            .ball {
-                height: 13px;
-                width: 13px;
-                background-color: #bbb;
-                border-radius: 50%;
-                position: absolute;
-            }
-            .player {
-                height: 180px;
-                width: 9px;
-                background-color: #000000;
-                position: absolute;
-            }
-            .score {
-                letter-spacing: 1px;
-            }
-        </style>
-    </head>
-
-    <body id="test-target">
-        <div class="player" id="me"></div>
-        <div class="player" id="opponent"></div>
-        <div class="ball"></div>
-        <div class="score" id="score1"></div>
-        <div classe="score" id="score2"></div>
-        {{ roomName|json_script:"roomName" }}
-        {{ id|json_script:"id" }}
-        <script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/***************************************** Setup *****************************************/
-
 let gameArea = document.getElementById("test-target"),
 htmlme = document.getElementById("me"),
 htmlopponent = document.getElementById("opponent"),
@@ -91,8 +13,8 @@ ratio1 = tmpScreenHeight / 1080;
 ratio2 = tmpScreenWidth / 1920;
 const ratio = Math.min(ratio1, ratio2);
 
-var screenHeight = tmpScreenHeight
-var screenWidth = tmpScreenWidth
+var screenHeight = tmpScreenHeight;
+var screenWidth = tmpScreenWidth;
 if (ratio == ratio1) {
     screenHeight = tmpScreenHeight;
     screenWidth = screenHeight * 1920 / 1080;
@@ -106,7 +28,7 @@ console.log("tmpScreenWidth is: " + tmpScreenWidth.toString());
 console.log("screenHeight is: " + screenHeight.toString());
 console.log("screenWidth is: " + screenWidth.toString());
 
-htmlopponent.style.left = screenWidth - parseInt(meStyle.width, 10) - 10 + 'px';
+htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
 
 /***************************************** Classes *****************************************/
 
@@ -132,7 +54,7 @@ class Ball {
     constructor() {
         this.pos = {x: screenWidth / 2, y: screenHeight / 2};
         this.speedStart = 0; // Non !
-        this.speed = 0
+        this.speed = 0;
         this.angle = Math.PI;
         this.size = 0; // Non !
     }
@@ -153,8 +75,8 @@ let me = new Player("me");
 let opponent = new Player("opponent");
 
 // Events for keyboard inputs
-gameArea.addEventListener("keydown", (e) => { // Booleans with on press and on release (anyway will be a websocket) !!
-    if (e.repeat || me.isPlayer === false) {
+window.addEventListener("keydown", function(e) { // Booleans with on press and on release (anyway will be a websocket) !!
+	if (e.repeat || me.isPlayer === false) {
         return;
     }
     if (`${e.key}` === 'w') {
@@ -164,7 +86,7 @@ gameArea.addEventListener("keydown", (e) => { // Booleans with on press and on r
     }
 });
 
-gameArea.addEventListener("keyup", (e) => { // Booleans with on press and on release (anyway will be a websocket) !!
+window.addEventListener("keyup", (e) => { // Booleans with on press and on release (anyway will be a websocket) !!
     if (me.isPlayer === false) {
         return;
     }
@@ -177,25 +99,25 @@ gameArea.addEventListener("keyup", (e) => { // Booleans with on press and on rel
 
 /***************************************** Websockets *****************************************/
 
-const roomName = JSON.parse(document.getElementById('roomName').textContent);
-const id = JSON.parse(document.getElementById('id').textContent);
+const roomName = "aaa";
+const id = 0;
 console.log(roomName);
 
 async function get_unique_use_token() {
     try {
-        console.log("damned")
+        console.log("damned");
         const response = await fetch("/ludo/pong/connectionView/");
 
         const result = await response.json();
         if ('Err' in result) {
-            console.log("une erreure a occured")
+            console.log("une erreure a occured");
             console.log(result.Err);
 
         } else {
-            console.log("no mistake")
-            const unique_use_token = result.Key
+            console.log("no mistake");
+            const unique_use_token = result.Key;
         }
-        return await result.Key
+        return await result.Key;
     }
     catch (error) {
         console.error("Error:", error);
@@ -203,11 +125,11 @@ async function get_unique_use_token() {
 }
 
 async function init_socket() {
-    unique_use_token = await get_unique_use_token()
-    console.log(unique_use_token)
-    url = 'wss://localhost:8000/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token
+    unique_use_token = await get_unique_use_token();
+    console.log(unique_use_token);
+    url = 'wss://localhost:8000/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
-    console.log(url)
+    console.log(url);
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
@@ -231,12 +153,12 @@ async function init_socket() {
 
         else if (data.type == "gameParameters") {
             // Display
-            htmlme.style.height = data.playerHeight * ratio + 'px';
-            htmlopponent.style.height = data.playerHeight * ratio + 'px';
-            htmlme.style.width = data.playerWidth * ratio + 'px';
-            htmlopponent.style.width = data.playerWidth * ratio + 'px';
-            htmlBall.style.height = data.ballSize * ratio + 'px';
-            htmlBall.style.width = data.ballSize * ratio + 'px';
+            // htmlme.style.height = data.playerHeight * ratio + 'px';
+            // htmlopponent.style.height = data.playerHeight * ratio + 'px';
+            // htmlme.style.width = data.playerWidth * ratio + 'px';
+            // htmlopponent.style.width = data.playerWidth * ratio + 'px';
+            // htmlBall.style.height = data.ballSize * ratio + 'px';
+            // htmlBall.style.width = data.ballSize * ratio + 'px';
 
             // Actual objects
             ball.size = data.ballSize * ratio;
@@ -254,15 +176,13 @@ async function init_socket() {
 
         if (data.type == "myState" || data.type == "opponentState") {
             if (data.type == "myState") {
-                me.pos = data.mePos * ratio;
+                me.pos = data.mePos / 100 * screenHeight;
             } else {
-                opponent.pos = data.opponentPos * ratio;
+                opponent.pos = data.opponentPos / 100 * screenHeight;
             }
             // console.log("Pos of ball before back return: x=" + ball.pos['x'].toString() + " y=" + ball.pos['y'].toString());
-            ball.pos['x'] = data.ballPosX * ratio;
-            ball.pos['y'] = data.ballPosY * ratio;
-            ball.speed = data.ballSpeed * ratio;
-            ball.angle = data.ballAngle * ratio;
+            ball.pos['x'] = data.ballPosX / 100 * screenWidth;
+            ball.pos['y'] = data.ballPosY / 100 * screenHeight;
             // Ajouter vitesse et angle de la balle.
             // console.log("Pos of ball after back return: x=" + ball.pos['x'].toString() + " y=" + ball.pos['y'].toString());
         }
@@ -319,6 +239,26 @@ async function init_socket() {
     let i = 1;
     let frames = {};
     let nbframes = 1;
+
+    function updateScreenSize() {
+        screenHeight = window.innerHeight;
+        screenWidth = window.innerWidth;
+        ratioHeight = screenHeight / 1080;
+        ratioWidth = screenWidth / 1920;
+        ratioBall = Math.min(ratioHeight, ratioWidth);
+        htmlme.style.height = 108 * ratioHeight + 'px';
+        htmlopponent.style.height = 108 * ratioHeight + 'px';
+        htmlme.style.width = 24 * ratioWidth + 'px';
+        htmlopponent.style.width = 24 * ratioWidth + 'px';
+        htmlBall.style.height = 36 * ratioBall + 'px';
+        htmlBall.style.width = 36 * ratioBall + 'px';
+        htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
+    }
+
+window.addEventListener('resize', updateScreenSize());
+window.onresize = updateScreenSize;
+htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
+htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
     function gameLoop() {
         // End of point
@@ -379,72 +319,6 @@ async function init_socket() {
 
 // requestAnimationFrame()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
 
-init_socket()
-
-
-
-        </script>
-    </body>
-</html>
+init_socket();
