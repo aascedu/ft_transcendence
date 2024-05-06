@@ -40,12 +40,11 @@ class userInfoView(View):
                 return JsonNotFound("Ressource doesn't exist")
 
         data = request.data
-        client.avatar = data.get("Avatar", client.avatar)
         client.lang = data.get("Lang", client.lang)
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
-        client.contrast_mode = data.get("contrast-mode", client.contrast_mode)
+        client.contrast_mode = data.get("Contrast-mode", client.contrast_mode)
         return save_response(client)
 
 
