@@ -37,7 +37,7 @@ class Client(models.Model):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Avatar": "avatar"
+            "Pic": self.avatar.url if self.avatar else None,
         }
 
     def friends_dict(self):
@@ -55,6 +55,7 @@ class Client(models.Model):
             "Lang": self.lang_state(),
             "Font": self.font,
             "Pic": self.avatar.url if self.avatar else "default",
+            "Contrast-mode": self.contrast_mode,
             "Friends": self.list_friends(),
         }
 
