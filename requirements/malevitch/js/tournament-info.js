@@ -435,6 +435,16 @@ document.addEventListener('keydown', function(e) {
 				return ;
 			}
 		}
+		if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-icon')) {
+			// if there is no player
+			// document.querySelector('.tournament-info-join-icon').focus();
+			// if you are owner
+			// lastPlayerCard.querySelector('.tournament-kick-player').focus();
+			// else
+			lastPlayerCard.focus();
+			e.preventDefault();
+			return ;
+		}
 
 		// join -> first player card
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-join-icon')) {
