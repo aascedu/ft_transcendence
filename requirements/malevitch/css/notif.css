@@ -29,6 +29,7 @@
 	border-radius: 23px;
 	background-color: rgba(42, 133, 0, 0.5);
 	filter: drop-shadow(2px 2px 8px rgba(42, 133, 0, 0.2));
+	border: 0;
 }
 
 .notif-buttons > * img {
@@ -36,7 +37,11 @@
 }
 
 .notif-buttons > *:hover {
-	filter: drop-shadow(2px 2px 8px rgba(42, 133, 0, 0.6));
+	filter: drop-shadow(2px 2px 8px rgb(42, 133, 0));
+}
+
+.notif-buttons > *:focus {
+	filter: drop-shadow(2px 2px 8px rgb(42, 133, 0));
 }
 
 /* Contrast mode */

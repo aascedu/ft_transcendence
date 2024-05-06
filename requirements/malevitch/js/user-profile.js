@@ -215,3 +215,21 @@ function drawGraph() {
 }
 
 drawGraph();
+
+
+// Keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.user-profile').classList.contains('visually-hidden')) {
+		if (e.key === 'Tab') {
+			document.querySelector('.homepage-header-logo').focus();
+			e.preventDefault();
+		}
+	}
+});
+
+document.addEventListener('focusout', function(e) {
+	if (e.target === document.querySelector('.user-profile-picture-input')) {
+		document.querySelector('.user-profile-picture label').classList.add('visually-hidden');
+	}
+});

@@ -55,9 +55,12 @@
 	object-fit: contain;
 }
 
-.user-profile-picture:hover,
-.user-profile-picture:focus {
+.user-profile-picture:hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.user-profile-picture:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 

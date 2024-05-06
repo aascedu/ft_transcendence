@@ -133,6 +133,7 @@ function dismissPlayInvite() {
 function searchMatch() {
 	// show notif
 	document.querySelector('.notif-search-match').classList.remove('visually-hidden');
+	document.querySelector('.notif-search-match .notif-dismiss').focus();
 
 	// count time elapsed
 	startTimer();
@@ -237,3 +238,19 @@ function inviteSentCountdown(seconds) {
 		document.querySelector('.notif-invite-sent').classList.add('visually-hidden');
 	}
 }
+
+// Keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	document.querySelectorAll('.notif').forEach(function(item) {
+		if (!item.classList.contains('visually-hidden')) {
+			let isFw =!e.shiftKey;
+	
+			// Search match
+			if (e.key === 'Tab' && document.activeElement === document.querySelector('.notif-search-match .notif-dismiss')) {
+				document.querySelector('.homepage-header-logo').focus();
+				e.preventDefault();
+			}
+		}
+	})
+});
