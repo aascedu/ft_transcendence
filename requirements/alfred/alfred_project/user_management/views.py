@@ -1,4 +1,4 @@
-from user_management.models import Client
+from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
@@ -98,24 +98,8 @@ class friendView(View):
         emiter = request.model
         return JsonResponse({
             "Id": request.user.id,
-            "Friends": [
-                {"id": object.id,
-                 "nick": object.nick,
-                 "mail": object.email}
-                for object
-                in emiter
-                .friends
-                .all()
-            ],
-            "Requests": [
-                {"id": object.sender.id,
-                 "nick": object.sender.nick}
-                for object in list(
-                    FriendshipRequest
-                    .objects
-                    .filter(receiver=emiter)
-                )
-            ],
+            "Friends": emiter.list_friends(),
+            "Requests": emiter.list_sent_requests(),
         })
 
     def post(self, request, id: int) -> JsonResponse:
