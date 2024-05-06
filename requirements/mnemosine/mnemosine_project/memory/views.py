@@ -107,7 +107,7 @@ class playerView(View):
             try:
                 personal_player = Player.objects.get(id=request.user.id)
                 return_json |= {"Perso" : personal_player.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friend' in queries:
@@ -117,7 +117,7 @@ class playerView(View):
                 if id in friends_ids:
                     friend = Player.objects.get(id=id)
                     return_json |= {"Friend": friend.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friends' in queries:
