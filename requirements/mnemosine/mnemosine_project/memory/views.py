@@ -11,14 +11,28 @@ from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRe
 
 
 class tournamentView(View):
-    def get(self, request, id: int = 0):
+    def get(self, request):
         return_json = {}
+        queryparams = request.GET
 
-        data = request.GET.getlist('tournaments')
-        return_json |= request_get_all(data, "Tournaments", Tournament)
+        players = queryparams.getlist('players')
+        for player in players:
+
+            try:
+                player_id = int(player)
+            except (ValueError, TypeError):
+                return JsonBadRequest(f'bad player id : {player}')
+
+            try:
+                player = Player.objects.get(id=player_id)
+            except ObjectDoesNotExist as e:
+                return JsonNotFound(f'{player}: {e.__str__()}')
+
+            return_json |= {player_id: [tournament.to_dict() for tournament in player.tournaments.all()]}
+
         return JsonResponse(return_json)
 
-    def post(self, request, id: int = 0):
+    def post(self, request):
         if request.user.is_service is False \
             or request.user.nick != "coubertin":
             return JsonForbiden("Only Coubertin can create tournaments")
@@ -93,7 +107,7 @@ class playerView(View):
             try:
                 personal_player = Player.objects.get(id=request.user.id)
                 return_json |= {"Perso" : personal_player.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friend' in queries:
@@ -103,7 +117,7 @@ class playerView(View):
                 if id in friends_ids:
                     friend = Player.objects.get(id=id)
                     return_json |= {"Friend": friend.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friends' in queries:
