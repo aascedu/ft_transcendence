@@ -422,6 +422,7 @@ document.addEventListener('keydown', function(e) {
 		var firstInviteCard = document.querySelector('.tournament-info-invite button');
 		var	lastInviteCard = document.querySelector('.tournament-info-invite').lastElementChild;
 
+		// tournament icon -> next
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-icon')) {
 			if (document.querySelector('.tournament-info-name-input-container').classList.contains('visually-hidden')) {
 				// if you are tournament owner
@@ -434,6 +435,8 @@ document.addEventListener('keydown', function(e) {
 				return ;
 			}
 		}
+
+		// join -> first player card
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-join-icon')) {
 			if (firstPlayerCard) {
 				firstPlayerCard.focus();
@@ -441,13 +444,66 @@ document.addEventListener('keydown', function(e) {
 				return ;
 			}
 		}
-		// edit (if you are owner)
+		// leave -> first player card
+		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-leave-icon')) {
+			if (firstPlayerCard) {
+				firstPlayerCard.focus();
+				e.preventDefault();
+				return ;
+			}
+		}
+
+		// first player card -> join / leave
+		if (e.key == 'Tab' && !isFw && firstPlayerCard && document.activeElement === firstPlayerCard) {
+			// if you have joined the tournament
+			// document.querySelector('.tournament-info-leave-icon').focus();
+			// else
+			document.querySelector('.tournament-info-join-icon').focus();
+			e.preventDefault();
+			return ;
+		}
+
+		// join -> previous
+		if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-join-icon')) {
+			// if you are owner OR you have joined tournament
+			// document.querySelector('.tournament-info-invite-icon').focus();
+			// else
+			document.querySelector('.tournament-info-icon').focus();
+			e.preventDefault();
+			return ;
+		}
+		// leave -> previous
+		if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-leave-icon')) {
+			// if you are owner OR you have joined tournament
+			// document.querySelector('.tournament-info-invite-icon').focus();
+			// else
+			document.querySelector('.tournament-info-icon').focus();
+			e.preventDefault();
+			return ;
+		}
+
+		// if you are the owner (invite -> edit)
+		// if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-invite-icon')) {
+		// 	document.querySelector('.tournament-info-edit-icon').focus();
+		// 	e.preventDefault();
+		// 	return ;
+		// }
+
+		// if you are the owner (edit -> tournament icon)
+		// if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-edit-icon')) {
+		// 	document.querySelector('.tournament-info-icon').focus();
+		// 	e.preventDefault();
+		// 	return ;
+		// }
+
+		// input -> check (if you are owner)
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-name-input')) {
 				document.querySelector('.tournament-info-check-icon').focus();
 				e.preventDefault();
 				return ;
 		}
-		// invite friends
+
+		// invite -> join / leave
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-invite-icon')) {
 			// if you have already joined the tournament
 			// document.querySelector('.tournament-info-leave-icon').focus();
@@ -456,6 +512,7 @@ document.addEventListener('keydown', function(e) {
 			e.preventDefault();
 			return ;
 		}
+		// last invite -> first invite
 		if (e.key == 'Tab' && isFw && document.activeElement === lastInviteCard) {
 			if (document.querySelector('.tournament-info-no-friends').classList.contains('visually-hidden')) {
 				firstInviteCard.focus();
@@ -463,6 +520,7 @@ document.addEventListener('keydown', function(e) {
 				return ;
 			}
 		}
+		// first invite -> last invite
 		if (document.querySelector('.tournament-info-no-friends').classList.contains('visually-hidden')) {
 			if (e.key == 'Tab' && !isFw && document.activeElement === firstInviteCard) {
 				lastInviteCard.focus();
@@ -470,12 +528,14 @@ document.addEventListener('keydown', function(e) {
 				return ;
 			}
 		}
+		// leave invite window
 		if (e.key == 'Escape' && document.activeElement.parentElement.classList.contains('tournament-info-invite')) {
 			document.querySelector('.tournament-info-invite').classList.add('visually-hidden');
 			document.querySelector('.tournament-info-invite-icon').focus();
 			e.preventDefault();
 			return ;
 		}
+
 		// if you are the owner (kick icons)
 		// if (e.key == 'Tab' && isFw && document.activeElement === lastPlayerCard.querySelector('.tournament-kick-player')) {
 		// 	document.querySelector('.tournament-info-icon').focus();
