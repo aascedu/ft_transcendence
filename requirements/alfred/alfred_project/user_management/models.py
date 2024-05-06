@@ -56,7 +56,7 @@ class Client(models.Model):
             "Email": self.email,
             "Lang": self.lang_state(),
             "Font": self.font,
-            "Pic": self.avatar.url if self.avatar else "default",
+            "Pic": self.avatar.url if self.avatar else None,
             "Contrast-mode": self.contrast_mode,
             "Friends": self.list_friends(),
         }

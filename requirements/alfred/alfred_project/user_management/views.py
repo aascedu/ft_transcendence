@@ -100,6 +100,7 @@ class friendView(View):
             "Id": request.user.id,
             "Friends": emiter.list_friends(),
             "Requests": emiter.list_sent_requests(),
+            "Other": emiter.list_received_requests(),
         })
 
     def post(self, request, id: int) -> JsonResponse:
