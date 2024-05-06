@@ -41,13 +41,17 @@ class gameView(View):
 
         players = queryparams.getlist('players')
         for player in players:
+
             try:
                 player_id = int(player)
-                requestee = Player.objects.get(id=player_id)
-            except ObjectDoesNotExist as e:
-                return JsonNotFound(f'{player}: {e.__str__()}')
             except (ValueError, TypeError):
                 return JsonBadRequest(f'bad player id : {player}')
+
+            try:
+                Player.objects.get(id=player_id)
+            except ObjectDoesNotExist as e:
+                return JsonNotFound(f'{player}: {e.__str__()}')
+
             return_json |= {player_id: [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:10]]}
 
         if 'latests' in queryparams:
