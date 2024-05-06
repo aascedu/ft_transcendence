@@ -46,6 +46,7 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Pic": self.avatar.url if self.avatar else None,
+            "Online": self.online,
         }
 
     def personal_dict(self):
