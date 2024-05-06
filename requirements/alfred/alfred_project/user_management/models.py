@@ -1,5 +1,6 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+from shared.utils import JsonBadRequest
 from shared.validators import NickNameValidator
 
 
@@ -122,7 +123,7 @@ class FriendshipRequest(models.Model):
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
         if redondantRequest is not None:
-            return JsonResponse({"Err": "redondant request"}, status=400)
+            return JsonBadRequest("redondant request")
 
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
