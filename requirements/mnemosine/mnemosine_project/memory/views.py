@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views import View
 
@@ -8,21 +9,6 @@ import requests
 from memory.models import Tournament, Game, Player
 from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
-def request_get_all(ids_str, key_name, model):
-    return_json = {}
-
-    try :
-        ids = [int(id) for id in ids_str]
-    except BaseException as e:
-        return {"Err": f"wrong query params provided {e.__str__()}"}
-    try:
-        querylist = model.objects.filter(id__in=ids)
-    except BaseException as e:
-        return {"Err": e.__str__()}
-    if len(ids) != len(querylist):
-        return_json |= {"Warn": "invalid ids provided"}
-    return_json |= {key_name: [queryobject.to_dict() for queryobject in querylist]}
-    return return_json
 
 class tournamentView(View):
     def get(self, request, id: int = 0):
@@ -59,14 +45,15 @@ class gameView(View):
                 player_id = int(player)
                 requestee = Player.objects.get(id=player_id)
             except ObjectDoesNotExist as e:
-                return JsonNotFound(f"{player}: {e.__str__()}")
-            return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
-                                 "Loses": [game.to_dict() for game in requestee.loses.all()]}}
+                return JsonNotFound(f'{player}: {e.__str__()}')
+            except (ValueError, TypeError):
+                return JsonBadRequest(f'bad player id : {player}')
+            return_json |= {player_id: [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:10]]}
 
         if 'latests' in queryparams:
             try:
                 x = min(int(queryparams.get('latests', 10)), 10)
-            except ValueError as e:
+            except (ValueError, TypeError) as e:
                 return JsonBadRequest(e.__str__())
             latest_games = Game.objects.order_by('-id').reverse()[:x]
             return_json |= {"latests": [game.to_dict() for game in latest_games]}
