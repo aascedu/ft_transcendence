@@ -35,7 +35,7 @@ class tournamentView(View):
 
 
 class gameView(View):
-    def get(self, request, id: int=0):
+    def get(self, request):
         return_json = {}
         queryparams = request.GET
 
@@ -64,7 +64,7 @@ class gameView(View):
 
         return JsonResponse(return_json)
 
-    def post(self, request, id: int=0):
+    def post(self, request):
         if request.user.is_service is False:
             return JsonForbiden("Only services can post games")
         try:
@@ -78,7 +78,7 @@ class gameView(View):
             return JsonErrResponse(e.__str__(), status=500)
         return JsonResponse(new_game.to_dict())
 
-    def delete(self, request, id: int=0):
+    def delete(self, request):
         if request.user.is_admin is False:
             return JsonForbiden("Only admin can delete games")
         return JsonErrResponse("Not implemented delete", status=501)

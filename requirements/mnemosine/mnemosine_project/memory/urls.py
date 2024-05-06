@@ -23,6 +23,6 @@ urlpatterns = [
     path("view-db", view_db),
     path("view-game-db", view_game_db),
     path("pong/tournaments/<int:id>", tournamentView.as_view()),
-    path("pong/matchs/<int:id>", gameView.as_view()),
+    path("pong/games", gameView.as_view()),
     path("players/<int:id>", playerView.as_view()),
 ]
