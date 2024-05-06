@@ -52,11 +52,19 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
-            "Lang": self.lang,
+            "Lang": self.lang_state(),
             "Font": self.font,
             "Pic": self.avatar.url if self.avatar else "default",
             "Friends": self.list_friends(),
         }
+
+    def lang_state(self):
+        if self.lang == 1:
+            return "fr"
+        if self.lang == 2:
+            return "eng"
+        if self.lang == 3:
+            return "zh"
 
     def list_friends(self):
         return [object.friends_dict()
