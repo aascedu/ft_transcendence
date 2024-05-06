@@ -1,6 +1,8 @@
 // Hide when clicking top left button
 
 document.querySelector('.create-tournament-icon').addEventListener('click', function() {
+	document.querySelector('.homepage-header-logo').focus();
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.homepage-game';
@@ -247,3 +249,20 @@ function displayCreatedTournament() {
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
+
+// Keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.create-tournament').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+
+		if (e.key === 'Tab' && isFw && document.activeElement === document.querySelector('.create-tournament-submit')) {
+			document.querySelector('.create-tournament-icon').focus();
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.create-tournament-icon')) {
+			document.querySelector('.create-tournament-submit').focus();
+			e.preventDefault();
+		}
+	}
+});

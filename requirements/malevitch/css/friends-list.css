@@ -63,12 +63,17 @@
 }
 
 .friends-list-card-container
-.content-card:nth-child(even) {
-	margin-right: 8px;
+.content-card:focus {
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
 .friends-list-card-container
 .content-card:nth-child(odd) {
+	margin-right: 8px;
+}
+
+.friends-list-card-container
+.content-card:nth-child(even) {
 	margin-left: 8px;
 }
 

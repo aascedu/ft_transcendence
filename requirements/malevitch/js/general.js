@@ -9,7 +9,7 @@ let	g_translations = null;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
@@ -26,11 +26,11 @@ function render() {
 
 	// A ENLEVER
 
-	// var	homepageHeader = document.querySelector('.homepage-header');
-	// homepageHeader.classList.remove('visually-hidden');
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
 	
-	// var	homepagePicture = document.querySelector('.homepage-game-picture');
-	// homepagePicture.classList.remove('visually-hidden');
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
 }
 
 window.history.replaceState(g_state, null, "");
@@ -157,6 +157,10 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		activeImg.setAttribute('alt', selectedLang);
 		selectedImg.setAttribute('src', activeImgSrc);
 		selectedImg.setAttribute('alt', activeLang);
+
+		// switch back focus to main button
+		var	itemButton = item.closest('.language-selector').querySelector('.dropdown');
+		itemButton.focus();
 	});
 });
 
@@ -305,6 +309,8 @@ function goToHomepageGame(previous) {
 
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.remove('visually-hidden');
+
+	document.querySelector('.homepage-header-logo').focus();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");

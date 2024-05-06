@@ -16,6 +16,11 @@
 .sign-up-input-container .input-box {
 	margin-bottom: 5%;
 	margin-right: 0;
+	visibility: visible;
+}
+
+.sign-up .input-box.visually-hidden {
+	visibility: hidden;
 }
 
 .sign-up-input-container .input-warning {
