@@ -42,6 +42,9 @@ function contrastMode() {
 	document.querySelectorAll('.notif').forEach(function(item) {
 		item.classList.toggle('notif-contrast');
 	});
+	document.querySelectorAll('.ball').forEach(function(item) {
+		item.classList.toggle('ball-contrast');
+	});
 }
 
 // Keyboard navigation
