@@ -22,6 +22,7 @@ document.querySelector('.homepage-id-input').addEventListener('input', function(
 		warning.classList.add('visually-hidden');
 		container.classList.remove('input-container-focused');
 	}
+	setAriaHidden();
 });
 
 // Submit nickname using Enter key.

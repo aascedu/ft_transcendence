@@ -26,6 +26,7 @@ document.querySelector('.homepage-header-tournaments').addEventListener('click',
 	if (!document.querySelector('.homepage-header-open-tournaments').classList.contains('visually-hidden')) {
 		document.querySelector('.homepage-header-available-tournaments').focus();
 	}
+	setAriaHidden();
 });
 
 document.querySelector('.homepage-header-play').addEventListener('click', function() {
@@ -38,6 +39,7 @@ document.querySelector('.homepage-header-play').addEventListener('click', functi
 	if (!document.querySelector('.homepage-header-open-play').classList.contains('visually-hidden')) {
 		document.querySelector('.homepage-header-quick-play').focus();
 	}
+	setAriaHidden();
 });
 
 document.querySelector('.homepage-header-friends').addEventListener('click', function() {
@@ -50,6 +52,7 @@ document.querySelector('.homepage-header-friends').addEventListener('click', fun
 	if (!document.querySelector('.homepage-header-open-friends').classList.contains('visually-hidden')) {
 		document.querySelector('.homepage-header-friend-list').focus();
 	}
+	setAriaHidden();
 });
 
 // Close menus on click outside
@@ -104,6 +107,7 @@ window.addEventListener('click', function ({target}){
 		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
 		document.querySelector('.homepage-header-add-friend-input').value = '';
 	}
+	setAriaHidden();
 });
 
 // --- TOURNAMENTS ---
@@ -168,6 +172,7 @@ document.querySelector('.homepage-header-quick-play').addEventListener('click', 
 	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
 		searchMatch();
 	}
+	setAriaHidden();
 });
 
 // Play with friend
@@ -189,6 +194,7 @@ document.querySelector('.homepage-header-play-friend').addEventListener('click',
 	if (!document.querySelector('.homepage-header-open-play').lastElementChild.classList.contains('homepage-header-play-friend-card')) {
 		document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
 	}
+	setAriaHidden();
 });
 
 document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
@@ -200,6 +206,8 @@ document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(
 			item.classList.add('visually-hidden');
 		});
 		document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
+
+		setAriaHidden();
 
 		// send invite
 
@@ -247,6 +255,8 @@ document.querySelector('.homepage-header-add-friend').addEventListener('click', 
 	}
 
 	document.querySelector('.homepage-header-add-friend-input-box').classList.toggle('visually-hidden');
+
+	setAriaHidden();
 });
 
 document.querySelector('.homepage-header-add-friend-input').addEventListener('input', function() {
@@ -257,6 +267,7 @@ document.querySelector('.homepage-header-add-friend-input').addEventListener('in
 	else {
 		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 });
 
 document.querySelector('.homepage-header-add-friend-input').addEventListener('keypress', function(e) {
@@ -313,7 +324,7 @@ function addFriend() {
 				document.querySelector('.homepage-header-add-friend-input').value = '';
 				document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
 			}
-			
+			setAriaHidden();
 		})
 		.catch (error => {
 			console.error('Fetch problem:', error.message);
@@ -469,6 +480,7 @@ document.addEventListener('keydown', function(e) {
 			}
 			e.preventDefault();
 		}
+		setAriaHidden();
 	}
 });
 
@@ -483,6 +495,7 @@ document.querySelector('.homepage-header-add-friend-input').addEventListener('ke
 
 		document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
 		document.querySelector('.homepage-header-friends').focus();
+		setAriaHidden();
 		e.preventDefault();
 	}
 });

@@ -7,6 +7,7 @@ document.querySelector('.sign-in-input').addEventListener('input', function() {
 	if (this.value.length > 0) {
 		container.classList.add('input-container-focused');
 		warning.classList.add('visually-hidden');
+		warning.setAttribute('aria-hidden', 'true');
 	} 
 	else {
 		container.classList.remove('input-container-focused');
@@ -71,6 +72,7 @@ function sendInvalidPassword() {
 	
 	switchLanguageContent(locale);
 	warning.classList.remove('visually-hidden');
+	warning.removeAttribute('aria-hidden');
 	input.value = '';
 }
 
@@ -89,6 +91,7 @@ document.querySelector('.sign-in-other-nickname button').addEventListener('click
 	document.querySelector('.sign-in-message').innerHTML = newContent;
 	// Clear the password input in sign-in screen
 	document.querySelector('.sign-in-input').value = '';
+	setAriaHidden();
 });
 
 // keyboard navigation

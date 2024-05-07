@@ -33,6 +33,7 @@ function loadUserProfile() {
 
 document.querySelector('.tournament-info-join-icon').addEventListener('click', function() {
 	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
+	document.querySelector('.tournament-info-join-alert').removeAttribute('aria-hidden');
 	document.querySelector('.tournament-info-join-alert .alert-confirm-button').focus();
 });
 
@@ -44,6 +45,7 @@ document.querySelector('.tournament-info-join-alert .alert-confirm-button').addE
 	document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
+	setAriaHidden();
 });
 document.querySelector('.tournament-info-join-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
@@ -52,15 +54,18 @@ document.querySelector('.tournament-info-join-alert .alert-confirm-button').addE
 		document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 		document.querySelector('.tournament-info-leave-icon').focus();
+		setAriaHidden();
 	}
 });
 
 document.querySelector('.tournament-info-join-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-join-alert').setAttribute('aria-hidden', 'true');
 });
 document.querySelector('.tournament-info-join-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+		document.querySelector('.tournament-info-join-alert').setAttribute('aria-hidden', 'true');
 	}
 });
 
@@ -68,6 +73,7 @@ document.querySelector('.tournament-info-join-alert .alert-cancel-button').addEv
 
 document.querySelector('.tournament-info-leave-icon').addEventListener('click', function() {
 	document.querySelector('.tournament-info-leave-alert').classList.remove('visually-hidden');
+	document.querySelector('.tournament-info-leave-alert').removeAttribute('aria-hidden');
 	document.querySelector('.tournament-info-leave-alert .alert-confirm-button').focus();
 });
 
@@ -79,6 +85,7 @@ document.querySelector('.tournament-info-leave-alert .alert-confirm-button').add
 	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-join-icon').focus();
+	setAriaHidden();
 });
 document.querySelector('.tournament-info-leave-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
@@ -87,15 +94,18 @@ document.querySelector('.tournament-info-leave-alert .alert-confirm-button').add
 		document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
 		document.querySelector('.tournament-info-join-icon').focus();
+		setAriaHidden();
 	}
 });
 
 document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-leave-alert').setAttribute('aria-hidden', 'true');
 });
 document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
+		document.querySelector('.tournament-info-leave-alert').setAttribute('aria-hidden', 'true');
 	}
 });
 
@@ -116,6 +126,7 @@ document.querySelector('.tournament-info-edit-icon').addEventListener('click', f
 	tournamentNameInput.value = tournamentName;
 	document.querySelector('.tournament-info-name-input-container').classList.remove('visually-hidden');
 	tournamentNameInput.focus();
+	setAriaHidden();
 });
 
 // Kick a player
@@ -190,6 +201,8 @@ function kickPlayer(item) {
 		}
 		playerToHide = null;
 	});
+
+	setAriaHidden();
 }
 
 // Leave edit mode
@@ -210,6 +223,7 @@ function checkToLeaveTournamentEditMode() {
 		document.querySelector('.tournament-info-edit-alert').classList.remove('visually-hidden');
 		document.querySelector('.tournament-info-edit-alert .alert-confirm-button').focus();
 	}
+	setAriaHidden();
 }
 
 // Leave edit mode using button
@@ -230,6 +244,7 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', function () {
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-edit-alert').setAttribute('aria-hidden', 'true');
 
 	// Update tournament name
 	var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
@@ -242,6 +257,7 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 	if (event.key === 'Enter') {
 		// Hide alert
 		document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
+		document.querySelector('.tournament-info-edit-alert').setAttribute('aria-hidden', 'true');
 	
 		// Update tournament name
 		var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
@@ -254,12 +270,14 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-edit-alert').setAttribute('aria-hidden', 'true');
 });
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		// Hide alert
 		document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
+		document.querySelector('.tournament-info-edit-alert').setAttribute('aria-hidden', 'true');
 	}
 });
 
@@ -271,6 +289,7 @@ document.querySelector('.tournament-info-invite-icon').addEventListener('click',
 	if (document.querySelector('.tournament-info-no-friends').classList.contains('visually-hidden')) {
 		document.querySelector('.tournament-info-invite button').focus();
 	}
+	setAriaHidden();
 });
 
 // Close friends list on click outside
@@ -315,6 +334,7 @@ function isFriendsList(target) {
 window.addEventListener('click', function ({target}){
 	if (!isFriendsList(target)) {
 		document.querySelector('.tournament-info-invite-box').classList.add('visually-hidden');
+		document.querySelector('.tournament-info-invite-box').setAttribute('aria-hidden', 'true');
 	}
 });
 
@@ -327,6 +347,7 @@ document.querySelectorAll('.tournament-info-invite .content-card').forEach(funct
 
 		// Show alert
 		document.querySelector('.tournament-info-invite-alert').classList.remove('visually-hidden');
+		document.querySelector('.tournament-info-invite-alert').removeAttribute('aria-hidden');
 		document.querySelector('.tournament-info-invite-alert .alert-confirm-button').focus();
 
 		// Confirm the invite
@@ -351,6 +372,7 @@ document.querySelectorAll('.tournament-info-invite .content-card').forEach(funct
 		document.querySelector('.tournament-info-invite-alert .alert-cancel-button').addEventListener('click', function () {
 			// Hide alert
 			document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
+			document.querySelector('.tournament-info-invite-alert').setAttribute('aria-hidden', 'true');
 
 			invitedNick = null;
 		});
@@ -358,6 +380,7 @@ document.querySelectorAll('.tournament-info-invite .content-card').forEach(funct
 			if (event.key === 'Enter') {
 				// Hide alert
 				document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
+				document.querySelector('.tournament-info-invite-alert').setAttribute('aria-hidden', 'true');
 	
 				invitedNick = null;
 			}
@@ -400,6 +423,8 @@ function addInvitedPlayerToTournament(nick, pic) {
 	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
 		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
 	}
+
+	setAriaHidden();
 }
 
 function removeItemFromFriendsList(item) {
@@ -410,6 +435,7 @@ function removeItemFromFriendsList(item) {
 		document.querySelector('.tournament-info-invite-box').classList.add('visually-hidden');
 	}
 	item.parentNode.removeChild(item);
+	setAriaHidden();
 }
 
 // Keyboard navigation
@@ -541,6 +567,7 @@ document.addEventListener('keydown', function(e) {
 		// leave invite window
 		if (e.key == 'Escape' && document.activeElement.parentElement.classList.contains('tournament-info-invite')) {
 			document.querySelector('.tournament-info-invite').classList.add('visually-hidden');
+			document.querySelector('.tournament-info-invite').setAttribute('aria-hidden', 'true');
 			document.querySelector('.tournament-info-invite-icon').focus();
 			e.preventDefault();
 			return ;
