@@ -320,4 +320,4 @@ htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 +
 
 }
 
-init_socket();
+//#init_socket();
