@@ -128,7 +128,7 @@ class avatarView(View):
     def get(self, request, id: int):
         try:
             client = Client.objects.get(id=id)
-            url = client.avatar.url
+            url = client.avatar.url if client.avatar else None
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
         return JsonResponse({id: url})

@@ -325,17 +325,35 @@ function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
-	document.querySelector('.user-profile-picture-input').focus();
-
-	hideEveryPage();
-
-	g_state.pageToDisplay = '.user-profile';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
+	fetch('/alfred/user/avatar/' + g_userId, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + g_jwt,
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Error fetching avatar');
+        }
+    })
+    .then(data => {
+        var avatarUrl = data.url;
+        var profilePictureElement = document.querySelector('.user-profile-picture');
+        profilePictureElement.src = avatarUrl;
+        hideEveryPage();
+        g_state.pageToDisplay = '.user-profile';
+        window.history.pushState(g_state, null, "");
+        render(g_state);
+    })
+    .catch(error => {
+        console.error('Error fetching avatar:', error);
+    });
+    document.querySelector('.user-profile-picture-input').focus();
 });
 
 // Go to accessibility
-
 document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
 	document.querySelector('.accessibility-icon').focus();
 

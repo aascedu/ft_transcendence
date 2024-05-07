@@ -1,11 +1,48 @@
 document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', function() {
-	document.querySelector('.friends-list-icon').focus();
-	
-	hideEveryPage();
+    fetch('/alfred/user/users/' + g_userId, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + g_jwt,
+        },
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Error fetching friend list');
+        }
+    })
+    .then(data => {
+        var friendsListContainer = document.querySelector('.homepage-friend-content-card-container');
+        friendsListContainer.innerHTML = '';
 
-	g_state.pageToDisplay = '.friends-list';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
+        data.Friends.forEach(friend => {
+            var friendCard = document.createElement('button');
+            friendCard.classList.add('content-card', 'w-100', 'd-flex', 'justify-content-between', 'align-items-center', 'purple-shadow');
+        
+            var friendName = document.createElement('div');
+            friendName.classList.add('user-card-name', 'unselectable');
+            friendName.textContent = friend.Nick;
+            var friendPicture = document.createElement('div');
+            friendPicture.classList.add('user-card-picture');
+            var friendPictureImg = document.createElement('img');
+            friendPictureImg.src = friend.Pic;
+            friendPictureImg.alt = 'profile picture of friend';
+            friendPictureImg.draggable = false;
+            friendPictureImg.classList.add('unselectable');
+            friendPicture.appendChild(friendPictureImg);
+            friendCard.appendChild(friendName);
+            friendCard.appendChild(friendPicture);
+            friendsListContainer.appendChild(friendCard);
+        });
+        hideEveryPage();
+        g_state.pageToDisplay = '.friends-list';
+        window.history.pushState(g_state, null, "");
+        render(g_state);
+    })
+    .catch(error => {
+        console.error('Error fetching friend list:', error);
+    });
 });
 
 document.querySelector('.homepage-game-content-play').addEventListener('click', function() {
