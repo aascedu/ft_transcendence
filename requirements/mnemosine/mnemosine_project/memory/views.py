@@ -33,8 +33,7 @@ class tournamentView(View):
         return JsonResponse(return_json)
 
     def post(self, request):
-        if request.user.is_service is False \
-            or request.user.nick != "coubertin":
+        if request.user.is_service is False:
             return JsonForbiden("Only Coubertin can create tournaments")
         data = request.data
         try:
@@ -43,8 +42,6 @@ class tournamentView(View):
             return JsonErrResponse(e.__str__(), status=409)
         except ValidationError as e:
             return JsonErrResponse(e.__str__(), status=422)
-        except BaseException as e:
-            return JsonErrResponse(e.__str__(), status=500)
         return JsonResponse({"Ressource": "updated"})
 
 
