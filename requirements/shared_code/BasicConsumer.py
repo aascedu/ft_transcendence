@@ -6,3 +6,4 @@ class OurBasicConsumer(AsyncWebsocketConsumer):
             print(self.scope['error'])
             return self.close()
         self.user = self.scope["user"]
+        print("all goot" "user is " ,self.scope["user"])

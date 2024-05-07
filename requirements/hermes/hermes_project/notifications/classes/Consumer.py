@@ -8,7 +8,7 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
 
-        self.identify_or_close()
+        self.security_check()
 
         await self.channel_layer.group_add("notificationRoom", self.channel_name)
         await self.accept()
