@@ -20,13 +20,15 @@ filebeat.inputs:
 
 # filestream is an input for collecting log messages from files.
 - type: filestream
+  id: default-filestream
 
   # Change to true to enable this input configuration.
   enabled: true
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - /var/log/*.log
+    - ingest_data/*.log
+    # - /var/log/*.log
     #- c:\programdata\elasticsearch\logs\*
 
 filebeat.autodiscover:
@@ -62,7 +64,7 @@ filebeat.config.modules:
   path: ${path.config}/modules.d/*.yml
 
   # Set to true to enable config reloading
-  reload.enabled: true
+  reload.enabled: false
 
   # Period on which files under path should be checked for changes
   #reload.period: 10s
@@ -112,9 +114,9 @@ setup.kibana:
   # Scheme and port can be left out and will be set to the default (http and 5601)
   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-  host: "http://iris:5601"
-  username: "elastic"
-  password: "elastic123"
+  host: ${KIBANA_HOSTS}
+  username: ${ELASTIC_USER}
+  password: ${ELASTIC_PASSWORD}
 
   # Kibana Space ID
   # ID of the Kibana Space into which the dashboards should be loaded. By default,
@@ -141,26 +143,28 @@ setup.kibana:
 # ---------------------------- Elasticsearch Output ----------------------------
 # output.elasticsearch:
 #   # Array of hosts to connect to.
-#   hosts: ["apollo:9200"]
+  # hosts: ${ELASTIC_HOSTS}
 
 #   # Protocol - either `http` (default) or `https`.
 #   protocol: "https"
 
 #   # Authentication credentials - either API key or username/password.
 #   #api_key: "id:api_key"
-#   username: "elastic"
-#   password: "elastic123"
-#   ssl.enabled: true
-#   ssl.certificate_authorities: "config/certs/ca/ca.crt"
+  # username: ${ELASTIC_USER}
+  # password: ${ELASTIC_PASSWORD}
+  # ssl.enabled: true
+  # ssl.certificate_authorities: "config/certs/ca/ca.crt"
 
 # ------------------------------ Logstash Output -------------------------------
 output.logstash:
   # The Logstash hosts
-  hosts: ["http://aether:5044"]
+  hosts: ${LOGSTASH_HOSTS}
+  loadbalance: true
+  ssl.enabled: true
 
   # Optional SSL. By default is off.
   # List of root certificates for HTTPS server verifications
-  # ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.certificate_authorities: ["config/certs/ca/ca.crt"]
 
   # Certificate for SSL client authentication
   # ssl.certificate: "/etc/pki/client/cert.pem"

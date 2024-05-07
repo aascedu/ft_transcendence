@@ -1643,10 +1643,10 @@ filebeat.modules:
     # var.tz_offset: local
 
 #-------------------------------- Nginx Module --------------------------------
-# - module: nginx
+- module: nginx
   # Access logs
-  # access:
-    # enabled: true
+  access:
+    enabled: true
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
@@ -1657,8 +1657,8 @@ filebeat.modules:
     #input:
 
   # Error logs
-  # error:
-  #   enabled: true
+  error:
+    enabled: true
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.

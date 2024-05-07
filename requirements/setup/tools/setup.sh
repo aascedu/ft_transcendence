@@ -59,11 +59,11 @@ echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
 openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
 
 # Wait for Elasticsearch availability
-echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability${COLOR_RESET}";
+echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability...${COLOR_RESET}";
 until curl --cacert config/certs/ca/ca.crt https://apollo:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
 
 # Set kibana_system password
-echo -e "${COLOR_GREEN}Setting kibana_system password${COLOR_RESET}";
+echo -e "${COLOR_GREEN}Setting kibana_system password...${COLOR_RESET}";
 until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
 
 echo -e "${COLOR_GREEN}All done!${COLOR_RESET}";
