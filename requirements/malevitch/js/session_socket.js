@@ -33,3 +33,34 @@ async function init_session_socket() {
         console.log(`Message du serveur : ${event.data}`)
     }
 }
+
+async function add_friend(id) {
+	fetch('/alfred/user/friends/' + id,
+        {
+            method: 'POST'
+
+        }
+    )
+		.then (response => {
+			if (!response.ok) {
+				throw new Error('HTTP error: ' + response.status);
+			}
+			return response.json();
+		})
+		.then (data => {
+            console.log(data)
+		})
+		.catch (error => {
+			console.error('Fetch problem:', error.message);
+		});
+}
+
+async function connect(id, password) {
+		const response = await fetch('/petrus/auth/signin/youpi', {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({Id: id, Pass: password,}),
+		});
+}

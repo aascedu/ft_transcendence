@@ -71,12 +71,14 @@ class Consumer(OurBasicConsumer):
         }))
 
     # Receive message from room group
-    async def FriendRequest(self, event):
+    async def notification_friendship_request(self, event):
         if event['target'] == self.name:
             await self.send (text_data=json.dumps({
-            "type": "friendRequest",
-            "source": event['source'],
-        }))
+                "type": "notification.message",
+                "message": event['message'],
+                # "type": "friendRequest",
+                # "source": event['source'],
+            }))
 
     async def GameInvite(self, event):
         if event['target'] == self.name:

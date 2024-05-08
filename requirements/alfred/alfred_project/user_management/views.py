@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+import requests
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -153,7 +154,7 @@ class friendView(View):
             receiver = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("Ressource not found", status=404)
-        return FriendshipRequest.processRequest(receiver, sender)
+        return FriendshipRequest.processRequest(sender, receiver)
 
     def delete(self, request, id: int) -> JsonResponse:
         emiter = request.model
