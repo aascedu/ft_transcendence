@@ -1,6 +1,6 @@
 from django.urls import path
-from . import views
+from notifications.views import notificationsView
 
 urlpatterns = [
-    path("", views.notifications, name="notifications"),
+    path("send-shit/", notificationsView.as_view(), name="notifications"),
 ]
