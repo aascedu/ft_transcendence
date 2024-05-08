@@ -27,6 +27,25 @@ class sessionView(View):
         friends_id = [friend.id for friend in request.model.friends.all()]
         return JsonResponse({"Session": "Created", "Friends": friends_id})
 
+    def delete(self, request, id: int):
+        if request.user.is_service is False:
+            return JsonUnauthorized("Session can't be deleted by user")
+        try:
+            request.model = Client.objects.get(id=id)
+        except ObjectDoesNotExist as e:
+            return JsonBadRequest("No Client for this id")
+
+        request.model.online = False
+
+        try:
+            request.model.full_clean()
+            request.model.save()
+        except IntegrityError as e:
+            return JsonResponse({"Err": e.__str__()}, status=409)
+        return JsonResponse({"Session": "deleted"})
+
+
+
 
 
 class userInfoView(View):
