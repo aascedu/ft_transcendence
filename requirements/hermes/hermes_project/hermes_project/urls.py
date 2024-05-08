@@ -4,4 +4,5 @@ from shared.commonView import socketConnectionView
 urlpatterns = [
     path('metrics/', include('django_prometheus.urls')),
     path('connectionView/', socketConnectionView.as_view()),
+    path('notif/', include('notifications.urls')),
 ]
