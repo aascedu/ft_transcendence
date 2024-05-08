@@ -14,7 +14,7 @@ class OurBasicConsumer(AsyncWebsocketConsumer):
 
     def get_friends(self):
         id = self.scope['user'].id
-        response = requests.get(f'http://alfred:8001/user/friends/{id}')
+        response = requests.post(f'http://alfred:8001/user/sessions/{id}')
         self.scope['friends'] = response.json().get("Friends")
         print('friends were loaded')
         print(self.scope['friends'])

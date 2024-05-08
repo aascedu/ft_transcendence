@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
@@ -5,7 +6,27 @@ from django.http import JsonResponse
 import os
 from django.conf import settings
 
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
+
+class sessionView(View):
+    def post(self, request, id: int):
+        if request.user.is_service is False:
+            return JsonUnauthorized("Session can't be created by user")
+
+        try:
+            request.model = Client.objects.get(id=id)
+        except ObjectDoesNotExist as e:
+            return JsonBadRequest("No Client for this id")
+
+        request.model.online = True
+        try:
+            request.model.full_clean()
+            request.model.save()
+        except IntegrityError as e:
+            return JsonResponse({"Err": e.__str__()}, status=409)
+        friends_id = [friend.id for friend in request.model.friends.all()]
+        return JsonResponse({"Session": "Created", "Friends": friends_id})
+
 
 
 class userInfoView(View):
