@@ -18,18 +18,18 @@ class Consumer(OurBasicConsumer):
 
         self.get_friends()
 
-        await self.channel_layer.group_add(f"friend_{self.scope['user'].id}_group", self.channel_name)
+        await self.channel_layer.group_add(f"user_{self.scope['user'].id}_group", self.channel_name)
 
         await self.accept()
 
         for friend in self.scope['friends']:
-            friend_groupe = f'friend_{friend}_group'
+            friend_groupe = f'user_{friend}_group'
 
             await self.channel_layer.group_send(
                 friend_groupe,
                 {
                     "type": "new.client.connected",
-                    "message": f'"connected":{self.scope['user'].id}',
+                    "message": f'{{"connected":{self.scope['user'].id}}}',
                 })
 
     async def disconnect(self, close_code):
@@ -58,6 +58,13 @@ class Consumer(OurBasicConsumer):
         }))
 
     async def notification_message(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "notification.message",
+            "message": event['message'],
+        }))
+
+    async def notification_new_friendship(self, event):
+        print(self.scope['user'].id, " is self notifying")
         await self.send(text_data=json.dumps({
             "type": "notification.message",
             "message": event['message'],

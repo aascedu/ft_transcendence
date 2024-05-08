@@ -1,5 +1,6 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+import requests
 from shared.utils import JsonBadRequest
 from shared.validators import NickNameValidator
 
@@ -135,7 +136,8 @@ class FriendshipRequest(models.Model):
 
         pastRequest.delete()
         sender.friends.add(receiver)
-        # Hermes
+        requests.post(f'http://hermes:8004/notif/friendship/{sender}',
+                      json={"Notified": receiver.id})
         return JsonResponse({"Friendship": "established"})
 
     @staticmethod
