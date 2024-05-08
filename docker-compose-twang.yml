@@ -30,14 +30,14 @@ volumes:
   logstash_data:
     driver: local
 
-  logstash_ingest_data:
-    driver: local
+  # logstash_ingest_data:
+  #   driver: local
 
-  filebeat_data:
-    driver: local
+  # filebeat_data:
+  #   driver: local
 
-  filebeat_ingest_data:
-    driver: local
+  # filebeat_ingest_data:
+  #   driver: local
 
 services:
 # # Reverse proxy container
@@ -87,21 +87,17 @@ services:
       apollo:
         condition: service_healthy
       iris:
-        condition: service_started
+        condition: service_healthy
     container_name: aether
-    build:
-      context: ./requirements/aether/
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_USER: $ELASTIC_USER
-        ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     labels:
       co.elastic.logs/module: logstash
     user: root
     volumes:
-      - certificates:/usr/share/elasticsearch/config/certs:ro
+      - certificates:/usr/share/logstash/config/certs
       - logstash_data:/usr/share/logstash/data
-      - logstash_ingest_data:/usr/share/logstash/ingest_data/
+      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+      - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
      xpack.monitoring.enabled: false
      ELASTIC_USER: elastic
@@ -224,38 +220,6 @@ services:
       - "8007:80"
     networks:
       - atlas
-    restart: on-failure
-
-# # Filebeat container
-  orion:
-    depends_on:
-      tutum:
-        condition: service_healthy
-      apollo:
-        condition: service_healthy
-    container_name: orion
-    image: orion
-    labels:
-      co.elastic.logs/module: filebeat
-    volumes:
-      - certificates:/usr/share/filebeat/config/certs:ro
-      - filebeat_data:/usr/share/filebeat/data
-      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
-      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    build:
-      context: ./requirements/orion/
-      dockerfile: Dockerfile
-    user: root
-    environment:
-      ELASTIC_USER: ${ELASTIC_USER}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTIC_HOSTS: https://apollo:9200
-      KIBANA_HOSTS: http://iris:5601
-      LOGSTASH_HOSTS: http://aether:9600
-    networks:
-      - atlas
-      - sentinel
     restart: on-failure
 
 # # ELK setup container
