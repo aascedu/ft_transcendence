@@ -22,13 +22,15 @@ class Consumer(OurBasicConsumer):
 
         await self.accept()
 
-        await self.channel_layer.group_send(
-                "notification_group",
+        for friend in self.scope['friends']:
+            friend_groupe = f'friend_{friend}_group'
+
+            await self.channel_layer.group_send(
+                friend_groupe,
                 {
                     "type": "new.client.connected",
-                    "message": "Un nouveau client s'est connecte",
+                    "message": f'"connected":{self.scope['user'].id}',
                 })
-        self.name = 'test'
 
     async def disconnect(self, close_code):
         # Leave room group
