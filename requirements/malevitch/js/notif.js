@@ -10,6 +10,7 @@ document.querySelectorAll('.notif-dismiss').forEach(function(item) {
 			item.parentNode.parentNode.classList.add('visually-hidden');
 		}
 	});
+	setAriaHidden();
 });
 
 // Tournament invite
@@ -81,6 +82,7 @@ document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('
 function acceptFriendInvite() {
 	// close the notif
 	document.querySelector('.notif-friend-invite').classList.add('visually-hidden');
+	document.querySelector('.notif-friend-invite').setAttribute('aria-hidden', 'true');
 
 	// add user to friends list
 	// -> POST new friend to our friends list
@@ -116,6 +118,7 @@ document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('ke
 function acceptPlayInvite() {
 	// close the notif
 	document.querySelector('.notif-play-invite').classList.add('visually-hidden');
+	document.querySelector('.notif-play-invite').setAttribute('aria-hidden', 'true');
 
 	// show "match found" notif to inform we play against Sender
 	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
@@ -133,6 +136,8 @@ function dismissPlayInvite() {
 function searchMatch() {
 	// show notif
 	document.querySelector('.notif-search-match').classList.remove('visually-hidden');
+	document.querySelector('.notif-search-match').removeAttribute('aria-hidden');
+	document.querySelector('.notif-search-match .notif-dismiss').focus();
 
 	// count time elapsed
 	startTimer();
@@ -197,6 +202,7 @@ function cancelSearchMatch() {
 function matchFound() {
 	// show match found notif
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
+	document.querySelector('.notif-match-found').removeAttribute('aria-hidden');
 
 	// wait 5 seconds then close notif
 	matchCountdown(5);
@@ -210,6 +216,7 @@ function matchCountdown(seconds) {
 	else {
 		// close notif
 		document.querySelector('.notif-match-found').classList.add('visually-hidden');
+		document.querySelector('.notif-match-found').setAttribute('aria-hidden', 'true');
 		
 		// start match
 	}
@@ -223,6 +230,7 @@ function inviteSentNotif(invited) {
 
 	// show notif
 	document.querySelector('.notif-invite-sent').classList.remove('visually-hidden');
+	document.querySelector('.notif-friend-invite').removeAttribute('aria-hidden');
 
 	// wait 2 seconds and close notif
 	inviteSentCountdown(2);
@@ -235,5 +243,22 @@ function inviteSentCountdown(seconds) {
 	else {
 		// close notif
 		document.querySelector('.notif-invite-sent').classList.add('visually-hidden');
+		document.querySelector('.notif-invite-sent').setAttribute('aria-hidden', 'true');
 	}
 }
+
+// Keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	document.querySelectorAll('.notif').forEach(function(item) {
+		if (!item.classList.contains('visually-hidden')) {
+			let isFw =!e.shiftKey;
+	
+			// Search match
+			if (e.key === 'Tab' && document.activeElement === document.querySelector('.notif-search-match .notif-dismiss')) {
+				document.querySelector('.homepage-header-logo').focus();
+				e.preventDefault();
+			}
+		}
+	})
+});

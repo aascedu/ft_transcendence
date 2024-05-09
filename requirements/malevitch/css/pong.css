@@ -1,0 +1,35 @@
+.game {
+	padding: 2.5vw;
+}
+
+.ball {
+	height: 32px;
+	width: 32px;
+	background-color: #F4BF04;
+	border-radius: 50%;
+	position: absolute;
+	filter: drop-shadow(2px 2px 8px rgba(244, 191, 4, 0.6));
+}
+
+.ball-contrast {
+	background-color: #685203;
+}
+
+.player {
+	height: 192px;
+	width: 24px;
+	border-radius: 8px;
+	background-color: #7300E6;
+	position: absolute;
+}
+
+.score {
+	color: #7300E6;
+	font-size: 96pt;
+	font-weight: 600;
+	position: absolute;
+}
+
+#score2 {
+	right: 2.5vw;
+}

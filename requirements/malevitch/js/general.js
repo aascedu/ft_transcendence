@@ -9,7 +9,7 @@ let	g_translations = null;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {
@@ -24,7 +24,9 @@ function render() {
 		homepagePicture.classList.remove('visually-hidden');
 	}
 
-	// // A ENLEVER
+	setAriaHidden();
+
+	// A ENLEVER
 
 	// var	homepageHeader = document.querySelector('.homepage-header');
 	// homepageHeader.classList.remove('visually-hidden');
@@ -53,6 +55,17 @@ function hideEveryPage() {
 	document.querySelector('.friends-list').classList.add('visually-hidden');
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
+}
+
+function setAriaHidden() {
+	document.querySelectorAll('.visually-hidden').forEach(function(item) {
+		item.setAttribute('aria-hidden', 'true');
+	});
+	document.querySelectorAll('[aria-hidden="true"]').forEach(function(item) {
+		if (!item.classList.contains('visually-hidden')) {
+			item.removeAttribute('aria-hidden');
+		}
+	});
 }
 
 // Translation functions.
@@ -157,6 +170,10 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		activeImg.setAttribute('alt', selectedLang);
 		selectedImg.setAttribute('src', activeImgSrc);
 		selectedImg.setAttribute('alt', activeLang);
+
+		// switch back focus to main button
+		var	itemButton = item.closest('.language-selector').querySelector('.dropdown');
+		itemButton.focus();
 	});
 });
 
@@ -306,6 +323,8 @@ function goToHomepageGame(previous) {
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.remove('visually-hidden');
 
+	document.querySelector('.homepage-header-logo').focus();
+
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
@@ -328,6 +347,8 @@ function leaveTournamentEditMode() {
 
 	// Show tournament name
 	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+
+	setAriaHidden();
 }
 
 // Hide alerts when clicking outside
@@ -338,6 +359,7 @@ document.querySelectorAll('.alert').forEach(function(item) {
 			return ;
 		}
 		item.classList.add('visually-hidden');
+		setAriaHidden();
 	});
 });
 
