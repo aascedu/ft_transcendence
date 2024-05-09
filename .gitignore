@@ -38,3 +38,4 @@ sources.txt
 # temporary
 elastic-agent.yml
 
+requirements/aether/conf/info.conf
