@@ -30,15 +30,6 @@ volumes:
   logstash_data:
     driver: local
 
-  # logstash_ingest_data:
-  #   driver: local
-
-  # filebeat_data:
-  #   driver: local
-
-  # filebeat_ingest_data:
-  #   driver: local
-
 services:
 # # Reverse proxy container
   aegis:
@@ -49,6 +40,8 @@ services:
         condition: service_healthy
       malevitch:
         condition: service_started
+      # aether:
+      #   condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: aegis
@@ -94,7 +87,7 @@ services:
       co.elastic.logs/module: logstash
     user: root
     volumes:
-      - certificates:/usr/share/logstash/config/certs
+      - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
       - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
       - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
@@ -107,6 +100,15 @@ services:
       - atlas
       - sentinel
     restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 # # Elastisearch container
   apollo:
@@ -142,8 +144,6 @@ services:
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
       ES_JAVA_OPTS: -Xms512m -Xms512m
-      # xpack.security.enrollment.enabled: true
-    # command: /usr/share/elasticsearch/bin/elasticsearch-create-enrollment-token -s kibana
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
