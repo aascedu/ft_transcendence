@@ -78,7 +78,7 @@ kill:
 restart:
 	$(COMPOSE) restart
 
-reset: | db_reset
+reset: | fclean
 	make debug
 
 re: down
