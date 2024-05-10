@@ -17,7 +17,6 @@ class Client(models.Model):
     contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
-    online = models.BooleanField(default=False)
 
     objects = models.Manager()
 

@@ -1,24 +1,31 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
+
+from notifications.cache import get_cache, set_cache
 
 from shared.BasicConsumer import OurBasicConsumer
 
+
 class Consumer(OurBasicConsumer):
     async def connect(self):
-
         # Join room group
-
         if self.security_check() is False:
             return self.close()
+        user = self.scope['user']
 
-        print(self.scope['user'])
         await self.channel_layer.group_add("notification_group", self.channel_name)
-        print("adding friend layer")
-        print(f"friend_{self.scope['user'].id}_group")
 
+        apparel_count = get_cache(f'user_{user.id}')
+        if apparel_count is None:
+            apparel_count = 0
+        apparel_count = apparel_count + 1
+        set_cache(f'user_{user.id}', apparel_count)
         self.get_friends()
 
-        await self.channel_layer.group_add(f"user_{self.scope['user'].id}_group", self.channel_name)
+        await self.channel_layer.group_add(
+                f"user_{user.id}_group",
+                self.channel_name)
+
+        get_cache(f'user_{user.id}')
 
         await self.accept()
 
@@ -34,6 +41,17 @@ class Consumer(OurBasicConsumer):
 
     async def disconnect(self, close_code):
         # Leave room group
+        user = self.scope['user']
+        apparel_count = get_cache(f'user_{user.id}')
+        apparel_count = apparel_count - 1
+        if apparel_count == 0:
+            delete_cache(f'user_{user.id}')
+        else:
+            set_cache(f'user_{user.id}', apparel_count)
+
+        await self.channel_layer.group_discard(
+                f"user_{user.id}_group",
+                self.channel_name)
         await self.channel_layer.group_discard("notification_group", self.channel_name)
 
     # Receive message from WebSocket

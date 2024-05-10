@@ -2,10 +2,28 @@ from django.views import View
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from shared.utils import JsonBadRequest, JsonUnauthorized
-
+from shared.utils import JsonBadRequest
+from notifications.cache import get_cache
 
 # Create your views here.
+
+class onlineView(View):
+    def get(self, request):
+        return_json = {}
+        queryparams = request.GET
+
+        clients = queryparams.getlist('status')
+        for client in clients:
+            try:
+                id = int(client)
+            except (ValueError, TypeError) as e:
+                return JsonBadRequest(f'client id : {client} must be an int : {e}')
+            if get_cache(f'user_{id}') is None:
+                return_json |= {id: True}
+            else:
+                return_json |= {id: False}
+        return JsonResponse({"online-status": return_json})
+
 
 class notificationsView(View):
     def get(self, request):
@@ -21,8 +39,6 @@ class notificationsView(View):
             }
         )
         return JsonResponse({"status": "Notification sent"})
-
-
 
 class friendshipView(View):
     def post(self, request, requester: int):
