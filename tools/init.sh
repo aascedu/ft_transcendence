@@ -11,7 +11,6 @@ else
     DOCKER_FILE="docker-compose-nologs.yml"
 fi
 
-
 sleep 10
 
 export ELASTIC_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=EPW env/epw' | tr -cd '[:alnum:]_-')"

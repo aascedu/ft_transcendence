@@ -97,7 +97,7 @@ services:
      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
      ELASTIC_HOSTS: https://apollo:9200
     networks:
-      - atlas
+      # - atlas
       - sentinel
     restart: on-failure
     healthcheck:
