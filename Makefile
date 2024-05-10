@@ -83,7 +83,7 @@ reset: | db_reset
 
 re: down
 	make debug
-
+# docker compose build --parallel -> a test
 #---- setups ----#
 
 volumes:
