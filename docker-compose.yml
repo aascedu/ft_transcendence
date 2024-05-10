@@ -163,6 +163,9 @@ services:
 
 # # Profil container
   alfred:
+    depends_on:
+      alfred_db:
+        condition: service_healthy
     container_name: alfred
     build:
       context: ./requirements/alfred
@@ -176,9 +179,6 @@ services:
     networks:
       - atlas
       - alfred_network
-    depends_on:
-      alfred_db:
-        condition: service_healthy
     restart: on-failure
 
 # # Profil database container
@@ -220,8 +220,6 @@ services:
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
-    networks:
-      - sentinel
     environment:
       node.name: elasticsearch
       discovery.type: single-node
@@ -245,6 +243,8 @@ services:
       memlock:
         soft: -1
         hard: -1
+    networks:
+      - sentinel
     restart: unless-stopped
     healthcheck:
       test:
@@ -258,6 +258,9 @@ services:
 
 # # Tournament container
   coubertin:
+    depends_on:
+      tutum:
+        condition: service_healthy
     container_name: coubertin
     build:
       context: ./requirements/coubertin
@@ -270,13 +273,13 @@ services:
       - "8002:8002"
     networks:
       - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Matchmaking container
   cupidon:
+    depends_on:
+      tutum:
+        condition: service_healthy
     container_name: cupidon
     build:
       context: ./requirements/cupidon
@@ -289,9 +292,6 @@ services:
       - "8003:8003"
     networks:
       - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Matchmaking container
