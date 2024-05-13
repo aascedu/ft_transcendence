@@ -357,6 +357,12 @@ body {
 	color: #7300E6;
 }
 
+.alert-input-message {
+	font-size: 13pt;
+	font-weight: 400;
+	color: #7300E6;
+}
+
 .alert-buttons-container {
 	margin-top: 32px;
 }
