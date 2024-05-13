@@ -168,6 +168,10 @@ async function init_socket() {
         else if (data.type == "updateScore") {
             me.points = data.myScore;
             opponent.points = data.opponentScore;
+            ball.pos['x'] = screenWidth / 2;
+            ball.pos['y'] = screenHeight / 2;
+            me.pos = screenHeight / 2;
+            opponent.pos = screenHeight / 2;
         }
 
         if (data.type == "myState" || data.type == "opponentState") {

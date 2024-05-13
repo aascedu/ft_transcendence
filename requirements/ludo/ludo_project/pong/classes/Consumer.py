@@ -12,7 +12,8 @@ import requests
 # match[(self.id + 1) % 2] = adversaire
 
 # Remettre la balle au centre avant le sleep
-# Regarder pourquoi le joueur 2 ne peut pas bouger
+# Check la fin de game
+# Hitbox sur les bords de la plateforme
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -136,6 +137,7 @@ class Consumer(OurBasicConsumer):
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
         }))
+        time.sleep(3)
 
     async def gameLogic(self, frames, id):
         global matches
