@@ -7,6 +7,9 @@ networks:
   sentinel:
     internal: true
 
+  internet_access:
+    internal: false
+
   alfred_network:
     internal: true
 
@@ -65,7 +68,7 @@ services:
       hermes:
         condition: service_started
       iris:
-        condition: service_started
+        condition: service_healthy
       ludo:
         condition: service_started
       malevitch:
@@ -74,12 +77,10 @@ services:
         condition: service_started
       mnemosine:
         condition: service_started
-      orion:
-        condition: service_started
       petrus:
         condition: service_started
       tutum:
-        condition: service_started
+        condition: service_healthy
     build:
       context: ./requirements/aegis
       dockerfile: Dockerfile
@@ -129,25 +130,42 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      iris:
+        condition: service_healthy
     container_name: aether
-    build:
-      context: ./requirements/aether/
-      dockerfile: Dockerfile
-      args:
-        ELASTIC_USER: $ELASTIC_USER
-        ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     labels:
       co.elastic.logs/module: logstash
     user: root
     volumes:
-      - certificates:/usr/share/elasticsearch/config/certs:ro
+      - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
+      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+      - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+    environment:
+     xpack.monitoring.enabled: false
+     ELASTIC_USER: elastic
+     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+     ELASTIC_HOSTS: https://apollo:9200
     networks:
+      - atlas
       - sentinel
     restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 # # Profil container
   alfred:
+    depends_on:
+      alfred_db:
+        condition: service_healthy
     container_name: alfred
     build:
       context: ./requirements/alfred
@@ -161,9 +179,6 @@ services:
     networks:
       - atlas
       - alfred_network
-    depends_on:
-      alfred_db:
-        condition: service_healthy
     restart: on-failure
 
 # # Profil database container
@@ -196,6 +211,8 @@ services:
     depends_on:
       setup:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: apollo
     image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     labels:
@@ -203,24 +220,32 @@ services:
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
+    environment:
+      node.name: elasticsearch
+      discovery.type: single-node
+      cluster.name: ${CLUSTER_NAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      network.host: 0.0.0.0
+      xpack.security.enabled: true
+      xpack.security.http.ssl.enabled: true
+      xpack.security.http.ssl.key: certs/apollo/apollo.key
+      xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.enabled: true
+      xpack.security.transport.ssl.key: certs/apollo/apollo.key
+      xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.license.self_generated.type: ${LICENSE}
+      ES_JAVA_OPTS: -Xms512m -Xms512m
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
       - sentinel
-    environment:
-      - "discovery.type=single-node"
-      - "cluster.name=${CLUSTER_NAME}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "network.host=0.0.0.0"
-      - "xpack.security.enabled=true"
-      - "xpack.security.http.ssl.enabled=true"
-      - "xpack.security.http.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.http.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.http.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.enabled=true"
-      - "xpack.security.transport.ssl.key=certs/apollo/apollo.key"
-      - "xpack.security.transport.ssl.certificate=certs/apollo/apollo.crt"
-      - "xpack.security.transport.ssl.certificate_authorities=certs/ca/ca.crt"
-      - "xpack.security.transport.ssl.verification_mode=certificate"
-      - "xpack.license.self_generated.type=${LICENSE}"
+    restart: unless-stopped
     healthcheck:
       test:
         [
@@ -233,6 +258,9 @@ services:
 
 # # Tournament container
   coubertin:
+    depends_on:
+      tutum:
+        condition: service_healthy
     container_name: coubertin
     build:
       context: ./requirements/coubertin
@@ -245,13 +273,13 @@ services:
       - "8002:8002"
     networks:
       - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Matchmaking container
   cupidon:
+    depends_on:
+      tutum:
+        condition: service_healthy
     container_name: cupidon
     build:
       context: ./requirements/cupidon
@@ -264,9 +292,6 @@ services:
       - "8003:8003"
     networks:
       - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Matchmaking container
@@ -310,39 +335,44 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      tutum:
+        condition: service_healthy
+    container_name: iris
     image: docker.elastic.co/kibana/kibana:8.12.2
-    #container_name: iris
     labels:
       co.elastic.logs/module: kibana
     volumes:
       - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
-    networks:
-      - sentinel
     environment:
-      - "SERVERNAME=https://localhost:8000/iris/"
-      - "ELASTICSEARCH_HOSTS=https://apollo:9200"
-      - "ELASTICSEARCH_USERNAME=kibana_system"
-      - "ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}"
-      - "ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt"
-      - "SERVER_SSL_ENABLED=false"
-      - "XPACK_REPORTING_ROLES_ENABLED=false"
-      - "XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}"
-      - "XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}"
-      - "XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}"
-      - "SERVER_REWRITEBASEPATH=true"
-      - "SERVER_BASEPATH=/iris"
-      - "SERVER_PUBLICBASEURL=https://localhost:8000/iris"
-    # healthcheck:
-    #  test:
-    #    [
-    #      "CMD-SHELL",
-    #      "curl -I https://localhost:8000/iris/ | grep -q 'HTTP/1.1 302 Found'",
-    #    ]
-    #  interval: 10s
-    #  timeout: 10s
-    #  retries: 120
+      SERVERNAME: kibana
+      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      SERVER_SSL_ENABLED: false
+      XPACK_REPORTING_ROLES_ENABLED: false
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+      SERVER_REWRITEBASEPATH: true
+      SERVER_BASEPATH: /iris
+      SERVER_PUBLICBASEURL: https://localhost:8000/iris
+      NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+    mem_limit: ${KB_MEM_LIMIT}
+    networks:
+      - internet_access
+      - sentinel
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
 
 # # Auth inter-container container
   lovelace:
@@ -411,7 +441,7 @@ services:
 
   db_exporter_a:
     container_name: db_exporter_a
-    image: db_exporter_a
+    # image: db_exporter_a
     build:
       context: ./requirements/mensura/db_exporter_a
       dockerfile: Dockerfile
@@ -429,7 +459,7 @@ services:
 
   db_exporter_m:
     container_name: db_exporter_m
-    image: db_exporter_m
+    # image: db_exporter_m
     build:
       context: ./requirements/mensura/db_exporter_m
       dockerfile: Dockerfile
@@ -447,7 +477,7 @@ services:
 
   db_exporter_p:
     container_name: db_exporter_p
-    image: db_exporter_p
+    # image: db_exporter_p
     build:
       context: ./requirements/mensura/db_exporter_p
       dockerfile: Dockerfile
@@ -466,7 +496,7 @@ services:
 # # Data exporter container
   alertmanager:
     container_name: alertmanager
-    image: alertmanager
+    # image: alertmanager
     build:
       context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile
@@ -524,23 +554,6 @@ services:
       test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
       interval: 10s
       retries: 5
-
-# # Filebeat container
-  orion:
-    depends_on:
-      aether:
-        condition: service_started
-    container_name: orion
-    labels:
-      co.elastic.logs/module: filebeat
-    build:
-      context: ./requirements/orion/
-      dockerfile: Dockerfile
-    user: "root"
-    networks:
-      - atlas
-      - sentinel
-    restart: on-failure
 
 # # Authentification container
   petrus:
@@ -626,7 +639,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: setup
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
     environment:
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
       - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
