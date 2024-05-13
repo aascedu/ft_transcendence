@@ -12,8 +12,7 @@ import requests
 # match[(self.id + 1) % 2] = adversaire
 
 # Fin de points, tout ne se fait pas toujours ds le meme ordre
-# Discard du grp ?
-# Close la ws
+# Send only one gameEnd
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -129,7 +128,7 @@ class Consumer(OurBasicConsumer):
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
 
-        self.close() # ?
+        await self.close() # ?
 
     async def updateScore(self, event):
         await self.send (text_data=json.dumps({
