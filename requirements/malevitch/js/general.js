@@ -9,7 +9,7 @@ let	g_translations = null;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-id"
+	pageToDisplay: ".homepage-game"
 };
 
 function render() {

@@ -46,10 +46,11 @@ function acceptTournamentInvite() {
 	// var tournamentId;
 	// -> GET tournament info thanks to tournamentId
 
-	hideEveryPage();
-	g_state.pageToDisplay = '.tournament-info';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
+	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
+	document.querySelector('.tournament-info-join-alert').removeAttribute('aria-hidden');
+
+	document.querySelector('.tournament-info-join-input').value = 'cha'; // replace with user nick
+	document.querySelector('.tournament-info-join-input').focus();
 }
 
 function dismissTournamentInvite() {
