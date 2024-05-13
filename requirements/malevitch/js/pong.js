@@ -176,11 +176,10 @@ async function init_socket() {
             } else {
                 opponent.pos = data.opponentPos / 100 * screenHeight;
             }
-            // console.log("Pos of ball before back return: x=" + ball.pos['x'].toString() + " y=" + ball.pos['y'].toString());
             ball.pos['x'] = data.ballPosX / 100 * screenWidth;
             ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            // Ajouter vitesse et angle de la balle.
-            // console.log("Pos of ball after back return: x=" + ball.pos['x'].toString() + " y=" + ball.pos['y'].toString());
+            me.points = data.myScore;
+            opponent.points = data.opponentScore;
         }
     };
     function sendStartGameData(type) {
@@ -242,8 +241,8 @@ async function init_socket() {
         ratioHeight = screenHeight / 1080;
         ratioWidth = screenWidth / 1920;
         ratioBall = Math.min(ratioHeight, ratioWidth);
-        htmlme.style.height = 108 * ratioHeight + 'px';
-        htmlopponent.style.height = 108 * ratioHeight + 'px';
+        htmlme.style.height = 200 * ratioHeight + 'px';
+        htmlopponent.style.height = 200 * ratioHeight + 'px';
         htmlme.style.width = 24 * ratioWidth + 'px';
         htmlopponent.style.width = 24 * ratioWidth + 'px';
         htmlBall.style.height = 36 * ratioBall + 'px';

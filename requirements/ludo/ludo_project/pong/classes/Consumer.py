@@ -11,7 +11,8 @@ import requests
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
 
-# Gerer les scores
+# Remettre la balle au centre avant le sleep
+# Regarder pourquoi le joueur 2 ne peut pas bouger
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -180,6 +181,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
+                    "myScore": self.myMatch.score[0],
+                    "opponentScore": self.myMatch.score[1],
                 }))
             else:
                 await self.send(text_data=json.dumps({
@@ -189,6 +192,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
+                    "myScore": self.myMatch.score[0],
+                    "opponentScore": self.myMatch.score[1],
             }))
 
         # Received from opponent
@@ -202,6 +207,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
+                    "myScore": self.myMatch.score[0],
+                    "opponentScore": self.myMatch.score[1],
                 }))
             else:
                 await self.send(text_data=json.dumps({
@@ -211,6 +218,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
+                    "myScore": self.myMatch.score[0],
+                    "opponentScore": self.myMatch.score[1],
                 }))
 
 
