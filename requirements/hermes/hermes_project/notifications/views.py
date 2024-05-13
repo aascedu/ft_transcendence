@@ -50,7 +50,7 @@ class friendshipView(View):
         except KeyError as e:
             return JsonBadRequest(str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an array of id")
+            return JsonBadRequest("Notified must be an id")
 
         channel_layer = get_channel_layer()
 
@@ -75,7 +75,7 @@ class friendshipRequestView(View):
         except KeyError as e:
             return JsonBadRequest(str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an array of id")
+            return JsonBadRequest("Notified must be an id")
 
         channel_layer = get_channel_layer()
 
