@@ -239,7 +239,7 @@ services:
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs
     user: "0"
-    command: ./tools/setup.sh
+    command: bash /usr/share/elasticsearch/tools/setup.sh
     networks:
       - sentinel
     healthcheck:
