@@ -1,5 +1,6 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+import requests
 from shared.utils import JsonBadRequest
 from shared.validators import NickNameValidator
 
@@ -16,7 +17,6 @@ class Client(models.Model):
     contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
-    online = models.BooleanField(default=False)
 
     objects = models.Manager()
 
@@ -128,6 +128,8 @@ class FriendshipRequest(models.Model):
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
         if pastRequest is None:
+            requests.post(f'http://hermes:8004/notif/friend-request/{sender.id}',
+                          json={"Notified": receiver.id})
             newRequest = FriendshipRequest.objects.create(
                 sender=sender, receiver=receiver)
             newRequest.save()
@@ -135,7 +137,8 @@ class FriendshipRequest(models.Model):
 
         pastRequest.delete()
         sender.friends.add(receiver)
-        # Hermes
+        requests.post(f'http://hermes:8004/notif/friendship/{sender.id}',
+                      json={"Notified": receiver.id})
         return JsonResponse({"Friendship": "established"})
 
     @staticmethod
