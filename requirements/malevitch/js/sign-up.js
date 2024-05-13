@@ -142,6 +142,7 @@ async function signUpNickname(input) {
 		document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box email filling.
@@ -181,6 +182,7 @@ async function signUpEmail(input) {
 		document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box password filling.
@@ -211,6 +213,7 @@ function signUpPassword(input) {
 		warning.classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box password confirmation.
@@ -240,6 +243,7 @@ function signUpPasswordConfirm(input) {
 	else {
 		warning.classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Submit info and create account
@@ -302,4 +306,28 @@ document.querySelector('.sign-up-sign-in button').addEventListener('click', func
 	document.querySelector('.sign-up-email-input').value = '';
 	document.querySelector('.sign-up-password-input').value = '';
 	document.querySelector('.sign-up-password-confirm-input').value = '';
+	setAriaHidden();
+});
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.sign-up').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+	
+		if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
+			if (isFw) {
+				document.querySelector('.sign-up-nickname-input').focus();
+			}
+			else {
+				document.querySelector('.sign-up-sign-in button').focus();
+			}
+	
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {
+			document.querySelector('.sign-up-font-size').focus();
+			e.preventDefault();
+		}
+	}
 });

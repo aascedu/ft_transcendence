@@ -1,6 +1,8 @@
 // Hide when clicking top left button
 
 document.querySelector('.create-tournament-icon').addEventListener('click', function() {
+	document.querySelector('.homepage-header-logo').focus();
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.homepage-game';
@@ -26,7 +28,7 @@ document.querySelector('.create-tournament-name-input').addEventListener('keypre
 			document.querySelector('.create-tournament-players-button').focus();
 			tournamentInputWarning.classList.add('visually-hidden');
 		}
-
+		setAriaHidden();
 	}
 });
 
@@ -120,6 +122,7 @@ function checkToSubmitTournament() {
 		document.querySelector('.create-tournament-alert').classList.remove('visually-hidden');
 		document.querySelector('.create-tournament-alert .alert-confirm-button').focus();
 	}
+	setAriaHidden();
 }
 
 // Confirm / cancel
@@ -147,12 +150,14 @@ document.querySelector('.create-tournament-alert .alert-confirm-button').addEven
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
 	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
+	document.querySelector('.create-tournament-alert').setAttribute('aria-hidden', 'true');
 });
 
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		// Hide alert
 		document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
+		document.querySelector('.create-tournament-alert').setAttribute('aria-hidden', 'true');
 	}
 });
 
@@ -160,6 +165,7 @@ document.querySelector('.create-tournament-alert .alert-cancel-button').addEvent
 
 function resetTournamentCreation() {
 	document.querySelector('.create-tournament').classList.add('visually-hidden');
+	document.querySelector('.create-tournament').setAttribute('aria-hidden', 'true');
 
 	document.querySelector('.create-tournament-name-input').value = "";
 	var chosen = document.querySelector('.create-tournament-players-button-chosen');
@@ -247,3 +253,20 @@ function displayCreatedTournament() {
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
+
+// Keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.create-tournament').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+
+		if (e.key === 'Tab' && isFw && document.activeElement === document.querySelector('.create-tournament-submit')) {
+			document.querySelector('.create-tournament-icon').focus();
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.create-tournament-icon')) {
+			document.querySelector('.create-tournament-submit').focus();
+			e.preventDefault();
+		}
+	}
+});

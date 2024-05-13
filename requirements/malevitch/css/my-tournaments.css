@@ -75,6 +75,11 @@
 }
 
 .my-tournaments-card-container
+.content-card:focus {
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.my-tournaments-card-container
 .content-card:nth-child(even) {
 	margin-right: 8px;
 }
