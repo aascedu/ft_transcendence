@@ -16,21 +16,20 @@ class Ball:
         self.size = gameSettings.ballSize
 
     def isPlayerCollision(self, player):
-        if (self.pos[1] > player.pos - (player.height / 2) and
-            self.pos[1] < player.pos + (player.height / 2)):
+        if self.pos[1] + self.size / 3 > player.pos - (player.height / 2) and self.pos[1] - self.size / 3 < player.pos + (player.height / 2):
             return True
         return False
 
     def hostCollision(self, host):
-        if (self.pos[0] <= self.size + host.width and self.isPlayerCollision(host)):
+        if self.pos[0] <= self.size + host.width and self.isPlayerCollision(host):
             impactToMid = ((self.pos[1] - host.pos) / (host.height * 0.5))
             self.angle = (m.pi / 4) * impactToMid
             self.speed *= 1.1
-            if (self.speed > 20):
+            if self.speed > 20:
                 self.speed = 20
 
     def clientCollision(self, client, gameSettings):
-        if (self.pos[0] >= gameSettings.screenWidth - (self.size + client.width) and self.isPlayerCollision(client)):
+        if self.pos[0] >= gameSettings.screenWidth - (self.size + client.width) and self.isPlayerCollision(client):
             impactToMid = ((self.pos[1] - client.pos) / (client.height * 0.5))
             self.angle = - (m.pi + (m.pi / 4) * impactToMid)
             self.speed *= 1.1
@@ -38,14 +37,14 @@ class Ball:
                 self.speed = 20
     
     def wallCollision(self, gameSettings):
-        if (self.pos[1] <= self.size / 2 or self.pos[1] >= gameSettings.screenHeight - self.size / 2):
+        if self.pos[1] <= self.size / 2 or self.pos[1] >= gameSettings.screenHeight - self.size / 2:
             self.angle = - self.angle
 
     def updatePoints(self, gameSettings):
-        if (self.pos[0] < 0):
+        if self.pos[0] < 0:
             self.newPoint(gameSettings)
             return 1
-        elif (self.pos[0] > gameSettings.screenWidth):
+        elif self.pos[0] > gameSettings.screenWidth:
             self.newPoint(gameSettings)
             return 0
         return -1

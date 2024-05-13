@@ -11,9 +11,7 @@ import requests
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
 
-# Remettre la balle au centre avant le sleep
 # Check la fin de game
-# Hitbox sur les bords de la plateforme
 
 from shared.BasicConsumer import OurBasicConsumer
 
