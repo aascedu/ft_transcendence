@@ -2,7 +2,7 @@ class gameSettings:
     def __init__(self):
         self.screenHeight = 1080
         self.screenWidth = 1920
-        self.playerHeight = 192
+        self.playerHeight = 350
         self.playerWidth = 24
         self.ballSize = 32
         print("gameSettings are:")
