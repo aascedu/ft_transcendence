@@ -11,8 +11,7 @@ import requests
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
 
-# Gerer la hitbox
-# Regarder 
+# Gerer les scores
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -27,7 +26,7 @@ class Consumer(OurBasicConsumer):
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         print("Room name is " + self.roomName)
 
-        if (self.roomName not in matches):
+        if self.roomName not in matches:
             matches[self.roomName] = Match()
 
         await self.channel_layer.group_add(self.roomName, self.channel_name)
@@ -109,12 +108,11 @@ class Consumer(OurBasicConsumer):
             requests.post(
                 'http://coubertin:8002/tournament/gameResult/',
                 json={'tournamentId': 'test',
-                      'game': self.myMatch.toDict()}) # Allo faut recuperer l'id ici Henri !!
+                      'game': self.myMatch.toDict()})
         elif self.id == 0:
             requests.post(
                 'http://mnemosine:8008/memory/pong/match/0/',
                 json={self.myMatch.to_mnemosine()})
-        # requests.post() # Poster direct a la db
 
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({
@@ -172,7 +170,7 @@ class Consumer(OurBasicConsumer):
         global matches
 
         # Received from me
-        if event["id"] == self.id: # Remplacer event["id"] par le check du JWT, cf Brieuc.
+        if event["id"] == self.id:
             await self.gameLogic(event["frames"], self.id)
             if self.id % 2 == 0:
                 await self.send(text_data=json.dumps({

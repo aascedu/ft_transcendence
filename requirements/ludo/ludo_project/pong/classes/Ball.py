@@ -17,7 +17,7 @@ class Ball:
         self.size = gameSettings.ballSize
         time.sleep(3)
 
-    def isPlayerCollision(self, player): # Identifier les joueurs par id (si pair, ils sont hotes sinon clients)
+    def isPlayerCollision(self, player):
         if (self.pos[1] > player.pos - (player.height / 2) and
             self.pos[1] < player.pos + (player.height / 2)):
             return True
@@ -28,15 +28,16 @@ class Ball:
             impactToMid = ((self.pos[1] - host.pos) / (host.height * 0.5))
             self.angle = (m.pi / 4) * impactToMid
             self.speed *= 1.1
+            if (self.speed > 20):
+                self.speed = 20
 
     def clientCollision(self, client, gameSettings):
         if (self.pos[0] >= gameSettings.screenWidth - (self.size + client.width) and self.isPlayerCollision(client)):
             impactToMid = ((self.pos[1] - client.pos) / (client.height * 0.5))
             self.angle = - (m.pi + (m.pi / 4) * impactToMid)
-            self.speed *= 1.1 # Mettre une limite de speed pour eviter les tp.
+            self.speed *= 1.1
             if (self.speed > 20):
                 self.speed = 20
-            print(self.speed)
     
     def wallCollision(self, gameSettings):
         if (self.pos[1] <= self.size / 2 or self.pos[1] >= gameSettings.screenHeight - self.size / 2):
