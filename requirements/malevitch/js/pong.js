@@ -23,12 +23,8 @@ if (ratio == ratio1) {
     screenHeight = screenWidth * 1080 / 1920;
 }
 
-console.log("tmpScreenHeight is: " + tmpScreenHeight.toString());
-console.log("tmpScreenWidth is: " + tmpScreenWidth.toString());
-console.log("screenHeight is: " + screenHeight.toString());
-console.log("screenWidth is: " + screenWidth.toString());
-
 htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
+htmlme.style.left = 10 + 'px';
 
 /***************************************** Classes *****************************************/
 
@@ -99,10 +95,6 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 /***************************************** Websockets *****************************************/
 
-const roomName = "aaa";
-const id = 0;
-console.log(roomName);
-
 async function get_unique_use_token() {
     try {
         console.log("damned");
@@ -125,6 +117,10 @@ async function get_unique_use_token() {
 }
 
 async function init_socket() {
+    const roomName = "aaa";
+    const id = 0;
+    console.log(roomName);
+
     unique_use_token = await get_unique_use_token();
     console.log(unique_use_token);
     url = 'wss://localhost:8000/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
@@ -320,4 +316,4 @@ htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 +
 
 }
 
-//#init_socket();
+// init_socket();
