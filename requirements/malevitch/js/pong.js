@@ -144,7 +144,6 @@ async function init_socket() {
 
         if (data.type == "youWin" || data.type == "youLose") {
             console.log(data.type); // Sleep pour faire pop une fenetre ?
-            window.location.href = "https://localhost:8000/";
         }
 
         else if (data.type == "gameParameters") {
