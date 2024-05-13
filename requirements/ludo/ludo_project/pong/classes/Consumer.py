@@ -11,7 +11,9 @@ import requests
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
 
-# Check la fin de game
+# Fin de points, tout ne se fait pas toujours ds le meme ordre
+# Discard du grp ?
+# Close la ws
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -103,7 +105,7 @@ class Consumer(OurBasicConsumer):
 
     async def gameEnd(self, event):
         # Si game de tournoi, envoyer au tournoi, sinon envoyer a la db.
-        print("This is gameEnd function")
+        print("This is gameEnd function with id: " + str(self.id))
         if self.roomName.count('-') == 2 and self.id == 0: # N'envoyer qu'avec l'hote
             requests.post(
                 'http://coubertin:8002/tournament/gameResult/',
@@ -112,7 +114,7 @@ class Consumer(OurBasicConsumer):
         elif self.id == 0:
             requests.post(
                 'http://mnemosine:8008/memory/pong/match/0/',
-                json={self.myMatch.to_mnemosine()})
+                json=self.myMatch.to_mnemosine())
 
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({
@@ -127,7 +129,7 @@ class Consumer(OurBasicConsumer):
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
 
-        self.close()
+        self.close() # ?
 
     async def updateScore(self, event):
         await self.send (text_data=json.dumps({
@@ -135,7 +137,7 @@ class Consumer(OurBasicConsumer):
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
         }))
-        time.sleep(3)
+        time.sleep(1)
 
     async def gameLogic(self, frames, id):
         global matches
@@ -181,8 +183,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
-                    "myScore": self.myMatch.score[0],
-                    "opponentScore": self.myMatch.score[1],
+                    "myScore": self.myMatch.score[self.id],
+                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 }))
             else:
                 await self.send(text_data=json.dumps({
@@ -192,14 +194,14 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
-                    "myScore": self.myMatch.score[0],
-                    "opponentScore": self.myMatch.score[1],
+                    "myScore": self.myMatch.score[self.id],
+                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
 
         # Received from opponent
         else:
             await self.gameLogic(event["frames"], (self.id + 1) % 2)
-            if (self.id % 2 == 0):
+            if self.id % 2 == 0:
                 await self.send(text_data=json.dumps({
                     "type": "opponentState",
                     "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
@@ -207,8 +209,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": self.myMatch.ball.angle,
-                    "myScore": self.myMatch.score[0],
-                    "opponentScore": self.myMatch.score[1],
+                    "myScore": self.myMatch.score[self.id],
+                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 }))
             else:
                 await self.send(text_data=json.dumps({
@@ -218,8 +220,8 @@ class Consumer(OurBasicConsumer):
                     "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
                     "ballSpeed": 100 * self.myMatch.ball.speed / self.gameSettings.screenWidth,
                     "ballAngle": math.pi - self.myMatch.ball.angle,
-                    "myScore": self.myMatch.score[0],
-                    "opponentScore": self.myMatch.score[1],
+                    "myScore": self.myMatch.score[self.id],
+                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 }))
 
 
