@@ -47,7 +47,6 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Pic": self.avatar.url if self.avatar else None,
-            "Online": self.online,
         }
 
     def personal_dict(self):
@@ -143,7 +142,6 @@ class FriendshipRequest(models.Model):
 
     @staticmethod
     def deleteFriendship(emiter, target) -> JsonResponse:
-
         if target in emiter.friends.all():
             emiter.friends.remove(target)
             return JsonResponse({"Friendship": "deleted"})
@@ -151,13 +149,13 @@ class FriendshipRequest(models.Model):
         oldRequest = FriendshipRequest.objects.filter(
             sender=emiter, receiver=target)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=target, receiver=emiter)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 2"})
 
         return JsonResponse({"Err": "nothing to get deleted"}, status=404)
