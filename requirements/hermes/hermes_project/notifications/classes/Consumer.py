@@ -25,8 +25,6 @@ class Consumer(OurBasicConsumer):
                 f"user_{user.id}_group",
                 self.channel_name)
 
-        get_cache(f'user_{user.id}')
-
         await self.accept()
 
         for friend in self.scope['friends']:
