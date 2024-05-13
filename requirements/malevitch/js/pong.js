@@ -282,7 +282,6 @@ htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 +
         // Send info to back
         // sendData("gameState", me.up, me.down);
         if (i % nbframes == 0) {
-            console.log("Data sent to back");
             sendData("gameState", frames);
             frames = {};
         }
@@ -321,4 +320,4 @@ htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 +
 
 }
 
-init_socket();
+//#init_socket();
