@@ -2,6 +2,7 @@ from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils import timezone
 import os
 from django.conf import settings
 
@@ -127,10 +128,10 @@ class avatarView(View):
     def get(self, request, id: int):
         try:
             client = Client.objects.get(id=id)
-            url = client.avatar.url
+            url = client.avatar.url if client.avatar else None
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
-        return JsonResponse({id: url})
+        return JsonResponse({"url": url})
 
     def post(self, request, id: int):
         try:

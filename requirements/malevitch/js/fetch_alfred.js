@@ -4,6 +4,22 @@
   //  path("avatar/<int:id>", avatarView.as_view()),
  //   path("media/<str:filename>", serve_avatar),
 //    path("view-db", view_db)
+function fetch_error(error) {
+    console.error('Fetch problem:', error.message)
+}
+
+async function fetch_get(url) {
+    return fetch(url)
+        .then(response => {
+            return response.json()
+        })
+        .then(data => {
+            console.log(data)
+            return data
+        })
+        .catch(error => {fetch_error(error)});
+}
+
 
 function add_alfred_in_url(url) {
     return ("/alfred/user" + url)
@@ -13,16 +29,6 @@ function user_url(id) {
     return add_alfred_in_url("/users/" + id)
 }
 
-function fetch_get(url) {
-    return fetch(url)
-            .then(response => {
-                return response.json()
-            })
-            .then(data => {
-                console.log(data)
-            })
-            .catch(error => console.error());
-}
 
 async function get_user_info(id) {
     return fetch_get(user_url(id))
@@ -71,7 +77,7 @@ async function get_friend(id) {
 }
 
 async function post_friend(id) {
-	fetch(friend_url(id),
+	return fetch(friend_url(id),
         {
             method: 'POST',
             headers: {
@@ -87,6 +93,7 @@ async function post_friend(id) {
 		})
 		.then (data => {
             console.log(data)
+            return data
 		})
 		.catch (error => {
 			console.error('Fetch problem:', error.message);
@@ -107,10 +114,49 @@ async function delete_friend(id) {
     })
     .then (data => {
         console.log(data)
+        return data
     })
     .catch (error => {
         console.error('Fetch problem:', error.message);
     });
 }
 
+function avatar_url(id) {
+    return add_alfred_in_url("/avatar/" + id)
+}
+
+async function get_media_from_url(url) {
+    return await fetch_get(add_alfred_in_url(url))
+}
+
+function custom_error(response) {
+    return new Error('HTTP error: ' + response.status + "-" + response.Err)
+}
+
+async function get_avatar_from_id(id) {
+    return fetch(avatar_url(id))
+    .then (response => {
+        if (response.status != 200) {
+            throw custom_error(response)
+        }
+        return response.json()
+    })
+    .then (data => {
+        if (data == null) {
+            return fetch(add_alfred_in_url(data['url']))
+                .then (response => {
+                    if (response.status != 200) {
+                        throw custom_error(response)
+                    }
+                    return response
+                })
+        }
+        else {
+            return basic_url;
+        }
+    })
+    .catch ( error => {
+        fetch_error(error)
+    });
+}
 
