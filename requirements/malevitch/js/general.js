@@ -278,6 +278,10 @@ document.querySelectorAll('.font-size-input').forEach(function(item) {
 
 		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
 		g_prevFontSize = newSize;
+
+		if (item.classList.contains('accessibility-font-size')) {
+			patch_user_info(g_userId, null, newSize, null, null, null);
+		}
 	});
 });
 
