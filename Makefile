@@ -78,12 +78,12 @@ kill:
 restart:
 	$(COMPOSE) restart
 
-reset: | db_reset
+reset: | fclean
 	make debug
 
 re: down
 	make debug
-
+# docker compose build --parallel -> a test
 #---- setups ----#
 
 volumes:
@@ -199,7 +199,7 @@ db_reset: db_suppr copyfile
 #---- re ----#
 
 ifeq ($(WHO), twang)
-re: fclean debug
+re: prune debug
 else
 re: down debug
 endif

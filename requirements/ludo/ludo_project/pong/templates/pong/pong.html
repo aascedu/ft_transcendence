@@ -33,47 +33,6 @@
         <script>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /***************************************** Setup *****************************************/
 
 let gameArea = document.getElementById("test-target"),
@@ -181,10 +140,10 @@ const roomName = JSON.parse(document.getElementById('roomName').textContent);
 const id = JSON.parse(document.getElementById('id').textContent);
 console.log(roomName);
 
-async function get_unique_use_token() {
+async function get_unique_use_token(path) {
     try {
         console.log("damned")
-        const response = await fetch("/ludo/pong/connectionView/");
+        const response = await fetch(path + "connectionView/");
 
         const result = await response.json();
         if ('Err' in result) {
@@ -203,7 +162,7 @@ async function get_unique_use_token() {
 }
 
 async function init_socket() {
-    unique_use_token = await get_unique_use_token()
+    unique_use_token = await get_unique_use_token("/ludo/pong/")
     console.log(unique_use_token)
     url = 'wss://localhost:8000/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token
     const socket = new WebSocket(url); // Probably add room name
@@ -378,66 +337,6 @@ async function init_socket() {
 }
 
 // requestAnimationFrame()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

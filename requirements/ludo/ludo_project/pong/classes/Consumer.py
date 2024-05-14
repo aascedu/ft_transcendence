@@ -20,6 +20,9 @@ class Consumer(OurBasicConsumer):
     async def connect(self):
         global matches
 
+        if "err" in self.scope:
+            return self.close()
+
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         print("Room name is " + self.roomName)
 

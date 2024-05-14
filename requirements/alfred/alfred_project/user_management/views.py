@@ -5,7 +5,7 @@ from django.http import JsonResponse
 import os
 from django.conf import settings
 
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
 
 class userInfoView(View):
@@ -15,7 +15,6 @@ class userInfoView(View):
                 return JsonResponse(Client.objects.get(id=id).personal_dict())
             except ObjectDoesNotExist:
                 return JsonNotFound("ressource not found")
-
         client = request.model
         if id == 0 or id == request.user.id:
             print("client :", client.personal_dict())
@@ -113,7 +112,7 @@ class friendView(View):
             receiver = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("Ressource not found", status=404)
-        return FriendshipRequest.processRequest(receiver, sender)
+        return FriendshipRequest.processRequest(sender, receiver)
 
     def delete(self, request, id: int) -> JsonResponse:
         emiter = request.model

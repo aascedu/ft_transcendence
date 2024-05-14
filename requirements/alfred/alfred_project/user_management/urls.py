@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from django.urls import path
 
 from user_management.views import view_db, userInfoView, friendView, avatarView, serve_avatar
