@@ -81,3 +81,5 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
             -keyout /etc/nginx/ssl/elastic.key                         \
             -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
             { echo "SSL elastic certification failed"; exit 1; }
+
+# RUN     chown -R root:root /var/log/nginx/*.log
