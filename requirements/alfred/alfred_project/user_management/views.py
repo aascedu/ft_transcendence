@@ -8,12 +8,12 @@ from django.conf import settings
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
 def int_to_lang(nb):
-    if nb == 1:
-        return "fr"
-    if nb == 2:
-        return "en"
-    if nb == 3:
-        return "zh"
+    if nb == "fr":
+        return 1
+    if nb == "en":
+        return 2
+    if nb == "zh":
+        return 3
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
