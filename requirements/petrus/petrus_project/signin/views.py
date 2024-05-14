@@ -78,6 +78,8 @@ class signupView(View):
             client.email = data['Email']
             client.nick = data['Nick']
             client.password = data['Pass']
+            lang = data['Lang']
+            font = data['Font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
 
@@ -96,7 +98,7 @@ class signupView(View):
         try:
             response = requests.post(
                 f'http://alfred:8001/user/users/{client.id}',
-                json=client.to_alfred())
+                json=client.to_alfred() | {'lang': lang, 'font': font})
             if response.status_code != 200:
                 raise BaseException("Error : error during alfred row creation")
             response = requests.post(
