@@ -56,7 +56,7 @@ services:
       alfred:
         condition: service_started
       aether:
-        condition: service_started
+        condition: service_healthy
       apollo:
         condition: service_healthy
       coubertin:
@@ -133,7 +133,10 @@ services:
       iris:
         condition: service_healthy
     container_name: aether
-    image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    # image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
+    build:
+      context: ./requirements/aether
+      dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: logstash
     user: root
@@ -141,14 +144,13 @@ services:
       - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
       - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
+      # - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
-     xpack.monitoring.enabled: false
-     ELASTIC_USER: elastic
-     ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-     ELASTIC_HOSTS: https://apollo:9200
+      xpack.monitoring.enabled: false
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_HOSTS: https://apollo:9200
     networks:
-      - atlas
       - sentinel
     restart: on-failure
     healthcheck:
@@ -206,7 +208,7 @@ services:
       interval: 10s
       retries: 5
 
- # Elastisearch container
+# # Elastisearch container
   apollo:
     depends_on:
       setup:
@@ -214,12 +216,14 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.2
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
+    networks:
+      - sentinel
     environment:
       node.name: elasticsearch
       discovery.type: single-node
@@ -243,8 +247,6 @@ services:
       memlock:
         soft: -1
         hard: -1
-    networks:
-      - sentinel
     restart: unless-stopped
     healthcheck:
       test:
@@ -338,7 +340,7 @@ services:
       tutum:
         condition: service_healthy
     container_name: iris
-    image: docker.elastic.co/kibana/kibana:8.12.2
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     labels:
       co.elastic.logs/module: kibana
     volumes:
@@ -360,6 +362,9 @@ services:
       SERVER_BASEPATH: /iris
       SERVER_PUBLICBASEURL: https://localhost:8000/iris
       NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+      # xpack.screenshotting.browser.chromium.disablesandbox: true
+      # xpack.observability.aiassistant: disable
+      # LICENSE: ${LICENSE}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -648,7 +653,7 @@ services:
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs
     user: "0"
-    command: ./tools/setup.sh
+    command: bash /usr/share/elasticsearch/tools/setup.sh
     networks:
       - sentinel
     healthcheck:
