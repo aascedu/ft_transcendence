@@ -12,6 +12,13 @@ document.querySelector('.accessibility-icon').addEventListener('click', function
 
 document.querySelector('.accessibility .switch input').addEventListener('change', function() {
 	contrastMode();
+
+	if (this.checked) {
+		patch_user_info(g_userId, null, null, null, null, true);
+	}
+	else {
+		patch_user_info(g_userId, null, null, null, null, false);
+	}
 });
 
 function contrastMode() {
