@@ -1,5 +1,6 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+import requests
 from shared.utils import JsonBadRequest
 from shared.validators import NickNameValidator
 
@@ -16,7 +17,6 @@ class Client(models.Model):
     contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
-    online = models.BooleanField(default=False)
 
     objects = models.Manager()
 
@@ -47,7 +47,6 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Pic": self.avatar.url if self.avatar else None,
-            "Online": self.online,
         }
 
     def personal_dict(self):
@@ -128,6 +127,8 @@ class FriendshipRequest(models.Model):
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
         if pastRequest is None:
+            requests.post(f'http://hermes:8004/notif/friend-request/{sender.id}',
+                          json={"Notified": receiver.id})
             newRequest = FriendshipRequest.objects.create(
                 sender=sender, receiver=receiver)
             newRequest.save()
@@ -135,12 +136,12 @@ class FriendshipRequest(models.Model):
 
         pastRequest.delete()
         sender.friends.add(receiver)
-        # Hermes
+        requests.post(f'http://hermes:8004/notif/friendship/{sender.id}',
+                      json={"Notified": receiver.id})
         return JsonResponse({"Friendship": "established"})
 
     @staticmethod
     def deleteFriendship(emiter, target) -> JsonResponse:
-
         if target in emiter.friends.all():
             emiter.friends.remove(target)
             return JsonResponse({"Friendship": "deleted"})
@@ -148,13 +149,13 @@ class FriendshipRequest(models.Model):
         oldRequest = FriendshipRequest.objects.filter(
             sender=emiter, receiver=target)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=target, receiver=emiter)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 2"})
 
         return JsonResponse({"Err": "nothing to get deleted"}, status=404)

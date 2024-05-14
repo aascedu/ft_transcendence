@@ -236,6 +236,10 @@
 	font-weight: 400;
 }
 
+.tournament-info-join-input-container {
+	margin-top: 16px;
+}
+
 /* bracket */
 
 .tournament-info-bracket {

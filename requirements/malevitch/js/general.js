@@ -19,7 +19,7 @@ function render() {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		var	homepageHeader = document.querySelector('.homepage-header');
 		homepageHeader.classList.remove('visually-hidden');
-	
+
 		var	homepagePicture = document.querySelector('.homepage-game-picture');
 		homepagePicture.classList.remove('visually-hidden');
 	}
@@ -30,7 +30,7 @@ function render() {
 
 	// var	homepageHeader = document.querySelector('.homepage-header');
 	// homepageHeader.classList.remove('visually-hidden');
-	
+
 	// var	homepagePicture = document.querySelector('.homepage-game-picture');
 	// homepagePicture.classList.remove('visually-hidden');
 }
@@ -74,7 +74,7 @@ function loadTranslations() {
 	if (g_translations) {
 	   return Promise.resolve(g_translations);
 	}
-   
+
 	return fetch('./assets/lang/translations.json')
 	   .then(response => response.json())
 	   .then(data => {
@@ -83,7 +83,7 @@ function loadTranslations() {
 	   })
 	   .catch(error => console.error(error));
 }
-   
+
 function switchLanguageAttr(locale, newAttr) {
 	loadTranslations().then(translations => {
 		document.querySelectorAll('[data-language]').forEach(element => {
@@ -330,7 +330,7 @@ function goToHomepageGame(previous) {
 	render(g_state);
 }
 
-// 
+//
 
 function leaveTournamentEditMode() {
 	// Switch button appearance
