@@ -11,7 +11,7 @@ def int_to_lang(nb):
     if nb == 1:
         return "fr"
     if nb == 2:
-        return "eng"
+        return "en"
     if nb == 3:
         return "zh"
 
