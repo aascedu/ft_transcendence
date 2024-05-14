@@ -1,7 +1,10 @@
 // Global variables.
 let g_userId;
 let	g_userNick;
+let	g_userPic = '/assets/general/pong.png';
+let	g_userLang;
 let	g_prevFontSize = 0;
+let	g_userFriends;
 let	g_jwt;
 let	g_refreshToken;
 let	g_translations = null;
@@ -9,7 +12,7 @@ let	g_translations = null;
 // History routing.
 
 let g_state = {
-	pageToDisplay: ".homepage-game"
+	pageToDisplay: ".homepage-id"
 };
 
 function render() {
@@ -311,9 +314,69 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 	}
 }
 
-//
+// update homepage content
+
+async function setHomepageContent() {
+	const userInfo = await get_user_info(g_userId);
+	g_userFriends = userInfo.Friends;
+
+	// change lang if needed
+	var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
+	if (userInfo.Lang != locale) {
+		var	localeImg = document.querySelector('.homepage-header-language-selector button img');
+		var	localeImgSrc = localeImg.getAttribute('src');
+
+		document.querySelectorAll('.homepage-header-language-selector img').forEach(function(item) {
+			if (item.getAttribute('alt') == userInfo.Lang) {
+				var	userLangBtn = item;
+				var	userLangImg = item.getAttribute('src');
+
+				userLangBtn.setAttribute('alt', locale);
+				localeImg.setAttribute('alt', userInfo.Lang);
+				localeImg.setAttribute('src', userLangImg);
+				userLangBtn.setAttribute('src', localeImgSrc);
+			}
+		});
+		switchLanguageAttr(userInfo.Lang, 'placeholder');
+		switchLanguageContent(userInfo.Lang);
+	}
+
+	// change font if needed
+	if (userInfo.Font != g_prevFontSize) {
+		updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
+		g_prevFontSize = userInfo.Font;
+	}
+	document.querySelector('.accessibility-font-size').value = userInfo.Font;
+
+	// change contrast mode if needed
+	if (userInfo["Contrast-mode"] == true) {
+		contrastMode();
+		document.querySelector('.accessibility .switch input').checked = true;
+	}
+
+	// change pic if needed
+	if (userInfo.Pic != null) {
+		document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
+		g_userPic = userInfo.Pic;
+	}
+
+	// show friends
+	var	friendsOnline = 0;
+	// for (i = 0; i < g_userFriends.length; i++) {
+
+	// }
+	if (friendsOnline == 0) {
+		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
+	}
+
+	// show history & stats
+
+}
 
 function goToHomepageGame(previous) {
+	setHomepageContent();
+
+	// hide previous and display homepage content
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');
 
