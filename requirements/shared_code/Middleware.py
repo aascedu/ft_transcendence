@@ -1,10 +1,37 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
+from shared.utils import JsonBadRequest, JsonUnauthorized
+from shared.commonView import identificators
 from .jwt_management import JWT
 from .common_classes import User
 import json
 import information
+
+
+from urllib.parse import parse_qs
+
+
+class socketJWTIdentificationMiddleware:
+    def __init__(self, application) -> None:
+        self.application = application
+
+    async def __call__(self, scope, receive, send):
+        global identificators
+
+        query_params = parse_qs(scope["query_string"].decode())
+
+        if "token" not in query_params:
+            scope["error"] = "No key in params"
+            return await self.application(scope, receive, send)
+
+        if query_params["token"][0] not in identificators:
+            scope["error"] = "Invalid key"
+            return await self.application(scope, receive, send)
+
+        scope["user"]=identificators[query_params["token"][0]]
+        del identificators[query_params["token"][0]]
+        return await self.application(scope, receive, send)
 
 
 class JWTIdentificationMiddleware:
@@ -20,9 +47,16 @@ class JWTIdentificationMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        if 'X-External-Request' not in request.headers:
+            print("Info : Internal request")
+            request.user = User.header_to_user(request.headers)
+            print("Info: Service :", str(request.user))
+            return None
+
+
         if 'auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
-            print("JWT: request with no jwt")
+            print("Info : request with no jwt")
             return None
 
         autorisationJWT = request.COOKIES['auth']
@@ -31,7 +65,7 @@ class JWTIdentificationMiddleware:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
-            print("JWT: Warning: ", e.__str__())
+            print("Warning: ", e.__str__())
             return None
 
         request.user = User(nick=decodedJWT.get('nick'),
@@ -41,32 +75,27 @@ class JWTIdentificationMiddleware:
         if "MAIN_MODEL" in information.__dict__:
             print("Service has a model")
             try:
-                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+                request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
+                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')
                 return response
 
-        print("JWT: User:", str(User))
+        print("Info: request_user=", str(request.user))
         return None
 
 
 class ensureIdentificationMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
-        key = public_key
-        # key = os.environ.get('PUBLIC_KEY_JWT')
-        if not key:
-            raise Error("publicKey is not defined")
-        self.publicKey = key
 
     def __call__(self, request: HttpRequest):
         response = self.get_response(request)
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if not request.user.is_autenticated:
-            return JsonResponse({"Err": request.user.error})
+        if request.user.error is not None:
+            return JsonResponse({"Err": f"request can't be authentified {request.user.error}."}, status=401)
         return None
 
 

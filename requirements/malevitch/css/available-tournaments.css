@@ -21,6 +21,7 @@
 
 .available-tournaments-icon {
 	left: 16px;
+	top: 0;
 }
 
 .available-tournaments-icon img {
@@ -72,6 +73,11 @@
 .available-tournaments-card-container
 .content-card:hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.available-tournaments-card-container
+.content-card:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 

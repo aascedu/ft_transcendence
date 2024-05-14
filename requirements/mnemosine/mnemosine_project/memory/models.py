@@ -71,6 +71,7 @@ class Game(baseModel):
         created_game.loser = Player.objects.get(id=json['Loser'])
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+        created_game.full_clean()
         created_game.save()
         return created_game
 
@@ -108,6 +109,7 @@ class TournamentGame(baseModel):
         if (game.round == 1):
             tournament.players.add(game.game.winner)
             tournament.players.add(game.game.loser)
+        game.full_clean()
         game.save()
         return game
 

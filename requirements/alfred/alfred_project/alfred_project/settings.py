@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
+from shared.settings import add_prometheused_apps
 from pathlib import Path
+from shared.jwt_management import get_ressource_from_vault
+try:
+    from tokens.token import vault_token
+except ModuleNotFoundError:
+    print("Warn vault_token not found")
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,11 +39,14 @@ ALLOWED_HOSTS = ['localhost', 'batch42.me', 'alfred']
 
 # Application definition
 
-INSTALLED_APPS = [
+PROJECT_APPS = [
     'user_management'
 ]
+INSTALLED_APPS = add_prometheused_apps(PROJECT_APPS)
 
-PROJECT_OWN_MIDDLEWARE = []
+PROJECT_OWN_MIDDLEWARE = [
+    'shared.Middleware.ensureIdentificationMiddleware',
+]
 
 MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)
 
@@ -68,9 +77,9 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('ALFRED_DB', 'default'),
-        'USER': os.environ.get('ALFRED_USER', 'default'),
-        'PASSWORD': os.environ.get('ALFRED_PASSWORD', 'default'),
+        'NAME': get_ressource_from_vault(vault_token, 'alfred/alfred_db', 'db'),
+        'USER': get_ressource_from_vault(vault_token, 'alfred/alfred_user', 'user'),
+        'PASSWORD': get_ressource_from_vault(vault_token, 'alfred/alfred_password', 'password'),
         'HOST': 'alfred_db',
         'PORT': '5432',
     }
