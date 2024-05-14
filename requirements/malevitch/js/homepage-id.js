@@ -57,6 +57,7 @@ function submitNickname(nickname) {
 			return response.json();
 		})
 		.then (data => {
+			g_userId = data.Id;
 			if (data.Ava) {
 				g_state.pageToDisplay = '.sign-up';
 				getSignUpNickname(nickname);
@@ -64,7 +65,6 @@ function submitNickname(nickname) {
 			}
 			else {
 				g_state.pageToDisplay = '.sign-in';
-				g_userId = data.Id;
 				document.querySelector('.sign-in-input').focus();
 				addInfoToElement(nickname, document.querySelector('.sign-in-message'));
 			}
