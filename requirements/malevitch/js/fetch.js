@@ -113,4 +113,38 @@ async function delete_friend(id) {
     });
 }
 
+function avatar_url(id) {
+    return add_alfred_in_url("/avatar/" + id)
+}
+
+async function get_media_from_url(url) {
+    return await fetch_get(add_alfred_in_url(url))
+}
+
+async function get_avatar_from_id(id) {
+    return fetch(avatar_url(id))
+    .then (response => {
+        if (response.status != 200) {
+            throw new Error('HTTP error: ' + response.status)
+        }
+        return response.json()
+    })
+    .then (data => {
+        if (data == null) {
+            return fetch(add_alfred_in_url(data['url']))
+                .then (response => {
+                    if (response.status != 200) {
+                        throw new Error('HTTP error: ' + response.status + "-" + response.Err)
+                    }
+                    return response
+                })
+        }
+        else {
+            return basic_url;
+        }
+    })
+    .catch ( error => {
+        console.error('Fetch problem:', error.message)
+    });
+}
 
