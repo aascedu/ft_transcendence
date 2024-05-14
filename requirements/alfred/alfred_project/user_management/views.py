@@ -145,7 +145,6 @@ class avatarView(View):
 def serve_avatar(request, filename):
     if request.method != 'GET':
         return JsonForbiden("Bad Method")
-
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
     if request.user.is_autenticated is False:
