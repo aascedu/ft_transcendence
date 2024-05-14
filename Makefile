@@ -18,19 +18,19 @@ DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
 
 WHO                =    $(shell whoami)
 
-ifeq ($(WHO), twang)
-DOCKER_FILE        =    docker-compose-twang.yml
-else ifeq ($(WHO), root)
-DOCKER_FILE        =    docker-compose-twang.yml
-else ifeq ($(WHO), bpoumeau)
-DOCKER_FILE        =    docker-compose-nologs.yml
-else ifeq ($(WHO), ccrottie)
-DOCKER_FILE        =    docker-compose-nologs.yml
-else ifeq ($(WHO), hgeffroy)
-DOCKER_FILE        =    docker-compose-nologs.yml
-else
+# ifeq ($(WHO), twang)
+# DOCKER_FILE        =    docker-compose-twang.yml
+# else ifeq ($(WHO), root)
+# DOCKER_FILE        =    docker-compose-twang.yml
+# else ifeq ($(WHO), bpoumeau)
+# DOCKER_FILE        =    docker-compose-nologs.yml
+# else ifeq ($(WHO), ccrottie)
+# DOCKER_FILE        =    docker-compose-nologs.yml
+# else ifeq ($(WHO), hgeffroy)
+# DOCKER_FILE        =    docker-compose-nologs.yml
+# else
 DOCKER_FILE        =    docker-compose.yml
-endif
+# endif
 COMPOSE		=	docker compose
 COMPOSE_F	=	docker compose -f
 STOP		=	docker compose stop

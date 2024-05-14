@@ -97,9 +97,10 @@ class signupView(View):
             requests.post(
                 f'http://alfred:8001/user/users/{client.id}',
                 json=client.to_alfred())
-            requests.post(
-                f"http://mnemosine:8008/memory/players/{client.id}",
-                json=client.to_mnemosine())
+            #requests.post(
+             #   f"http://mnemosine:8008/memory/players/{client.id}",
+              #  json=client.to_mnemosine())
+              
         except requests.RequestException:
             client.delete()
             print("Error : during creation of ressources :", client.__str__())
