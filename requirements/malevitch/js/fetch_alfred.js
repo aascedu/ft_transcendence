@@ -13,13 +13,14 @@ function user_url(id) {
     return add_alfred_in_url("/users/" + id)
 }
 
-function fetch_get(url) {
+async function fetch_get(url) {
     return fetch(url)
             .then(response => {
                 return response.json()
             })
             .then(data => {
                 console.log(data)
+                return data
             })
             .catch(error => console.error());
 }
