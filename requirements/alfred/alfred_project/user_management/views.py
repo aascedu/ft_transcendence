@@ -7,6 +7,13 @@ from django.conf import settings
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
+def int_to_lang(nb):
+    if nb == 1:
+        return "fr"
+    if nb == 2:
+        return "eng"
+    if nb == 3:
+        return "zh"
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
@@ -39,7 +46,9 @@ class userInfoView(View):
                 return JsonNotFound("Ressource doesn't exist")
 
         data = request.data
-        client.lang = data.get("Lang", client.lang)
+        lang = data.get("Lang")
+        if lang is not None:
+            client.lang = int_to_lang(lang)
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
