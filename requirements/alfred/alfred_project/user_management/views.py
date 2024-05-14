@@ -66,6 +66,8 @@ class userInfoView(View):
             client.email = data['mail']
             client.nick = data['nick']
             client.id = data['id']
+            client.lang = int_to_lang(data['lang'])
+            client.font = data['font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
         return save_response(client)
