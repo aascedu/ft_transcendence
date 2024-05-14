@@ -1,0 +1,153 @@
+.create-tournament {
+	top: 20vh;
+	padding-left: 2.5vw;
+	padding-right: 1.25vw;
+	padding-bottom: 2.5vw;
+	height: 80vh;
+}
+
+.create-tournament-container {
+	height: 100%;
+	padding-top: 16px;
+}
+
+.create-tournament-container
+.category-title {
+	padding-top: 4px;
+	padding-left: 16px;
+	padding-right: 16px;
+	padding-bottom: 16px;
+}
+
+.create-tournament-icon {
+	left: 16px;
+	top: 0;
+}
+
+.create-tournament-icon img {
+	height: 20px;
+}
+
+.create-tournament-container
+.category-title > p {
+	font-weight: 700;
+}
+
+.create-tournament-title p {
+	font-weight: 400;
+}
+
+.create-tournament-card-container {
+	padding: 16px;
+	padding-top: 0;
+	margin-top: 48px;
+	flex-grow: 1;
+	max-width: 100%;
+}
+
+.create-tournament-title {
+	margin-top: 32px;
+	font-size: 14pt;
+	font-weight: 500;
+	color: #7300E6;
+	margin-bottom: 12px;
+}
+
+.create-tournament-name-input-box {
+	padding: 12px;
+	margin: 0;
+}
+
+.create-tournament-name-input-warning {
+	margin-top: 4px;
+	margin-bottom: 8px;
+	font-size: 12pt;
+}
+
+.create-tournament-players-button {
+	width: calc(50% - 8px);
+	padding: 8px;
+	background-color: white;
+	border-radius: 12px;
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
+	color: #7300E6;
+	font-size: 14pt;
+	font-weight: 700;
+}
+
+.create-tournament-players-button-chosen {
+	background-color: #7300E6;
+	border-width: 0;
+	color: white;
+}
+
+.create-tournament-players-button:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.create-tournament-invite-container {
+	min-height: 96px;
+	border-radius: 12px;
+	background-color: white;
+	padding: 16px;
+	padding-top: 0;
+}
+
+.create-tournament-invite-container-contrast {
+	border-color: #7300E6;
+	border-style: solid;
+	border-width: 2px;
+}
+
+.create-tournament-invite-container
+.content-card:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.create-tournament-invited-friend {
+	background-color: #7300E6;
+}
+
+.create-tournament-invited-friend
+.user-card-name {
+	color: white;
+}
+
+.create-tournament-no-friends img {
+	margin-top: 20px;
+	width: 40%;
+	opacity: 50%;
+}
+
+.create-tournament-no-friends p {
+	font-size: 14pt;
+	font-weight: 400;
+	margin-top: 16px;
+}
+
+.create-tournament-submit {
+	margin-top: 32px;
+	padding: 16px 8px;
+	border-radius: 12px;
+	background-color: #7300E6;
+}
+
+.create-tournament-submit img {
+	height: 16px;
+	left: 16px;
+}
+
+.create-tournament-submit p {
+	color: white;
+	font-size: 16pt;
+	font-weight: 600;
+}
+
+.create-tournament-submit:hover {
+	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}

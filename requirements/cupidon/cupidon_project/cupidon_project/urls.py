@@ -18,4 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('matchmaking/', include('matchmaking.urls')),
+    path('metrics/', include('django_prometheus.urls')),
 ]

@@ -1,0 +1,64 @@
+.notif {
+	right: 2.5vw;
+	top: 15vh;
+	width: 20vw;
+	padding: 12px;
+	border-radius: 16px;
+	background-color: rgba(42, 133, 0, 0.5);
+	backdrop-filter: blur(3px);
+	filter: drop-shadow(2px 2px 8px rgba(42, 133, 0, 0.2));
+}
+
+.notif-sender, .notif-info, .notif-message {
+	color: white;
+	font-size: 13pt;
+	font-weight: 400;
+}
+
+.notif-sender, .notif-info {
+	font-weight: 600;
+}
+
+.notif-buttons {
+	margin-top: 16px;
+}
+
+.notif-buttons > * {
+	width: 46px;
+	height: 46px;
+	border-radius: 23px;
+	background-color: rgba(42, 133, 0, 0.5);
+	filter: drop-shadow(2px 2px 8px rgba(42, 133, 0, 0.2));
+	border: 0;
+}
+
+.notif-buttons > * img {
+	height: 18px;
+}
+
+.notif-buttons > *:hover {
+	filter: drop-shadow(2px 2px 8px rgb(42, 133, 0));
+}
+
+.notif-buttons > *:focus {
+	filter: drop-shadow(2px 2px 8px rgb(42, 133, 0));
+}
+
+/* Contrast mode */
+
+.notif-contrast {
+	background-color: white;
+	border-color: #1F6100;
+	border-style: solid;
+	border-width: 3px;
+}
+
+.notif-contrast .notif-sender,
+.notif-contrast .notif-message,
+.notif-contrast .notif-info {
+	color: #1F6100;
+}
+
+.notif-contrast .notif-buttons > * {
+	background-color: #1F6100;
+}

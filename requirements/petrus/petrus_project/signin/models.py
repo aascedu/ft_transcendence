@@ -1,12 +1,11 @@
 from django.db import models
-from django.core import validators
 from django.core.exceptions import ValidationError
 from shared.validators import NickNameValidator
 import re
 
 
 class Client(models.Model):
-    unique_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     email = models.EmailField(
             unique=True,
     )
@@ -31,17 +30,17 @@ class Client(models.Model):
         return {
             "mail": self.email,
             "nick": self.nick,
-            "id": self.unique_id,
+            "id": self.id,
         }
 
     def to_mnemosine(self):
         return {
-                "Id": self.unique_id
+                "Id": self.id
         }
 
     def toDict(self):
         return {
-            "id": self.unique_id,
+            "id": self.id,
             "mail": self.email,
             "nick": self.nick,
         }

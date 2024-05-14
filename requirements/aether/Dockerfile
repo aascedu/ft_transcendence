@@ -2,15 +2,23 @@
 
 FROM    docker.elastic.co/logstash/logstash:8.12.2
 
-#---- variables -------------------------------------------------------#
+#---- env args --------------------------------------------------------#
 
-ARG     ELASTIC_USER
-ARG     ELASTIC_PASSWORD
+ENV     PLUGIN_BIN "/usr/share/logstash/bin/logstash-plugin"
 
-RUN     export ELASTIC_USER=ELASTIC_USER                            && \
-        export ELASTIC_PASSWORD=ELASTIC_PASSWORD
+#---- plugins for logstash --------------------------------------------#
 
-#---- config ----------------------------------------------------------#
+RUN     "$PLUGIN_BIN" install logstash-input-syslog
+# RUN "$PLUGIN_BIN" install logstash-filter-date
+RUN     "$PLUGIN_BIN" install logstash-filter-grok
+# RUN "$PLUGIN_BIN" install logstash-filter-useragent
+RUN     "$PLUGIN_BIN" install logstash-output-elasticsearch
 
-COPY    conf/logstash.conf /usr/share/logstash/config/logstash.conf
-COPY    conf/logstash.yml /usr/share/logstash/config/logstash.yml
+#---- configuration files ---------------------------------------------#
+
+COPY    conf/logstash.conf /usr/share/logstash/pipeline/logstash.conf
+COPY    patterns /usr/share/logstash/patterns
+
+#---- launch ---------------------------------------------------------#
+
+CMD ["-f", "/usr/share/logstash/pipeline/logstash.conf"]

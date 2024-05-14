@@ -19,10 +19,20 @@ function render() {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		var	homepageHeader = document.querySelector('.homepage-header');
 		homepageHeader.classList.remove('visually-hidden');
-	
+
 		var	homepagePicture = document.querySelector('.homepage-game-picture');
 		homepagePicture.classList.remove('visually-hidden');
 	}
+
+	setAriaHidden();
+
+	// A ENLEVER
+
+	// var	homepageHeader = document.querySelector('.homepage-header');
+	// homepageHeader.classList.remove('visually-hidden');
+
+	// var	homepagePicture = document.querySelector('.homepage-game-picture');
+	// homepagePicture.classList.remove('visually-hidden');
 }
 
 window.history.replaceState(g_state, null, "");
@@ -47,13 +57,24 @@ function hideEveryPage() {
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 }
 
+function setAriaHidden() {
+	document.querySelectorAll('.visually-hidden').forEach(function(item) {
+		item.setAttribute('aria-hidden', 'true');
+	});
+	document.querySelectorAll('[aria-hidden="true"]').forEach(function(item) {
+		if (!item.classList.contains('visually-hidden')) {
+			item.removeAttribute('aria-hidden');
+		}
+	});
+}
+
 // Translation functions.
 
 function loadTranslations() {
 	if (g_translations) {
 	   return Promise.resolve(g_translations);
 	}
-   
+
 	return fetch('./assets/lang/translations.json')
 	   .then(response => response.json())
 	   .then(data => {
@@ -62,7 +83,7 @@ function loadTranslations() {
 	   })
 	   .catch(error => console.error(error));
 }
-   
+
 function switchLanguageAttr(locale, newAttr) {
 	loadTranslations().then(translations => {
 		document.querySelectorAll('[data-language]').forEach(element => {
@@ -149,6 +170,10 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		activeImg.setAttribute('alt', selectedLang);
 		selectedImg.setAttribute('src', activeImgSrc);
 		selectedImg.setAttribute('alt', activeLang);
+
+		// switch back focus to main button
+		var	itemButton = item.closest('.language-selector').querySelector('.dropdown');
+		itemButton.focus();
 	});
 });
 
@@ -298,12 +323,14 @@ function goToHomepageGame(previous) {
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.remove('visually-hidden');
 
+	document.querySelector('.homepage-header-logo').focus();
+
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
 
-// 
+//
 
 function leaveTournamentEditMode() {
 	// Switch button appearance
@@ -320,6 +347,8 @@ function leaveTournamentEditMode() {
 
 	// Show tournament name
 	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+
+	setAriaHidden();
 }
 
 // Hide alerts when clicking outside
@@ -330,6 +359,7 @@ document.querySelectorAll('.alert').forEach(function(item) {
 			return ;
 		}
 		item.classList.add('visually-hidden');
+		setAriaHidden();
 	});
 });
 
@@ -347,4 +377,7 @@ function hideEveryPage() {
 	}
 	document.querySelector('.user-profile').classList.add('visually-hidden');
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
+	// Automatically cancel tournament creation if there was one
+	resetTournamentCreation();
+	document.querySelector('.accessibility').classList.add('visually-hidden');
 }

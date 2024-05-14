@@ -1,8 +1,10 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from matchmaking.classes.Player import Player, waitingList
+from shared.BasicConsumer import OurBasicConsumer
 
-class Consumer(AsyncWebsocketConsumer):
+
+class Consumer(OurBasicConsumer):
     async def connect(self):
         global waitingList
 
@@ -20,7 +22,7 @@ class Consumer(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         type = text_data_json['type']
-        
+
         # Send message to room group
         await self.channel_layer.group_send(
             "matchmakingRoom", {
@@ -32,7 +34,7 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def PlayerData(self, event):
         global waitingList
-        
+
         id = event['id']
         elo = event['elo']
         self.me = Player(id, elo)
@@ -41,7 +43,7 @@ class Consumer(AsyncWebsocketConsumer):
     async def SendToGame(self, event): # Will need to delete players from the waitingList here
         if (event['player1'] == self.me.id or event['player2'] == self.me.id):
             await self.send(json.dumps({
-                    "action": "redirect", 
+                    "action": "redirect",
                     "url": "https://localhost:8000/ludo/pong/"
                             + str(waitingList[event['player1']])
                             + "-"
@@ -51,7 +53,7 @@ class Consumer(AsyncWebsocketConsumer):
 
     async def Ping(self, event):
         global waitingList
-        
+
         self.me.margin += 10
 
         for id in waitingList:
