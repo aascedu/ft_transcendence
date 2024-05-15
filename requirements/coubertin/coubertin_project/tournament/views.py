@@ -3,12 +3,11 @@ from django.http import JsonResponse
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
 
-# Faire des fonctions quand on a juste un post.
 # Invite someone to tournament
 # Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
 
-class tournamentManagement(View): #Faire un patch pour modif le nb de joueurs ou autre ?
+class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs ou autre ?
     def post(self, request): # Maybe we can set admin here instead.
         global tournaments
 
@@ -26,7 +25,6 @@ class tournamentManagement(View): #Faire un patch pour modif le nb de joueurs ou
         return JsonResponse({}) # Redirect on the tournament url, or join URL ?
     
     def get(self, request):
-
         data = request.data
         if 'id' not in data:
             return JsonResponse({'Err': "tournament id not provided"})
