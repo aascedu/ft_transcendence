@@ -416,6 +416,8 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+      aether:
+        condition: service_healthy
     restart: on-failure
 
 # # Front container
