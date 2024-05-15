@@ -56,7 +56,7 @@ class Consumer(OurBasicConsumer):
             #         }))
             
             await self.send(json.dumps({
-                    'action': "startGame",
+                    'type': "start.game",
                     'player1': str(waitingList[event['player1']]),
                     'player2': str(waitingList[event['player2']]),
                     }))
