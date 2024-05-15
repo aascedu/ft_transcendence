@@ -106,3 +106,12 @@ class Consumer(OurBasicConsumer):
                 "message": event['message'],
             }))
 
+    async def notification_game_accepted(self, event): # Il faut lancer les websockets de game apres reception de ce msg (type = game start)
+        user = self.scope['user']
+
+        if event['player1'] == user.id or event['player2'] == user.id:
+            await self.send (text_data=json.dumps({
+                "type": "start.game",
+                "player1": event['player1'],
+                "Player2": event['player2'],
+            }))
