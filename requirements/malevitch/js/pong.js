@@ -117,8 +117,7 @@ async function get_unique_use_token() {
 }
 
 async function init_socket() {
-    const roomName = "aaa";
-    const id = 0;
+    const roomName = "aaa"; // "player1ID-player2ID"
     console.log(roomName);
 
     unique_use_token = await get_unique_use_token();
@@ -189,7 +188,7 @@ async function init_socket() {
         // Construct a msg object containing the data the server needs to process the message from the chat client.
         const gameData = {
           type: type,
-          id: id,
+          id: g_userId,
         };
 
         // Send the msg object as a JSON-formatted string.
