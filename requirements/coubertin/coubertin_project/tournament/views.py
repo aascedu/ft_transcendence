@@ -26,11 +26,19 @@ class tournamentManagement(View): #Faire un patch pour modif le nb de joueurs ou
         return JsonResponse({}) # Redirect on the tournament url, or join URL ?
     
     def get(self, request):
-        response = {}
-        for id in tournaments:
-            if tournaments[id].state == 0:
-                response[id] = tournaments[id].toDict()
-        return JsonResponse(response)
+
+        data = request.data
+        if 'id' not in data:
+            return JsonResponse({'Err': "tournament id not provided"})
+        
+        if data['id'] == -1: # Pour avoir tous les tournois auxquels on peut s'inscrire
+            response = {}
+            for id in tournaments:
+                if tournaments[id].state == 0:
+                    response[id] = tournaments[id].toDict()
+            return JsonResponse(response)
+        else:
+            return JsonResponse(tournaments[id].toDict())
 
 class tournamentEntry(View):
     def patch(self, request): # Leave
