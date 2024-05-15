@@ -10,6 +10,10 @@ function loadMyTournaments() {
 		document.querySelector('.my-tournaments-empty').classList.remove('visually-hidden');
 		return ;
 	// }
+
+	// document.querySelector('.my-tournaments-ongoing').classList.remove('visually-hidden');
+	// document.querySelector('.my-tournaments-closed').classList.remove('visually-hidden');
+	// document.querySelector('.my-tournaments-empty').classList.add('visually-hidden');
 	
 	// var	ongoingTournaments = get ongoing tournaments
 	// var	closedTournaments = past tournaments from user
@@ -18,6 +22,8 @@ function loadMyTournaments() {
 	// var	tournamentName;
 
 	// // My ongoing tournaments
+	// document.querySelector('.my-tournaments-no-open').classList.add('visually-hidden');
+
 	// for (i = 0; i < ongoingTournaments.length; i++) {
 	// 	tournamentName = ongoingTournaments[i].Name;
 
@@ -34,6 +40,8 @@ function loadMyTournaments() {
 	// }
 
 	// // Closed tournaments
+	// document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
+
 	// for (i = 0; i < closedTournaments.length; i++) {
 	// 	tournamentName = closedTournaments[i].Name;
 
