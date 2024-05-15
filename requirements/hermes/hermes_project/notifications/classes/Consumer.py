@@ -54,19 +54,20 @@ class Consumer(OurBasicConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        text_data_json = json.loads(text_data)
-        type = text_data_json['type']
-        source = text_data_json['source']
-        target = text_data_json['target']
+        pass
+        # text_data_json = json.loads(text_data)
+        # type = text_data_json['type']
+        # source = text_data_json['source']
+        # target = text_data_json['target']
 
-        # Send message to room group
-        await self.channel_layer.group_send(
-            "notification_group", {
-                "type": type,
-                "target": target,
-                "source": source,
-            }
-        )
+        # # Send message to room group
+        # await self.channel_layer.group_send(
+        #     "notification_group", {
+        #         "type": type,
+        #         "target": target,
+        #         "source": source,
+        #     }
+        # )
 
     async def new_client_connected(self, event):
         await self.send(text_data=json.dumps({
@@ -87,26 +88,30 @@ class Consumer(OurBasicConsumer):
         }))
 
     # Receive message from room group
-    async def notification_friendship_request(self, event):
-        if event['target'] == self.name:
+    # async def notification_friendship_request(self, event):
+    #     if event['target'] == self.name:
+    #         await self.send (text_data=json.dumps({
+    #             "type": "notification.message",
+    #             "message": event['message'],
+    #             # "type": "friendRequest",
+    #             # "source": event['source'],
+    #         }))
+
+    async def notification_game_request(self, event):
+        user = self.scope['user']
+
+        if event['notified'] == user.id:
             await self.send (text_data=json.dumps({
                 "type": "notification.message",
                 "message": event['message'],
-                # "type": "friendRequest",
-                # "source": event['source'],
             }))
 
-    async def GameInvite(self, event):
-        if event['target'] == self.name:
-            await self.send (text_data=json.dumps({
-            "type": "gameInvite",
-            "source": event['source'],
-        }))
+    async def notification_game_accepted(self, event): # Il faut lancer les websockets de game apres reception de ce msg (type = game start)
+        user = self.scope['user']
 
-    async def TournamentInvite(self, event):
-        if event['target'] == self.name:
+        if event['player1'] == user.id or event['player2'] == user.id:
             await self.send (text_data=json.dumps({
-            "type": "tournamentInvite",
-            "source": event['source'],
-        }))
-
+                "type": "start.game",
+                "player1": event['player1'],
+                "Player2": event['player2'],
+            }))
