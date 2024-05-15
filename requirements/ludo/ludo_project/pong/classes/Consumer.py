@@ -89,7 +89,7 @@ class Consumer(OurBasicConsumer):
 
         except Exception as e:
             print(e)
-            await self.send (text_data=json.dumps({'err': e})
+            await self.send (text_data=json.dumps({'err': e}))
             await self.close()
 
     async def gameStart(self, event):
