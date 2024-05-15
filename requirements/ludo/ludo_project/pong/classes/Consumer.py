@@ -11,13 +11,9 @@ import requests
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
 
-# Fin de points, tout ne se fait pas toujours ds le meme ordre
-# Send only one gameEnd
-# Detsroy game at the end !
-# Check that we do not send to ws after it is closed
+# Sleep at the end of a point ?
 # Protect ws in case of wrong data
-# Fetch
-# Reponse visible par la cli
+# Fetch id of someone and open the good ws
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -108,17 +104,20 @@ class Consumer(OurBasicConsumer):
         }))
 
     async def gameEnd(self, event):
-        # Si game de tournoi, envoyer au tournoi, sinon envoyer a la db.
+        global matches
         print("This is gameEnd function with id: " + str(self.id))
-        if self.roomName.count('-') == 2 and self.id == 0: # N'envoyer qu'avec l'hote
-            requests.post(
-                'http://coubertin:8002/tournament/gameResult/',
-                json={'tournamentId': 'test',
-                      'game': self.myMatch.toDict()})
-        elif self.id == 0:
-            requests.post(
-                'http://mnemosine:8008/memory/pong/match/0/',
-                json=self.myMatch.to_mnemosine())
+
+        if self.id == 0:
+            if self.roomName.count('-') == 2:
+                requests.post(
+                    'http://coubertin:8002/tournament/gameResult/',
+                    json={'tournamentId': 'test',
+                        'game': self.myMatch.toDict()})
+            else:
+                requests.post(
+                    'http://mnemosine:8008/memory/pong/match/0/',
+                    json=self.myMatch.to_mnemosine())
+            del matches[self.roomName]
 
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({
