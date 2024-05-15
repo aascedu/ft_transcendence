@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from shared.settings import add_prometheused_apps
 from pathlib import Path
+from shared.jwt_management import get_ressource_from_vault
+try:
+    from tokens.token import vault_token
+except ModuleNotFoundError:
+    print("Warn vault_token not found")
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -72,9 +77,9 @@ WSGI_APPLICATION = 'alfred_project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('ALFRED_DB', 'default'),
-        'USER': os.environ.get('ALFRED_USER', 'default'),
-        'PASSWORD': os.environ.get('ALFRED_PASSWORD', 'default'),
+        'NAME': get_ressource_from_vault(vault_token, 'alfred/alfred_db', 'db'),
+        'USER': get_ressource_from_vault(vault_token, 'alfred/alfred_user', 'user'),
+        'PASSWORD': get_ressource_from_vault(vault_token, 'alfred/alfred_password', 'password'),
         'HOST': 'alfred_db',
         'PORT': '5432',
     }
@@ -121,3 +126,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'logstash': {
+            'level': 'INFO',
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'aether',
+            'port': 5140,
+            'version': 1,
+            'message_type': 'logstash',
+            'fqdn': True, #fully qualified domain name
+            'tags': ['alfred_project'],
+        }
+    },
+    'loggers': {
+        'alfred_project': {
+            'handlers': ['logstash'],
+            'level': 'INFO',
+        }
+    }
+}

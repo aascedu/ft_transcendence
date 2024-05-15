@@ -22,6 +22,7 @@ document.querySelector('.homepage-id-input').addEventListener('input', function(
 		warning.classList.add('visually-hidden');
 		container.classList.remove('input-container-focused');
 	}
+	setAriaHidden();
 });
 
 // Submit nickname using Enter key.
@@ -56,6 +57,7 @@ function submitNickname(nickname) {
 			return response.json();
 		})
 		.then (data => {
+			g_userId = data.Id;
 			if (data.Ava) {
 				g_state.pageToDisplay = '.sign-up';
 				getSignUpNickname(nickname);
@@ -63,7 +65,6 @@ function submitNickname(nickname) {
 			}
 			else {
 				g_state.pageToDisplay = '.sign-in';
-				g_userId = data.Id;
 				document.querySelector('.sign-in-input').focus();
 				addInfoToElement(nickname, document.querySelector('.sign-in-message'));
 			}
@@ -78,5 +79,36 @@ function submitNickname(nickname) {
 		.catch (error => {
 			console.error('Fetch problem:', error.message);
 		});
-
 }
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.homepage-id').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+
+		if (e.key === 'Tab' && document.querySelector('.homepage-id-font-size') === document.activeElement) {
+	
+			if (isFw) {
+				document.querySelector('.homepage-id-language-selector button').focus();
+			}
+			else {
+				var	submit = document.querySelector('.homepage-id-submit');
+				var	submitStyle = window.getComputedStyle(submit);
+				var	submitVisibility = submitStyle.getPropertyValue('visibility');
+				if (submitVisibility == 'hidden') {
+					document.querySelector('.homepage-id-input').focus();
+				}
+				else {
+					document.querySelector('.homepage-id-submit').focus();
+				}
+			}
+	
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-id-language-selector button') === document.activeElement) {
+			document.querySelector('.homepage-id-font-size').focus();
+			e.preventDefault();
+		}
+	}
+});

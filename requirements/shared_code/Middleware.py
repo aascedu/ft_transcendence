@@ -1,10 +1,37 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
+from shared.utils import JsonBadRequest, JsonUnauthorized
+from shared.commonView import identificators
 from .jwt_management import JWT
 from .common_classes import User
 import json
 import information
+
+
+from urllib.parse import parse_qs
+
+
+class socketJWTIdentificationMiddleware:
+    def __init__(self, application) -> None:
+        self.application = application
+
+    async def __call__(self, scope, receive, send):
+        global identificators
+
+        query_params = parse_qs(scope["query_string"].decode())
+
+        if "token" not in query_params:
+            scope["error"] = "No key in params"
+            return await self.application(scope, receive, send)
+
+        if query_params["token"][0] not in identificators:
+            scope["error"] = "Invalid key"
+            return await self.application(scope, receive, send)
+
+        scope["user"]=identificators[query_params["token"][0]]
+        del identificators[query_params["token"][0]]
+        return await self.application(scope, receive, send)
 
 
 class JWTIdentificationMiddleware:
@@ -48,7 +75,7 @@ class JWTIdentificationMiddleware:
         if "MAIN_MODEL" in information.__dict__:
             print("Service has a model")
             try:
-                request.model = information.MAIN_MODEL.objects.get(pk=request.user.id)
+                request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')

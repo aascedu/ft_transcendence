@@ -142,6 +142,7 @@ async function signUpNickname(input) {
 		document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box email filling.
@@ -181,6 +182,7 @@ async function signUpEmail(input) {
 		document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box password filling.
@@ -211,6 +213,7 @@ function signUpPassword(input) {
 		warning.classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Input box password confirmation.
@@ -240,6 +243,7 @@ function signUpPasswordConfirm(input) {
 	else {
 		warning.classList.add('visually-hidden');
 	}
+	setAriaHidden();
 }
 
 // Submit info and create account
@@ -262,6 +266,8 @@ async function submitCreateAccount() {
 	var	nick = document.querySelector('.sign-up-nickname-input').value;
 	var	email = document.querySelector('.sign-up-email-input').value;
 	var	password = document.querySelector('.sign-up-password-input').value;
+	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
+	var	font = document.querySelector('.sign-up-font-size').value;
 
 	g_userNick = nick;
 
@@ -271,7 +277,7 @@ async function submitCreateAccount() {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({Nick: nick, Email:email, Pass: password,}),
+			body: JSON.stringify({Nick: nick, Email:email, Pass: password, Lang: lang, Font: font,}),
 		});
 
 		const result = await response.json();
@@ -280,12 +286,23 @@ async function submitCreateAccount() {
 			console.error('Error: ' + result.Err);
 		}
 		else {
+			g_userId = result.Client;
+			g_refreshToken = result.ref;
+			patchUserContent();
 			goToHomepageGame('.sign-up');
 		}
 	}
 	catch (error) {
 		console.error("Error:", error);
 	}
+}
+
+async function patchUserContent() {
+	var	email = document.querySelector('.sign-up-email-input').value;
+	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
+	var	font = document.querySelector('.sign-up-font-size').value;
+
+	await patch_user_info(g_userId, lang, font, g_userNick, email, null);
 }
 
 // "I already have an account" button.
@@ -302,4 +319,28 @@ document.querySelector('.sign-up-sign-in button').addEventListener('click', func
 	document.querySelector('.sign-up-email-input').value = '';
 	document.querySelector('.sign-up-password-input').value = '';
 	document.querySelector('.sign-up-password-confirm-input').value = '';
+	setAriaHidden();
+});
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.sign-up').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+	
+		if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
+			if (isFw) {
+				document.querySelector('.sign-up-nickname-input').focus();
+			}
+			else {
+				document.querySelector('.sign-up-sign-in button').focus();
+			}
+	
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {
+			document.querySelector('.sign-up-font-size').focus();
+			e.preventDefault();
+		}
+	}
 });

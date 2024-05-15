@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import JsonResponse
 from django.views import View
 
@@ -8,33 +9,31 @@ import requests
 from memory.models import Tournament, Game, Player
 from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
-def request_get_all(ids_str, key_name, model):
-    return_json = {}
-
-    try :
-        ids = [int(id) for id in ids_str]
-    except BaseException as e:
-        return {"Err": f"wrong query params provided {e.__str__()}"}
-    try:
-        querylist = model.objects.filter(id__in=ids)
-    except BaseException as e:
-        return {"Err": e.__str__()}
-    if len(ids) != len(querylist):
-        return_json |= {"Warn": "invalid ids provided"}
-    return_json |= {key_name: [queryobject.to_dict() for queryobject in querylist]}
-    return return_json
 
 class tournamentView(View):
-    def get(self, request, id: int = 0):
+    def get(self, request):
         return_json = {}
+        queryparams = request.GET
 
-        data = request.GET.getlist('tournaments')
-        return_json |= request_get_all(data, "Tournaments", Tournament)
+        players = queryparams.getlist('players')
+        for player in players:
+
+            try:
+                player_id = int(player)
+            except (ValueError, TypeError):
+                return JsonBadRequest(f'bad player id : {player}')
+
+            try:
+                player = Player.objects.get(id=player_id)
+            except ObjectDoesNotExist as e:
+                return JsonNotFound(f'{player}: {e.__str__()}')
+
+            return_json |= {player_id: [tournament.to_dict() for tournament in player.tournaments.all()]}
+
         return JsonResponse(return_json)
 
-    def post(self, request, id: int = 0):
-        if request.user.is_service is False \
-            or request.user.nick != "coubertin":
+    def post(self, request):
+        if request.user.is_service is False:
             return JsonForbiden("Only Coubertin can create tournaments")
         data = request.data
         try:
@@ -43,40 +42,42 @@ class tournamentView(View):
             return JsonErrResponse(e.__str__(), status=409)
         except ValidationError as e:
             return JsonErrResponse(e.__str__(), status=422)
-        except BaseException as e:
-            return JsonErrResponse(e.__str__(), status=500)
         return JsonResponse({"Ressource": "updated"})
 
 
 class gameView(View):
-    def get(self, request, id: int=0):
+    def get(self, request):
         return_json = {}
         queryparams = request.GET
 
         players = queryparams.getlist('players')
         for player in players:
+
             try:
                 player_id = int(player)
-                requestee = Player.objects.get(id=player_id)
+            except (ValueError, TypeError):
+                return JsonBadRequest(f'bad player id : {player}')
+
+            try:
+                Player.objects.get(id=player_id)
             except ObjectDoesNotExist as e:
-                return JsonNotFound(f"{player}: {e.__str__()}")
-            return_json |= {player_id: {"Wins": [game.to_dict() for game in requestee.wins.all()],
-                                 "Loses": [game.to_dict() for game in requestee.loses.all()]}}
+                return JsonNotFound(f'{player}: {e.__str__()}')
+
+            return_json |= {player_id: [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
 
         if 'latests' in queryparams:
             try:
                 x = min(int(queryparams.get('latests', 10)), 10)
-            except ValueError as e:
+            except (ValueError, TypeError) as e:
                 return JsonBadRequest(e.__str__())
             latest_games = Game.objects.order_by('-id').reverse()[:x]
             return_json |= {"latests": [game.to_dict() for game in latest_games]}
 
         return JsonResponse(return_json)
 
-    def post(self, request, id: int=0):
-        if request.user.is_service is False \
-            or request.user.nick == "ludo":
-                return JsonForbiden("Only Ludo can post games")
+    def post(self, request):
+        if request.user.is_service is False:
+            return JsonForbiden("Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
@@ -88,7 +89,7 @@ class gameView(View):
             return JsonErrResponse(e.__str__(), status=500)
         return JsonResponse(new_game.to_dict())
 
-    def delete(self, request, id: int=0):
+    def delete(self, request):
         if request.user.is_admin is False:
             return JsonForbiden("Only admin can delete games")
         return JsonErrResponse("Not implemented delete", status=501)
@@ -103,7 +104,7 @@ class playerView(View):
             try:
                 personal_player = Player.objects.get(id=request.user.id)
                 return_json |= {"Perso" : personal_player.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friend' in queries:
@@ -113,7 +114,7 @@ class playerView(View):
                 if id in friends_ids:
                     friend = Player.objects.get(id=id)
                     return_json |= {"Friend": friend.to_dict()}
-            except BaseException as e:
+            except ObjectDoesNotExist as e:
                 return_json |= {"Err": e.__str__()}
 
         if 'friends' in queries:
@@ -125,9 +126,8 @@ class playerView(View):
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
-        if request.user.is_service is False \
-                or request.user.nick != "petrus":
-                return JsonErrResponse("Only petrus can create a player", status=401)
+        if request.user.is_service is False:
+            return JsonErrResponse("Only services can create a player", status=401)
         player = Player()
         try:
             player.id = request.data['Id']

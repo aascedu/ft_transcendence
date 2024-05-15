@@ -7,6 +7,7 @@ document.querySelector('.sign-in-input').addEventListener('input', function() {
 	if (this.value.length > 0) {
 		container.classList.add('input-container-focused');
 		warning.classList.add('visually-hidden');
+		warning.setAttribute('aria-hidden', 'true');
 	} 
 	else {
 		container.classList.remove('input-container-focused');
@@ -71,6 +72,7 @@ function sendInvalidPassword() {
 	
 	switchLanguageContent(locale);
 	warning.classList.remove('visually-hidden');
+	warning.removeAttribute('aria-hidden');
 	input.value = '';
 }
 
@@ -89,4 +91,28 @@ document.querySelector('.sign-in-other-nickname button').addEventListener('click
 	document.querySelector('.sign-in-message').innerHTML = newContent;
 	// Clear the password input in sign-in screen
 	document.querySelector('.sign-in-input').value = '';
+	setAriaHidden();
+});
+
+// keyboard navigation
+
+document.addEventListener('keydown', function(e) {
+	if (!document.querySelector('.sign-in').classList.contains('visually-hidden')) {
+		let isFw =!e.shiftKey;
+	
+		if (e.key === 'Tab' && document.querySelector('.sign-in-font-size') === document.activeElement) {
+			if (isFw) {
+				document.querySelector('.sign-in-language-selector button').focus();
+			}
+			else {
+				document.querySelector('.sign-in-other-nickname button').focus();
+			}
+	
+			e.preventDefault();
+		}
+		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-in-language-selector button') === document.activeElement) {
+			document.querySelector('.sign-in-font-size').focus();
+			e.preventDefault();
+		}
+	}
 });

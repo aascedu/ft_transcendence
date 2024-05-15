@@ -43,6 +43,12 @@
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
+.homepage-game-content-play:focus,
+.homepage-game-content-tournaments:focus,
+.homepage-game-content-new-tournament:focus {
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
 .homepage-game-content-history {
 	flex-grow: 1;
 	margin-top: 16px;
@@ -117,6 +123,11 @@
 .homepage-game-content-friends
 .content-card:hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.homepage-game-content-friends
+.content-card:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 

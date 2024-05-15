@@ -1,7 +1,10 @@
 // Global variables.
 let g_userId;
 let	g_userNick;
+let	g_userPic = '/assets/general/pong.png';
+let	g_userLang;
 let	g_prevFontSize = 0;
+let	g_userFriends;
 let	g_jwt;
 let	g_refreshToken;
 let	g_translations = null;
@@ -19,16 +22,18 @@ function render() {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		var	homepageHeader = document.querySelector('.homepage-header');
 		homepageHeader.classList.remove('visually-hidden');
-	
+
 		var	homepagePicture = document.querySelector('.homepage-game-picture');
 		homepagePicture.classList.remove('visually-hidden');
 	}
 
-	// // A ENLEVER
+	setAriaHidden();
+
+	// A ENLEVER
 
 	// var	homepageHeader = document.querySelector('.homepage-header');
 	// homepageHeader.classList.remove('visually-hidden');
-	
+
 	// var	homepagePicture = document.querySelector('.homepage-game-picture');
 	// homepagePicture.classList.remove('visually-hidden');
 }
@@ -55,13 +60,24 @@ function hideEveryPage() {
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 }
 
+function setAriaHidden() {
+	document.querySelectorAll('.visually-hidden').forEach(function(item) {
+		item.setAttribute('aria-hidden', 'true');
+	});
+	document.querySelectorAll('[aria-hidden="true"]').forEach(function(item) {
+		if (!item.classList.contains('visually-hidden')) {
+			item.removeAttribute('aria-hidden');
+		}
+	});
+}
+
 // Translation functions.
 
 function loadTranslations() {
 	if (g_translations) {
 	   return Promise.resolve(g_translations);
 	}
-   
+
 	return fetch('./assets/lang/translations.json')
 	   .then(response => response.json())
 	   .then(data => {
@@ -70,7 +86,7 @@ function loadTranslations() {
 	   })
 	   .catch(error => console.error(error));
 }
-   
+
 function switchLanguageAttr(locale, newAttr) {
 	loadTranslations().then(translations => {
 		document.querySelectorAll('[data-language]').forEach(element => {
@@ -157,6 +173,10 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		activeImg.setAttribute('alt', selectedLang);
 		selectedImg.setAttribute('src', activeImgSrc);
 		selectedImg.setAttribute('alt', activeLang);
+
+		// switch back focus to main button
+		var	itemButton = item.closest('.language-selector').querySelector('.dropdown');
+		itemButton.focus();
 	});
 });
 
@@ -258,6 +278,10 @@ document.querySelectorAll('.font-size-input').forEach(function(item) {
 
 		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
 		g_prevFontSize = newSize;
+
+		if (item.classList.contains('accessibility-font-size')) {
+			patch_user_info(g_userId, null, newSize, null, null, null);
+		}
 	});
 });
 
@@ -294,9 +318,69 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 	}
 }
 
-//
+// update homepage content
+
+async function setHomepageContent() {
+	const userInfo = await get_user_info(g_userId);
+	g_userFriends = userInfo.Friends;
+
+	// change lang if needed
+	var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
+	if (userInfo.Lang != locale) {
+		var	localeImg = document.querySelector('.homepage-header-language-selector button img');
+		var	localeImgSrc = localeImg.getAttribute('src');
+
+		document.querySelectorAll('.homepage-header-language-selector img').forEach(function(item) {
+			if (item.getAttribute('alt') == userInfo.Lang) {
+				var	userLangBtn = item;
+				var	userLangImg = item.getAttribute('src');
+
+				userLangBtn.setAttribute('alt', locale);
+				localeImg.setAttribute('alt', userInfo.Lang);
+				localeImg.setAttribute('src', userLangImg);
+				userLangBtn.setAttribute('src', localeImgSrc);
+			}
+		});
+		switchLanguageAttr(userInfo.Lang, 'placeholder');
+		switchLanguageContent(userInfo.Lang);
+	}
+
+	// change font if needed
+	if (userInfo.Font != g_prevFontSize) {
+		updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
+		g_prevFontSize = userInfo.Font;
+	}
+	document.querySelector('.accessibility-font-size').value = userInfo.Font;
+
+	// change contrast mode if needed
+	if (userInfo["Contrast-mode"] == true) {
+		contrastMode();
+		document.querySelector('.accessibility .switch input').checked = true;
+	}
+
+	// change pic if needed
+	if (userInfo.Pic != null) {
+		document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
+		g_userPic = userInfo.Pic;
+	}
+
+	// show friends
+	var	friendsOnline = 0;
+	// for (i = 0; i < g_userFriends.length; i++) {
+
+	// }
+	if (friendsOnline == 0) {
+		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
+	}
+
+	// show history & stats
+
+}
 
 function goToHomepageGame(previous) {
+	setHomepageContent();
+
+	// hide previous and display homepage content
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');
 
@@ -306,12 +390,14 @@ function goToHomepageGame(previous) {
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.remove('visually-hidden');
 
+	document.querySelector('.homepage-header-logo').focus();
+
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
 
-// 
+//
 
 function leaveTournamentEditMode() {
 	// Switch button appearance
@@ -328,6 +414,8 @@ function leaveTournamentEditMode() {
 
 	// Show tournament name
 	document.querySelector('.tournament-info-name').classList.remove('visually-hidden');
+
+	setAriaHidden();
 }
 
 // Hide alerts when clicking outside
@@ -338,6 +426,7 @@ document.querySelectorAll('.alert').forEach(function(item) {
 			return ;
 		}
 		item.classList.add('visually-hidden');
+		setAriaHidden();
 	});
 });
 

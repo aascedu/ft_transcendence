@@ -1,17 +1,20 @@
 from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
+import requests
+from shared.utils import JsonBadRequest
 from shared.validators import NickNameValidator
 
 
 class Client(models.Model):
     font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
-    languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
+    languages_choices = [(1, "fr"),  (2, "en"), (3, "zh")]
     avatar = models.ImageField(upload_to='avatars/', blank=True)
-    unique_id = models.BigAutoField(primary_key=True)
+    id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=16, unique=True,
                     validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
+    contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)
     lang = models.IntegerField(choices=languages_choices, default=1)
 
@@ -21,12 +24,12 @@ class Client(models.Model):
         return f"""
                 ${self.nick.__str__()}
                 ${self.email.__str__()}
-                ${self.unique_id.__str__()}
+                ${self.id.__str__()}
                 """
 
     def to_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
             "Friends": self.list_friends(),
@@ -34,28 +37,37 @@ class Client(models.Model):
 
     def public_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
-            "Avatar": "avatar"
+            "Pic": self.avatar.url if self.avatar else None,
         }
 
     def friends_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
-            "Email": self.email,
-            "Avatar": "avatar"
+            "Pic": self.avatar.url if self.avatar else None,
         }
 
     def personal_dict(self):
         return {
-            "Id": self.unique_id,
+            "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
-            "Lang": self.lang,
+            "Lang": self.lang_state(),
             "Font": self.font,
-            "Avatar": "avatar",
+            "Pic": self.avatar.url if self.avatar else None,
+            "Contrast-mode": self.contrast_mode,
+            "Friends": self.list_friends(),
         }
+
+    def lang_state(self):
+        if self.lang == 1:
+            return "fr"
+        if self.lang == 2:
+            return "en"
+        if self.lang == 3:
+            return "zh"
 
     def list_friends(self):
         return [object.friends_dict()
@@ -98,8 +110,8 @@ class FriendshipRequest(models.Model):
 
     def to_dict(self):
         return {
-            "sender": [self.sender.nick, self.sender.unique_id],
-            "receiver": [self.receiver.nick, self.receiver.unique_id],
+            "sender": [self.sender.nick, self.sender.id],
+            "receiver": [self.receiver.nick, self.receiver.id],
         }
 
     @staticmethod
@@ -110,11 +122,13 @@ class FriendshipRequest(models.Model):
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
         if redondantRequest is not None:
-            return JsonResponse({"Err": "redondant request"}, status=400)
+            return JsonBadRequest("redondant request")
 
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
         if pastRequest is None:
+            requests.post(f'http://hermes:8004/notif/friend-request/{sender.id}',
+                          json={"Notified": receiver.id})
             newRequest = FriendshipRequest.objects.create(
                 sender=sender, receiver=receiver)
             newRequest.save()
@@ -122,12 +136,12 @@ class FriendshipRequest(models.Model):
 
         pastRequest.delete()
         sender.friends.add(receiver)
-        # Hermes
+        requests.post(f'http://hermes:8004/notif/friendship/{sender.id}',
+                      json={"Notified": receiver.id})
         return JsonResponse({"Friendship": "established"})
 
     @staticmethod
     def deleteFriendship(emiter, target) -> JsonResponse:
-
         if target in emiter.friends.all():
             emiter.friends.remove(target)
             return JsonResponse({"Friendship": "deleted"})
@@ -135,13 +149,13 @@ class FriendshipRequest(models.Model):
         oldRequest = FriendshipRequest.objects.filter(
             sender=emiter, receiver=target)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=target, receiver=emiter)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 2"})
 
         return JsonResponse({"Err": "nothing to get deleted"}, status=404)

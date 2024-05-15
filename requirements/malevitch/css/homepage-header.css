@@ -3,6 +3,11 @@
 	padding: 2.5vw;
 }
 
+.homepage-header-logo {
+	background: 0;
+	border: 0;
+}
+
 .homepage-header-logo img {
 	height: 46px;
 }
@@ -50,11 +55,11 @@
 
 .homepage-header-category {
 	background-color: rgba(115, 0, 230, 0.1);
-	backdrop-filter: blur(100px);
 	border-radius: 12px;
 	padding: 12px;
 	margin-bottom: 16px;
 	min-height: 56px;
+	border: 0;
 }
 
 .homepage-header-category-contrast {
@@ -67,6 +72,10 @@
 
 .homepage-header-category:hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.homepage-header-category:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
@@ -149,6 +158,9 @@
 	border-radius: 12px;
 	background-color: #7300E6;
 	margin-left: 16px;
+	visibility: visible;
+	opacity: 1;
+	border: 0;
 }
 
 .homepage-header-add-friend-submit img {
@@ -173,6 +185,11 @@
 	border-radius: 25px;
 }
 
+.homepage-header-profile {
+	background: 0;
+	border: 0;
+}
+
 .homepage-header-profile img {
 	height: 46px;
 	width: 46px;
@@ -187,5 +204,11 @@
 .homepage-header-menus > *:hover,
 .homepage-header-options > *:not(:first-child):hover {
 	cursor: pointer;
+	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
+}
+
+.homepage-header-logo:focus,
+.homepage-header-menus > *:focus,
+.homepage-header-options > *:not(:first-child):focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }

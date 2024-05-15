@@ -28,11 +28,11 @@ class signinView(View):
 
         if by_mail is not None:
             Ava = False
-            id = by_mail.unique_id
+            id = by_mail.id
             nick = by_mail.nick
         elif by_nick is not None:
             Ava = False
-            id = by_nick.unique_id
+            id = by_nick.id
             nick = by_nick.nick
         return JsonResponse({"Ava": Ava, "Id": id, "Nick": nick})
 
@@ -51,7 +51,7 @@ class signinView(View):
             return JsonBadRequest(f"{id} is not a valid id")
 
         try:
-            client = Client.objects.get(unique_id=id)
+            client = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("no user found for this id", status=404)
 
@@ -78,6 +78,8 @@ class signupView(View):
             client.email = data['Email']
             client.nick = data['Nick']
             client.password = data['Pass']
+            lang = data['Lang']
+            font = data['Font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
 
@@ -94,22 +96,29 @@ class signupView(View):
             return response
 
         try:
-            requests.post(
-                f'http://alfred:8001/user/users/{client.unique_id}',
-                json=client.to_alfred())
-            requests.post(
-                f"http://mnemosine:8008/memory/players/{client.unique_id}",
+            response = requests.post(
+                f'http://alfred:8001/user/users/{client.id}',
+                json=client.to_alfred() | {'lang': lang, 'font': font})
+            if response.status_code != 200:
+                raise BaseException("Error : error during alfred row creation")
+            response = requests.post(
+                f'http://mnemosine:8008/memory/players/{client.id}',
                 json=client.to_mnemosine())
-        except requests.RequestException:
+            if response.status_code != 200:
+                raise BaseException("Error : error during mnemosine row creation")
+        except BaseException as e:
             client.delete()
-            print("Error : during creation of ressources :", client.__str__())
-            requests.delete(f'http://alfred:8001/user/users/{client.unique_id}')
-            requests.delete(f'http://mnemosine:8008/memory/players/{client.unique_id}')
-            return JsonErrResponse("Internal error", status=409)
+            print(f'Error : {e} : during creation of ressources : {client}')
+            try:
+                requests.delete(f'http://alfred:8001/user/users/{client.id}')
+                requests.delete(f'http://mnemosine:8008/memory/players/{client.id}')
+            except BaseException as e:
+                print(f'Error: during deleting row. {e}')
+            return JsonErrResponse('Internal error', status=409)
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse({"Client": "created", "ref": refresh_token})
+        response = JsonResponse({"Client": client.id, "ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 
@@ -140,7 +149,7 @@ class refreshView(View):
             return JsonForbiden("Ids aren't the same")
 
         try:
-            client = Client.objects.get(unique_id=id)
+            client = Client.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonErrResponse("Clients doesn't exist anymore", status=404)
 
