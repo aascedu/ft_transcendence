@@ -60,31 +60,36 @@ class Consumer(OurBasicConsumer):
         global matches
 
         # Check if the request is good here
-        currentTime = time.time_ns()
-        if currentTime - self.lastRequestTime < 9800000:
-            return
-        self.lastRequestTime = currentTime
+        try:
+            currentTime = time.time_ns()
+            if currentTime - self.lastRequestTime < 9800000:
+                return
+            self.lastRequestTime = currentTime
 
-        gameDataJson = json.loads(text_data)
-        self.type = gameDataJson["type"]
+            gameDataJson = json.loads(text_data)
+            self.type = gameDataJson["type"]
 
-        # Send to room group
-        if self.type == "gameStart":
-            await self.channel_layer.group_send(
-                self.roomName, {
-                    "type": self.type,
-                    "id": gameDataJson["id"]
-                }
-            )
+            # Send to room group
+            if self.type == "gameStart":
+                await self.channel_layer.group_send(
+                    self.roomName, {
+                        "type": self.type,
+                        "id": gameDataJson["id"]
+                    }
+                )
 
-        elif self.type == "gameState":
-            await self.channel_layer.group_send(
-                self.roomName, {
-                    "type": "myState",
-                    "id": self.id,
-                    "frames": gameDataJson["frames"],
-                }
-            )
+            elif self.type == "gameState":
+                await self.channel_layer.group_send(
+                    self.roomName, {
+                        "type": "myState",
+                        "id": self.id,
+                        "frames": gameDataJson["frames"],
+                    }
+                )
+
+        except Exception as e:
+            print(e)
+            await self.close()
 
     async def gameStart(self, event):
         global matches
