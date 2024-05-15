@@ -7,7 +7,7 @@ from shared.validators import NickNameValidator
 
 class Client(models.Model):
     font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
-    languages_choices = [(1, "fr"),  (2, "eng"), (3, "zh")]
+    languages_choices = [(1, "fr"),  (2, "en"), (3, "zh")]
     avatar = models.ImageField(upload_to='avatars/', blank=True)
     id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=16, unique=True,
@@ -47,7 +47,6 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Pic": self.avatar.url if self.avatar else None,
-            "Online": self.online,
         }
 
     def personal_dict(self):
@@ -66,7 +65,7 @@ class Client(models.Model):
         if self.lang == 1:
             return "fr"
         if self.lang == 2:
-            return "eng"
+            return "en"
         if self.lang == 3:
             return "zh"
 
@@ -143,7 +142,6 @@ class FriendshipRequest(models.Model):
 
     @staticmethod
     def deleteFriendship(emiter, target) -> JsonResponse:
-
         if target in emiter.friends.all():
             emiter.friends.remove(target)
             return JsonResponse({"Friendship": "deleted"})
@@ -151,13 +149,13 @@ class FriendshipRequest(models.Model):
         oldRequest = FriendshipRequest.objects.filter(
             sender=emiter, receiver=target)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=target, receiver=emiter)
         if oldRequest is not None:
-            oldRequest.delete()
-            return JsonResponse({"Friendship": "aborted"})
+            oldRequest.first().delete()
+            return JsonResponse({"Friendship": "aborted 2"})
 
         return JsonResponse({"Err": "nothing to get deleted"}, status=404)

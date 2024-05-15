@@ -26,7 +26,7 @@ class Consumer(OurBasicConsumer):
     async def connect(self):
         global matches
 
-        if self.security_check() is False:
+        if "err" in self.scope:
             return self.close()
 
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]

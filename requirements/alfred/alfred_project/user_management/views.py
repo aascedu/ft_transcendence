@@ -1,53 +1,20 @@
-from django.db import IntegrityError
-import requests
 from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils import timezone
 import os
 from django.conf import settings
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
-class sessionView(View):
-    def post(self, request, id: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Session can't be created by user")
-
-        try:
-            request.model = Client.objects.get(id=id)
-        except ObjectDoesNotExist as e:
-            return JsonBadRequest("No Client for this id")
-
-        request.model.online = True
-        try:
-            request.model.full_clean()
-            request.model.save()
-        except IntegrityError as e:
-            return JsonResponse({"Err": e.__str__()}, status=409)
-        friends_id = [friend.id for friend in request.model.friends.all()]
-        return JsonResponse({"Session": "Created", "Friends": friends_id})
-
-    def delete(self, request, id: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Session can't be deleted by user")
-        try:
-            request.model = Client.objects.get(id=id)
-        except ObjectDoesNotExist as e:
-            return JsonBadRequest("No Client for this id")
-
-        request.model.online = False
-
-        try:
-            request.model.full_clean()
-            request.model.save()
-        except IntegrityError as e:
-            return JsonResponse({"Err": e.__str__()}, status=409)
-        return JsonResponse({"Session": "deleted"})
-
-
-
-
+def int_to_lang(nb):
+    if nb == "fr":
+        return 1
+    if nb == "en":
+        return 2
+    if nb == "zh":
+        return 3
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
@@ -56,7 +23,6 @@ class userInfoView(View):
                 return JsonResponse(Client.objects.get(id=id).personal_dict())
             except ObjectDoesNotExist:
                 return JsonNotFound("ressource not found")
-
         client = request.model
         if id == 0 or id == request.user.id:
             print("client :", client.personal_dict())
@@ -81,7 +47,9 @@ class userInfoView(View):
                 return JsonNotFound("Ressource doesn't exist")
 
         data = request.data
-        client.lang = data.get("Lang", client.lang)
+        lang = data.get("Lang")
+        if lang is not None:
+            client.lang = int_to_lang(lang)
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
@@ -98,6 +66,8 @@ class userInfoView(View):
             client.email = data['mail']
             client.nick = data['nick']
             client.id = data['id']
+            client.lang = int_to_lang(data['lang'])
+            client.font = data['font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
         return save_response(client)
@@ -169,10 +139,10 @@ class avatarView(View):
     def get(self, request, id: int):
         try:
             client = Client.objects.get(id=id)
-            url = client.avatar.url
+            url = client.avatar.url if client.avatar else None
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
-        return JsonResponse({id: url})
+        return JsonResponse({"url": url})
 
     def post(self, request, id: int):
         try:
@@ -187,7 +157,6 @@ class avatarView(View):
 def serve_avatar(request, filename):
     if request.method != 'GET':
         return JsonForbiden("Bad Method")
-
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
     if request.user.is_autenticated is False:

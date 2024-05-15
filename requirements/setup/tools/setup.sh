@@ -44,12 +44,6 @@ if [ ! -f config/certs/certs.zip ]; then
   "      - localhost\n"\
   "    ip:\n"\
   "      - 127.0.0.1\n"\
-  "  - name: orion\n"\
-  "    dns:\n"\
-  "      - orion\n"\
-  "      - localhost\n"\
-  "    ip:\n"\
-  "      - 127.0.0.1\n"\
   > config/certs/instances.yml;
   bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
   unzip config/certs/certs.zip -d config/certs;
@@ -61,16 +55,17 @@ chown -R root:root config/certs;
 find . -type d -exec chmod 750 {} \;
 find . -type f -exec chmod 640 {} \;
 
-echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
-openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+if [ ! -f config/certs/aether/aether.pkcs8.key ]; then
+  echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
+  openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+fi;
 
 # Wait for Elasticsearch availability
-echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability${COLOR_RESET}";
+echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability...${COLOR_RESET}";
 until curl --cacert config/certs/ca/ca.crt https://apollo:9200 | grep -q "missing authentication credentials"; do sleep 30; done;
 
 # Set kibana_system password
-echo -e "${COLOR_GREEN}Setting kibana_system password${COLOR_RESET}";
-# until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
+echo -e "${COLOR_GREEN}Setting kibana_system password...${COLOR_RESET}";
 until curl -X POST --cacert config/certs/ca/ca.crt -u "elastic:${ELASTIC_PASSWORD}" -H "Content-Type: application/json" https://apollo:9200/_security/user/kibana_system/_password -d "{\"password\":\"${KIBANA_PASSWORD}\"}" | grep -q "^{}"; do sleep 10; done;
 
 echo -e "${COLOR_GREEN}All done!${COLOR_RESET}";
