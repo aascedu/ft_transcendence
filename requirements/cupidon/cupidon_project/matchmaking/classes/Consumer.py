@@ -26,9 +26,9 @@ class Consumer(OurBasicConsumer):
         # Send message to room group
         await self.channel_layer.group_send(
             "matchmakingRoom", {
-                "type": type,
-                "id": text_data_json['id'],
-                "elo": text_data_json['elo'],
+                'type': type,
+                'id': text_data_json['id'],
+                'elo': text_data_json['elo'],
             }
         )
 
@@ -41,15 +41,23 @@ class Consumer(OurBasicConsumer):
         waitingList[id] = self.me # Get player name with the token here
 
     async def SendToGame(self, event): # Will need to delete players from the waitingList here
-        if (event['player1'] == self.me.id or event['player2'] == self.me.id):
+        if event['player1'] == self.me.id or event['player2'] == self.me.id:
+            # await self.send(json.dumps({
+            #         "action": "redirect",
+            #         "url": "https://localhost:8000/ludo/pong/"
+            #                 + str(waitingList[event['player1']])
+            #                 + "-"
+            #                 + str(waitingList[event['player2']])
+            #                 + "/"
+            #         }))
+            
             await self.send(json.dumps({
-                    "action": "redirect",
-                    "url": "https://localhost:8000/ludo/pong/"
-                            + str(waitingList[event['player1']])
-                            + "-"
-                            + str(waitingList[event['player2']])
-                            + "/"
+                    'action': "startGame",
+                    'player1': str(waitingList[event['player1']]),
+                    'player2': str(waitingList[event['player2']]),
                     }))
+            
+            del waitingList[self.me.id]            
 
     async def Ping(self, event):
         global waitingList
