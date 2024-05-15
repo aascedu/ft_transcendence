@@ -169,8 +169,9 @@ async function init_socket() {
             opponent.points = data.opponentScore;
             ball.pos['x'] = screenWidth / 2;
             ball.pos['y'] = screenHeight / 2;
-            me.pos = screenHeight / 2;
-            opponent.pos = screenHeight / 2;
+            htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
+            htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
+            setTimeout(gameLoop, 1000);
         }
 
         if (data.type == "myState" || data.type == "opponentState") {
@@ -181,8 +182,7 @@ async function init_socket() {
             }
             ball.pos['x'] = data.ballPosX / 100 * screenWidth;
             ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            me.points = data.myScore;
-            opponent.points = data.opponentScore;
+
         }
     };
     function sendStartGameData(type) {
@@ -224,15 +224,6 @@ async function init_socket() {
         ball.speed *= 1.1;
     }
 
-    function normAngle(angle) {
-        if (angle > Math.PI) {
-            angle -= 2 * Math.PI;
-        } else if (angle < - Math.PI) {
-            angle += 2 * Math.PI;
-        }
-        // return angle;
-    }
-
     let ball = new Ball();
     let i = 1;
     let frames = {};
@@ -253,10 +244,10 @@ async function init_socket() {
         htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
     }
 
-window.addEventListener('resize', updateScreenSize());
-window.onresize = updateScreenSize;
-htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
-htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
+    window.addEventListener('resize', updateScreenSize());
+    window.onresize = updateScreenSize;
+    htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
+    htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
     function gameLoop() {
         // End of point
@@ -317,5 +308,3 @@ htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 +
 // requestAnimationFrame()
 
 }
-
-// init_socket();

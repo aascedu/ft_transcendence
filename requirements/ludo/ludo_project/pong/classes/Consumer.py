@@ -13,6 +13,11 @@ import requests
 
 # Fin de points, tout ne se fait pas toujours ds le meme ordre
 # Send only one gameEnd
+# Detsroy game at the end !
+# Check that we do not send to ws after it is closed
+# Protect ws in case of wrong data
+# Fetch
+# Reponse visible par la cli
 
 from shared.BasicConsumer import OurBasicConsumer
 
@@ -128,7 +133,7 @@ class Consumer(OurBasicConsumer):
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
 
-        await self.close() # ?
+        await self.close()
 
     async def updateScore(self, event):
         await self.send (text_data=json.dumps({
@@ -136,7 +141,6 @@ class Consumer(OurBasicConsumer):
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
         }))
-        time.sleep(1)
 
     async def gameLogic(self, frames, id):
         global matches
