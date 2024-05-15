@@ -11,6 +11,10 @@ function loadFriendsList() {
 		return ;
 	// }
 	
+	// document.querySelector('.friends-list-online').classList.remove('visually-hidden');
+	// document.querySelector('.friends-list-offline').classList.remove('visually-hidden');
+	// document.querySelector('.friends-list-no-friends').classList.add('visually-hidden');
+
 	// var	friendsOnline = get friends online from hermes
 	// var	friendsOffline = the friends that aren't online from hermes
 	// var	friendsOnlineContainer = document.querySelector('.friends-list-online');
@@ -19,6 +23,8 @@ function loadFriendsList() {
 	// var	friendPic;
 
 	// // Friends online
+	// document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
+
 	// for (i = 0; i < friendsOnline.length; i++) {
 	// 	friendNick = friendsOnline[i].Nick;
 	// 	friendPic = friendsOnline[i].Pic;
@@ -36,6 +42,8 @@ function loadFriendsList() {
 	// }
 
 	// // Friends offline
+	// document.querySelector('.friends-list-no-offline').classList.add('visually-hidden');
+
 	// for (i = 0; i < friendsOffline.length; i++) {
 	// 	friendNick = friendsOffline[i].Nick;
 	// 	friendPic = friendsOffline[i].Pic;
