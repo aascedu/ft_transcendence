@@ -10,6 +10,9 @@ function loadAvailableTournaments() {
 		return ;
 	// }
 	
+	// document.querySelector('.available-tournaments-card-container').classList.remove('visually-hidden');
+	// document.querySelector('.available-tournaments-empty').classList.add('visually-hidden');
+
 	// var	availableTournamentsContainer = document.querySelector('.available-tournaments-card-container');
 	// var	tournamentName;
 
