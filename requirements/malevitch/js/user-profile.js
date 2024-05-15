@@ -1,13 +1,191 @@
+// Load user profile
+
+function loadUserProfile(/* id of user selected */) {
+	if (id != g_userId) {
+		var	userInfo = get_user_info(id);
+
+		// Load user general info
+		document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
+		document.querySelector('.user-profile-name').textContent = userInfo.Pic;
+	}
+
+	// Display history
+
+	var	history = get history of user from db (last 15 games)
+	var	historyContainer = document.querySelector('.user-profile-history');
+	var	numWins = 0;
+	var	totalPoints = 0;
+	var	totalTime = 0;
+
+	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
+	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Score.split('-')[0] == 5) {
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+				<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
+				<div class="user-profile-history-card-result">` + history[i].Score + `</div>
+				<div class="user-profile-history-card-event">vs<b> ` + history[i].Opponent + `</b></div>
+			</div>`);
+
+			numWins++;
+		}
+		else {
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+				<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
+				<div class="user-profile-history-card-result">` + history[i].Score + `</div>
+				<div class="user-profile-history-card-event">vs<b> ` + history[i].Opponent + `</b></div>
+			</div>`);
+		}
+		totalScore += history[i].Score.split('-')[1];
+		totalTime += history[i].Time;
+	}
+
+	if (history.length == 0) {
+		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+		return ;
+	}
+
+	// Display stats
+
+	document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
+	document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
+
+	var	averageTime;
+	var	averageMinutes;
+	var	averageSeconds;
+	
+	averageTime = Math.round(totalTime / history.length);
+	averageMinutes = Math.floor(averageTime / 60);
+	averageSeconds = averageTime % 60;
+
+	document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
+
+	// Current shape graph
+
+	const canvas = document.querySelector('.user-profile-stats-graph');
+	if (!canvas.getContext) {
+		return;
+	}
+	canvas.width = canvas.parentElement.offsetWidth;
+	canvas.height = `${getCanvasHeight(history)}`;
+
+	const ctx = canvas.getContext('2d');
+
+	ctx.strokeStyle = '#7300E6';
+	ctx.fillStyle = '#7300E6';
+	ctx.lineWidth = 3;
+
+	var	posX = 50;
+	var	posY = getCanvasStart(history, canvas.height);
+	var	startX = posX;
+	var	startY = posY;
+
+	// draw lines
+	ctx.beginPath();
+	ctx.moveTo(startX, startY);
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Score.split('-')[0] == 5) {
+			posY += 50;
+		}
+		else {
+			posY -= 50;
+		}
+		posX++;
+		ctx.lineTo(posX, posY);
+	}
+	ctx.stroke();
+
+	posX = startX;
+	posY = startY;
+
+	// draw points
+	ctx.beginPath();
+	ctx.moveTo(startX, startY);
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Score.split('-')[0] == 5) {
+			posY += 50;
+		}
+		else {
+			posY -= 50;
+		}
+		posX++;
+		ctx.moveTo(posX, posY);
+		ctx.arc(posX, posY, 5, 0, 2*Math.PI);
+	}
+	ctx.fill();
+}
+
+function getCanvasHeight(history) {
+	var	height = 50;
+	var	prevResult = 0;
+	var	result = 0;
+	var	prevStreak = 0;
+	var	streak = 0;
+
+	for (i = 0; i < history.length; i++) {
+		prevResult = result;
+		if (history[i].Score.split('-') == 5) {
+			result = 1;
+		}
+		else {
+			result = 0;
+		}
+		if (i == 0 || result != prevResult) {
+			prevStreak = streak;
+			streak = 0;
+		}
+		streak++;
+		if (streak > prevStreak) {
+			height += 50;
+		}
+	}
+	return height;
+}
+
+function getCanvasStart(history, height) {
+	var	result = 0;
+	var	min = 0;
+	var	max = 0;
+
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Score.split('-') == 5) {
+			result++;
+		}
+		else {
+			result--;
+		}
+		min = result < min ? result : min;
+		max = result > max ? result : max;
+	}
+	if (min == 0) {
+		return 0;
+	}
+	if (max == 0) {
+		return height;
+	}
+	return height - (max * 50);
+}
+
 // Modify avatar (check if it is user profile before !)
 
 // Show edit button on hover / focus
 document.querySelector('.user-profile-picture').addEventListener('mouseover', function() {
-	document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+	// You can upload only if the profile is yours.
+	if (document.querySelector('.user-profile-name').textContent == g_userNick) {
+		document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+	}
 });
 document.querySelector('.user-profile-picture').addEventListener('focusin', function() {
-	document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+	// You can upload only if the profile is yours.
+	if (document.querySelector('.user-profile-name').textContent == g_userNick) {
+		document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+	}
 });
 
 // Upload an image and check its size
@@ -176,82 +354,6 @@ document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEve
 		document.querySelector('.user-profile-remove-alert').setAttribute('aria-hidden', 'true');
 	}
 });
-
-// Current shape graph
-
-function drawGraph() {
-	const canvas = document.querySelector('.user-profile-stats-graph');
-	if (!canvas.getContext) {
-		return;
-	}
-	canvas.width = canvas.parentElement.offsetWidth;
-	canvas.height = '450';
-
-	const ctx = canvas.getContext('2d');
-
-	ctx.strokeStyle = '#7300E6';
-	ctx.fillStyle = '#7300E6';
-	ctx.lineWidth = 3;
-
-	// draw lines
-	ctx.beginPath();
-	ctx.moveTo(50, 400);
-	ctx.lineTo(100, 350);
-	ctx.lineTo(150, 300);
-	ctx.lineTo(200, 250);
-	ctx.lineTo(250, 300);
-	ctx.lineTo(300, 250);
-	ctx.lineTo(350, 300);
-	ctx.lineTo(400, 350);
-	ctx.lineTo(450, 300);
-	ctx.lineTo(500, 250);
-	ctx.lineTo(550, 200);
-	ctx.lineTo(600, 250);
-	ctx.lineTo(650, 200);
-	ctx.lineTo(700, 150);
-	ctx.lineTo(750, 200);
-	ctx.lineTo(800, 250);
-	ctx.stroke();
-
-	// draw points
-	ctx.beginPath();
-	ctx.moveTo(50, 400);
-	ctx.arc(50, 400, 5, 0, 2*Math.PI);
-	ctx.moveTo(100, 350);
-	ctx.arc(100, 350, 5, 0, 2*Math.PI);
-	ctx.moveTo(150, 300);
-	ctx.arc(150, 300, 5, 0, 2*Math.PI);
-	ctx.moveTo(200, 250);
-	ctx.arc(200, 250, 5, 0, 2*Math.PI);
-	ctx.moveTo(250, 300);
-	ctx.arc(250, 300, 5, 0, 2*Math.PI);
-	ctx.moveTo(300, 250);
-	ctx.arc(300, 250, 5, 0, 2*Math.PI);
-	ctx.moveTo(350, 300);
-	ctx.arc(350, 300, 5, 0, 2*Math.PI);
-	ctx.moveTo(400, 350);
-	ctx.arc(400, 350, 5, 0, 2*Math.PI);
-	ctx.moveTo(450, 300);
-	ctx.arc(450, 300, 5, 0, 2*Math.PI);
-	ctx.moveTo(500, 250);
-	ctx.arc(500, 250, 5, 0, 2*Math.PI);
-	ctx.moveTo(550, 200);
-	ctx.arc(550, 200, 5, 0, 2*Math.PI);
-	ctx.moveTo(600, 250);
-	ctx.arc(600, 250, 5, 0, 2*Math.PI);
-	ctx.moveTo(650, 200);
-	ctx.arc(650, 200, 5, 0, 2*Math.PI);
-	ctx.moveTo(700, 150);
-	ctx.arc(700, 150, 5, 0, 2*Math.PI);
-	ctx.moveTo(750, 200);
-	ctx.arc(750, 200, 5, 0, 2*Math.PI);
-	ctx.moveTo(800, 250);
-	ctx.arc(800, 250, 5, 0, 2*Math.PI);
-	ctx.fill();
-}
-
-drawGraph();
-
 
 // Keyboard navigation
 

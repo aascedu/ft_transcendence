@@ -119,6 +119,14 @@
 	border-width: 0;
 }
 
+.user-profile-win {
+	background-color: #46DB00;
+}
+
+.user-profile-lose {
+	background-color: #E2123C;
+}
+
 .user-profile-history-card-result,
 .user-profile-stats-card-stat {
 	font-size: 18pt;

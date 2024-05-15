@@ -341,6 +341,9 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
 	document.querySelector('.user-profile-name').textContent = g_userNick;
 
+	// Disable adding friend button (you can't add yourself as a friend)
+	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+
 	// history and stats
 
 	// render page
