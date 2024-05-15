@@ -12,6 +12,8 @@ function loadTournamentInfo(/* tournamentId */) {
 	// var	userNick;
 	// var	userPic;
 
+	// document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
+
 	// for (i = 0; i < availableFriends.length; i++) {
 	// 	userNick = availableFriends[i].Nick;
 	// 	userPic = availableFriends[i].Pic;
@@ -39,6 +41,8 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 	document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
 	// 	return ;
 	// }
+
+	// document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
 
 	// // Display number of players
 	// document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + tournamentInfo.NumPlayers;
@@ -115,6 +119,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
 	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -128,6 +138,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			score = bracket.RoundOne[i].Score.split('-')[1];
 	// 			if (score == null) {
 	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
 	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
@@ -153,6 +169,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 		}
 	// 		matchs.querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
 	// 		<div class="bracket-player-picture">
 	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -166,6 +188,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		score = bracket.RoundTwo[0].Score.split('-')[1];
 	// 		if (score == null) {
 	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
 	// 		}
 	// 		matchs.querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
 	// 		<div class="bracket-player-picture">
@@ -201,6 +229,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
 	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -214,6 +248,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			score = bracket.RoundOne[i].Score.split('-')[1];
 	// 			if (score == null) {
 	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
 	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
@@ -239,6 +279,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
 	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -252,6 +298,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			score = bracket.RoundTwo[i].Score.split('-')[1];
 	// 			if (score == null) {
 	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
 	// 			}
 	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
 	// 			<div class="bracket-player-picture">
@@ -276,6 +328,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 		}
 	// 		matchs.querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
 	// 		<div class="bracket-player-picture">
 	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -289,6 +347,12 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		score = bracket.RoundThree[0].Score.split('-')[1];
 	// 		if (score == null) {
 	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
 	// 		}
 	// 		matchs.querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
 	// 		<div class="bracket-player-picture">
