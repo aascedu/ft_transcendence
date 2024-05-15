@@ -133,7 +133,6 @@ services:
       iris:
         condition: service_healthy
     container_name: aether
-    # image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     build:
       context: ./requirements/aether
       dockerfile: Dockerfile
@@ -144,13 +143,13 @@ services:
       - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
       - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      # - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       ELASTIC_HOSTS: https://apollo:9200
     networks:
+      - atlas
       - sentinel
     restart: on-failure
     healthcheck:
@@ -167,6 +166,8 @@ services:
   alfred:
     depends_on:
       alfred_db:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     container_name: alfred
     build:
