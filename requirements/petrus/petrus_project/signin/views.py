@@ -78,6 +78,8 @@ class signupView(View):
             client.email = data['Email']
             client.nick = data['Nick']
             client.password = data['Pass']
+            lang = data['Lang']
+            font = data['Font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
 
@@ -94,22 +96,29 @@ class signupView(View):
             return response
 
         try:
-            requests.post(
+            response = requests.post(
                 f'http://alfred:8001/user/users/{client.id}',
-                json=client.to_alfred())
-            requests.post(
-                f"http://mnemosine:8008/memory/players/{client.id}",
+                json=client.to_alfred() | {'lang': lang, 'font': font})
+            if response.status_code != 200:
+                raise BaseException("Error : error during alfred row creation")
+            response = requests.post(
+                f'http://mnemosine:8008/memory/players/{client.id}',
                 json=client.to_mnemosine())
-        except requests.RequestException:
+            if response.status_code != 200:
+                raise BaseException("Error : error during mnemosine row creation")
+        except BaseException as e:
             client.delete()
-            print("Error : during creation of ressources :", client.__str__())
-            requests.delete(f'http://alfred:8001/user/users/{client.id}')
-            requests.delete(f'http://mnemosine:8008/memory/players/{client.id}')
-            return JsonErrResponse("Internal error", status=409)
+            print(f'Error : {e} : during creation of ressources : {client}')
+            try:
+                requests.delete(f'http://alfred:8001/user/users/{client.id}')
+                requests.delete(f'http://mnemosine:8008/memory/players/{client.id}')
+            except BaseException as e:
+                print(f'Error: during deleting row. {e}')
+            return JsonErrResponse('Internal error', status=409)
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse({"Client": "created", "ref": refresh_token})
+        response = JsonResponse({"Client": client.id, "ref": refresh_token})
         response.set_cookie("auth", jwt)
         return response
 

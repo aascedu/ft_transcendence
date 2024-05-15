@@ -2,11 +2,19 @@ from user_management.models import Client, FriendshipRequest
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
+from django.utils import timezone
 import os
 from django.conf import settings
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
+def int_to_lang(nb):
+    if nb == "fr":
+        return 1
+    if nb == "en":
+        return 2
+    if nb == "zh":
+        return 3
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
@@ -39,7 +47,9 @@ class userInfoView(View):
                 return JsonNotFound("Ressource doesn't exist")
 
         data = request.data
-        client.lang = data.get("Lang", client.lang)
+        lang = data.get("Lang")
+        if lang is not None:
+            client.lang = int_to_lang(lang)
         client.font = data.get("Font", client.font)
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
@@ -56,6 +66,8 @@ class userInfoView(View):
             client.email = data['mail']
             client.nick = data['nick']
             client.id = data['id']
+            client.lang = int_to_lang(data['lang'])
+            client.font = data['font']
         except KeyError as e:
             return JsonBadRequest(f"Key : {str(e)} not provided.")
         return save_response(client)
@@ -130,7 +142,7 @@ class avatarView(View):
             url = client.avatar.url if client.avatar else None
         except ObjectDoesNotExist:
             return JsonErrResponse("ressource not found", status=404)
-        return JsonResponse({id: url})
+        return JsonResponse({"url": url})
 
     def post(self, request, id: int):
         try:
@@ -145,7 +157,6 @@ class avatarView(View):
 def serve_avatar(request, filename):
     if request.method != 'GET':
         return JsonForbiden("Bad Method")
-
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
     if request.user.is_autenticated is False:

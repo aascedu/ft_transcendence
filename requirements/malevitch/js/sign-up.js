@@ -266,6 +266,8 @@ async function submitCreateAccount() {
 	var	nick = document.querySelector('.sign-up-nickname-input').value;
 	var	email = document.querySelector('.sign-up-email-input').value;
 	var	password = document.querySelector('.sign-up-password-input').value;
+	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
+	var	font = document.querySelector('.sign-up-font-size').value;
 
 	g_userNick = nick;
 
@@ -275,7 +277,7 @@ async function submitCreateAccount() {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({Nick: nick, Email:email, Pass: password,}),
+			body: JSON.stringify({Nick: nick, Email:email, Pass: password, Lang: lang, Font: font,}),
 		});
 
 		const result = await response.json();
@@ -284,12 +286,23 @@ async function submitCreateAccount() {
 			console.error('Error: ' + result.Err);
 		}
 		else {
+			g_userId = result.Client;
+			g_refreshToken = result.ref;
+			patchUserContent();
 			goToHomepageGame('.sign-up');
 		}
 	}
 	catch (error) {
 		console.error("Error:", error);
 	}
+}
+
+async function patchUserContent() {
+	var	email = document.querySelector('.sign-up-email-input').value;
+	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
+	var	font = document.querySelector('.sign-up-font-size').value;
+
+	await patch_user_info(g_userId, lang, font, g_userNick, email, null);
 }
 
 // "I already have an account" button.

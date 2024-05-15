@@ -126,3 +126,25 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'logstash': {
+            'level': 'INFO',
+            'class': 'logstash.TCPLogstashHandler',
+            'host': 'aether',
+            'port': 5140,
+            'version': 1,
+            'message_type': 'logstash',
+            'fqdn': True, #fully qualified domain name
+            'tags': ['alfred_project'],
+        }
+    },
+    'loggers': {
+        'alfred_project': {
+            'handlers': ['logstash'],
+            'level': 'INFO',
+        }
+    }
+}

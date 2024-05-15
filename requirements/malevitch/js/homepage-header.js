@@ -336,32 +336,21 @@ function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
-	fetch('/alfred/user/avatar/' + g_userId, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + g_jwt,
-        },
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error('Error fetching avatar');
-        }
-    })
-    .then(data => {
-        var avatarUrl = data.url;
-        var profilePictureElement = document.querySelector('.user-profile-picture');
-        profilePictureElement.src = avatarUrl;
-        hideEveryPage();
-        g_state.pageToDisplay = '.user-profile';
-        window.history.pushState(g_state, null, "");
-        render(g_state);
-    })
-    .catch(error => {
-        console.error('Error fetching avatar:', error);
-    });
-    document.querySelector('.user-profile-picture-input').focus();
+	// Load user profile content
+	// pic and nick
+	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
+	document.querySelector('.user-profile-name').textContent = g_userNick;
+
+	// history and stats
+
+	// render page
+	document.querySelector('.user-profile-picture-input').focus();
+
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.user-profile';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 });
 
 // Go to accessibility
