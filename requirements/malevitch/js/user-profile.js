@@ -11,7 +11,7 @@ function loadUserProfile(/* id of user selected */) {
 
 	// Display history
 
-	var	history = get history of user from db (last 15 games)
+	var	history = get_game_history(id)
 	var	historyContainer = document.querySelector('.user-profile-history');
 	var	numWins = 0;
 	var	totalPoints = 0;
@@ -57,7 +57,7 @@ function loadUserProfile(/* id of user selected */) {
 	var	averageTime;
 	var	averageMinutes;
 	var	averageSeconds;
-	
+
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
@@ -298,7 +298,7 @@ document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEv
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-	
+
 		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
 		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
@@ -337,7 +337,7 @@ document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEv
 document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-	
+
 		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
 		document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
 		setAriaHidden();
