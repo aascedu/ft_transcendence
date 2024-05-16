@@ -121,6 +121,8 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 		item.classList.add('visually-hidden');
 	});
 
+	loadAvailableTournaments();
+
 	document.querySelector('.available-tournaments-icon').focus();
 
 	g_state.pageToDisplay = '.available-tournaments';
@@ -136,6 +138,8 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
+
+	loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
 
@@ -232,6 +236,8 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
+
+	loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
 

@@ -1,3 +1,66 @@
+// Load friends list from db
+
+function loadFriendsList() {
+	// var	friendsList = get friends list from alfred
+	
+	// // If no friends at all
+	// if (friendsList.length == 0) {
+		document.querySelector('.friends-list-online').classList.add('visually-hidden');
+		document.querySelector('.friends-list-offline').classList.add('visually-hidden');
+		document.querySelector('.friends-list-no-friends').classList.remove('visually-hidden');
+		return ;
+	// }
+	
+	// document.querySelector('.friends-list-online').classList.remove('visually-hidden');
+	// document.querySelector('.friends-list-offline').classList.remove('visually-hidden');
+	// document.querySelector('.friends-list-no-friends').classList.add('visually-hidden');
+
+	// var	friendsOnline = get friends online from hermes
+	// var	friendsOffline = the friends that aren't online from hermes
+	// var	friendsOnlineContainer = document.querySelector('.friends-list-online');
+	// var	friendsOfflineContainer = document.querySelector('.friends-list-offline');
+	// var	friendNick;
+	// var	friendPic;
+
+	// // Friends online
+	// document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
+
+	// for (i = 0; i < friendsOnline.length; i++) {
+	// 	friendNick = friendsOnline[i].Nick;
+	// 	friendPic = friendsOnline[i].Pic;
+
+	// 	friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
+	// 		<div class="user-card-name unselectable">` + friendNick + `</div>
+	// 		<div class="user-card-picture">
+	// 			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 	</button>`);
+	// }
+	// if (friendsOnline.length == 0) {
+	// 	document.querySelector('.friends-list-no-online').classList.remove('visually-hidden');
+	// }
+
+	// // Friends offline
+	// document.querySelector('.friends-list-no-offline').classList.add('visually-hidden');
+
+	// for (i = 0; i < friendsOffline.length; i++) {
+	// 	friendNick = friendsOffline[i].Nick;
+	// 	friendPic = friendsOffline[i].Pic;
+
+	// 	friendsOfflineContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
+	// 		<div class="user-card-name unselectable">` + friendNick + `</div>
+	// 		<div class="user-card-picture">
+	// 			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 	</button>`);
+	// }
+	// if (friendsOffline.length == 0) {
+	// 	document.querySelector('.friends-list-no-offline').classList.remove('visually-hidden');
+	// }
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.friends-list-icon').addEventListener('click', function() {

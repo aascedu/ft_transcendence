@@ -68,5 +68,5 @@ class Client(models.Model):
             raise ValidationError("Password must contain at least one lowercase char")
         if not re.search(r'\d', self.password):
             raise ValidationError("Password must contain a digit")
-        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', self.password):
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>+=-_]', self.password):
             raise ValidationError("Password must contain special char")
