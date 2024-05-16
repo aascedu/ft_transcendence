@@ -4,6 +4,7 @@
 
     <body id="test-target">
         <div>Waiting room...</div>
+        {{ Id|json_script:"Id" }}
         <script>
 
 
@@ -23,11 +24,12 @@
 
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Probably add room name
+const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Cf ludo pour la secu
+const Id = JSON.parse(document.getElementById('Id').textContent);
 
 exampleSocket.onopen = function(event) {
     console.log("Socket opened in the front");
-    sendPlayerData("PlayerData");
+    sendPlayerData("playerData");
 };
 
 exampleSocket.onclose = function() {
@@ -42,25 +44,27 @@ exampleSocket.onerror = function(event) {
 exampleSocket.onmessage = (event) => {
     const data = JSON.parse(event.data);
     if (data.action === "redirect") {
-        window.location.href = data.url;
+        window.location.href = data.url; // NON (Pas SPA)
     }
 };
 
-function sendPlayerData(state) {
+console.log(Id)
+
+function sendPlayerData(type) {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
     const data = {
-        state: state,
-        id: 0, // A recuperer depuis la db
-        elo: 0, // A recuperer depuis la db
+        type: type,
+        id: Id, // A recuperer depuis la db
+        elo: 500, // A recuperer depuis la db, le back va le recuperer
     };
   
     // Send the msg object as a JSON-formatted string.
     exampleSocket.send(JSON.stringify(data));
 }
 
-function sendData(state) {
+function sendData(type) {
     const data = {
-        state: state,
+        type: type,
     };
 
     exampleSocket.send(JSON.stringify(data));
@@ -71,7 +75,7 @@ function ping() {
 }
 
 exampleSocket.addEventListener('open', (event) => {
-    const intervalID = setInterval(ping, 10000);
+    const intervalID = setInterval(ping, 10000); // Juste envoyer sendData('ping') ?
 });
 
 
