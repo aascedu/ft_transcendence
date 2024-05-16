@@ -1,8 +1,8 @@
 // Load user profile
 
-function loadUserContent(id) {
+async function loadUserContent(id) {
 	// if (id != g_userId) {
-	// 	var	userInfo = get_user_info(id);
+	// 	var	userInfo = await get_user_info(id);
 
 	// 	// Load user general info
 	// 	document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
@@ -25,7 +25,8 @@ function loadUserContent(id) {
 	// for (i = 0; i < history.length; i++) {
 	// 	if (history[i].Winner == g_userId) {
 	// 		score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
-	// 		opponent = get_user_info(history[i].Loser).Nick;
+	// 		opponent = await get_user_info(history[i].Loser);
+	//		opponent = opponent.Nick;
 
 	// 		historyContainer.insertAdjacentHTML('beforeend', `\
 	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
@@ -39,7 +40,8 @@ function loadUserContent(id) {
 	// 	}
 	// 	else {
 	// 		score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
-	// 		opponent = get_user_info(history[i].Winner).Nick;
+	// 		opponent = await get_user_info(history[i].Winner);
+	//		opponent = opponent.Nick;
 
 	// 		historyContainer.insertAdjacentHTML('beforeend', `\
 	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
