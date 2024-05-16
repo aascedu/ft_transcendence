@@ -323,18 +323,12 @@
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 							</div>
-							<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
+							<!-- <button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
 								<div class="user-card-name unselectable">Ami1</div>
 								<div class="user-card-picture">
 									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
 								</div>
-							</button>
-							<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami1</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button>
+							</button> -->
 						</div>
 					</div>
 					<div class="homepage-game-content-stats category w-100 d-flex flex-column justify-content-between align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
@@ -681,6 +675,16 @@
 			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
 				<div class="alert-message w-100 text-center unselectable" data-language="confirm-join">
 					Do you want to join this tournament ?
+				</div>
+				<div class="tournament-info-join-input-container w-100 d-flex flex-column justify-content-center align-items-center">
+					<div class="alert-input-message w-100 text-center unselectable" data-language="tournament-nick">
+						Choose a nickname for this tournament :
+					</div>
+					<div class="tournament-info-join-input-box input-box w-100 bg-white purple-shadow">
+						<label for="tournament-nick-input" data-language="tournament-nick-input" class="visually-hidden">Choose a nickname...</label>
+						<input id="tournament-nick-input" type="text" name="tournament-nick" label="tournament-nick" data-language="tournament-nick-input" placeholder="Choose a nickname..." autocomplete="off" class="tournament-info-join-input input w-100 border-0 text-center">
+					</div>
+					<div class="tournament-info-join-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-tournament-nick">Invalid nickname.</div>
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
 					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >

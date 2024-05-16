@@ -55,7 +55,6 @@
 
 .homepage-header-category {
 	background-color: rgba(115, 0, 230, 0.1);
-	backdrop-filter: blur(100px);
 	border-radius: 12px;
 	padding: 12px;
 	margin-bottom: 16px;

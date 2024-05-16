@@ -18,11 +18,7 @@ DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
 
 WHO                =    $(shell whoami)
 
-ifeq ($(WHO), twang)
-DOCKER_FILE        =    docker-compose-twang.yml
-else ifeq ($(WHO), root)
-DOCKER_FILE        =    docker-compose-twang.yml
-else ifeq ($(WHO), bpoumeau)
+ifeq ($(WHO), bpoumeau)
 DOCKER_FILE        =    docker-compose-nologs.yml
 else ifeq ($(WHO), ccrottie)
 DOCKER_FILE        =    docker-compose-nologs.yml
@@ -83,7 +79,7 @@ reset: | fclean
 
 re: down
 	make debug
-
+# docker compose build --parallel -> a test
 #---- setups ----#
 
 volumes:
