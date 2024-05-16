@@ -59,7 +59,7 @@ function containsNumbers(str) {
 }
 
 function containsSymbols(str) {
-	const symbols = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
+	const symbols = /[!@#$%^&*(),.?":{}|<>+=\-_]/;
 	return symbols.test(str);
    }
 
