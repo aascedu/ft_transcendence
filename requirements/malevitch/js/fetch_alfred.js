@@ -1,25 +1,9 @@
-   // path("sessions/<int:id>", sessionView.as_view()),
-    //path("users/<int:id>", userInfoView.as_view()),
-   // path("friends/<int:id>", friendView.as_view()),
-  //  path("avatar/<int:id>", avatarView.as_view()),
- //   path("media/<str:filename>", serve_avatar),
-//    path("view-db", view_db)
-function fetch_error(error) {
-    console.error('Fetch problem:', error.message)
-}
-
-async function fetch_get(url) {
-    return fetch(url)
-        .then(response => {
-            return response.json()
-        })
-        .then(data => {
-            console.log(data)
-            return data
-        })
-        .catch(error => {fetch_error(error)});
-}
-
+//path("sessions/<int:id>", sessionView.as_view()),
+//path("users/<int:id>", userInfoView.as_view()),
+//path("friends/<int:id>", friendView.as_view()),
+//path("avatar/<int:id>", avatarView.as_view()),
+//path("media/<str:filename>", serve_avatar),
+//path("view-db", view_db)
 
 function add_alfred_in_url(url) {
     return ("/alfred/user" + url)
@@ -52,15 +36,7 @@ async function patch_user_info(id, lang, font, nick, email, contrast_mode) {
     if (contrast_mode != null) {
         json['Contrast-mode'] = contrast_mode
     }
-    fetch(url, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(json),
-    })
-    .then(response => {return response.json()})
-    .then(data => console.log(data))
+    fetch_patch(url, json)
     .catch(error => console.error('Erreur:', error));
 }
 
@@ -77,45 +53,14 @@ async function get_friend(id) {
 }
 
 async function post_friend(id) {
-	return fetch(friend_url(id),
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        }
-    )
-		.then (response => {
-			if (!response.ok) {
-				throw new Error('HTTP error: ' + response.status);
-			}
-			return response.json();
-		})
-		.then (data => {
-            console.log(data)
-            return data
-		})
+	return fetch_post(friend_url(id), {})
 		.catch (error => {
 			console.error('Fetch problem:', error.message);
 		});
 }
 
 async function delete_friend(id) {
-    fetch(friend_url(id),
-        {
-            method: 'DELETE',
-        }
-    )
-    .then (response => {
-        if (!response.ok) {
-            throw new Error('HTTP error: ' + response.status);
-        }
-        return response.json();
-    })
-    .then (data => {
-        console.log(data)
-        return data
-    })
+    return fetch_delete(friend_url(id))
     .catch (error => {
         console.error('Fetch problem:', error.message);
     });
@@ -129,21 +74,11 @@ async function get_media_from_url(url) {
     return await fetch_get(add_alfred_in_url(url))
 }
 
-function custom_error(response) {
-    return new Error('HTTP error: ' + response.status + "-" + response.Err)
-}
-
 async function get_avatar_from_id(id) {
-    return fetch(avatar_url(id))
-    .then (response => {
-        if (response.status != 200) {
-            throw custom_error(response)
-        }
-        return response.json()
-    })
-    .then (data => {
-        if (data == null) {
-            return fetch(add_alfred_in_url(data['url']))
+    return fetch_get(avatar_url(id))
+        .then (data => {
+        if (data != null) {
+            return fetch_get(add_alfred_in_url(data['url']))
                 .then (response => {
                     if (response.status != 200) {
                         throw custom_error(response)
