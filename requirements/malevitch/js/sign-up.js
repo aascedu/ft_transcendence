@@ -286,6 +286,7 @@ async function submitCreateAccount() {
 			console.error('Error: ' + result.Err);
 		}
 		else {
+			console.log('Success sign-up : ' + result);
 			g_userId = result.Client;
 			g_refreshToken = result.ref;
 			patchUserContent();
