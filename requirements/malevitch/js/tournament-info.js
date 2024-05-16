@@ -377,16 +377,20 @@ document.querySelector('.tournament-info-icon').addEventListener('click', functi
 // Load user profile page when clicking on a player
 
 document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', loadUserProfile);
+	item.addEventListener('click', loadUserProfile(item.getAttribute('user-id')));
 });
 
-function loadUserProfile() {
-	// if player is yourself
-	// document.querySelector('.user-profile-picture-input').focus();
+function loadUserProfile(id) {
+	if (id == g_userId) {
+		document.querySelector('.user-profile-picture-input').focus();
+	}
 	// else if user is your friend
 	// document.querySelector('.user-profile-remove-icon').focus();
-	// else
-	document.querySelector('.user-profile-add-icon').focus();
+	else {
+		document.querySelector('.user-profile-add-icon').focus();
+	}
+
+	loadUserContent(id);
 
 	hideEveryPage();
 
@@ -794,7 +798,7 @@ function addInvitedPlayerToTournament(nick, pic) {
     </button>`);
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', loadUserProfile);
+		item.addEventListener('click', loadUserProfile(item.getAttribute('user-id')));
 	});
 
 	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
