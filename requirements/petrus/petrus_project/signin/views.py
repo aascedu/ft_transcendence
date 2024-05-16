@@ -5,6 +5,7 @@ from requests.models import DecodeError
 from jwt import ExpiredSignatureError, InvalidTokenError
 import requests
 import bcrypt
+import logging
 
 from signin.models import Client
 from shared.jwt_management import JWT
@@ -43,6 +44,7 @@ class signinView(View):
             id = data['Id']
             password = data['Pass']
         except KeyError as e:
+            logging.info(f"no {str(e)} provided")
             return JsonBadRequest(f"no {str(e)} provided")
 
         try:
@@ -62,6 +64,7 @@ class signinView(View):
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Client": "connected", "ref": refresh_token})
         response.set_cookie("auth", jwt)
+        logging.debug("Client connected")
         return response
 
 
@@ -81,7 +84,9 @@ class signupView(View):
             lang = data['Lang']
             font = data['Font']
         except KeyError as e:
-            return JsonBadRequest(f"Key : {str(e)} not provided.")
+            error_message = f"Key : {str(e)} not provided."
+            logging.error(error_message)
+            return JsonBadRequest(error_message)
 
         try:
             client.check_password()
@@ -120,6 +125,7 @@ class signupView(View):
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Client": client.id, "ref": refresh_token})
         response.set_cookie("auth", jwt)
+        logging.debug("Client created")
         return response
 
 
