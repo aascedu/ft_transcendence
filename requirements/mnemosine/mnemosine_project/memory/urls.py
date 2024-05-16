@@ -6,7 +6,7 @@ from memory.views import (
 )
 
 urlpatterns = [
-    path("pong/tournaments", tournamentView.as_view()),
+    path("pong/tournaments/", tournamentView.as_view()),
     path("pong/games", gameView.as_view()),
     path("players/<int:id>", playerView.as_view()),
 ]

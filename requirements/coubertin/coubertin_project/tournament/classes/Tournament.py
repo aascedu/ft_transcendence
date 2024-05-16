@@ -39,5 +39,39 @@ class Tournament:
         }
         return (tournamentDict)
     
+    def testMnemosine(self):
+        games = []
+        games.append({
+            'Round': 0,
+            'Winner': 0,
+            'Winner-score': 1,
+            'Loser': 5,
+            'Loser-score': 2,
+        })
+        games.append({
+            'Round': 1,
+            'Winner': 2,
+            'Winner-score': 4,
+            'Loser': 1,
+            'Loser-score': 5,
+        })
+        games.append({
+            'Round': 2,
+            'Winner': 0,
+            'Winner-score': 7,
+            'Loser': 5,
+            'Loser-score': 4,
+        })
+
+        tournamentDict = {
+            'Name': self.name,
+            'Players': [0, 1, 2, 3, 4, 5, 6, 7],
+            'Games': games,
+            'NbPlayers': self.nbPlayers,
+            'Admin': self.admin,
+            'Winner': 0,
+        }
+        return tournamentDict
+    
 
 tournaments = {}

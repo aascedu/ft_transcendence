@@ -91,3 +91,6 @@ def printData(data):
     game = data['game']
     print('Player ', game['Player1'], ' had a score of ', game['Score1'])
     print('Player ', game['Player2'], ' had a score of ', game['Score2'])
+
+def testView(request):
+    return render(request, 'tournament/home.html')

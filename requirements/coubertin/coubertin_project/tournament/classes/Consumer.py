@@ -1,6 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from tournament.classes.Tournament import tournaments
+from tournament.classes.Tournament import tournaments, Tournament
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
@@ -9,14 +9,15 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         # Join room group
-        self.tournamentId = self.scope["url_route"]["kwargs"]["tournamentId"]
+        # self.tournamentId = self.scope["url_route"]["kwargs"]["tournamentId"]
+        self.tournamentId = '0'
 
-        self.admin = False
-        if (len(tournaments[self.tournamentId].players) == 0):
-            self.admin = True # Do we let the admin chose if he plays or not ?
+        # self.admin = False
+        # if (len(tournaments[self.tournamentId].players) == 0):
+        #     self.admin = True # Do we let the admin chose if he plays or not ?
 
-        self.id = len(tournaments[self.tournamentId].players) # We want it to be his place in the players array
-        print ("Tournament room name is " + self.tournamentId)
+        # self.id = len(tournaments[self.tournamentId].players) # We want it to be his place in the players array
+        # print ("Tournament room name is " + self.tournamentId)
 
         await self.channel_layer.group_add(self.tournamentId, self.channel_name)
         await self.accept()
@@ -28,83 +29,88 @@ class Consumer(OurBasicConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        global tournaments
+        tournament = Tournament('Polala', 8, 0, 6)
+        requests.post(
+            f'http://mnemosine:8008/memory/pong/tournaments/',
+            json=tournament.testMnemosine())
 
-        text_data_json = json.loads(text_data)
-        type = text_data_json['Type']
+    #     global tournaments
 
-        if type == "removePlayer" and self.admin == True: # Redirect the target ?
-            tournaments[self.tournamentId].removePlayer(text_data_json['Target'])
-            await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "tournamentState",
-                }
-            )
+    #     text_data_json = json.loads(text_data)
+    #     type = text_data_json['Type']
 
-        elif type == "renameTournament" and self.admin == True:
-            tournaments[self.tournamentId].name = text_data_json['NewName']
-            await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "tournamentState",
-                }
-            )
+    #     if type == "removePlayer" and self.admin == True: # Redirect the target ?
+    #         tournaments[self.tournamentId].removePlayer(text_data_json['Target'])
+    #         await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "tournamentState",
+    #             }
+    #         )
 
-        else:
-            await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': type
-                }
-            )
+    #     elif type == "renameTournament" and self.admin == True:
+    #         tournaments[self.tournamentId].name = text_data_json['NewName']
+    #         await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "tournamentState",
+    #             }
+    #         )
 
-    async def Ready(self, event): # When someone is ready to play his next round
-        if (tournaments[self.tournamentId].state > 0 and tournaments[self.tournamentId].onGoingGames == 0):
-            await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "StartRound",
-                }
-            )
+    #     else:
+    #         await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': type
+    #             }
+    #         )
 
-    async def Start(self, event): # Only for admin, to start tournament
-        global tournaments
-        if (self.admin == False):
-            return
+    # async def Ready(self, event): # When someone is ready to play his next round
+    #     if (tournaments[self.tournamentId].state > 0 and tournaments[self.tournamentId].onGoingGames == 0):
+    #         await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "StartRound",
+    #             }
+    #         )
 
-        tournaments[self.tournamentId].state += 1
-        await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "StartRound",
-                }
-            )
+    # async def Start(self, event): # Only for admin, to start tournament
+    #     global tournaments
+    #     if (self.admin == False):
+    #         return
 
-    async def StartRound(self, event): # To start a round (Will redirect every player etc...)
-        global tournaments
+    #     tournaments[self.tournamentId].state += 1
+    #     await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "StartRound",
+    #             }
+    #         )
 
-        if (self.admin):
-            tournaments[self.tournamentId].onGoingGames = len(tournaments[self.tournamentId].players) / 2 # Check this in case of disconnected participants
-            tournaments[self.tournamentId].currentRound += 1
+    # async def StartRound(self, event): # To start a round (Will redirect every player etc...)
+    #     global tournaments
 
-            # Check tournament end
-            if (tournaments[self.tournamentId].players == 1):
-                tournaments[self.tournamentId].state += 1
-                requests.post(
-                        f'http://mnemosine:8008/memory/pong/tournaments/0',
-                        json=tournaments[self.tournamentId].toDict())
-                return
+    #     if (self.admin):
+    #         tournaments[self.tournamentId].onGoingGames = len(tournaments[self.tournamentId].players) / 2 # Check this in case of disconnected participants
+    #         tournaments[self.tournamentId].currentRound += 1
 
-        tmpId = tournaments[self.tournamentId].players.index(self.id)
+    #         # Check tournament end
+    #         if (tournaments[self.tournamentId].players == 1):
+    #             tournaments[self.tournamentId].state += 1
+    #             requests.post(
+    #                     f'http://mnemosine:8008/memory/pong/tournaments/0',
+    #                     json=tournaments[self.tournamentId].toDict())
+    #             return
 
-        await self.send(json.dumps({
-                'Action': "startMatch",
-                'TournamentName': tournaments[self.tournamentId].name,
-                'Player1': tournaments[self.tournamentId].players[tmpId - tmpId % 2],
-                'Player2': tournaments[self.tournamentId].players[tmpId + (1 - tmpId % 2)],
-                }))
+    #     tmpId = tournaments[self.tournamentId].players.index(self.id)
 
-    async def TournamentState(self, event): # Update the state of a tournament for the front
-        await self.send(json.dumps({
-            'Action': "tournamentState",
-            'Tournament': tournaments[self.tournamentId].toDict(),
-            }))
+    #     await self.send(json.dumps({
+    #             'Action': "startMatch",
+    #             'TournamentName': tournaments[self.tournamentId].name,
+    #             'Player1': tournaments[self.tournamentId].players[tmpId - tmpId % 2],
+    #             'Player2': tournaments[self.tournamentId].players[tmpId + (1 - tmpId % 2)],
+    #             }))
+
+    # async def TournamentState(self, event): # Update the state of a tournament for the front
+    #     await self.send(json.dumps({
+    #         'Action': "tournamentState",
+    #         'Tournament': tournaments[self.tournamentId].toDict(),
+    #         }))
 
 
 # To do

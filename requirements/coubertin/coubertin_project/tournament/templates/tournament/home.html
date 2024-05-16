@@ -23,16 +23,15 @@
 
 /***************************************** Websockets *****************************************/
 
-const tournamentSocket = new WebSocket('wss://localhost:8000/coubertin/matchmaking/ws/'); // Probably add room name
+const tournamentSocket = new WebSocket('wss://localhost:8000/coubertin/tournament/ws/lala/'); // Probably add room name
 
 tournamentSocket.onopen = function(event) {
     console.log("Socket opened in the front");
-    sendData("Ready");
+    sendData('lol');
 };
 
 tournamentSocket.onclose = function() {
     console.log("Socket closed in the front");
-    sendData("Leaving")
 }
 
 tournamentSocket.onerror = function(event) {
@@ -56,8 +55,6 @@ tournamentSocket.onmessage = (event) => {
         // cf endpoints here
     }
 };
-
-// 
 
 function sendData(state) {
     // Construct a msg object containing the data the server needs to process the message from the chat client.
