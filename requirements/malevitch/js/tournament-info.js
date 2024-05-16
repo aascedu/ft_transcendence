@@ -1,28 +1,26 @@
 // Load tournament info from db
 
-function loadTournamentInfo(/* tournamentId */) {
-	// var	tournamentInfo = get tournament info from db (tournamentId)
+function loadTournamentInfo(id) {
+	// var	tournamentInfo = get tournament info from db (id)
 	
 	// // Display tournament name
 	// document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
 
 	// // Display online friends that aren't already invited to tournament
-	// var	availableFriends = get available friends from db (userId)
+	// var	availableFriends = get available friends from db (g_userId)
 	// var	friendsContainer = document.querySelector('.tournament-info-invite');
-	// var	userNick;
-	// var	userPic;
+	// var	userInfo;
 
 	// document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
 
 	// for (i = 0; i < availableFriends.length; i++) {
-	// 	userNick = availableFriends[i].Nick;
-	// 	userPic = availableFriends[i].Pic;
+	// 	userInfo = get_user_info(availableFriends[i]);
 
 	// 	friendsContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
-	// 		<div class="user-card-name unselectable">` + userNick + `</div>
+	// 	<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i] + `">
+	// 		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
 	// 		<div class="user-card-picture">
-	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
 	// 		</div>
 	// 	</button>`);
 	// }
@@ -49,14 +47,13 @@ function loadTournamentInfo(/* tournamentId */) {
 
 	// // Display players that are confirmed
 	// for (i = 0; i < confirmedPlayers.length; i++) {
-	// 	userNick = confirmedPlayers[i].Nick;
-	// 	userPic = confirmedPlayers[i].Pic;
+	// 	userInfo = get_user_info(confirmedPlayers[i]);
 
 	// 	playersContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
-	// 		<div class="user-card-name unselectable">` + userNick + `</div>
+	// 	<button class="content-card d-flex justify-content-between align-items-center purple-shadow" user-id="` + confirmedPlayers[i] + `">
+	// 		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
 	// 		<div class="user-card-picture">
-	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
 	// 		</div>
 	// 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
 	// 			<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
@@ -66,17 +63,16 @@ function loadTournamentInfo(/* tournamentId */) {
 
 	// // Display invited players that haven't joined (pending)
 	// for (i = 0; i < pendingPlayers.length; i++) {
-	// 	userNick = pendingPlayers[i].Nick;
-	// 	userPic = pendingPlayers[i].Pic;
+	// 	userInfo = get_user_info(pendingPlayers[i]);
 
 	// 	playersContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
+	// 	<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + pendingPlayers[i] + `">
 	// 		<div class="d-flex flex-nowrap align-items-center">
-	// 			<div class="user-card-name unselectable">`+ userNick + `</div>
+	// 			<div class="user-card-name unselectable">`+ userInfo.Nick + `</div>
 	// 			<div class="user-card-pending" data-language="pending">(pending...)</div>
 	// 		</div>
 	// 		<div class="user-card-picture">
-	// 			<img src="` + userPic + `" alt="profile picture of `+ userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
 	// 		</div>
 	// 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
 	// 			<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
@@ -115,7 +111,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 1
 	// 			userNick = bracket.RoundOne[i].Players[0].Nick;
 	// 			userPic = bracket.RoundOne[i].Players[0].Pic;
-	// 			score = bracket.RoundOne[i].Score.split('-')[0];
+	// 			score = bracket.RoundOne[i].Score[0];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -135,7 +131,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 2
 	// 			userNick = bracket.RoundOne[i].Players[1].Nick;
 	// 			userPic = bracket.RoundOne[i].Players[1].Pic;
-	// 			score = bracket.RoundOne[i].Score.split('-')[1];
+	// 			score = bracket.RoundOne[i].Score[1];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -165,7 +161,7 @@ function loadTournamentInfo(/* tournamentId */) {
 
 	// 		userNick = bracket.RoundTwo[0].Players[0].Nick;
 	// 		userPic = bracket.RoundTwo[0].Players[0].Pic;
-	// 		score = bracket.RoundTwo[0].Score.split('-')[0];
+	// 		score = bracket.RoundTwo[0].Score[0];
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
@@ -185,7 +181,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		// fill info for player 2
 	// 		userNick = bracket.RoundTwo[0].Players[1].Nick;
 	// 		userPic = bracket.RoundTwo[0].Players[1].Pic;
-	// 		score = bracket.RoundTwo[0].Score.split('-')[1];
+	// 		score = bracket.RoundTwo[0].Score[1];
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
@@ -225,7 +221,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 1
 	// 			userNick = bracket.RoundOne[i].Players[0].Nick;
 	// 			userPic = bracket.RoundOne[i].Players[0].Pic;
-	// 			score = bracket.RoundOne[i].Score.split('-')[0];
+	// 			score = bracket.RoundOne[i].Score[0];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -245,7 +241,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 2
 	// 			userNick = bracket.RoundOne[i].Players[1].Nick;
 	// 			userPic = bracket.RoundOne[i].Players[1].Pic;
-	// 			score = bracket.RoundOne[i].Score.split('-')[1];
+	// 			score = bracket.RoundOne[i].Score[1];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -275,7 +271,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 1
 	// 			userNick = bracket.RoundTwo[i].Players[0].Nick;
 	// 			userPic = bracket.RoundTwo[i].Players[0].Pic;
-	// 			score = bracket.RoundTwo[i].Score.split('-')[0];
+	// 			score = bracket.RoundTwo[i].Score[0];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -295,7 +291,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 			// fill info for player 2
 	// 			userNick = bracket.RoundTwo[i].Players[1].Nick;
 	// 			userPic = bracket.RoundTwo[i].Players[1].Pic;
-	// 			score = bracket.RoundTwo[i].Score.split('-')[1];
+	// 			score = bracket.RoundTwo[i].Score[1];
 	// 			if (score == null) {
 	// 				score = 0;
 	// 			}
@@ -324,7 +320,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		// fill info for player 1
 	// 		userNick = bracket.RoundThree[0].Players[0].Nick;
 	// 		userPic = bracket.RoundThree[0].Players[0].Pic;
-	// 		score = bracket.RoundThree[0].Score.split('-')[0];
+	// 		score = bracket.RoundThree[0].Score[0];
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
@@ -344,7 +340,7 @@ function loadTournamentInfo(/* tournamentId */) {
 	// 		// fill info for player 2
 	// 		userNick = bracket.RoundThree[0].Players[1].Nick;
 	// 		userPic = bracket.RoundThree[0].Players[1].Pic;
-	// 		score = bracket.RoundThree[0].Score.split('-')[1];
+	// 		score = bracket.RoundThree[0].Score[1];
 	// 		if (score == null) {
 	// 			score = 0;
 	// 		}
