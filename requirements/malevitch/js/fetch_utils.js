@@ -1,8 +1,8 @@
 async function fetch_get(url) {
     return fetch(url)
         .then(response => {
-            if (!response.ok != 200)
-                throw new Error('HTTP error: ' + response.Err);
+            if (!response.ok)
+                throw custom_error(response)
             return response.json()
         })
         .then(data => {
@@ -78,6 +78,3 @@ function fetch_error(error) {
 function custom_error(response) {
     return new Error('HTTP error: ' + response.status + "-" + response.Err)
 }
-
-fetch_get("/petrus/their").catch(error => fetch_error(error))
-

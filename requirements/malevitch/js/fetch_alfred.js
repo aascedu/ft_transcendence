@@ -75,9 +75,8 @@ async function get_media_from_url(url) {
 }
 
 async function get_avatar_from_id(id) {
-    return
-    fetch_get(avatar_url(id))
-    .then (data => {
+    return fetch_get(avatar_url(id))
+        .then (data => {
         if (data != null) {
             return fetch_get(add_alfred_in_url(data['url']))
                 .then (response => {
