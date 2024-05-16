@@ -128,55 +128,31 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# LOGGING = {
-#     'version': 1,
-#     'handlers': {
-#         'logstash': {
-#             'level': 'INFO',
-#             'class': 'logstash.TCPLogstashHandler',
-#             'host': 'aether',
-#             'port': 5140,
-#             'version': 1,
-#             'message_type': 'logstash',
-#             'fqdn': True, #fully qualified domain name
-#             'tags': ['alfred_project'],
-#         }
-#     },
-#     'loggers': {
-#         'alfred_project': {
-#             'handlers': ['logstash'],
-#             'level': 'INFO',
-#         }
-#     }
-# }
-
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'syslog': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.SysLogHandler',
-            'facility': 'user',
-            'address': ('aether', 5140),
-            'socktype': SOCK_STREAM
-            # 'formatter': 'verbose',
-            # 'host': 'aether',
-            # 'port': 5140,
-            # 'version': 1,
-            # 'message_type': 'logstash',
-            # 'fqdn': True, #fully qualified domain name
-            # 'tags': ['alfred_project'],
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
         },
-        'console': {
-            'class': 'logging.StreamHandler',
+        "logstash": {
+            "level": "DEBUG",
+            "class": "logging.handlers.SysLogHandler",
+            "facility": "user",
+            "address": ("aether", 5140),
+            "socktype": SOCK_STREAM,
+            # "host": "aether",
+            # "port": 5140,
+            # "message_type": "logstash",
+            # "fqdn": True, #fully qualified domain name
         },
     },
-    'loggers': {
-        '': {
-            'handlers': ['syslog', 'console'],
-            'level': 'DEBUG',
-            'propagate': True,
+    "loggers": {
+        "": {
+            "handlers": ["logstash", "console"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
 }
