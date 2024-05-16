@@ -30,7 +30,7 @@ function loadMyTournaments() {
 	//	tournamentId = ongoingTournaments[i].Id;
 
 	//	ongoingTournamentsContainer.insertAdjacentHTML('beforeend', `\
-	//	<button class="content-card d-flex justify-content-center align-items-center purple-shadow">
+	//	<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
 	//		<div class="my-tournaments-card-picture position-absolute">
 	//			<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 	//		</div>
@@ -49,7 +49,7 @@ function loadMyTournaments() {
 	//	tournamentId = closedTournaments[i].Id;
 
 	// 	closedTournamentsContainer.insertAdjacentHTML('beforeend', `\
-	//	<button class="content-card d-flex justify-content-center align-items-center purple-shadow">
+	//	<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
 	//		<div class="my-tournaments-card-picture position-absolute">
 	//			<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 	//		</div>
