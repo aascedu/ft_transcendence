@@ -139,6 +139,8 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 		item.classList.add('visually-hidden');
 	});
 
+	loadMyTournaments();
+
 	document.querySelector('.my-tournaments-icon').focus();
 
 	g_state.pageToDisplay = '.my-tournaments';
