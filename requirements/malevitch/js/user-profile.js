@@ -11,7 +11,7 @@ async function loadUserContent(id) {
 
 	// // Display history
 
-	// var	history = get history of user from db (last 15 games)
+	// var	history = get_game_history(id);
 	// var	historyContainer = document.querySelector('.user-profile-history');
 	// var	numWins = 0;
 	// var	totalPoints = 0;
@@ -310,7 +310,7 @@ document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEv
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-	
+
 		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
 		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
@@ -349,7 +349,7 @@ document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEv
 document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-	
+
 		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
 		document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
 		setAriaHidden();
