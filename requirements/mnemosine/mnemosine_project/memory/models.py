@@ -17,29 +17,31 @@ class Player(baseModel):
 
     def to_dict(self):
         return {
-            "Id": self.id,
-            "Elo": self.elo,
-            "Win-Count": self.win_count,
-            "Lose-Count": self.lose_count,
+            'Id': self.id,
+            'Elo': self.elo,
+            'Win-Count': self.win_count,
+            'Lose-Count': self.lose_count,
         }
 
 class Tournament(baseModel):
     name = models.SlugField()
-    players = models.ManyToManyField(Player)
+    players = models.ManyToManyField(Player, related_name="tournaments")
 
     def to_dict(self):
         return {
-            "TournamentName": self.name,
-            "Games": [a.to_dict() for a in self.games.all()],
-            "players": [player.to_dict() for player in self.players.all()],
+            'TournamentName': self.name,
+            'Games': [a.to_dict() for a in self.games.all()],
+            'players': [player.to_dict() for player in self.players.all()],
         }
 
     @staticmethod
     def from_json_saved(json):
-        tournament = Tournament.objects.create(name="Named")
+        tournament = Tournament.objects.create(name='Named')
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament
+        for player in Player.objects.filter(id__in=json['Players']):
+            tournament.players.add(player)
         return tournament
 
 
@@ -67,10 +69,12 @@ class Game(baseModel):
     @staticmethod
     def from_json_saved(json):
         created_game = Game()
-        created_game.winner = Player.objects.get(id=json['Winner'])
-        created_game.loser = Player.objects.get(id=json['Loser'])
+        print(f"getting winner {json['Winner']}")
+        created_game.winner = Player.objects.get(id=int(json['Winner']))
+        created_game.loser = Player.objects.get(id=int(json['Loser']))
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+
         created_game.full_clean()
         created_game.save()
         return created_game
