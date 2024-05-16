@@ -233,6 +233,8 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 		item.classList.add('visually-hidden');
 	});
 
+	loadFriendsList();
+
 	document.querySelector('.friends-list-icon').focus();
 
 	g_state.pageToDisplay = '.friends-list';

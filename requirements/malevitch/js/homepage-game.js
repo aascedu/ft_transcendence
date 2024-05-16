@@ -1,4 +1,6 @@
 document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', function() {
+	loadFriendsList();
+
 	document.querySelector('.friends-list-icon').focus();
 	
 	hideEveryPage();
