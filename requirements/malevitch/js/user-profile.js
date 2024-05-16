@@ -1,122 +1,134 @@
 // Load user profile
 
-function loadUserProfile(/* id of user selected */) {
-	if (id != g_userId) {
-		var	userInfo = get_user_info(id);
+async function loadUserContent(id) {
+	// if (id != g_userId) {
+	// 	var	userInfo = await get_user_info(id);
 
-		// Load user general info
-		document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
-		document.querySelector('.user-profile-name').textContent = userInfo.Pic;
-	}
+	// 	// Load user general info
+	// 	document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
+	// 	document.querySelector('.user-profile-name').textContent = userInfo.Pic;
+	// }
 
-	// Display history
+	// // Display history
 
-	var	history = get history of user from db (last 15 games)
-	var	historyContainer = document.querySelector('.user-profile-history');
-	var	numWins = 0;
-	var	totalPoints = 0;
-	var	totalTime = 0;
+	// var	history = get history of user from db (last 15 games)
+	// var	historyContainer = document.querySelector('.user-profile-history');
+	// var	numWins = 0;
+	// var	totalPoints = 0;
+	// var	totalTime = 0;
+	// var	score;
+	// var	opponent;
 
-	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
-	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+	// document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
+	// document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
 
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Score.split('-')[0] == 5) {
-			historyContainer.insertAdjacentHTML('beforeend', `\
-			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
-				<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
-				<div class="user-profile-history-card-result">` + history[i].Score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + history[i].Opponent + `</b></div>
-			</div>`);
+	// for (i = 0; i < history.length; i++) {
+	// 	if (history[i].Winner == g_userId) {
+	// 		score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
+	// 		opponent = await get_user_info(history[i].Loser);
+	//		opponent = opponent.Nick;
 
-			numWins++;
-		}
-		else {
-			historyContainer.insertAdjacentHTML('beforeend', `\
-			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
-				<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
-				<div class="user-profile-history-card-result">` + history[i].Score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + history[i].Opponent + `</b></div>
-			</div>`);
-		}
-		totalScore += history[i].Score.split('-')[1];
-		totalTime += history[i].Time;
-	}
+	// 		historyContainer.insertAdjacentHTML('beforeend', `\
+	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+	// 			<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
+	// 			<div class="user-profile-history-card-result">` + score + `</div>
+	// 			<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+	// 		</div>`);
 
-	if (history.length == 0) {
-		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
-		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
-		return ;
-	}
+	// 		numWins++;
+	// 		totalPoints += history[i]["Loser-score"];
+	// 	}
+	// 	else {
+	// 		score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
+	// 		opponent = await get_user_info(history[i].Winner);
+	//		opponent = opponent.Nick;
 
-	// Display stats
+	// 		historyContainer.insertAdjacentHTML('beforeend', `\
+	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+	// 			<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
+	// 			<div class="user-profile-history-card-result">` + score + `</div>
+	// 			<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+	// 		</div>`);
 
-	document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
-	document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
+	// 		totalPoints += history[i]["Winner-score"];
+	// 	}
+	// 	totalTime += history[i].Time;
+	// }
 
-	var	averageTime;
-	var	averageMinutes;
-	var	averageSeconds;
+	// if (history.length == 0) {
+	// 	document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+	// 	document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+	// 	return ;
+	// }
+
+	// // Display stats
+
+	// document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
+	// document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
+
+	// var	averageTime;
+	// var	averageMinutes;
+	// var	averageSeconds;
 	
-	averageTime = Math.round(totalTime / history.length);
-	averageMinutes = Math.floor(averageTime / 60);
-	averageSeconds = averageTime % 60;
+	// averageTime = Math.round(totalTime / history.length);
+	// averageMinutes = Math.floor(averageTime / 60);
+	// averageSeconds = averageTime % 60;
 
-	document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
+	// document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
 
-	// Current shape graph
+	// // Current shape graph
 
-	const canvas = document.querySelector('.user-profile-stats-graph');
-	if (!canvas.getContext) {
-		return;
-	}
-	canvas.width = canvas.parentElement.offsetWidth;
-	canvas.height = `${getCanvasHeight(history)}`;
+	// const canvas = document.querySelector('.user-profile-stats-graph');
+	// if (!canvas.getContext) {
+	// 	return;
+	// }
+	// canvas.width = canvas.parentElement.offsetWidth;
+	// canvas.height = `${getCanvasHeight(history)}`;
 
-	const ctx = canvas.getContext('2d');
+	// const ctx = canvas.getContext('2d');
 
-	ctx.strokeStyle = '#7300E6';
-	ctx.fillStyle = '#7300E6';
-	ctx.lineWidth = 3;
+	// ctx.strokeStyle = '#7300E6';
+	// ctx.fillStyle = '#7300E6';
+	// ctx.lineWidth = 3;
 
-	var	posX = 50;
-	var	posY = getCanvasStart(history, canvas.height);
-	var	startX = posX;
-	var	startY = posY;
+	// var	posX = 50;
+	// var	posY = getCanvasStart(history, canvas.height);
+	// var	startX = posX;
+	// var	startY = posY;
 
-	// draw lines
-	ctx.beginPath();
-	ctx.moveTo(startX, startY);
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Score.split('-')[0] == 5) {
-			posY += 50;
-		}
-		else {
-			posY -= 50;
-		}
-		posX++;
-		ctx.lineTo(posX, posY);
-	}
-	ctx.stroke();
+	// // draw lines
+	// ctx.beginPath();
+	// ctx.moveTo(startX, startY);
+	// for (i = 0; i < history.length; i++) {
+	// 	if (history[i].Winner == g_userId) {
+	// 		posY += 50;
+	// 	}
+	// 	else {
+	// 		posY -= 50;
+	// 	}
+	// 	posX++;
+	// 	ctx.lineTo(posX, posY);
+	// }
+	// ctx.stroke();
 
-	posX = startX;
-	posY = startY;
+	// posX = startX;
+	// posY = startY;
 
-	// draw points
-	ctx.beginPath();
-	ctx.moveTo(startX, startY);
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Score.split('-')[0] == 5) {
-			posY += 50;
-		}
-		else {
-			posY -= 50;
-		}
-		posX++;
-		ctx.moveTo(posX, posY);
-		ctx.arc(posX, posY, 5, 0, 2*Math.PI);
-	}
-	ctx.fill();
+	// // draw points
+	// ctx.beginPath();
+	// ctx.moveTo(startX, startY);
+	// for (i = 0; i < history.length; i++) {
+	// 	if (history[i].Winner == g_userId) {
+	// 		posY += 50;
+	// 	}
+	// 	else {
+	// 		posY -= 50;
+	// 	}
+	// 	posX++;
+	// 	ctx.moveTo(posX, posY);
+	// 	ctx.arc(posX, posY, 5, 0, 2*Math.PI);
+	// }
+	// ctx.fill();
 }
 
 function getCanvasHeight(history) {
@@ -128,7 +140,7 @@ function getCanvasHeight(history) {
 
 	for (i = 0; i < history.length; i++) {
 		prevResult = result;
-		if (history[i].Score.split('-') == 5) {
+		if (history[i].Winner = g_userId) {
 			result = 1;
 		}
 		else {
@@ -152,7 +164,7 @@ function getCanvasStart(history, height) {
 	var	max = 0;
 
 	for (i = 0; i < history.length; i++) {
-		if (history[i].Score.split('-') == 5) {
+		if (history[i].Winner = g_userId) {
 			result++;
 		}
 		else {
