@@ -55,8 +55,10 @@ chown -R root:root config/certs;
 find . -type d -exec chmod 750 {} \;
 find . -type f -exec chmod 640 {} \;
 
-echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
-openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+if [ ! -f config/certs/aether/aether.pkcs8.key ]; then
+  echo -e "${COLOR_GREEN}Convert the Logstash key to pkcs8${COLOR_RESET}"
+  openssl pkcs8 -inform PEM -in config/certs/aether/aether.key -topk8 -nocrypt -outform PEM -out config/certs/aether/aether.pkcs8.key
+fi;
 
 # Wait for Elasticsearch availability
 echo -e "${COLOR_GREEN}Waiting for Elasticsearch availability...${COLOR_RESET}";

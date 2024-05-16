@@ -26,27 +26,46 @@ document.querySelector('.user-profile-picture input').addEventListener('change',
 		}
 		var	reader = new FileReader();
 		reader.onload = function(e) {
-            		var img = new Image();
-            		img.onload = function() {
+            var img = new Image();
+            img.onload = function() {
 				if (this.width > maxWidth || this.height > maxHeight) {
 					sendImageAlert("max-image-size");
-			                e.target.value = '';
-			        }
+					e.target.value = '';
+				}
 				else if (this.width < minWidth || this.height < minHeight) {
 					sendImageAlert("min-image-size");
-                    			e.target.value = '';
-                		}
+					e.target.value = '';
+				}
 				else {
 					var	url = reader.result;
-                    			document.querySelector('.user-profile-picture > img').setAttribute('src', url);
-					document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
-                		}
-            		};
-            		img.src = e.target.result;
+					uploadImageToDB(file, url);
+				}
         	};
+            img.src = e.target.result;
+        };
         reader.readAsDataURL(file);
 	}
 });
+
+function uploadImageToDB(file, url) {
+    var formData = new FormData();
+    formData.append('avatar', file, file.name);
+
+    fetch('/alfred/user/avatar/' + g_userId, {
+        method: 'POST',
+        body: formData,
+    })
+   .then(response => response.json())
+   .then(data => {
+        console.log('Success:', data);
+		document.querySelector('.user-profile-picture > img').setAttribute('src', url);
+		document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
+		// g_userPic = url;
+    })
+   .catch((error) => {
+        console.error('Error:', error);
+    });
+}
 
 // Send correct alert if image does not respect max / min size
 function sendImageAlert(data) {

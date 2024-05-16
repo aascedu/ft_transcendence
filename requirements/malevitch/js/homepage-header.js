@@ -336,6 +336,14 @@ function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', function() {
+	// Load user profile content
+	// pic and nick
+	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
+	document.querySelector('.user-profile-name').textContent = g_userNick;
+
+	// history and stats
+
+	// render page
 	document.querySelector('.user-profile-picture-input').focus();
 
 	hideEveryPage();
