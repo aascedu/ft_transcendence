@@ -1,3 +1,35 @@
+// Load available tournaments from db
+
+function loadAvailableTournaments() {
+	// var	availableTournaments = get tournament list from db
+	
+	// // If no tournament at all
+	// if (availableTournaments.length == 0) {
+		document.querySelector('.available-tournaments-card-container').classList.add('visually-hidden');
+		document.querySelector('.available-tournaments-empty').classList.remove('visually-hidden');
+		return ;
+	// }
+	
+	// document.querySelector('.available-tournaments-card-container').classList.remove('visually-hidden');
+	// document.querySelector('.available-tournaments-empty').classList.add('visually-hidden');
+
+	// var	availableTournamentsContainer = document.querySelector('.available-tournaments-card-container');
+	// var	tournamentName;
+	// var	tournamentId;
+
+	// for (i = 0; i < availableTournaments.length; i++) {
+	// 	tournamentName = availableTournaments[i].Name;
+	// 	tournamentId = availableTournaments[i].Id;
+	// 	availableTournamentsContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
+	// 		<div class="available-tournaments-card-picture position-absolute">
+	// 			<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="available-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
+	// 	</button>`);
+	// }
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.available-tournaments-icon').addEventListener('click', function() {
