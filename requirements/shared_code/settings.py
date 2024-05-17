@@ -21,10 +21,11 @@ def add_prometheused_apps(apps):
     COMBINED = PROMETHEUS_APP + apps
     return COMBINED
 
-if os.getenv("PROXY_CONF") != "proxy.conf":
+if os.getenv('NOLOGS'):
+    print("No logs mode set")
     LOGGING = None
 else:
-    print("Logging is set")
+    print("Logging mode set")
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
