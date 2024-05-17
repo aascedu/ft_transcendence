@@ -12,8 +12,6 @@ from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_r
 
 class tournamentView(View):
     def get(self, request, id: int):
-
-
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
