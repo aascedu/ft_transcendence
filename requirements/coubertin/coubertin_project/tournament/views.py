@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
-
+import logging
 # Invite someone to tournament
 # Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
