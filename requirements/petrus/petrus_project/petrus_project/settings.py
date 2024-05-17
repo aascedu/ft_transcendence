@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware, LOGGING
 from shared.settings import add_prometheused_apps
 from pathlib import Path
 from pathlib import os
@@ -20,11 +20,8 @@ try:
 except ModuleNotFoundError:
     print("Warn vault_token not found")
 
-from socket import SOCK_STREAM
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -125,33 +122,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "logstash": {
-            "()": "syslog_rfc5424_formatter.RFC5424Formatter"
-        }
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "level": "DEBUG",
-        },
-        "logstash": {
-            "level": "DEBUG",
-            "class": "logging.handlers.SysLogHandler",
-            "address": ("aether", 5141),
-            "socktype": SOCK_STREAM,
-            "formatter" : "logstash",
-        },
-    },
-    "loggers": {
-        "": {
-            "handlers": ["logstash", "console"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-    },
-}
