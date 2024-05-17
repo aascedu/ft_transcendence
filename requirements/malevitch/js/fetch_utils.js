@@ -9,6 +9,7 @@ async function fetch_get(url) {
             console.log(data)
             return data
         })
+        .catch ( error => console.error(error) )
 }
 
 async function fetch_post(url, json) {
@@ -30,24 +31,25 @@ async function fetch_post(url, json) {
             console.log(data)
             return data
         })
+        .catch ( error => console.error(error) )
 }
 
 async function fetch_delete(url) {
-    return fetch (url,
-        {
-            method: 'DELETE',
-        }
-    )
-    .then (response => {
-        if (!response.ok) {
-            throw custom_error(response);
-        }
-        return response.json();
-    })
-    .then (data => {
-        console.log(data);
-        return data;
-    })
+    return fetch (url, {
+                method: 'DELETE',
+            }
+        )
+        .then (response => {
+            if (!response.ok) {
+                throw custom_error(response);
+            }
+            return response.json();
+        })
+        .then (data => {
+            console.log(data);
+            return data;
+        })
+        .catch ( error => console.error(error) )
 }
 
 async function fetch_patch(url, json) {
@@ -68,7 +70,8 @@ async function fetch_patch(url, json) {
             console.log(data);
             return data;
         });
-    }
+        .catch ( error => fetch_error(error) )
+}
 
 
 function fetch_error(error) {
