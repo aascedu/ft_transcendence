@@ -90,7 +90,7 @@ class playerView(View):
         return_json = {}
 
         try:
-            personal_player = Player.objects.get(id=request.user.id)
+            personal_player = Player.objects.get(id=id)
             return_json = personal_player.to_dict()
         except ObjectDoesNotExist as e:
             return_json |= {"Err": e.__str__()}
