@@ -71,10 +71,8 @@ async function invite_friend_to_tournament(TournamentId, Invited) {
             .catch(error => console.error(error));
 }
 
-// Work in progress
-
-async function join_tournament(id) {
-    json = JSON.stringify({Id: id});
+async function join_tournament(TournamentId) {
+    json = JSON.stringify({TournamentId: TournamentId});
     method = 'POST';
     headers = {'Content-Type': 'application/json',};
 
@@ -90,7 +88,7 @@ async function join_tournament(id) {
             .catch(error => console.error(error));
 }
 
-
+// Work in progress
 
 async function get_tournaments_available() {
     json = JSON.stringify({id: -1});

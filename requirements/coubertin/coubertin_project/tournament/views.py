@@ -75,15 +75,15 @@ class tournamentEntry(View):
         try:
             playerId = request.user.id
             data = request.data
-            tournamentId = data['tournamentId']
-            if (tournamentId not in tournaments):
+            TournamentId = data['TournamentId']
+            if (TournamentId not in tournaments):
                 return JsonResponse({'Err': "tournament does not exists"})
-            tournaments[tournamentId].addPlayer(playerId)
+            tournaments[TournamentId].addPlayer(playerId)
             
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
 
-        return JsonResponse({})
+        return JsonResponse({'Msg': "tournament joined"})
         
 class inviteFriend(View):
     def post(self, request):
