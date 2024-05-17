@@ -1,5 +1,5 @@
 function add_petrus_in_url(url) {
-    return ("/petrus/auth" + url)
+    return ("/petrus/auth" + url);
 }
 
 async function get_id_by_nickname(nick_name) {
@@ -10,19 +10,21 @@ async function get_id_by_nickname(nick_name) {
 }
 
 async function post_signin(id, password) {
-    json = Id: id, Pass : password,};
+    json = {Id: id, Pass : password};
 
-    return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json)
-            .then(data => {
-                return data.Ref
-            })
+    return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json);
+}
+
+async function post_signup(id, password, mail) {
+    json = {Id: id, Pass: password, Email: mail};
+    return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json);
 }
 
 async function post_jwt_refresh(refresh_token) {
-    json = {Ref: refresh_token,}
+    json = {Ref: refresh_token,};
 
     return fetch_post(add_petrus_in_url('/JWT-refresh'), json)
             .then(data => {
                 return data.Ref
-            })
+            });
 }

@@ -69,13 +69,13 @@ async function fetch_patch(url, json) {
         .then (data => {
             console.log(data);
             return data;
-        });
-        .catch ( error => fetch_error(error) )
+        })
+        .catch ( error => fetch_error(error) );
 }
 
 
 function fetch_error(error) {
-    console.error('Fetch problem:', error.message)
+    console.error('Fetch problem:', error.message);
 }
 
 function custom_error(response) {
