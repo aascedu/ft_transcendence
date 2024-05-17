@@ -61,7 +61,7 @@ class tournamentEntry(View):
         try:
             playerId = request.user.id
             data = request.data
-            tournamentId = data['tournamentId']
+            tournamentId = data['TournamentId']
             tournaments[tournamentId].removePlayer(playerId)
             
         except Exception as e:
@@ -85,6 +85,21 @@ class tournamentEntry(View):
 
         return JsonResponse({})
         
+class inviteFriend(View):
+    def post(self, request):
+        global tournaments
+
+        data = request.data
+        if 'Invited' not in data or 'TournamentId' not in data:
+            return JsonResponse({'Err': "tournament does not exists"})
+        TournamentId = data['TournamentId']
+        if (TournamentId not in tournaments):
+            return JsonResponse({'Err': "tournament does not exists"})
+        
+        tournaments[TournamentId].invited.append(data['Invited']) 
+
+        # Send a Hermes
+
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments

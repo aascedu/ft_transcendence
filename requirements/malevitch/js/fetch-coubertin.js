@@ -31,6 +31,40 @@ async function change_tournament_name(NewName, TournamentId) {
                     method: method,
                     headers: headers,
                 }
+                )
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+}
+            
+async function remove_player_from_tournament(TournamentId) {
+    json = JSON.stringify({TournamentIdId: TournamentId});
+    method = 'PATCH';
+    headers = {'Content-Type': 'application/json',};
+
+    return fetch(add_coubertin_in_url('/entry/'),
+                {
+                    json: json,
+                    method: method,
+                    headers: headers,
+                }
+            )
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+}
+
+async function invite_friend_to_tournament(TournamentId, Invited) {
+    json = JSON.stringify({TournamentId: TournamentId, Invited: Invited});
+    method = 'PATCH';
+    headers = {'Content-Type': 'application/json',};
+
+    return fetch(add_coubertin_in_url('/entry/'),
+                {
+                    json: json,
+                    method: method,
+                    headers: headers,
+                }
             )
             .then(response => response.json())
             .then(data => console.log(data))
@@ -56,22 +90,6 @@ async function join_tournament(id) {
             .catch(error => console.error(error));
 }
 
-async function remove_player_from_tournament(id) {
-    json = JSON.stringify({Id: id});
-    method = 'PATCH';
-    headers = {'Content-Type': 'application/json',};
-
-    return fetch(add_coubertin_in_url('/entry/'),
-                {
-                    json: json,
-                    method: method,
-                    headers: headers,
-                }
-            )
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
-}
 
 
 async function get_tournaments_available() {
