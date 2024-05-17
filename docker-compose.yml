@@ -262,6 +262,8 @@ services:
 # # Tournament container
   coubertin:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: coubertin
