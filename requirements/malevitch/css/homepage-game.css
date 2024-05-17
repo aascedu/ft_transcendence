@@ -65,9 +65,16 @@
 	left: 12px;
 	height: 60%;
 	width: 3px;
-	background-color: #46DB00;
 	border-radius: 1.5px;
 	border-width: 0;
+}
+
+.homepage-history-win {
+	background-color: #46DB00;
+}
+
+.homepage-history-lose {
+	background-color: #E2123C;
 }
 
 .homepage-game-content-history-card-result {

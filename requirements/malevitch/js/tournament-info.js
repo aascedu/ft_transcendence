@@ -1,3 +1,365 @@
+// Load tournament info from db
+
+function loadTournamentInfo(id) {
+	// var	tournamentInfo = get tournament info from db (id)
+	
+	// // Display tournament name
+	// document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
+
+	// // Display online friends that aren't already invited to tournament
+	// var	availableFriends = get available friends from db (g_userId)
+	// var	friendsContainer = document.querySelector('.tournament-info-invite');
+	// var	userInfo;
+
+	// document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
+
+	// for (i = 0; i < availableFriends.length; i++) {
+	// 	userInfo = get_user_info(availableFriends[i]);
+
+	// 	friendsContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i] + `">
+	// 		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
+	// 		<div class="user-card-picture">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 	</button>`);
+	// }
+	// // if no friend available
+	// if (availableFriends.length == 0) {
+	// 	document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
+	// }
+
+	// // Display players
+	// var	confirmedPlayers = tournamentInfo.Confirmed;
+	// var	pendingPlayers = tournamentInfo.Pending;
+	// var	playersContainer = document.querySelector('.tournament-info-players');
+
+	// // If no player at all
+	// if (confirmedPlayers.length == 0 && pendingPlayers.length == 0) {
+	// 	document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
+	// 	return ;
+	// }
+
+	// document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+
+	// // Display number of players
+	// document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + tournamentInfo.NumPlayers;
+
+	// // Display players that are confirmed
+	// for (i = 0; i < confirmedPlayers.length; i++) {
+	// 	userInfo = get_user_info(confirmedPlayers[i]);
+
+	// 	playersContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card d-flex justify-content-between align-items-center purple-shadow" user-id="` + confirmedPlayers[i] + `">
+	// 		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
+	// 		<div class="user-card-picture">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
+	// 			<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 	</button>`);
+	// }
+
+	// // Display invited players that haven't joined (pending)
+	// for (i = 0; i < pendingPlayers.length; i++) {
+	// 	userInfo = get_user_info(pendingPlayers[i]);
+
+	// 	playersContainer.insertAdjacentHTML('beforeend', `\
+	// 	<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + pendingPlayers[i] + `">
+	// 		<div class="d-flex flex-nowrap align-items-center">
+	// 			<div class="user-card-name unselectable">`+ userInfo.Nick + `</div>
+	// 			<div class="user-card-pending" data-language="pending">(pending...)</div>
+	// 		</div>
+	// 		<div class="user-card-picture">
+	// 			<img src="` + userInfo.Pic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
+	// 			<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 	</button>`);
+	// }
+
+	// // Display tournament bracket if ongoing
+	// if (tournamentInfo.Ongoing == true) {
+	// 	var	bracket = tournamentInfo.Bracket;
+	// 	var	round;
+	// 	var	matchs;
+	// 	var	score;
+
+	// 	if (tournamentInfo.NumPlayers == 4) {
+	// 		// Display 4 players bracket
+	// 		if (document.querySelector('.bracket-round-two') != null) {
+	// 			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+	// 			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+	// 			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+	// 			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+	// 		}
+	// 		document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+
+	// 		// Load info
+
+	// 		// Round one (semifinals)
+	// 		round = document.querySelector('.bracket-round-one-four');
+	// 		matchs = round.querySelectorAll('.bracket-match');
+
+	// 		for (i = 0; i < 2; i++) {
+	// 			if (bracket.RoundOne[i].Players == null) {
+	// 				return ;
+	// 			}
+
+	// 			// fill info for player 1
+	// 			userNick = bracket.RoundOne[i].Players[0].Nick;
+	// 			userPic = bracket.RoundOne[i].Players[0].Pic;
+	// 			score = bracket.RoundOne[i].Score[0];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+
+	// 			// fill info for player 2
+	// 			userNick = bracket.RoundOne[i].Players[1].Nick;
+	// 			userPic = bracket.RoundOne[i].Players[1].Pic;
+	// 			score = bracket.RoundOne[i].Score[1];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+	// 		}
+
+	// 		// Round two (final)
+	// 		round = document.querySelector('.bracket-round-three-four');
+	// 		matchs = round.querySelector('.bracket-match');
+
+	// 		if (bracket.RoundTwo[0].Players == null) {
+	// 			return ;
+	// 		}
+
+	// 		// fill info for player 1
+
+	// 		userNick = bracket.RoundTwo[0].Players[0].Nick;
+	// 		userPic = bracket.RoundTwo[0].Players[0].Pic;
+	// 		score = bracket.RoundTwo[0].Score[0];
+	// 		if (score == null) {
+	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 		}
+	// 		matchs.querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
+	// 		<div class="bracket-player-picture">
+	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 		<div class="bracket-player-score unselectable">` + score + `</div>`);
+
+	// 		// fill info for player 2
+	// 		userNick = bracket.RoundTwo[0].Players[1].Nick;
+	// 		userPic = bracket.RoundTwo[0].Players[1].Pic;
+	// 		score = bracket.RoundTwo[0].Score[1];
+	// 		if (score == null) {
+	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
+	// 		}
+	// 		matchs.querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
+	// 		<div class="bracket-player-picture">
+	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 		<div class="bracket-player-score unselectable">` + score + `</div>`);
+	// 	}
+	// 	else {
+	// 		// Display 8 players bracket if needed
+	// 		if (document.querySelector('.bracket-round-one-four') != null) {
+	// 			document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
+	// 			document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
+	// 			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
+	// 			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
+	// 			document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+	// 		}
+
+	// 		// Load info
+
+	// 		// Round one (quarterfinals)
+	// 		round = document.querySelector('.bracket-round-one');
+	// 		matchs = round.querySelectorAll('.bracket-match');
+
+	// 		for (i = 0; i < 4; i++) {
+	// 			if (bracket.RoundOne[i].Players == null) {
+	// 				return ;
+	// 			}
+	// 			// fill info for player 1
+	// 			userNick = bracket.RoundOne[i].Players[0].Nick;
+	// 			userPic = bracket.RoundOne[i].Players[0].Pic;
+	// 			score = bracket.RoundOne[i].Score[0];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+
+	// 			// fill info for player 2
+	// 			userNick = bracket.RoundOne[i].Players[1].Nick;
+	// 			userPic = bracket.RoundOne[i].Players[1].Pic;
+	// 			score = bracket.RoundOne[i].Score[1];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+	// 		}
+
+	// 		// Round two (semifinals)
+	// 		round = document.querySelector('.bracket-round-two');
+	// 		matchs = round.querySelectorAll('.bracket-match');
+
+	// 		for (i = 0; i < 2; i++) {
+	// 			if (bracket.RoundTwo[i].Players == null) {
+	// 				return ;
+	// 			}
+
+	// 			// fill info for player 1
+	// 			userNick = bracket.RoundTwo[i].Players[0].Nick;
+	// 			userPic = bracket.RoundTwo[i].Players[0].Pic;
+	// 			score = bracket.RoundTwo[i].Score[0];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+
+	// 			// fill info for player 2
+	// 			userNick = bracket.RoundTwo[i].Players[1].Nick;
+	// 			userPic = bracket.RoundTwo[i].Players[1].Pic;
+	// 			score = bracket.RoundTwo[i].Score[1];
+	// 			if (score == null) {
+	// 				score = 0;
+	// 			}
+	// 			if (score == 5) {
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 				matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 				matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
+	// 			}
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
+	// 			<div class="bracket-player-picture">
+	// 				<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 			</div>
+	// 			<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 			<div class="bracket-player-score unselectable">` + score + `</div>`);
+	// 		}
+
+	// 		// Round three (final)
+	// 		round = document.querySelector('.bracket-round-three-four');
+	// 		matchs = round.querySelector('.bracket-match');
+
+	// 		if (bracket.RoundThree[0].Players == null) {
+	// 			return ;
+	// 		}
+
+	// 		// fill info for player 1
+	// 		userNick = bracket.RoundThree[0].Players[0].Nick;
+	// 		userPic = bracket.RoundThree[0].Players[0].Pic;
+	// 		score = bracket.RoundThree[0].Score[0];
+	// 		if (score == null) {
+	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-loser');
+	// 		}
+	// 		matchs.querySelectorAll('.bracket-player')[0].insertAdjacentHTML('beforeend', `\
+	// 		<div class="bracket-player-picture">
+	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 		<div class="bracket-player-score unselectable">` + score + `</div>`);
+
+	// 		// fill info for player 2
+	// 		userNick = bracket.RoundThree[0].Players[1].Nick;
+	// 		userPic = bracket.RoundThree[0].Players[1].Pic;
+	// 		score = bracket.RoundThree[0].Score[1];
+	// 		if (score == null) {
+	// 			score = 0;
+	// 		}
+	// 		if (score == 5) {
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.remove('bracket-loser');
+	// 			matchs[i].querySelectorAll('.bracket-player')[1].classList.add('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.remove('bracket-winner');
+	// 			matchs[i].querySelectorAll('.bracket-player')[0].classList.add('bracket-loser');
+	// 		}
+	// 		matchs.querySelectorAll('.bracket-player')[1].insertAdjacentHTML('beforeend', `\
+	// 		<div class="bracket-player-picture">
+	// 			<img src="` + userPic + `" alt="profile picture of ` + userNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+	// 		</div>
+	// 		<div class="bracket-player-name unselectable">` + userNick + `</div>
+	// 		<div class="bracket-player-score unselectable">` + score + `</div>`);
+	// 	}
+	// }
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.tournament-info-icon').addEventListener('click', function() {
@@ -11,16 +373,20 @@ document.querySelector('.tournament-info-icon').addEventListener('click', functi
 // Load user profile page when clicking on a player
 
 document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', loadUserProfile);
+	item.addEventListener('click', loadUserProfile(item.getAttribute('user-id')));
 });
 
-function loadUserProfile() {
-	// if player is yourself
-	// document.querySelector('.user-profile-picture-input').focus();
+function loadUserProfile(id) {
+	if (id == g_userId) {
+		document.querySelector('.user-profile-picture-input').focus();
+	}
 	// else if user is your friend
 	// document.querySelector('.user-profile-remove-icon').focus();
-	// else
-	document.querySelector('.user-profile-add-icon').focus();
+	else {
+		document.querySelector('.user-profile-add-icon').focus();
+	}
+
+	loadUserContent(id);
 
 	hideEveryPage();
 
@@ -82,6 +448,8 @@ function confirmJoinTournament() {
 	document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
+
+	loadTournamentInfo();
 
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';
@@ -412,21 +780,21 @@ function addInvitedPlayerToTournament(nick, pic) {
 	var playersList = document.querySelector('.tournament-info-players');
 	
 	playersList.insertAdjacentHTML('beforeend', `\
-    <div class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
+    <button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
         <div class="d-flex flex-nowrap align-items-center">
             <div class="user-card-name unselectable">`+ nick + `</div>
             <div class="user-card-pending" data-language="pending">(pending...)</div>
         </div>
         <div class="user-card-picture">
-            <img src="` + pic + `" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
+            <img src="` + pic + `" alt="profile picture of `+ nick + `" draggable="false" (dragstart)="false;" class="unselectable">
         </div>
         <div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
             <img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
         </div>
-    </div>`);
+    </button>`);
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', loadUserProfile);
+		item.addEventListener('click', loadUserProfile(item.getAttribute('user-id')));
 	});
 
 	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
