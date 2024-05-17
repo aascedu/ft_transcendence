@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
-from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
+from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware, LOGGING
 from shared.settings import add_prometheused_apps
 from pathlib import Path
 
