@@ -37,7 +37,6 @@ async function patch_user_info(id, lang, font, nick, email, contrast_mode) {
         json['Contrast-mode'] = contrast_mode
     }
     fetch_patch(url, json)
-    .catch(error => console.error('Erreur:', error));
 }
 
 function friend_url(id) {
@@ -54,16 +53,10 @@ async function get_friend(id) {
 
 async function post_friend(id) {
 	return fetch_post(friend_url(id), {})
-		.catch (error => {
-			console.error('Fetch problem:', error.message);
-		});
 }
 
 async function delete_friend(id) {
     return fetch_delete(friend_url(id))
-    .catch (error => {
-        console.error('Fetch problem:', error.message);
-    });
 }
 
 function avatar_url(id) {

@@ -147,3 +147,30 @@ class gameRequestView(View):
                 }
         )
         return JsonResponse({"status": "Game accepted"})
+
+class tournamentRequestView(View):
+    def post(self, request, requester: int):
+        if request.user.is_service is False:
+            return JsonUnauthorized("Only service can notify new friendship")
+
+        try:
+            notified = int(request.data['Notified'])
+            tournament_name = request.data['Tournament-Name']
+        except KeyError as e:
+            return JsonBadRequest(str(e))
+        except (ValueError, TypeError):
+            return JsonBadRequest("Notified must be an id")
+        notified_group = f'user_{notified}_group'
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            notified_group,
+                {
+                    'type': 'notification.tournament.request',
+                    'player1': notified,
+                    'player2': requester,
+                    'Tournament-Name': tournament_name
+                }
+        )
+        return JsonResponse({"status": "Game accepted"})
+
