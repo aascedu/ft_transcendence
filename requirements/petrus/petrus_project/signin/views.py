@@ -119,7 +119,8 @@ class signupView(View):
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Client": client.id, "ref": refresh_token})
-        response.set_cookie("auth", jwt)
+        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        logging.info("Client created")
         return response
 
 class refreshView(View):
