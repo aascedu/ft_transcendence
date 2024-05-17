@@ -105,8 +105,6 @@ async function get_my_tournaments() {
             .catch(error => console.error(error));
 }
 
-// Work in progress
-
 async function get_tournaments_available() {
     json = JSON.stringify({id: -1});
     method = 'GET';

@@ -38,10 +38,10 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
             response = {}
             for id in tournaments:
                 if tournaments[id].state == 0:
-                    response[id] = tournaments[id].toDict()
+                    response[id] = tournaments[id].toFront()
             return JsonResponse(response)
         else:
-            return JsonResponse(tournaments[id].toDict())
+            return JsonResponse(tournaments[id].toFront())
         
     def patch(self, request):
         global tournaments

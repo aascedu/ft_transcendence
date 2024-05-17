@@ -36,6 +36,45 @@ class Tournament:
                 return True
         return False
 
+    def toFront(self):
+        bracket = {}
+        roundOne = []
+        roundTwo = []
+        roundThree = []
+
+        for game in self.gameHistory:
+            score = []
+            score.append(game['Winner-score'])
+            score.append(game['Loser-score'])
+            players = []
+            players.append(game['Winner'])
+            players.append(game['Loser'])
+            gameFront = {}
+            gameFront['Score'] = score
+            gameFront['Players'] = players
+
+            if game['Round'] == 0:
+                roundOne.append(gameFront)
+            elif game['Round'] == 1:
+                roundTwo.append(gameFront)
+            elif game['Round'] == 2:
+                roundThree.append(gameFront)
+
+        bracket['RoundOne'] = roundOne
+        bracket['RoundTwo'] = roundTwo
+        bracket['RoundThree'] = roundThree
+
+        response = {
+            'Name': self.name,
+            'NumPlayers': self.nbPlayers,
+            'Started': self.started,
+            'Owner': self.admin,
+            'Pending': self.invited,
+            'Confirmed': self.players,
+            'Bracket': bracket,
+        }
+        return response
+
     def toDict(self):
         tournamentDict = {
             'Name': self.name,
@@ -44,7 +83,7 @@ class Tournament:
             'NbPlayers': self.nbPlayers,
             'Admin': self.admin,
         }
-        return (tournamentDict)
+        return tournamentDict
     
 
 tournaments = {}
