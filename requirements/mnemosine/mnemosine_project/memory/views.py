@@ -89,30 +89,12 @@ class playerView(View):
     def get(self, request, id: int = 0):
         return_json = {}
 
-        queries = request.GET.getlist('query')
-        if 'personal' in queries:
-            try:
-                personal_player = Player.objects.get(id=request.user.id)
-                return_json |= {"Perso" : personal_player.to_dict()}
-            except ObjectDoesNotExist as e:
-                return_json |= {"Err": e.__str__()}
+        try:
+            personal_player = Player.objects.get(id=request.user.id)
+            return_json = personal_player.to_dict()
+        except ObjectDoesNotExist as e:
+            return_json |= {"Err": e.__str__()}
 
-        if 'friend' in queries:
-            try:
-                response = requests.get(f"http://alfred:8001/user/friends/{request.user.id}")
-                friends_ids = response.json().get("Friends")
-                if id in friends_ids:
-                    friend = Player.objects.get(id=id)
-                    return_json |= {"Friend": friend.to_dict()}
-            except ObjectDoesNotExist as e:
-                return_json |= {"Err": e.__str__()}
-
-        if 'friends' in queries:
-            pass
-
-        if 'players' in queries:
-            data = request.GET.getlist('players')
-            return_json |= request_get_all(data, 'Players', Player)
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
