@@ -69,7 +69,7 @@ class tournamentEntry(View):
 
         return JsonResponse({})
     
-    def post(self, request): #Join
+    def post(self, request): # Join
         global tournaments
         
         try:
@@ -83,7 +83,8 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
 
-        return JsonResponse({'Msg': "tournament joined"})
+        url = 'wss://localhost:8000/coubertin/tournament/ws/' + str(TournamentId)
+        return JsonResponse({'Msg': "tournament joined", 'url': url}) # url of the websocket to join
         
 class inviteFriend(View):
     def post(self, request):
