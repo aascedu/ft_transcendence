@@ -116,8 +116,8 @@ async function get_unique_use_token() {
     }
 }
 
-async function init_socket() {
-    const roomName = "aaa"; // "player1ID-player2ID"
+
+async function init_socket(roomName) {
     console.log(roomName);
 
     unique_use_token = await get_unique_use_token();

@@ -125,6 +125,9 @@ class gameResult(View): # We need to remove the loser from the player list
         printData(data)
         tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game']) # Game is a dictionnary
+
+        # Envoyer un next round si ongoingGames vaut 0
+
         return JsonResponse({})
 
 def tournamentHome(request, tournamentId):
