@@ -283,6 +283,8 @@ services:
 # # Matchmaking container
   cupidon:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: cupidon
@@ -332,6 +334,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 
@@ -398,6 +402,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 
