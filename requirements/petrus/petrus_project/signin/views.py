@@ -69,11 +69,6 @@ class signinView(View):
 
 
 class signupView(View):
-    """ s'inscrire """
-    def get(self, request):
-        request = request
-        return JsonResponse({"Ava": True})
-
     def post(self, request):
         data = request.data
         client = Client()
@@ -127,7 +122,6 @@ class signupView(View):
         response.set_cookie("auth", jwt)
         logging.info("Client created")
         return response
-
 
 class refreshView(View):
     def post(self, request):
