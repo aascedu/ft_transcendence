@@ -7,7 +7,7 @@ from django.views import View
 import requests
 
 from memory.models import Tournament, Game, Player
-from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
 
 class tournamentView(View):
@@ -36,35 +36,6 @@ class tournamentView(View):
 
 
 class gameView(View):
-    def get(self, request):
-        return_json = {}
-        queryparams = request.GET
-
-        players = queryparams.getlist('players')
-        for player in players:
-
-            try:
-                player_id = int(player)
-            except (ValueError, TypeError):
-                return JsonBadRequest(f'bad player id : {player}')
-
-            try:
-                Player.objects.get(id=player_id)
-            except ObjectDoesNotExist as e:
-                return JsonNotFound(f'{player}: {e.__str__()}')
-
-            return_json |= {'History': [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
-
-        if 'latests' in queryparams:
-            try:
-                x = min(int(queryparams.get('latests', 10)), 10)
-            except (ValueError, TypeError) as e:
-                return JsonBadRequest(e.__str__())
-            latest_games = Game.objects.order_by('-id').reverse()[:x]
-            return_json |= {"latests": [game.to_dict() for game in latest_games]}
-
-        return JsonResponse(return_json)
-
     def post(self, request):
         if request.user.is_service is False:
             return JsonForbiden("Only services can post games")
@@ -87,14 +58,14 @@ class gameView(View):
 
 class playerView(View):
     def get(self, request, id: int = 0):
-        return_json = {}
-
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized("Connect yourself to get history")
         try:
             player = Player.objects.get(id=id)
             return_json = player.to_dict()
             return_json |= {'History': [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
-        except ObjectDoesNotExist as e:
-            return_json |= {"Err": e.__str__()}
+        except ObjectDoesNotExist:
+            return JsonNotFound("Player is not found")
 
         return JsonResponse(return_json)
 
