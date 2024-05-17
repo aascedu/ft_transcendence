@@ -91,7 +91,6 @@ services:
 # # Profil container
   alfred:
     container_name: alfred
-    env_file: .env
     image: alfred
     build:
       context: ./requirements/alfred
@@ -100,6 +99,7 @@ services:
       ALFRED_USER: alfred
       ALFRED_PASSWORD: alfred_pass
       ALFRED_DB: user_management
+      NOLOGS: true
     volumes:
       - ./requirements/alfred/alfred_project:/app
       - ./tokens/alfred:/app/tokens
@@ -142,7 +142,8 @@ services:
 # # Tournament container
   coubertin:
     container_name: coubertin
-    env_file: .env
+    environment:
+      NOLOGS: true
     image: coubertin
     build:
       context: ./requirements/coubertin
@@ -163,7 +164,8 @@ services:
 # # Matchmaking container
   cupidon:
     container_name: cupidon
-    env_file: .env
+    environment:
+      NOLOGS: true
     image: cupidon
     build:
       context: ./requirements/cupidon
@@ -184,7 +186,8 @@ services:
 # # Notification container
   hermes:
     container_name: hermes
-    env_file: .env
+    environment:
+      NOLOGS: true
     image: hermes
     build:
       context: ./requirements/hermes
@@ -205,7 +208,8 @@ services:
 # # Auth inter-container container
   lovelace:
     container_name: lovelace
-    env_file: .env
+    environment:
+      NOLOGS: true
     image: lovelace
     build:
       context: ./requirements/lovelace
@@ -226,7 +230,8 @@ services:
 # # Game container
   ludo:
     container_name: ludo
-    env_file: .env
+    environment:
+      NOLOGS: true
     image: ludo
     build:
       context: ./requirements/ludo
@@ -262,7 +267,6 @@ services:
 # # Stats container
   mnemosine:
     container_name: mnemosine
-    env_file: .env
     image: mnemosine
     build:
       context: ./requirements/mnemosine
@@ -272,6 +276,7 @@ services:
       - ./tokens/mnemosine:/app/tokens
       - shared_code:/app/shared
     environment:
+      NOLOGS: true
       MNEMOSINE_USER: mnemosine
       MNEMOSINE_PASSWORD: 'mnemosine_pass'
       MNEMOSINE_DB: memory_management
@@ -313,12 +318,12 @@ services:
 # # Authentification container
   petrus:
     container_name: petrus
-    env_file: .env
     image: petrus
     build:
       context: ./requirements/petrus
       dockerfile: Dockerfile
     environment:
+      NOLOGS: true
       PETRUS_USER: petrus
       PETRUS_PASSWORD: 'petrus_pass'
       PETRUS_DB: auth_management

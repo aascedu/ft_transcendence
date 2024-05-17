@@ -21,8 +21,11 @@ def add_prometheused_apps(apps):
     COMBINED = PROMETHEUS_APP + apps
     return COMBINED
 
-if os.getenv("NOLOGS") is None:
-    print("Logging is set")
+if os.getenv('NOLOGS'):
+    print("No logs mode set")
+    LOGGING = None
+else:
+    print("Logging mode set")
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
@@ -52,6 +55,3 @@ if os.getenv("NOLOGS") is None:
             },
         },
     }
-else:
-    print("Launched in no logs")
-    LOGGING = None
