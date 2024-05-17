@@ -8,14 +8,18 @@ class Consumer(OurBasicConsumer):
     async def connect(self):
         global tournaments
 
+        if self.security_check() is False:
+            return self.close()
+        self.id = self.scope['user'].id
+
         # Join room group
         self.tournamentId = self.scope["url_route"]["kwargs"]["tournamentId"]
 
         self.admin = False
-        if (len(tournaments[self.tournamentId].players) == 0):
+        if (tournaments[self.tournamentId]):
             self.admin = True # Do we let the admin chose if he plays or not ?
 
-        self.id = len(tournaments[self.tournamentId].players) # We want it to be his place in the players array
+        
         print ("Tournament room name is " + self.tournamentId)
 
         await self.channel_layer.group_add(self.tournamentId, self.channel_name)
