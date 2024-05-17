@@ -1,15 +1,16 @@
 class Tournament:
-    def __init__(self, name, nbPlayers, id, admin):
+    def __init__(self, name, nbPlayers, id, admin, invited):
         self.id = id
         self.name = name
         self.admin = admin
         self.nbPlayers = nbPlayers
-        self.state = 0 # 0 = inscription, 1 = en cours, 2 = termine
+        self.started = False
         self.onGoingGames = 0
         self.currentRound = 0
-        self.players = [] # Id du player dans le tournoi
+        self.players = [] # Id du player
+        self.invited = invited
         self.gameHistory = [] # Liste des dictionnaires de games
-        self.playersMap = {} # Key: id in tournament, Value: global id
+        print("Tournament created")
 
     def addPlayer(self, player):
         if (len(self.players) >= self.nbPlayers):
@@ -19,7 +20,7 @@ class Tournament:
     def removePlayer(self, playerId):
         if (playerId not in self.players):
             raise Exception ("This player is not participating in this tournament")
-        if self.state == 0:
+        if self.started == False:
             self.players.remove(playerId)
         else: # Debug
             print("you tried to remove a player during a tournament")
@@ -32,7 +33,7 @@ class Tournament:
     def toDict(self):
         tournamentDict = {
             'Name': self.name,
-            'Players': self.playersMap,
+            'Players': self.players,
             'Games': self.gameHistory,
             'NbPlayers': self.nbPlayers,
             'Admin': self.admin,

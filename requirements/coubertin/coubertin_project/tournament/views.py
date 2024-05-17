@@ -12,17 +12,22 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
         global tournaments
 
         data = request.data
-        if 'tournamentName' not in data or 'nbPlayers' not in data:
-            return JsonResponse({'Err': "tournamentName or nbPlayers not provided"})
-        tournamentName = data['tournamentName']
-        nbPlayers = data['nbPlayers']
+        if 'Name' not in data or 'NumPlayers' not in data or 'Invited' not in data or 'Admin':
+            return JsonResponse({'Err': "missing informations to create tournament"})
+        tournamentName = data['Name']
+        nbPlayers = data['NumPlayers']
+        admin = data['Admin']
+        invited = data['Invited']
 
         id = 0
-        while id in tournaments:
+        for id in tournaments:
             id += 1
 
-        tournaments[id] = Tournament(tournamentName, nbPlayers, id, 0) # 0 = admin id to get
-        return JsonResponse({}) # Redirect on the tournament url, or join URL ?
+        tournaments[id] = Tournament(tournamentName, nbPlayers, id, admin, invited) # 0 = admin id to get
+        
+        # Faire une requete a Hermes pour inviter les gens
+
+        return JsonResponse({'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
     
     def get(self, request):
         data = request.data
@@ -37,6 +42,17 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
             return JsonResponse(response)
         else:
             return JsonResponse(tournaments[id].toDict())
+        
+    def patch(self, request):
+        global tournaments
+
+        data = request.data
+        if 'NewName' not in data or 'TournamentId' not in data:
+            return JsonResponse({'Err': "missing informations to change tournament name"})
+        
+        tournaments[data['TournamentId']].name = data['NewName']
+
+        return JsonResponse({'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
     def patch(self, request): # Leave
