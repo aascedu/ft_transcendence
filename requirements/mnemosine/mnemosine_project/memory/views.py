@@ -53,7 +53,7 @@ class gameView(View):
             except ObjectDoesNotExist as e:
                 return JsonNotFound(f'{player}: {e.__str__()}')
 
-            return_json |= {player_id: [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
+            return_json |= {'History': [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
 
         if 'latests' in queryparams:
             try:
@@ -90,8 +90,9 @@ class playerView(View):
         return_json = {}
 
         try:
-            personal_player = Player.objects.get(id=id)
-            return_json = personal_player.to_dict()
+            player = Player.objects.get(id=id)
+            return_json = player.to_dict()
+            return_json |= {'History': [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
         except ObjectDoesNotExist as e:
             return_json |= {"Err": e.__str__()}
 
