@@ -18,6 +18,7 @@ function render() {
 	pageToDisplay.classList.remove('visually-hidden');
 
 	if (g_state.pageToDisplay == '.homepage-game') {
+		clearHomepageContent();
 		setHomepageContent();
 
 		var	homepageHeader = document.querySelector('.homepage-header');
@@ -328,6 +329,23 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 
 // update homepage content
 
+function clearHomepageContent() {
+	// clear friend list
+	document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	// clear history
+	document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	// clear stats
+	document.querySelectorAll('.homepage-stats-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+}
+
 async function setHomepageContent() {
 	const userInfo = await get_user_info(g_userId);
 
@@ -471,7 +489,7 @@ async function setHomepageContent() {
 	// Winrate
 	statsContainer.insertAdjacentHTML('beforeend', `\
 	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-		<div class="homepage-game-content-stats-card-stat unselectable">` + (numWins / history.length) + `%</div>
+		<div class="homepage-game-content-stats-card-stat unselectable">` + (numWins / history.length) * 100 + `%</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="winrate">Win rate</div>
 	</div>`);
 
@@ -499,6 +517,7 @@ async function setHomepageContent() {
 }
 
 function goToHomepageGame(previous) {
+	clearHomepageContent();
 	setHomepageContent();
 
 	// hide previous and display homepage content
