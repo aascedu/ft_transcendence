@@ -131,6 +131,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "formatters": {
+        "logstash": {
+            "()": "syslog_rfc5424_formatter.RFC5424Formatter"
+        }
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
@@ -139,9 +144,9 @@ LOGGING = {
         "logstash": {
             "level": "DEBUG",
             "class": "logging.handlers.SysLogHandler",
-            "facility": "user",
-            "address": ("aether", 5140),
+            "address": ("aether", 5141),
             "socktype": SOCK_STREAM,
+            "formatter" : "logstash",
         },
     },
     "loggers": {
