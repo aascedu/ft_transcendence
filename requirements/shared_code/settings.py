@@ -21,9 +21,7 @@ def add_prometheused_apps(apps):
     COMBINED = PROMETHEUS_APP + apps
     return COMBINED
 
-if os.getenv("PROXY_CONF") != "proxy.conf":
-    LOGGING = None
-else:
+if os.getenv("NOLOGS") is None:
     print("Logging is set")
     LOGGING = {
         "version": 1,
@@ -54,3 +52,6 @@ else:
             },
         },
     }
+else:
+    print("Launched in no logs")
+    LOGGING = None

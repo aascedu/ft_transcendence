@@ -91,6 +91,7 @@ services:
 # # Profil container
   alfred:
     container_name: alfred
+    env_file: .env
     image: alfred
     build:
       context: ./requirements/alfred
@@ -141,6 +142,7 @@ services:
 # # Tournament container
   coubertin:
     container_name: coubertin
+    env_file: .env
     image: coubertin
     build:
       context: ./requirements/coubertin
@@ -161,6 +163,7 @@ services:
 # # Matchmaking container
   cupidon:
     container_name: cupidon
+    env_file: .env
     image: cupidon
     build:
       context: ./requirements/cupidon
@@ -181,6 +184,7 @@ services:
 # # Notification container
   hermes:
     container_name: hermes
+    env_file: .env
     image: hermes
     build:
       context: ./requirements/hermes
@@ -201,6 +205,7 @@ services:
 # # Auth inter-container container
   lovelace:
     container_name: lovelace
+    env_file: .env
     image: lovelace
     build:
       context: ./requirements/lovelace
@@ -221,6 +226,7 @@ services:
 # # Game container
   ludo:
     container_name: ludo
+    env_file: .env
     image: ludo
     build:
       context: ./requirements/ludo
@@ -256,6 +262,7 @@ services:
 # # Stats container
   mnemosine:
     container_name: mnemosine
+    env_file: .env
     image: mnemosine
     build:
       context: ./requirements/mnemosine
@@ -306,6 +313,7 @@ services:
 # # Authentification container
   petrus:
     container_name: petrus
+    env_file: .env
     image: petrus
     build:
       context: ./requirements/petrus
