@@ -156,7 +156,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -262,6 +262,8 @@ services:
 # # Tournament container
   coubertin:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: coubertin
@@ -281,6 +283,8 @@ services:
 # # Matchmaking container
   cupidon:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: cupidon
@@ -330,6 +334,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 
@@ -396,6 +402,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 

@@ -19,7 +19,6 @@ try:
 except ModuleNotFoundError:
     print("Warn vault_token not found")
 import os
-from socket import SOCK_STREAM
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
