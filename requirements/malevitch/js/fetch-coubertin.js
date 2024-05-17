@@ -88,6 +88,23 @@ async function join_tournament(TournamentId) {
             .catch(error => console.error(error));
 }
 
+async function get_my_tournaments() {
+    json = JSON.stringify({});
+    method = 'GET';
+    headers = {'Content-Type': 'application/json',};
+
+    return fetch(add_coubertin_in_url('/entry/'),
+                {
+                    json: json,
+                    method: method,
+                    headers: headers,
+                }
+            )
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+}
+
 // Work in progress
 
 async function get_tournaments_available() {

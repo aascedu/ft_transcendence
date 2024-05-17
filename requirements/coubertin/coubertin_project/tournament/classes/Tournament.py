@@ -30,6 +30,12 @@ class Tournament:
         self.gameHistory.append(game)
         self.onGoingGames -= 1
 
+    def userParticipating(self, userId):
+        for i in self.players:
+            if i == userId:
+                return True
+        return False
+
     def toDict(self):
         tournamentDict = {
             'Name': self.name,

@@ -100,6 +100,20 @@ class inviteFriend(View):
 
         # Send a Hermes
 
+class myTournaments(View):
+    def get(self, request):
+        userId = request.user.id
+        response = []
+
+        for i in tournaments:
+            if tournaments[i].userParticipating(userId):
+                t = {}
+                t['Name'] = tournaments[i].name
+                t['Id'] = tournaments[i].id
+                response.append(t)
+
+        return JsonResponse(response)
+
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments
