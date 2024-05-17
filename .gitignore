@@ -26,6 +26,7 @@ youpi
 sources.txt
 **/media/
 **/*project/test_settings.py
+**/*initial.py
 
 # volumes & env
 **/shared
@@ -34,7 +35,3 @@ sources.txt
 **/env_**
 /tokens
 **/media/
-
-# temporary
-elastic-agent.yml
-requirements/aether/conf/info.conf

@@ -7,6 +7,7 @@ import time
 import math
 import json
 import requests
+import logging
 
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
@@ -95,7 +96,7 @@ class Consumer(OurBasicConsumer):
     async def gameStart(self, event):
         global matches
 
-        print("This is from the gameStart function")
+        logging.info("Game starting")
 
         self.myMatch.players.append(Player(self.id, self.gameSettings)) # A check avec le viewer !!
         self.myMatch.ball = Ball(self.gameSettings)

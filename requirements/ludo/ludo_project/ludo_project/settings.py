@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from shared.settings import SHARED_MIDDLEWARE as shared_middleware, add_prometheused_middleware
 from shared.settings import add_prometheused_apps
 from pathlib import Path
+import os
+from socket import SOCK_STREAM
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -118,6 +120,37 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("redis", 6379)],
+        },
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'syslog': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.SysLogHandler',
+            'facility': 'user',
+            'address': ('aether', 5140),
+            'socktype': SOCK_STREAM
+            # 'formatter': 'verbose',
+            # 'host': 'aether',
+            # 'port': 5140,
+            # 'version': 1,
+            # 'message_type': 'logstash',
+            # 'fqdn': True, #fully qualified domain name
+            # 'tags': ['alfred_project'],
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['syslog', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
     },
 }
