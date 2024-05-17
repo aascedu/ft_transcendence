@@ -145,10 +145,6 @@ LOGGING = {
             "address": ("aether", 5141),
             "socktype": SOCK_STREAM,
             "formatter" : "logstash",
-            # "host": "aether",
-            # "port": 5140,
-            # "message_type": "logstash",
-            # "fqdn": True, #fully qualified domain name
         },
     },
     "loggers": {
@@ -159,34 +155,3 @@ LOGGING = {
         },
     },
 }
-
-# LOGGING = {
-#     'version': 1,
-#     'disable_existing_loggers': False,
-#     'handlers': {
-#         'syslog': {
-#             'level': 'DEBUG',
-#             'class': 'logging.handlers.SysLogHandler',
-#             'facility': 'user',
-#             'address': ('aether', 5140),
-#             'socktype': SOCK_STREAM
-#             # 'formatter': 'verbose',
-#             # 'host': 'aether',
-#             # 'port': 5140,
-#             # 'version': 1,
-#             # 'message_type': 'logstash',
-#             # 'fqdn': True, #fully qualified domain name
-#             # 'tags': ['alfred_project'],
-#         },
-#         'console': {
-#             'class': 'logging.StreamHandler',
-#         },
-#     },
-#     'loggers': {
-#         '': {
-#             'handlers': ['syslog', 'console'],
-#             'level': 'DEBUG',
-#             'propagate': True,
-#         },
-#     },
-# }

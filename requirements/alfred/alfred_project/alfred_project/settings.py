@@ -142,10 +142,6 @@ LOGGING = {
             "facility": "user",
             "address": ("aether", 5140),
             "socktype": SOCK_STREAM,
-            # "host": "aether",
-            # "port": 5140,
-            # "message_type": "logstash",
-            # "fqdn": True, #fully qualified domain name
         },
     },
     "loggers": {
