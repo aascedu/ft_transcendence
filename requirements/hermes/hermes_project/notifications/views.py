@@ -22,16 +22,16 @@ class onlineView(View):
             return JsonResponse({'Err': f'{e}'})
 
         friends = response.json().get("Friends")
-
+        print(friends)
         for friend in friends:
             try:
-                id = int(friend)
+                id = friend['Id']
             except (ValueError, TypeError) as e:
                 return JsonBadRequest(f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
-                return_json |= {id: True}
-            else:
                 return_json |= {id: False}
+            else:
+                return_json |= {id: True}
         return JsonResponse({"online-status": return_json})
 
 
