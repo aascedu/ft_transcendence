@@ -19,7 +19,7 @@ from notifications.classes.Consumer import Consumer
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hermes_project.settings')
 
 websocket_urlpatterns = [
-    re_path(r"session/(?P<Nick>[-\w]+)$", Consumer.as_asgi()),
+    re_path(r"session/(?P<Nick>[-\w]+)/$", Consumer.as_asgi()),
 ]
 
 application = ProtocolTypeRouter({
