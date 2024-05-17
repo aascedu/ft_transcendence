@@ -53,7 +53,7 @@ async function submitPassword(password) {
 			console.error(result.Err);
 		}
 		else {
-			console.log('Success sign-in : ' + result);
+			console.log('Success sign-in : ' + result); // Remove after test (ELK).
 			g_jwt = result.Auth;
 			g_refreshToken = result.Ref;
 			goToHomepageGame('.sign-in');
