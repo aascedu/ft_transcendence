@@ -457,7 +457,6 @@ services:
 
   db_exporter_a:
     container_name: db_exporter_a
-    # image: db_exporter_a
     build:
       context: ./requirements/mensura/db_exporter_a
       dockerfile: Dockerfile
@@ -475,7 +474,6 @@ services:
 
   db_exporter_m:
     container_name: db_exporter_m
-    # image: db_exporter_m
     build:
       context: ./requirements/mensura/db_exporter_m
       dockerfile: Dockerfile
@@ -493,7 +491,6 @@ services:
 
   db_exporter_p:
     container_name: db_exporter_p
-    # image: db_exporter_p
     build:
       context: ./requirements/mensura/db_exporter_p
       dockerfile: Dockerfile
@@ -512,7 +509,6 @@ services:
 # # Data exporter container
   alertmanager:
     container_name: alertmanager
-    # image: alertmanager
     build:
       context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile

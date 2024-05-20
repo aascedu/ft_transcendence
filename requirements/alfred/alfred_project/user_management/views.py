@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 import os
 from django.conf import settings
+import logging
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
