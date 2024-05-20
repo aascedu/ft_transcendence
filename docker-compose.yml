@@ -49,626 +49,673 @@ volumes:
     driver: local
 
 services:
-# # Reverse proxy container
-  aegis:
-    container_name: aegis
+# # Vault & ELK's setup
+  vault-setup:
+    extends:
+      file: ./requirements/vault_setup/docker-compose.yml
+      service: vault_setup
+
+# # Django services's databases
+  databases:
+    extends:
+      file: ./requirements/databases/docker-compose.yml
+      service: databases
     depends_on:
-      alfred:
+      vault_setup:
+        condition: service_healthy
+
+# # ELK, Prometheus & Grafana
+  logs_metrics:
+    extends:
+      file: ./requirements/logs_metrics/docker-compose.yml
+      services: logs_metrics
+    depends_on:
+      vault_setup:
+        condition: service_healthy
+
+# # User managements & authentification
+  user:
+    extends:
+      file: ./requirements/user/docker-compose.yml
+      services: user
+    depends_on:
+      databases:
+        condition: service_healthy
+      logs_metrics:
+        condition: service_healthy
+
+# # Game, tournament & matchmaking
+  game:
+    extends:
+      file: ./requirements/game/docker-compose.yml
+      services: game
+    depends_on:
+      logs_metrics:
+        condition: service_healthy
+
+# # Notifications & statistics
+  events:
+    extends:
+      file: ./requirements/events_stats/docker-compose.yml
+      services: events
+    depends_on:
+      logs_metrics:
+        condition: service_healthy
+
+# # Front & Reverse proxy nginx
+  front_proxy:
+    extends:
+      file: ./requirements/front_proxy/docker-compose.yml
+      services: front_proxy
+    depends_on:
+      logs_metrics:
+        condition: service_healthy
+      user:
         condition: service_started
-      aether:
-        condition: service_healthy
-      apollo:
-        condition: service_healthy
-      coubertin:
+      game:
         condition: service_started
-      cupidon:
+      events:
         condition: service_started
-      davinci:
+
+# # Prometheus exporters
+  exporters:
+    extends:
+      file: ./requirements/logs_metrics/docker-compose-exporters.yml
+      services: exporters
+    depends_on:
+      logs_metrics:
+        condition: service_healthy
+      front_proxy:
         condition: service_started
-      hermes:
-        condition: service_started
-      iris:
-        condition: service_healthy
-      ludo:
-        condition: service_started
-      malevitch:
-        condition: service_started
-      mensura:
-        condition: service_started
-      mnemosine:
-        condition: service_started
-      petrus:
-        condition: service_started
-      tutum:
-        condition: service_healthy
-    build:
-      context: ./requirements/aegis
-      dockerfile: Dockerfile
-      args:
-        PROXY_CONF: $PROXY_CONF
-    env_file: .env
-    ports:
-      # - "80:80"
-      # - "443:443"
-      - "7999:80"
-      - "8000:443"
-    volumes:
-      - ./requirements/aegis:/usr/share/nginx/html
-      - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
-    networks:
-      - aegis guard
-      - atlas
-      - sentinel
-    restart: on-failure
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -k https://localhost:8000",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
 
-# Nginx exporter container
-  aegis_vts_exporter:
-    depends_on:
-      aegis:
-        condition: service_started
-    container_name: aegis_vts_exporter
-    build:
-      context: ./requirements/mensura/aegis_vts_exporter
-      dockerfile: Dockerfile
-    ports:
-      - "9913:9913"
-    networks:
-      - atlas
-    restart: on-failure
+# # # Reverse proxy container
+#   aegis:
+#     container_name: aegis
+#     # depends_on:
+#     #   alfred:
+#     #     condition: service_started
+#     #   coubertin:
+#     #     condition: service_started
+#     #   cupidon:
+#     #     condition: service_started
+#     #   davinci:
+#     #     condition: service_started
+#     #   hermes:
+#     #     condition: service_started
+#     #   ludo:
+#     #     condition: service_started
+#     #   malevitch:
+#     #     condition: service_started
+#     #   mensura:
+#     #     condition: service_started
+#     #   mnemosine:
+#     #     condition: service_started
+#     #   petrus:
+#     #     condition: service_started
+#     build:
+#       context: ./requirements/aegis
+#       dockerfile: Dockerfile
+#       args:
+#         PROXY_CONF: $PROXY_CONF
+#     env_file: .env
+#     ports:
+#       # - "80:80"
+#       # - "443:443"
+#       - "7999:80"
+#       - "8000:443"
+#     volumes:
+#       - ./requirements/aegis:/usr/share/nginx/html
+#       - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
+#     networks:
+#       - aegis guard
+#       - atlas
+#       - sentinel
+#     restart: on-failure
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "curl -k https://localhost:8000",
+#         ]
+#       interval: 10s
+#       timeout: 10s  
+#       retries: 120
 
-# # Logstash container
-  aether:
-    depends_on:
-      apollo:
-        condition: service_healthy
-      iris:
-        condition: service_healthy
-    container_name: aether
-    build:
-      context: ./requirements/aether
-      dockerfile: Dockerfile
-    labels:
-      co.elastic.logs/module: logstash
-    user: root
-    volumes:
-      - certificates:/usr/share/logstash/config/certs:ro
-      - logstash_data:/usr/share/logstash/data
-      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-    environment:
-      xpack.monitoring.enabled: false
-      ELASTIC_USER: elastic
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTIC_HOSTS: https://apollo:9200
-    networks:
-      - atlas
-      - sentinel
-    restart: on-failure
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+# # Nginx exporter container
+#   aegis_vts_exporter:
+#     depends_on:
+#       aegis:
+#         condition: service_started
+#     container_name: aegis_vts_exporter
+#     build:
+#       context: ./requirements/mensura/aegis_vts_exporter
+#       dockerfile: Dockerfile
+#     ports:
+#       - "9913:9913"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Profil container
-  alfred:
-    depends_on:
-      alfred_db:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    container_name: alfred
-    build:
-      context: ./requirements/alfred
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/alfred/alfred_project:/app
-      - ./tokens/alfred:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8001:8001"
-    networks:
-      - atlas
-      - alfred_network
-    restart: on-failure
+# # # Logstash container
+#   aether:
+#     depends_on:
+#       apollo:
+#         condition: service_healthy
+#       iris:
+#         condition: service_healthy
+#     container_name: aether
+#     build:
+#       context: ./requirements/aether
+#       dockerfile: Dockerfile
+#     labels:
+#       co.elastic.logs/module: logstash
+#     user: root
+#     volumes:
+#       - certificates:/usr/share/logstash/config/certs:ro
+#       - logstash_data:/usr/share/logstash/data
+#       - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+#     environment:
+#       xpack.monitoring.enabled: false
+#       ELASTIC_USER: elastic
+#       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+#       ELASTIC_HOSTS: https://apollo:9200
+#     networks:
+#       - atlas
+#       - sentinel
+#     restart: on-failure
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
+#         ]
+#       interval: 10s
+#       timeout: 10s
+#       retries: 120
 
-# # Profil database container
-  alfred_db:
-    depends_on:
-      tutum:
-        condition: service_healthy
-    container_name: alfred_db
-    build:
-      context: ./requirements/alfred_db/
-      dockerfile: Dockerfile
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: $POSTGRES_ALFRED_DB
-      POSTGRES_USER: $POSTGRES_ALFRED_USER
-      POSTGRES_PASSWORD: $POSTGRES_ALFRED_PASSWORD
-    volumes:
-      - alfred_data:/var/lib/postgresql/data
-      - ./tokens/alfred-db:/tokens
-    networks:
-      - alfred_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
-      interval: 10s
-      retries: 5
+# # # Profil container
+#   alfred:
+#     depends_on:
+#       alfred_db:
+#         condition: service_healthy
+#       aether:
+#         condition: service_healthy
+#     container_name: alfred
+#     build:
+#       context: ./requirements/alfred
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/alfred/alfred_project:/app
+#       - ./tokens/alfred:/app/tokens
+#       - shared_code:/app/shared
+#     ports:
+#       - "8001:8001"
+#     networks:
+#       - atlas
+#       - alfred_network
+#     restart: on-failure
 
-# # Elastisearch container
-  apollo:
-    depends_on:
-      setup:
-        condition: service_healthy
-      tutum:
-        condition: service_healthy
-    container_name: apollo
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    labels:
-      co.elastic.logs/module: elasticsearch
-    volumes:
-      - certificates:/usr/share/elasticsearch/config/certs:ro
-      - elastic_data:/usr/share/elasticsearch/data
-    networks:
-      - sentinel
-    environment:
-      node.name: elasticsearch
-      discovery.type: single-node
-      cluster.name: ${CLUSTER_NAME}
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      network.host: 0.0.0.0
-      xpack.security.enabled: true
-      xpack.security.http.ssl.enabled: true
-      xpack.security.http.ssl.key: certs/apollo/apollo.key
-      xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
-      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
-      xpack.security.transport.ssl.enabled: true
-      xpack.security.transport.ssl.key: certs/apollo/apollo.key
-      xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
-      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
-      xpack.security.transport.ssl.verification_mode: certificate
-      xpack.license.self_generated.type: ${LICENSE}
-      ES_JAVA_OPTS: -Xms512m -Xms512m
-    mem_limit: ${ES_MEM_LIMIT}
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+# # # Profil database container
+#   alfred_db:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#     container_name: alfred_db
+#     build:
+#       context: ./requirements/alfred_db/
+#       dockerfile: Dockerfile
+#     ports:
+#       - "5432:5432"
+#     environment:
+#       POSTGRES_DB: $POSTGRES_ALFRED_DB
+#       POSTGRES_USER: $POSTGRES_ALFRED_USER
+#       POSTGRES_PASSWORD: $POSTGRES_ALFRED_PASSWORD
+#     volumes:
+#       - alfred_data:/var/lib/postgresql/data
+#       - ./tokens/alfred-db:/tokens
+#     networks:
+#       - alfred_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
+#       interval: 10s
+#       retries: 5
 
-# # Tournament container
-  coubertin:
-    depends_on:
-      aether:
-        condition: service_healthy
-      tutum:
-        condition: service_healthy
-    container_name: coubertin
-    build:
-      context: ./requirements/coubertin
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/coubertin/coubertin_project:/app
-      - ./tokens/shared-django:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8002:8002"
-    networks:
-      - atlas
-    restart: on-failure
+# # # Elastisearch container
+#   apollo:
+#     depends_on:
+#       setup:
+#         condition: service_healthy
+#       tutum:
+#         condition: service_healthy
+#     container_name: apollo
+#     image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+#     labels:
+#       co.elastic.logs/module: elasticsearch
+#     volumes:
+#       - certificates:/usr/share/elasticsearch/config/certs:ro
+#       - elastic_data:/usr/share/elasticsearch/data
+#     networks:
+#       - sentinel
+#     environment:
+#       node.name: elasticsearch
+#       discovery.type: single-node
+#       cluster.name: ${CLUSTER_NAME}
+#       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+#       network.host: 0.0.0.0
+#       xpack.security.enabled: true
+#       xpack.security.http.ssl.enabled: true
+#       xpack.security.http.ssl.key: certs/apollo/apollo.key
+#       xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
+#       xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+#       xpack.security.transport.ssl.enabled: true
+#       xpack.security.transport.ssl.key: certs/apollo/apollo.key
+#       xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
+#       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+#       xpack.security.transport.ssl.verification_mode: certificate
+#       xpack.license.self_generated.type: ${LICENSE}
+#       ES_JAVA_OPTS: -Xms512m -Xms512m
+#     mem_limit: ${ES_MEM_LIMIT}
+#     ulimits:
+#       memlock:
+#         soft: -1
+#         hard: -1
+#     restart: unless-stopped
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "curl --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+#         ]
+#       interval: 10s
+#       timeout: 10s
+#       retries: 120
 
-# # Matchmaking container
-  cupidon:
-    depends_on:
-      aether:
-        condition: service_healthy
-      tutum:
-        condition: service_healthy
-    container_name: cupidon
-    build:
-      context: ./requirements/cupidon
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/cupidon/cupidon_project:/app
-      - ./tokens/shared-django:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8003:8003"
-    networks:
-      - atlas
-    restart: on-failure
+# # # Tournament container
+#   coubertin:
+#     depends_on:
+#       aether:
+#         condition: service_healthy
+#       tutum:
+#         condition: service_healthy
+#     container_name: coubertin
+#     build:
+#       context: ./requirements/coubertin
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/coubertin/coubertin_project:/app
+#       - ./tokens/shared-django:/app/tokens
+#       - shared_code:/app/shared
+#     ports:
+#       - "8002:8002"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Matchmaking container
-  davinci:
-    container_name: davinci
-    build:
-      context: ./requirements/davinci
-      dockerfile: Dockerfile
-    volumes:
-      - ./tokens/davinci:/tokens
-    ports:
-      - "8010:8010"
-    networks:
-      - sentinel
-    depends_on:
-      tutum:
-        condition: service_healthy
-    restart: on-failure
+# # # Matchmaking container
+#   cupidon:
+#     depends_on:
+#       aether:
+#         condition: service_healthy
+#       tutum:
+#         condition: service_healthy
+#     container_name: cupidon
+#     build:
+#       context: ./requirements/cupidon
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/cupidon/cupidon_project:/app
+#       - ./tokens/shared-django:/app/tokens
+#       - shared_code:/app/shared
+#     ports:
+#       - "8003:8003"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Notification container
-  hermes:
-    container_name: hermes
-    build:
-      context: ./requirements/hermes
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/hermes/hermes_project:/app
-      - ./tokens/shared-django:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8004:8004"
-    networks:
-      - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    restart: on-failure
+# # # Grafana container
+#   davinci:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#     container_name: davinci
+#     build:
+#       context: ./requirements/davinci
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./tokens/davinci:/tokens
+#     ports:
+#       - "8010:8010"
+#     networks:
+#       - sentinel
+#     restart: on-failure
 
-# # Kibana container
-  iris:
-    depends_on:
-      apollo:
-        condition: service_healthy
-      tutum:
-        condition: service_healthy
-    container_name: iris
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
-    labels:
-      co.elastic.logs/module: kibana
-    volumes:
-      - certificates:/usr/share/kibana/config/certs:ro
-      - kibana_data:/usr/share/kibana/data
-      - ./tokens:/vault
-    environment:
-      SERVERNAME: kibana
-      ELASTICSEARCH_HOSTS: https://apollo:9200
-      ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
-      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
-      SERVER_SSL_ENABLED: false
-      XPACK_REPORTING_ROLES_ENABLED: false
-      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
-      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
-      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      SERVER_REWRITEBASEPATH: true
-      SERVER_BASEPATH: /iris
-      SERVER_PUBLICBASEURL: https://localhost:8000/iris
-      NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
-      # xpack.screenshotting.browser.chromium.disablesandbox: true
-      # xpack.observability.aiassistant: disable
-      # LICENSE: ${LICENSE}
-    mem_limit: ${KB_MEM_LIMIT}
-    networks:
-      - internet_access
-      - sentinel
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
+# # # Notification container
+#   hermes:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#       aether:
+#         condition: service_healthy
+#     container_name: hermes
+#     build:
+#       context: ./requirements/hermes
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/hermes/hermes_project:/app
+#       - ./tokens/shared-django:/app/tokens
+#       - shared_code:/app/shared
+#     ports:
+#       - "8004:8004"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Auth inter-container container
-  lovelace:
-    container_name: lovelace
-    build:
-      context: ./requirements/lovelace
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/lovelace/lovelace_project:/app
-      - ./tokens/shared-django:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8005:8005"
-    networks:
-      - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    restart: on-failure
+# # # Kibana container
+#   iris:
+#     depends_on:
+#       apollo:
+#         condition: service_healthy
+#       tutum:
+#         condition: service_healthy
+#     container_name: iris
+#     image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+#     labels:
+#       co.elastic.logs/module: kibana
+#     volumes:
+#       - certificates:/usr/share/kibana/config/certs:ro
+#       - kibana_data:/usr/share/kibana/data
+#       - ./tokens:/vault
+#     environment:
+#       SERVERNAME: kibana
+#       ELASTICSEARCH_HOSTS: https://apollo:9200
+#       ELASTICSEARCH_USERNAME: kibana_system
+#       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+#       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+#       SERVER_SSL_ENABLED: false
+#       XPACK_REPORTING_ROLES_ENABLED: false
+#       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+#       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+#       XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+#       SERVER_REWRITEBASEPATH: true
+#       SERVER_BASEPATH: /iris
+#       SERVER_PUBLICBASEURL: https://localhost:8000/iris
+#       NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+#     mem_limit: ${KB_MEM_LIMIT}
+#     networks:
+#       - internet_access
+#       - sentinel
+#     healthcheck:
+#       test:
+#         [
+#           "CMD-SHELL",
+#           "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+#         ]
+#       interval: 10s
+#       timeout: 10s
+#       retries: 120
 
-# # Game container
-  ludo:
-    container_name: ludo
-    build:
-      context: ./requirements/ludo
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/ludo/ludo_project:/app
-      - shared_code:/app/shared
-      - ./tokens/shared-django:/app/tokens
-    ports:
-      - "8006:8006"
-    networks:
-      - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    restart: on-failure
+# # # Game container
+#   ludo:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#       aether:
+#         condition: service_healthy
+#     container_name: ludo
+#     build:
+#       context: ./requirements/ludo
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/ludo/ludo_project:/app
+#       - shared_code:/app/shared
+#       - ./tokens/shared-django:/app/tokens
+#     ports:
+#       - "8006:8006"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Front container
-  malevitch:
-    container_name: malevitch
-    build:
-      context: ./requirements/malevitch
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/malevitch:/usr/share/nginx/html
-    ports:
-      - "8007:80"
-    networks:
-      - atlas
-    restart: on-failure
+# # # Front container
+#   malevitch:
+#     container_name: malevitch
+#     build:
+#       context: ./requirements/malevitch
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/malevitch:/usr/share/nginx/html
+#     ports:
+#       - "8007:80"
+#     networks:
+#       - atlas
+#     restart: on-failure
 
-# # Prometheus container
-  mensura:
-    container_name: mensura
-    build:
-      context: ./requirements/mensura
-      dockerfile: Dockerfile
-    ports:
-      - "8011:8011"
-    networks:
-      - atlas
-      - sentinel
-    restart: on-failure
+# # # Prometheus container
+#   mensura:
+#     container_name: mensura
+#     build:
+#       context: ./requirements/mensura
+#       dockerfile: Dockerfile
+#     ports:
+#       - "8011:8011"
+#     networks:
+#       - atlas
+#       - sentinel
+#     restart: on-failure
 
-  db_exporter_a:
-    container_name: db_exporter_a
-    build:
-      context: ./requirements/mensura/db_exporter_a
-      dockerfile: Dockerfile
-    ports:
-      - "9187:9187"
-    networks:
-      - sentinel
-      - alfred_network
-    volumes:
-      - ./tokens/db_exporter:/tokens
-    depends_on:
-      mensura:
-        condition: service_started
-    restart: on-failure
+#   db_exporter_a:
+#     depends_on:
+#       mensura:
+#         condition: service_started
+#     container_name: db_exporter_a
+#     build:
+#       context: ./requirements/mensura/db_exporter_a
+#       dockerfile: Dockerfile
+#     ports:
+#       - "9187:9187"
+#     networks:
+#       - sentinel
+#       - alfred_network
+#     volumes:
+#       - ./tokens/db_exporter:/tokens
+#     restart: on-failure
 
-  db_exporter_m:
-    container_name: db_exporter_m
-    build:
-      context: ./requirements/mensura/db_exporter_m
-      dockerfile: Dockerfile
-    ports:
-      - "9187:9187"
-    networks:
-      - sentinel
-      - mnemosine_network
-    volumes:
-      - ./tokens/db_exporter:/tokens
-    depends_on:
-      mensura:
-        condition: service_started
-    restart: on-failure
+#   db_exporter_m:
+#     depends_on:
+#       mensura:
+#         condition: service_started
+#     container_name: db_exporter_m
+#     build:
+#       context: ./requirements/mensura/db_exporter_m
+#       dockerfile: Dockerfile
+#     ports:
+#       - "9187:9187"
+#     networks:
+#       - sentinel
+#       - mnemosine_network
+#     volumes:
+#       - ./tokens/db_exporter:/tokens
+#     restart: on-failure
 
-  db_exporter_p:
-    container_name: db_exporter_p
-    build:
-      context: ./requirements/mensura/db_exporter_p
-      dockerfile: Dockerfile
-    ports:
-      - "9187:9187"
-    networks:
-      - sentinel
-      - petrus_network
-    volumes:
-      - ./tokens/db_exporter:/tokens
-    depends_on:
-      mensura:
-        condition: service_started
-    restart: on-failure
+#   db_exporter_p:
+#     depends_on:
+#       mensura:
+#         condition: service_started
+#     container_name: db_exporter_p
+#     build:
+#       context: ./requirements/mensura/db_exporter_p
+#       dockerfile: Dockerfile
+#     ports:
+#       - "9187:9187"
+#     networks:
+#       - sentinel
+#       - petrus_network
+#     volumes:
+#       - ./tokens/db_exporter:/tokens
+#     restart: on-failure
 
-# # Data exporter container
-  alertmanager:
-    container_name: alertmanager
-    build:
-      context: ./requirements/mensura/alertmanager
-      dockerfile: Dockerfile
-    environment:
-      - "GOOGLE_PASS=${GOOGLE_PASS}"
-    ports:
-      - "9093:9093"
-    depends_on:
-      mensura:
-        condition: service_started
-    networks:
-      - aegis guard
-      - sentinel
-    restart: on-failure
+# # # Data exporter container
+#   alertmanager:
+#     depends_on:
+#       mensura:
+#         condition: service_started
+#     container_name: alertmanager
+#     build:
+#       context: ./requirements/mensura/alertmanager
+#       dockerfile: Dockerfile
+#     environment:
+#       - "GOOGLE_PASS=${GOOGLE_PASS}"
+#     ports:
+#       - "9093:9093"
+#     networks:
+#       - aegis guard
+#       - sentinel
+#     restart: on-failure
 
-# # Stats container
-  mnemosine:
-    container_name: mnemosine
-    build:
-      context: ./requirements/mnemosine
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/mnemosine:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8008:8008"
-    networks:
-      - atlas
-      - mnemosine_network
-    depends_on:
-      mnemosine_db:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    restart: on-failure
+# # # Stats container
+#   mnemosine:
+#     depends_on:
+#       mnemosine_db:
+#         condition: service_healthy
+#       aether:
+#         condition: service_healthy
+#     container_name: mnemosine
+#     build:
+#       context: ./requirements/mnemosine
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/mnemosine/mnemosine_project:/app
+#       - ./tokens/mnemosine:/app/tokens
+#       - shared_code:/app/shared
+#     ports:
+#       - "8008:8008"
+#     networks:
+#       - atlas
+#       - mnemosine_network
+#     restart: on-failure
 
-# # Stats database container
-  mnemosine_db:
-    depends_on:
-      tutum:
-        condition: service_healthy
-    container_name: mnemosine_db
-    build:
-      context: ./requirements/mnemosine_db/
-      dockerfile: Dockerfile
-    environment:
-      POSTGRES_DB: $POSTGRES_MNEMOSINE_DB
-      POSTGRES_USER: $POSTGRES_MNEMOSINE_USER
-      POSTGRES_PASSWORD: $POSTGRES_MNEMOSINE_PASSWORD
-    volumes:
-      - ./tokens/mnemosine-db:/tokens
-      - mnemosine_data:/var/lib/postgresql/data
-    networks:
-      - mnemosine_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
-      interval: 10s
-      retries: 5
+# # # Stats database container
+#   mnemosine_db:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#     container_name: mnemosine_db
+#     build:
+#       context: ./requirements/mnemosine_db/
+#       dockerfile: Dockerfile
+#     environment:
+#       POSTGRES_DB: $POSTGRES_MNEMOSINE_DB
+#       POSTGRES_USER: $POSTGRES_MNEMOSINE_USER
+#       POSTGRES_PASSWORD: $POSTGRES_MNEMOSINE_PASSWORD
+#     volumes:
+#       - ./tokens/mnemosine-db:/tokens
+#       - mnemosine_data:/var/lib/postgresql/data
+#     networks:
+#       - mnemosine_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
+#       interval: 10s
+#       retries: 5
 
-# # Authentification container
-  petrus:
-    container_name: petrus
-    build:
-      context: ./requirements/petrus
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/petrus/petrus_project:/app
-      - shared_code:/app/shared
-      - ./tokens/petrus:/app/tokens
-    ports:
-      - "8009:8009"
-    depends_on:
-      petrus_db:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    networks:
-      - atlas
-      - petrus_network
-    restart: on-failure
+# # # Authentification container
+#   petrus:
+#     depends_on:
+#       petrus_db:
+#         condition: service_healthy
+#       aether:
+#         condition: service_healthy
+#     container_name: petrus
+#     build:
+#       context: ./requirements/petrus
+#       dockerfile: Dockerfile
+#     volumes:
+#       - ./requirements/petrus/petrus_project:/app
+#       - shared_code:/app/shared
+#       - ./tokens/petrus:/app/tokens
+#     ports:
+#       - "8009:8009"
+#     networks:
+#       - atlas
+#       - petrus_network
+#     restart: on-failure
 
-# # Authentification database container
-  petrus_db:
-    depends_on:
-      tutum:
-        condition: service_healthy
-    container_name: petrus_db
-    build:
-      context: ./requirements/petrus_db/
-      dockerfile: Dockerfile
-    environment:
-      POSTGRES_DB: $POSTGRES_PETRUS_DB
-      POSTGRES_USER: $POSTGRES_PETRUS_USER
-      POSTGRES_PASSWORD: $POSTGRES_PETRUS_PASSWORD
-    volumes:
-      - ./tokens/petrus-db:/tokens
-      - petrus_data:/var/lib/postgresql/data
-    networks:
-      - petrus_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
-      interval: 10s
-      retries: 5
+# # # Authentification database container
+#   petrus_db:
+#     depends_on:
+#       tutum:
+#         condition: service_healthy
+#     container_name: petrus_db
+#     build:
+#       context: ./requirements/petrus_db/
+#       dockerfile: Dockerfile
+#     environment:
+#       POSTGRES_DB: $POSTGRES_PETRUS_DB
+#       POSTGRES_USER: $POSTGRES_PETRUS_USER
+#       POSTGRES_PASSWORD: $POSTGRES_PETRUS_PASSWORD
+#     volumes:
+#       - ./tokens/petrus-db:/tokens
+#       - petrus_data:/var/lib/postgresql/data
+#     networks:
+#       - petrus_network
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
+#       interval: 10s
+#       retries: 5
 
-# # Vault container
-  tutum:
-    container_name: tutum
-    build:
-      context: ./requirements/tutum
-      dockerfile: Dockerfile
-    env_file: .env
-    volumes:
-      - ./requirements/tutum/vault:/opt/vault
-      - ./tokens:/tokens
-    ports:
-      - "8200:8200"
-    networks:
-      - atlas
-      - sentinel
-      - alfred_network
-      - mnemosine_network
-      - petrus_network
-    restart: on-failure
-    healthcheck:
-      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
+# # # Vault container
+#   tutum:
+#     container_name: tutum
+#     build:
+#       context: ./requirements/tutum
+#       dockerfile: Dockerfile
+#     env_file: .env
+#     volumes:
+#       - ./requirements/tutum/vault:/opt/vault
+#       - ./tokens:/tokens
+#     ports:
+#       - "8200:8200"
+#     networks:
+#       - atlas
+#       - sentinel
+#       - alfred_network
+#       - mnemosine_network
+#       - petrus_network
+#     restart: on-failure
+#     healthcheck:
+#       test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
+#       interval: 1s
+#       timeout: 5s
+#       retries: 120
 
-# # Websocket container
-  redis:
-    container_name: redis
-    image: 'bitnami/redis:latest'
-    environment:
-      - ALLOW_EMPTY_PASSWORD=yes
-    networks:
-      - atlas
-    restart: on-failure
+# # # Websocket container
+#   redis:
+#     container_name: redis
+#     image: 'bitnami/redis:latest'
+#     environment:
+#       - ALLOW_EMPTY_PASSWORD=yes
+#     networks:
+#       - atlas
+#     restart: on-failure
 
 # # ELK setup container
-  setup:
-    depends_on:
-      tutum:
-        condition: service_healthy
-    container_name: setup
-    environment:
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
-    build:
-      context: ./requirements/setup
-      dockerfile: Dockerfile
-    volumes:
-      - certificates:/usr/share/elasticsearch/config/certs
-    user: "0"
-    command: bash /usr/share/elasticsearch/tools/setup.sh
-    networks:
-      - sentinel
-    healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
+  # setup:
+  #   depends_on:
+  #     tutum:
+  #       condition: service_healthy
+  #   container_name: setup
+  #   environment:
+  #     - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+  #     - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+  #   build:
+  #     context: ./requirements/setup
+  #     dockerfile: Dockerfile
+  #   volumes:
+  #     - certificates:/usr/share/elasticsearch/config/certs
+  #   user: "0"
+  #   command: bash /usr/share/elasticsearch/tools/setup.sh
+  #   networks:
+  #     - sentinel
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
+  #     interval: 1s
+  #     timeout: 5s
+  #     retries: 120

@@ -1,0 +1,84 @@
+services:
+# Nginx exporter container
+  aegis_vts_exporter:
+    # depends_on:
+    #   aegis:
+    #     condition: service_started
+    container_name: aegis_vts_exporter
+    build:
+      context: mensura/aegis_vts_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9913:9913"
+    networks:
+      - atlas
+    restart: on-failure
+
+  db_exporter_a:
+    # depends_on:
+    #   mensura:
+    #     condition: service_started
+    container_name: db_exporter_a
+    build:
+      context: mensura/db_exporter_a
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - alfred_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
+    restart: on-failure
+
+  db_exporter_m:
+    # depends_on:
+    #   mensura:
+    #     condition: service_started
+    container_name: db_exporter_m
+    build:
+      context: mensura/db_exporter_m
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - mnemosine_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
+    restart: on-failure
+
+  db_exporter_p:
+    # depends_on:
+    #   mensura:
+    #     condition: service_started
+    container_name: db_exporter_p
+    build:
+      context: mensura/db_exporter_p
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - petrus_network
+    volumes:
+      - ./tokens/db_exporter:/tokens
+    restart: on-failure
+
+# # Data exporter container
+  alertmanager:
+    # depends_on:
+    #   mensura:
+    #     condition: service_started
+    container_name: alertmanager
+    build:
+      context: mensura/alertmanager
+      dockerfile: Dockerfile
+    environment:
+      - "GOOGLE_PASS=${GOOGLE_PASS}"
+    ports:
+      - "9093:9093"
+    networks:
+      - aegis guard
+      - sentinel
+    restart: on-failure

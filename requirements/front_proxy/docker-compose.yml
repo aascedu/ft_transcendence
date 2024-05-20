@@ -1,0 +1,67 @@
+services:
+# # Reverse proxy container
+  aegis:
+    container_name: aegis
+    # depends_on:
+    #   alfred:
+    #     condition: service_started
+    #   coubertin:
+    #     condition: service_started
+    #   cupidon:
+    #     condition: service_started
+    #   davinci:
+    #     condition: service_started
+    #   hermes:
+    #     condition: service_started
+    #   ludo:
+    #     condition: service_started
+    #   malevitch:
+    #     condition: service_started
+    #   mensura:
+    #     condition: service_started
+    #   mnemosine:
+    #     condition: service_started
+    #   petrus:
+    #     condition: service_started
+    build:
+      context: ./requirements/aegis
+      dockerfile: Dockerfile
+      args:
+        PROXY_CONF: $PROXY_CONF
+    env_file: .env
+    ports:
+      # - "80:80"
+      # - "443:443"
+      - "7999:80"
+      - "8000:443"
+    volumes:
+      - ./requirements/aegis:/usr/share/nginx/html
+      - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
+    networks:
+      - aegis guard
+      - atlas
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k https://localhost:8000",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+      
+# # Front container
+  malevitch:
+    container_name: malevitch
+    build:
+      context: ./requirements/malevitch
+      dockerfile: Dockerfile
+    volumes:
+      - ./requirements/malevitch:/usr/share/nginx/html
+    ports:
+      - "8007:80"
+    networks:
+      - atlas
+    restart: on-failure

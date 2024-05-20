@@ -1,0 +1,71 @@
+services:
+# # Profil database container
+  alfred_db:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    container_name: alfred_db
+    build:
+      context: alfred_db
+      dockerfile: Dockerfile
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: $POSTGRES_ALFRED_DB
+      POSTGRES_USER: $POSTGRES_ALFRED_USER
+      POSTGRES_PASSWORD: $POSTGRES_ALFRED_PASSWORD
+    volumes:
+      - alfred_data:/var/lib/postgresql/data
+      - ./tokens/alfred-db:/tokens
+    networks:
+      - alfred_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
+      interval: 10s
+      retries: 5
+
+# # Stats database container
+  mnemosine_db:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    container_name: mnemosine_db
+    build:
+      context: mnemosine_db
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: $POSTGRES_MNEMOSINE_DB
+      POSTGRES_USER: $POSTGRES_MNEMOSINE_USER
+      POSTGRES_PASSWORD: $POSTGRES_MNEMOSINE_PASSWORD
+    volumes:
+      - ./tokens/mnemosine-db:/tokens
+      - mnemosine_data:/var/lib/postgresql/data
+    networks:
+      - mnemosine_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
+      interval: 10s
+      retries: 5
+
+# # Authentification database container
+  petrus_db:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    container_name: petrus_db
+    build:
+      context: petrus_db
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_DB: $POSTGRES_PETRUS_DB
+      POSTGRES_USER: $POSTGRES_PETRUS_USER
+      POSTGRES_PASSWORD: $POSTGRES_PETRUS_PASSWORD
+    volumes:
+      - ./tokens/petrus-db:/tokens
+      - petrus_data:/var/lib/postgresql/data
+    networks:
+      - petrus_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
+      interval: 10s
+      retries: 5

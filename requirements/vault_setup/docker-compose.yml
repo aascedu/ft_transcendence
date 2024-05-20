@@ -1,0 +1,59 @@
+services:
+# # Websocket container
+  redis:
+    container_name: redis
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - atlas
+    restart: on-failure
+
+# # ELK setup container
+  setup:
+    depends_on:
+      tutum:
+        condition: service_healthy
+    container_name: setup
+    environment:
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+    build:
+      context: setup
+      dockerfile: Dockerfile
+    volumes:
+      - certificates:/usr/share/elasticsearch/config/certs
+    user: "0"
+    command: bash /usr/share/elasticsearch/tools/setup.sh
+    networks:
+      - sentinel
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f config/certs/apollo/apollo.crt ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+
+# # Vault container
+  tutum:
+    container_name: tutum
+    build:
+      context: tutum
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./requirements/tutum/vault:/opt/vault
+      - ./tokens:/tokens
+    ports:
+      - "8200:8200"
+    networks:
+      - atlas
+      - sentinel
+      - alfred_network
+      - mnemosine_network
+      - petrus_network
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-sSf", "http://localhost:8200/v1/sys/health"]
+      interval: 1s
+      timeout: 5s
+      retries: 120

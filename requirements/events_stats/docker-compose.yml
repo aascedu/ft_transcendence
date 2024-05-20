@@ -1,0 +1,43 @@
+services:
+# # Notification container
+  hermes:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    #   aether:
+    #     condition: service_healthy
+    container_name: hermes
+    build:
+      context: hermes
+      dockerfile: Dockerfile
+    volumes:
+      - hermes/hermes_project:/app
+      - ./tokens/shared-django:/app/tokens
+      - ../shared_code:/app/shared
+    ports:
+      - "8004:8004"
+    networks:
+      - atlas
+    restart: on-failure
+
+# # Stats container
+  mnemosine:
+    # depends_on:
+    #   mnemosine_db:
+    #     condition: service_healthy
+    #   aether:
+    #     condition: service_healthy
+    container_name: mnemosine
+    build:
+      context: mnemosine
+      dockerfile: Dockerfile
+    volumes:
+      - mnemosine/mnemosine_project:/app
+      - ./tokens/mnemosine:/app/tokens
+      - ../shared_code:/app/shared
+    ports:
+      - "8008:8008"
+    networks:
+      - atlas
+      - mnemosine_network
+    restart: on-failure

@@ -1,0 +1,161 @@
+services:
+# # Logstash container
+  aether:
+    depends_on:
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_healthy
+    container_name: aether
+    build:
+      context: aether
+      dockerfile: Dockerfile
+    labels:
+      co.elastic.logs/module: logstash
+    user: root
+    volumes:
+      - certificates:/usr/share/logstash/config/certs:ro
+      - logstash_data:/usr/share/logstash/data
+      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
+    environment:
+      xpack.monitoring.enabled: false
+      ELASTIC_USER: elastic
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_HOSTS: https://apollo:9200
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+# # Elastisearch container
+  apollo:
+    # depends_on:
+    #   setup:
+    #     condition: service_healthy
+    #   tutum:
+    #     condition: service_healthy
+    container_name: apollo
+    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    labels:
+      co.elastic.logs/module: elasticsearch
+    volumes:
+      - certificates:/usr/share/elasticsearch/config/certs:ro
+      - elastic_data:/usr/share/elasticsearch/data
+    networks:
+      - sentinel
+    environment:
+      node.name: elasticsearch
+      discovery.type: single-node
+      cluster.name: ${CLUSTER_NAME}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      network.host: 0.0.0.0
+      xpack.security.enabled: true
+      xpack.security.http.ssl.enabled: true
+      xpack.security.http.ssl.key: certs/apollo/apollo.key
+      xpack.security.http.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.http.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.enabled: true
+      xpack.security.transport.ssl.key: certs/apollo/apollo.key
+      xpack.security.transport.ssl.certificate: certs/apollo/apollo.crt
+      xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
+      xpack.security.transport.ssl.verification_mode: certificate
+      xpack.license.self_generated.type: ${LICENSE}
+      ES_JAVA_OPTS: -Xms512m -Xms512m
+    mem_limit: ${ES_MEM_LIMIT}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+# # Grafana container
+  davinci:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    container_name: davinci
+    build:
+      context: davinci
+      dockerfile: Dockerfile
+    volumes:
+      - ./tokens/davinci:/tokens
+    ports:
+      - "8010:8010"
+    networks:
+      - sentinel
+    restart: on-failure
+
+# # Kibana container
+  iris:
+    depends_on:
+      apollo:
+        condition: service_healthy
+      # tutum:
+      #   condition: service_healthy
+    container_name: iris
+    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    labels:
+      co.elastic.logs/module: kibana
+    volumes:
+      - certificates:/usr/share/kibana/config/certs:ro
+      - kibana_data:/usr/share/kibana/data
+      - ./tokens:/vault
+    environment:
+      SERVERNAME: kibana
+      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      SERVER_SSL_ENABLED: false
+      XPACK_REPORTING_ROLES_ENABLED: false
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+      SERVER_REWRITEBASEPATH: true
+      SERVER_BASEPATH: /iris
+      SERVER_PUBLICBASEURL: https://localhost:8000/iris
+      NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+    mem_limit: ${KB_MEM_LIMIT}
+    networks:
+      - internet_access
+      - sentinel
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+
+# # Prometheus container
+  mensura:
+    container_name: mensura
+    build:
+      context: mensura
+      dockerfile: Dockerfile
+    ports:
+      - "8011:8011"
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure

@@ -1,0 +1,63 @@
+services:
+# # Tournament container
+  coubertin:
+    depends_on:
+      # aether:
+      #   condition: service_healthy
+      # tutum:
+      #   condition: service_healthy
+    container_name: coubertin
+    build:
+      context: coubertin
+      dockerfile: Dockerfile
+    volumes:
+      - coubertin/coubertin_project:/app
+      - ./tokens/shared-django:/app/tokens
+      - ../shared_code:/app/shared
+    ports:
+      - "8002:8002"
+    networks:
+      - atlas
+    restart: on-failure
+
+# # Matchmaking container
+  cupidon:
+    depends_on:
+      # aether:
+      #   condition: service_healthy
+      # tutum:
+      #   condition: service_healthy
+    container_name: cupidon
+    build:
+      context: cupidon
+      dockerfile: Dockerfile
+    volumes:
+      - cupidon/cupidon_project:/app
+      - ./tokens/shared-django:/app/tokens
+      - ../shared_code:/app/shared
+    ports:
+      - "8003:8003"
+    networks:
+      - atlas
+    restart: on-failure
+
+# # Game container
+  ludo:
+    # depends_on:
+    #   tutum:
+    #     condition: service_healthy
+    #   aether:
+    #     condition: service_healthy
+    container_name: ludo
+    build:
+      context: ludo
+      dockerfile: Dockerfile
+    volumes:
+      - ludo/ludo_project:/app
+      - ../shared_code:/app/shared
+      - ./tokens/shared-django:/app/tokens
+    ports:
+      - "8006:8006"
+    networks:
+      - atlas
+    restart: on-failure

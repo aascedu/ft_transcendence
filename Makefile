@@ -11,7 +11,7 @@ VOLUMES_DIR		=	certification_data elasticsearch_data \
 					mnemosine_data petrus_data filebeat_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
-DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
+DJANGO_CTT		=	alfred coubertin cupidon hermes ludo \
 					mnemosine petrus
 
 #---- docker commands -------------------------------------------------#
@@ -133,10 +133,6 @@ iris:
 	$(COMPOSE) up -d iris
 	$(COMPOSE_F) $(DOCKER_FILE) exec iris /bin/bash
 
-lovelace:
-	$(COMPOSE) up -d lovelace
-	$(COMPOSE_F) $(DOCKER_FILE) exec lovelace bash
-
 ludo:
 	$(COMPOSE) up -d ludo
 	$(COMPOSE_F) $(DOCKER_FILE) exec ludo bash
@@ -206,6 +202,6 @@ endif
 .SILENT:
 .DEFAULT: debug # pour la prod: remettre all
 .PHONY: all up build down volumes copyfile debug clean fclean prune re \
-aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
+aegis alfred apollo coubertin cupidon davinci hermes iris \
 ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset \
 tutum
