@@ -357,6 +357,9 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 	// render page
 	document.querySelector('.user-profile-picture-input').focus();
 
+	clearUserContent();
+	loadUserContent(g_userId);
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.user-profile';

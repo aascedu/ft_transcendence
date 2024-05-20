@@ -386,6 +386,7 @@ function loadUserProfile(id) {
 		document.querySelector('.user-profile-add-icon').focus();
 	}
 
+	clearUserContent();
 	loadUserContent(id);
 
 	hideEveryPage();
