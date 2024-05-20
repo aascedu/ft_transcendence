@@ -77,6 +77,11 @@
 	background-color: #E2123C;
 }
 
+.homepage-history-content-card-container
+.content-card {
+	min-height: 60px;
+}
+
 .homepage-game-content-history-card-result {
 	font-size: 18pt;
 	font-weight: 700;
@@ -127,6 +132,11 @@
 	margin-left: 1px;
 }
 
+.homepage-friend-content-card-container
+.content-card {
+	min-height: 64px;
+}
+
 .homepage-game-content-friends
 .content-card:hover {
 	cursor: pointer;
@@ -152,6 +162,11 @@
 .homepage-game-content-stats {
 	flex-grow: 1;
 	margin-top: 16px;
+}
+
+.homepage-stats-content-card-container
+.content-card {
+	min-height: 56px;
 }
 
 .homepage-game-content-stats-card-stat {
