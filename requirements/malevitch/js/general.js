@@ -18,6 +18,7 @@ function render() {
 	pageToDisplay.classList.remove('visually-hidden');
 
 	if (g_state.pageToDisplay == '.homepage-game') {
+		clearHomepageContent();
 		setHomepageContent();
 
 		var	homepageHeader = document.querySelector('.homepage-header');
@@ -25,6 +26,9 @@ function render() {
 
 		var	homepagePicture = document.querySelector('.homepage-game-picture');
 		homepagePicture.classList.remove('visually-hidden');
+	}
+	if (g_state.pageToDisplay == '.homepage-id') {
+		document.querySelector('.homepage-id-input').focus();
 	}
 
 	setAriaHidden();
@@ -325,6 +329,23 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 
 // update homepage content
 
+function clearHomepageContent() {
+	// clear friend list
+	document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	// clear history
+	document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	// clear stats
+	document.querySelectorAll('.homepage-stats-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+}
+
 async function setHomepageContent() {
 	const userInfo = await get_user_info(g_userId);
 
@@ -369,118 +390,134 @@ async function setHomepageContent() {
 	}
 
 	// show friends
-	var	friendsOnline = /* get_friend_list_online(g_userId) */ 0;
-	// var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
-	// var	friendId;
-	// var	friendNick;
-	// var	friendPic;
+	var	friendsList = await get_friend(g_userId);
+	friendsList = friendsList.Friends;
 
-	// for (i = 0; i < friendsOnline.length; i++) {
-	// 	friendId = friendsOnline[i].Id;
-	// 	friendNick = friendsOnline[i].Nick;
-	// 	friendPic = friendsOnline[i].Pic;
+	var	friendsOnline = await get_friend_list_online(g_userId);
+	friendsOnline = friendsOnline["online-status"];
 
-	// 	friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
-	// 		<div class="user-card-name unselectable">` + friendNick + `</div>
-	// 		<div class="user-card-picture">
-	// 			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
-	// 		</div>
-	// 	</button>`);
-	// }
-	if (friendsOnline == 0) {
+	var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
+	var	numOfFriendsOnline = 0;
+	var	friendId;
+	var	friendNick;
+	var	friendPic;
+	
+	for (i = 0; i < friendsList.length; i++) {
+		if (friendsOnline[friendsList[i].Id] == true) {
+
+			friendId = friendsList[i].Id;
+			friendNick = friendsList[i].Nick;
+			friendPic = friendsList[i].Pic;
+			if (friendPic == null) {
+				friendPic = '/assets/general/pong.png';
+			}
+			
+			friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
+			<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
+			<div class="user-card-name unselectable">` + friendNick + `</div>
+			<div class="user-card-picture">
+			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			</button>`);
+
+			numOfFriendsOnline++;
+		}
+	}
+	if (friendsList.length == 0 || numOfFriendsOnline == 0) {
 		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
 	}
 
 	// History and stats
 
-	// var	history = get history of user from db (last 15 games)
-	// var	historyContainer = document.querySelector('.homepage-history-content-card-container');
-	// var	numWins = 0;
-	// var	totalPoints = 0;
-	// var	totalTime = 0;
-	// var	score;
-	// var	opponent;
+	var	history = await get_game_history(g_userId);
+	history = history.History;
+	var	historyContainer = document.querySelector('.homepage-history-content-card-container');
+	var	numWins = 0;
+	var	totalPoints = 0;
+	var	totalTime = 0;
+	var	score;
+	var	opponent;
 
-	// document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
-	// 	item.classList.add('visually-hidden');
-	// });
+	document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
 
-	// for (i = 0; i < history.length; i++) {
-	// 	if (history[i].Winner == g_userId) {
-	// 		score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
-	// 		opponent = await get_user_info(history[i].Loser);
-	//		opponent = opponent.Nick;
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Winner == g_userId) {
+			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
+			opponent = await get_user_info(history[i].Loser);
+			opponent = opponent.Nick;
 
-	//		historyContainer.insertAdjacentHTML('beforeend', `\
-	//		<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
-	//			<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
-	//			<div class="homepage-game-content-history-card-result">` + score + `</div>
-	//			<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
-	//		</div>`);
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
+				<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
+				<div class="homepage-game-content-history-card-result">` + score + `</div>
+				<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+			</div>`);
 
-	// 		numWins++;
-	// 		totalPoints += history[i]["Loser-score"];
-	// 	}
-	// 	else {
-	// 		score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
-	// 		opponent = await get_user_info(history[i].Winner);
-	//		opponent = opponent.Nick;
+			numWins++;
+			totalPoints += history[i]["Loser-score"];
+		}
+		else {
+			score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
+			opponent = await get_user_info(history[i].Winner);
+			opponent = opponent.Nick;
 
-	//		historyContainer.insertAdjacentHTML('beforeend', `\
-	//		<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
-	//			<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
-	//			<div class="homepage-game-content-history-card-result">` + score + `</div>
-	//			<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
-	//		</div>`);
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
+				<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
+				<div class="homepage-game-content-history-card-result">` + score + `</div>
+				<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+			</div>`);
 
-	// 		totalPoints += history[i]["Winner-score"];
-	// 	}
-	// 	totalTime += history[i].Time;
-	// }
+			totalPoints += history[i]["Winner-score"];
+		}
+		totalTime += history[i].Time;
+	}
 
-	// if (history.length == 0) {
-	// 	document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
-	// 		item.classList.remove('visually-hidden');
-	// 	});
-	// 	return ;
-	// }
+	if (history.length == 0) {
+		document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
+			item.classList.remove('visually-hidden');
+		});
+		return ;
+	}
 
-	// // Display stats
+	// Display stats
 
-	// var	statsContainer = document.querySelector('.homepage-stats-content-card-container');
+	var	statsContainer = document.querySelector('.homepage-stats-content-card-container');
 
-	// // Winrate
-	// statsContainer.insertAdjacentHTML('beforeend', `\
-	// <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-	// 	<div class="homepage-game-content-stats-card-stat unselectable">` + (numWins / history.length) + `%</div>
-	// 	<div class="homepage-game-content-stats-card-context unselectable" data-language="winrate">Win rate</div>
-	// </div>`);
+	// Winrate
+	statsContainer.insertAdjacentHTML('beforeend', `\
+	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
+		<div class="homepage-game-content-stats-card-stat unselectable">` + (numWins / history.length) * 100 + `%</div>
+		<div class="homepage-game-content-stats-card-context unselectable" data-language="winrate">Win rate</div>
+	</div>`);
 
-	// // Average conceded points
-	// statsContainer.insertAdjacentHTML('beforeend', `\
-	// <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-	// 	<div class="homepage-game-content-stats-card-stat unselectable">` + (totalScore / history.length) + `</div>
-	// 	<div class="homepage-game-content-stats-card-context unselectable" data-language="points-conceded">Average conceded points</div>
-	// </div>`);
+	// Average conceded points
+	statsContainer.insertAdjacentHTML('beforeend', `\
+	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
+		<div class="homepage-game-content-stats-card-stat unselectable">` + (totalPoints / history.length) + `</div>
+		<div class="homepage-game-content-stats-card-context unselectable" data-language="points-conceded">Average conceded points</div>
+	</div>`);
 
-	// var	averageTime;
-	// var	averageMinutes;
-	// var	averageSeconds;
+	var	averageTime;
+	var	averageMinutes;
+	var	averageSeconds;
 	
-	// averageTime = Math.round(totalTime / history.length);
-	// averageMinutes = Math.floor(averageTime / 60);
-	// averageSeconds = averageTime % 60;
+	averageTime = Math.round(totalTime / history.length);
+	averageMinutes = Math.floor(averageTime / 60);
+	averageSeconds = averageTime % 60;
 
-	// // Average match duration
-	// statsContainer.insertAdjacentHTML('beforeend', `\
-	// <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-	// 	<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
-	// 	<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
-	// </div>`);
+	// Average match duration
+	statsContainer.insertAdjacentHTML('beforeend', `\
+	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
+		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
+		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
+	</div>`);
 }
 
 function goToHomepageGame(previous) {
+	clearHomepageContent();
 	setHomepageContent();
 
 	// hide previous and display homepage content

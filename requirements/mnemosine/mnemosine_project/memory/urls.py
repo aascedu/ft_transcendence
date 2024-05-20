@@ -16,7 +16,7 @@ def view_db(request):
     return JsonResponse(json)
 
 urlpatterns = [
-        path("pong/tournaments/<int:id>", tournamentView.as_view()),
+    path("tournaments/<int:id>", tournamentView.as_view()),
     path("pong/games", gameView.as_view()),
     path("players/<int:id>", playerView.as_view()),
     path("db", view_db),
