@@ -60,6 +60,9 @@ document.querySelectorAll('.homepage-game-content-friends .content-card').forEac
 	item.addEventListener('click', function () {
 		document.querySelector('.user-profile-remove-icon').focus();
 
+		clearUserContent();
+		loadUserContent(item.getAttribute('user-id'));
+
 		hideEveryPage();
 
 		g_state.pageToDisplay = '.user-profile';
