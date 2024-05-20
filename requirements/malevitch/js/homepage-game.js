@@ -33,6 +33,7 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 });
 
 document.querySelector('.homepage-game-content-tournaments').addEventListener('click', function() {
+	clearMyTournaments();
 	loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
