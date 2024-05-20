@@ -7,13 +7,11 @@ from django.views import View
 import requests
 
 from memory.models import Tournament, Game, Player
-from shared.utils import JsonNotFound, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
 
 class tournamentView(View):
     def get(self, request, id: int):
-
-
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
@@ -36,38 +34,9 @@ class tournamentView(View):
 
 
 class gameView(View):
-    def get(self, request):
-        return_json = {}
-        queryparams = request.GET
-
-        players = queryparams.getlist('players')
-        for player in players:
-
-            try:
-                player_id = int(player)
-            except (ValueError, TypeError):
-                return JsonBadRequest(f'bad player id : {player}')
-
-            try:
-                Player.objects.get(id=player_id)
-            except ObjectDoesNotExist as e:
-                return JsonNotFound(f'{player}: {e.__str__()}')
-
-            return_json |= {player_id: [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
-
-        if 'latests' in queryparams:
-            try:
-                x = min(int(queryparams.get('latests', 10)), 10)
-            except (ValueError, TypeError) as e:
-                return JsonBadRequest(e.__str__())
-            latest_games = Game.objects.order_by('-id').reverse()[:x]
-            return_json |= {"latests": [game.to_dict() for game in latest_games]}
-
-        return JsonResponse(return_json)
-
     def post(self, request):
-        if request.user.is_service is False:
-            return JsonForbiden("Only services can post games")
+        #if request.user.is_service is False:
+            #return JsonForbiden("Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
@@ -87,32 +56,15 @@ class gameView(View):
 
 class playerView(View):
     def get(self, request, id: int = 0):
-        return_json = {}
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized("Connect yourself to get history")
+        try:
+            player = Player.objects.get(id=id)
+            return_json = player.to_dict()
+            return_json |= {'History': [game.to_dict() for game in Game.objects.filter(Q(winner=player) | Q(loser=player)).order_by('-id')[:15]]}
+        except ObjectDoesNotExist:
+            return JsonNotFound("Player is not found")
 
-        queries = request.GET.getlist('query')
-        if 'personal' in queries:
-            try:
-                personal_player = Player.objects.get(id=request.user.id)
-                return_json |= {"Perso" : personal_player.to_dict()}
-            except ObjectDoesNotExist as e:
-                return_json |= {"Err": e.__str__()}
-
-        if 'friend' in queries:
-            try:
-                response = requests.get(f"http://alfred:8001/user/friends/{request.user.id}")
-                friends_ids = response.json().get("Friends")
-                if id in friends_ids:
-                    friend = Player.objects.get(id=id)
-                    return_json |= {"Friend": friend.to_dict()}
-            except ObjectDoesNotExist as e:
-                return_json |= {"Err": e.__str__()}
-
-        if 'friends' in queries:
-            pass
-
-        if 'players' in queries:
-            data = request.GET.getlist('players')
-            return_json |= request_get_all(data, 'Players', Player)
         return JsonResponse(return_json)
 
     def post(self, request, id: int = 0):
