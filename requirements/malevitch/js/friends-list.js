@@ -11,11 +11,6 @@ async function loadFriendsList() {
 		return ;
 	}
 
-	document.querySelector('.friends-list-card-container').classList.remove('visually-hidden');
-	document.querySelector('.friends-list-no-friends').classList.add('visually-hidden');
-	document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
-	document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
-
 	var	friendsOnline = await get_friend_list_online(g_userId);
 	friendsOnline = friendsOnline["online-status"];
 
@@ -65,6 +60,24 @@ async function loadFriendsList() {
 	if (numOfFriendsOffline == 0) {
 		document.querySelector('.friends-list-no-offline').classList.remove('visually-hidden');
 	}
+}
+
+function clearFriendsList() {
+	document.querySelector('.friends-list-card-container').classList.remove('visually-hidden');
+	document.querySelector('.friends-list-no-friends').classList.add('visually-hidden');
+	document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
+	document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
+
+	var	friendsOnlineContainer = document.querySelector('.friends-list-online');
+	var	friendsOfflineContainer = document.querySelector('.friends-list-offline');
+
+	friendsOnlineContainer.querySelectorAll('.content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	friendsOfflineContainer.querySelectorAll('.content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
 }
 
 // Hide when clicking top left button
