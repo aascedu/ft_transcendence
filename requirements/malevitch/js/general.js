@@ -334,10 +334,14 @@ function clearHomepageContent() {
 	document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
 		item.parentElement.removeChild(item);
 	});
+	document.querySelector('.homepage-game-content-no-friends').classList.add('visually-hidden');
 
 	// clear history
 	document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
 		item.parentElement.removeChild(item);
+	});
+	document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
+		item.classList.add('visually-hidden');
 	});
 
 	// clear stats

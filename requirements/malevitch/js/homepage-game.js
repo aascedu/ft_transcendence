@@ -1,4 +1,5 @@
 document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', function() {
+	clearFriendsList();
 	loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
