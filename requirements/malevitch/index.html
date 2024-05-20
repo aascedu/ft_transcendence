@@ -296,7 +296,7 @@
 							<p data-language="history" class="unselectable">History</p>
 						</div>
 						<div class="homepage-history-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
-							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
 							</div>
@@ -330,10 +330,6 @@
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
 							</div>
-						</div>
-						<div class="homepage-game-content-stats-card-graphic w-100 d-flex flex-column justify-content-center align-items-center purple-shadow" data-language="current-shape">
-							Current shape
-							<div class="homepage-game-content-stats-graphic"></div>
 						</div>
 					</div>
 				</div>
@@ -1089,5 +1085,6 @@
         <script src="js/fetch_petrus.js"></script>
         <script src="js/fetch_hermes.js"></script>
         <script src="js/fetch_mnemosine.js"></script>
+		<script src="js/fetch-coubertin.js"></script>
 	</body>
 </html>

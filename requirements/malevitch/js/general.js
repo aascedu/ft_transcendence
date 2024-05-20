@@ -6,6 +6,7 @@ let	g_prevFontSize = 0;
 let	g_jwt;
 let	g_refreshToken;
 let	g_translations = null;
+let	g_canvasHeight = 0;
 
 // History routing.
 
