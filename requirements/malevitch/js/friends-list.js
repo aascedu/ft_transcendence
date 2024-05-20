@@ -96,7 +96,7 @@ document.querySelector('.friends-list-icon').addEventListener('click', function(
 document.querySelectorAll('.friends-list-card-container .content-card').forEach(function(item) {
 	item.addEventListener('click', function () {
 		clearUserContent();
-		loadUserContent(item.setAttribute('user-id'));
+		loadUserContent(item.getAttribute('user-id'));
 
 		hideEveryPage();
 
