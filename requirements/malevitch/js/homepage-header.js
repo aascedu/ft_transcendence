@@ -237,6 +237,7 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 		item.classList.add('visually-hidden');
 	});
 
+	clearFriendsList();
 	loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
