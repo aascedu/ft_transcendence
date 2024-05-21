@@ -7,7 +7,7 @@ document.querySelector('.sign-in-input').addEventListener('input', function() {
 	if (this.value.length > 0) {
 		container.classList.add('input-container-focused');
 		warning.classList.add('visually-hidden');
-		warning.setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	} 
 	else {
 		container.classList.remove('input-container-focused');
@@ -73,7 +73,7 @@ function sendInvalidPassword() {
 	
 	switchLanguageContent(locale);
 	warning.classList.remove('visually-hidden');
-	warning.removeAttribute('aria-hidden');
+	setAriaHidden();
 	input.value = '';
 }
 
