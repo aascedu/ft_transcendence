@@ -7,6 +7,7 @@ import time
 import math
 import json
 import requests
+import logging
 
 # match[self.id] = moi
 # match[(self.id + 1) % 2] = adversaire
@@ -52,6 +53,14 @@ class Consumer(OurBasicConsumer):
     async def disconnect(self, close_code):
         global matches
 
+        if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5:
+            await self.channel_layer.group_send(
+                    self.roomName, {
+                        "type": "gameEnd",
+                        "winner": self.myMatch.players[(self.id + 1) % 2].id
+                    }
+                )
+
         del self.myMatch.players[self.id]
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -95,9 +104,11 @@ class Consumer(OurBasicConsumer):
     async def gameStart(self, event):
         global matches
 
-        print("This is from the gameStart function")
+        logging.info("Game starting")
 
-        self.myMatch.players.append(Player(self.id, self.gameSettings)) # A check avec le viewer !!
+        if self.isPlayer:
+            self.myMatch.players.append(Player(self.id, self.gameSettings))
+
         self.myMatch.ball = Ball(self.gameSettings)
 
         await self.send (text_data=json.dumps({

@@ -1,3 +1,79 @@
+// Load my tournaments from DB
+
+async function loadMyTournaments() {
+	// var	ongoingTournaments = await get_my_tournaments(g_userId);
+	var	closedTournaments = await get_tournament_history(g_userId);
+	closedTournaments = closedTournaments[g_userId];
+	
+	// If no tournament at all
+	// if (ongoingTournaments.length + closedTournaments.length == 0) {
+		document.querySelector('.my-tournaments-ongoing').classList.add('visually-hidden');
+		document.querySelector('.my-tournaments-closed').classList.add('visually-hidden');
+		document.querySelector('.my-tournaments-empty').classList.remove('visually-hidden');
+		return ;
+	// }
+	
+	var	ongoingTournamentsContainer = document.querySelector('.my-tournaments-ongoing');
+	var	closedTournamentsContainer = document.querySelector('.my-tournaments-closed');
+	var	tournamentName;
+	var	tournamentId;
+
+	// My ongoing tournaments
+	document.querySelector('.my-tournaments-no-open').classList.add('visually-hidden');
+
+	for (i = 0; i < ongoingTournaments.length; i++) {
+		tournamentName = ongoingTournaments[i].Name;
+		tournamentId = ongoingTournaments[i].Id;
+
+		ongoingTournamentsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
+			<div class="my-tournaments-card-picture position-absolute">
+				<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
+		</button>`);
+	}
+	if (ongoingTournaments.length == 0) {
+		document.querySelector('.my-tournaments-no-open').classList.remove('visually-hidden');
+	}
+
+	// Closed tournaments
+	document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
+
+	for (i = 0; i < closedTournaments.length; i++) {
+		tournamentName = closedTournaments[i].Name;
+		tournamentId = closedTournaments[i].Id;
+
+		closedTournamentsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
+			<div class="my-tournaments-card-picture position-absolute">
+				<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
+		</button>`);
+	}
+	if (closedTournaments.length == 0) {
+		document.querySelector('.my-tournaments-no-closed').classList.remove('visually-hidden');
+	}
+}
+
+function clearMyTournaments() {
+	document.querySelector('.my-tournaments-ongoing').classList.remove('visually-hidden');
+	document.querySelector('.my-tournaments-closed').classList.remove('visually-hidden');
+	document.querySelector('.my-tournaments-empty').classList.add('visually-hidden');
+
+	var	ongoingTournamentsContainer = document.querySelector('.my-tournaments-ongoing');
+	var	closedTournamentsContainer = document.querySelector('.my-tournaments-closed');
+
+	ongoingTournamentsContainer.querySelectorAll('.content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	closedTournamentsContainer.querySelectorAll('.content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.my-tournaments-icon').addEventListener('click', function() {
@@ -13,6 +89,8 @@ document.querySelector('.my-tournaments-icon').addEventListener('click', functio
 
 document.querySelectorAll('.my-tournaments-card-container .content-card').forEach(function(item) {
 	item.addEventListener('click', function () {
+		loadTournamentInfo();
+
 		document.querySelector('.tournament-info-icon').focus();
 		
 		hideEveryPage();
@@ -48,7 +126,7 @@ document.addEventListener('keydown', function(e) {
 		else {
 			lastTournamentCard = document.querySelector('.my-tournaments-closed').lastElementChild;
 		}
-		// Loop after last friends card
+		// Loop after last tournament card
 		if (e.key === 'Tab' && isFw && document.activeElement === lastTournamentCard) {
 			document.querySelector('.my-tournaments-icon').focus();
 			e.preventDefault();

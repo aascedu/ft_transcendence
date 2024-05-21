@@ -295,14 +295,8 @@
 							</div>
 							<p data-language="history" class="unselectable">History</p>
 						</div>
-						<div class="content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
-							<!-- EXAMPLE OF MATCH / EVENT -->
-							<!-- <div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
-								<div class="homepage-game-content-history-card-color position-absolute"></div>
-								<div class="homepage-game-content-history-card-result">5-4</div>
-								<div class="homepage-game-content-history-card-event">vs<b> Ami1</b></div>
-							</div> -->
-							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+						<div class="homepage-history-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
+							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
 							</div>
@@ -318,17 +312,10 @@
 							<p data-language="online-friends" class="unselectable">Friends online</p>
 						</div>
 						<div class="homepage-friend-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
-							<!-- EXAMPLE OF ONLINE FRIEND -->
 							<div class="homepage-game-content-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 							</div>
-							<!-- <button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami1</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button> -->
 						</div>
 					</div>
 					<div class="homepage-game-content-stats category w-100 d-flex flex-column justify-content-between align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
@@ -338,20 +325,11 @@
 							</div>
 							<p data-language="stats" class="unselectable">Statistics</p>
 						</div>
-						<div class="content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
-							<!-- EXAMPLE OF STAT CARD -->
-							<!-- <div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="homepage-game-content-stats-card-stat">100%</div>
-								<div class="homepage-game-content-stats-card-context">Winrate</div>
-							</div> -->
+						<div class="homepage-stats-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
 							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
 							</div>
-						</div>
-						<div class="homepage-game-content-stats-card-graphic w-100 d-flex flex-column justify-content-center align-items-center purple-shadow" data-language="current-shape">
-							Current shape
-							<div class="homepage-game-content-stats-graphic"></div>
 						</div>
 					</div>
 				</div>
@@ -384,12 +362,6 @@
 						<div class="friends-list-no-online w-100 d-flex justify-content-center align-items-center text-center visually-hidden">
 							<p class="empty-list-content unselectable" data-language="no-friends-online">No friends are online...</p>
 						</div>
-						<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="user-card-name unselectable">Ami1</div>
-							<div class="user-card-picture">
-								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-						</button>
 					</div>
 					<div class="friends-list-offline w-100 d-flex flex-wrap">
 						<div class="friends-list-offline-title friends-list-title w-100">
@@ -398,12 +370,6 @@
 						<div class="friends-list-no-offline w-100 d-flex justify-content-center align-items-center text-center visually-hidden">
 							<p class="empty-list-content unselectable" data-language="no-friends-offline">No friends are offline...</p>
 						</div>
-						<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="user-card-name unselectable">Ami1</div>
-							<div class="user-card-picture">
-								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-						</button>
 					</div>
 				</div>
 				<div class="friends-list-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
@@ -513,19 +479,6 @@
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 							</div>
-							<!-- EXAMPLE OF ONLINE FRIEND -->
-							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami7</div>
-								<div class="user-card-picture">
-									<img src="assets/general/pong.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button>
-							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow">
-								<div class="user-card-name unselectable">Ami9</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button>
 						</div>
 					</div>
 					<button class="tournament-info-join-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
@@ -539,21 +492,12 @@
 					<div class="tournament-info-players w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-players-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
 							<p data-language="players" class="unselectable">Players</p>
-							<p class="tournament-info-players-num unselectable">2/8</p>
+							<p class="tournament-info-players-num unselectable">0/8</p>
 						</div>
 						<div class="tournament-info-no-players w-100 d-flex flex-column justify-content-center align-items-center visually-hidden">
 							<img src="assets/general/no-friends.svg" alt="no players icon" draggable="false" (dragstart)="false;" class="unselectable">
 							<p data-language="no-players" class="text-center unselectable">No player yet...</p>
 						</div>
-						<button class="content-card d-flex justify-content-between align-items-center purple-shadow">
-							<div class="user-card-name unselectable">Ami1</div>
-							<div class="user-card-picture">
-								<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
-								<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-						</button>
 					</div>
 					<div class="tournament-info-bracket w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-bracket-title tournament-info-title w-100">
@@ -564,11 +508,6 @@
 								<div class="bracket-round bracket-round-one">
 									<div class="bracket-match">
 										<div class="bracket-player bracket-winner">
-											<!-- <div class="bracket-player-picture">
-												<img src="assets/general/friend.png" alt="profile picture of player" draggable="false" (dragstart)="false;" class="unselectable">
-											</div>
-											<div class="bracket-player-name unselectable">Player1</div>
-											<div class="bracket-player-score unselectable">5</div> -->
 										</div>
 										<div class="bracket-player bracket-winner">
 										</div>
@@ -880,11 +819,6 @@
 					<div class="user-profile-history-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
 						<p data-language="history" class="unselectable">History</p>
 					</div>
-					<!-- <div class="content-card d-flex justify-content-center align-items-end purple-shadow">
-						<div class="user-profile-history-card-color position-absolute"></div>
-						<div class="user-profile-history-card-result">5-4</div>
-						<div class="user-profile-history-card-event">vs<b> Ami1</b></div>
-					</div> -->
 					<div class="user-profile-empty-history w-100 d-flex flex-column justify-content-center align-items-center">
 						<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 						<p data-language="profile-empty-history" class="text-center unselectable">No game has been played yet...</p>
@@ -895,15 +829,15 @@
 						<p data-language="stats" class="unselectable">Statistics</p>
 					</div>
 					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-						<div class="user-profile-stats-card-stat unselectable">100%</div>
+						<div class="user-profile-stats-card-stat user-profile-winrate unselectable">100%</div>
 						<div class="user-profile-stats-card-context text-center unselectable" data-language="winrate">Win rate</div>
 					</div>
 					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-						<div class="user-profile-stats-card-stat unselectable">4.00</div>
+						<div class="user-profile-stats-card-stat user-profile-points-conceded unselectable">4.00</div>
 						<div class="user-profile-stats-card-context text-center unselectable" data-language="points-conceded">Average conceded points</div>
 					</div>
 					<div class="content-card d-flex justify-content-between align-items-center purple-shadow">
-						<div class="user-profile-stats-card-stat unselectable">3:04</div>
+						<div class="user-profile-stats-card-stat user-profile-match-duration unselectable">3:04</div>
 						<div class="user-profile-stats-card-context text-center unselectable" data-language="match-duration">Average match duration</div>
 					</div>
 					<div class="content-card d-flex flex-column justify-content-between align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
@@ -1146,7 +1080,11 @@
 		<script src="js/pong.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
         <script src="js/session_socket.js"></script>
+        <script src="js/fetch_utils.js"></script>
         <script src="js/fetch_alfred.js"></script>
         <script src="js/fetch_petrus.js"></script>
+        <script src="js/fetch_hermes.js"></script>
+        <script src="js/fetch_mnemosine.js"></script>
+		<script src="js/fetch-coubertin.js"></script>
 	</body>
 </html>

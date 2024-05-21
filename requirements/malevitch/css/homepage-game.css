@@ -65,9 +65,21 @@
 	left: 12px;
 	height: 60%;
 	width: 3px;
-	background-color: #46DB00;
 	border-radius: 1.5px;
 	border-width: 0;
+}
+
+.homepage-history-win {
+	background-color: #46DB00;
+}
+
+.homepage-history-lose {
+	background-color: #E2123C;
+}
+
+.homepage-history-content-card-container
+.content-card {
+	min-height: 60px;
 }
 
 .homepage-game-content-history-card-result {
@@ -120,6 +132,11 @@
 	margin-left: 1px;
 }
 
+.homepage-friend-content-card-container
+.content-card {
+	min-height: 64px;
+}
+
 .homepage-game-content-friends
 .content-card:hover {
 	cursor: pointer;
@@ -145,6 +162,11 @@
 .homepage-game-content-stats {
 	flex-grow: 1;
 	margin-top: 16px;
+}
+
+.homepage-stats-content-card-container
+.content-card {
+	min-height: 56px;
 }
 
 .homepage-game-content-stats-card-stat {

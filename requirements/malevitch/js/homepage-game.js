@@ -1,4 +1,7 @@
 document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', function() {
+	clearFriendsList();
+	loadFriendsList();
+
 	document.querySelector('.friends-list-icon').focus();
 	
 	hideEveryPage();
@@ -30,6 +33,9 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 });
 
 document.querySelector('.homepage-game-content-tournaments').addEventListener('click', function() {
+	clearMyTournaments();
+	loadMyTournaments();
+
 	document.querySelector('.my-tournaments-icon').focus();
 	
 	hideEveryPage();
@@ -53,6 +59,9 @@ document.querySelector('.homepage-game-content-new-tournament').addEventListener
 document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
 	item.addEventListener('click', function () {
 		document.querySelector('.user-profile-remove-icon').focus();
+
+		clearUserContent();
+		loadUserContent(item.getAttribute('user-id'));
 
 		hideEveryPage();
 

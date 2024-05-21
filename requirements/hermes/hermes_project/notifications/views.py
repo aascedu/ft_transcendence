@@ -2,26 +2,36 @@ from django.views import View
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from shared.utils import JsonBadRequest
+from shared.utils import JsonBadRequest, JsonUnauthorized
 from notifications.cache import get_cache
+import requests
 
 # Create your views here.
 
 class onlineView(View):
     def get(self, request):
         return_json = {}
-        queryparams = request.GET
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized("Friendship list can only be get if autenticated")
+        id = request.user.id
+        try:
+            response = requests.get(f'http://alfred:8001/user/friends/{id}')
+            if response.status_code != 200:
+                raise BaseException(f'Error during fetch: {response.json()['Err']}')
+        except BaseException as e:
+            return JsonResponse({'Err': f'{e}'})
 
-        clients = queryparams.getlist('status')
-        for client in clients:
+        friends = response.json().get("Friends")
+        print(friends)
+        for friend in friends:
             try:
-                id = int(client)
+                id = friend['Id']
             except (ValueError, TypeError) as e:
-                return JsonBadRequest(f'client id : {client} must be an int : {e}')
+                return JsonBadRequest(f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
-                return_json |= {id: True}
-            else:
                 return_json |= {id: False}
+            else:
+                return_json |= {id: True}
         return JsonResponse({"online-status": return_json})
 
 
@@ -93,14 +103,14 @@ class gameRequestView(View):
     def get(self, request, requester: int):
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
-        
+
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
             return JsonBadRequest(str(e))
         except (ValueError, TypeError):
             return JsonBadRequest("Notified must be an id")
-        
+
         notified_group = f'user_{notified}_group'
 
         channel_layer = get_channel_layer()
@@ -113,18 +123,18 @@ class gameRequestView(View):
                 }
         )
         return JsonResponse({"status": "Game requested"})
-    
+
     def post(self, request, requester: int):
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
-        
+
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
             return JsonBadRequest(str(e))
         except (ValueError, TypeError):
             return JsonBadRequest("Notified must be an id")
-    
+
         notified_group = f'user_{notified}_group'
 
         channel_layer = get_channel_layer()
@@ -137,3 +147,30 @@ class gameRequestView(View):
                 }
         )
         return JsonResponse({"status": "Game accepted"})
+
+class tournamentRequestView(View):
+    def post(self, request, requester: int):
+        if request.user.is_service is False:
+            return JsonUnauthorized("Only service can notify new friendship")
+
+        try:
+            notified = int(request.data['Notified'])
+            tournament_name = request.data['Tournament-Name']
+        except KeyError as e:
+            return JsonBadRequest(str(e))
+        except (ValueError, TypeError):
+            return JsonBadRequest("Notified must be an id")
+        notified_group = f'user_{notified}_group'
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            notified_group,
+                {
+                    'type': 'notification.tournament.request',
+                    'player1': notified,
+                    'player2': requester,
+                    'Tournament-Name': tournament_name
+                }
+        )
+        return JsonResponse({"status": "Game accepted"})
+

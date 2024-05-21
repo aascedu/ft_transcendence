@@ -133,7 +133,6 @@ services:
       iris:
         condition: service_healthy
     container_name: aether
-    # image: docker.elastic.co/logstash/logstash:${STACK_VERSION}
     build:
       context: ./requirements/aether
       dockerfile: Dockerfile
@@ -144,20 +143,20 @@ services:
       - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
       - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-      # - "./requirements/aether/conf/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
     environment:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       ELASTIC_HOSTS: https://apollo:9200
     networks:
+      - atlas
       - sentinel
     restart: on-failure
     healthcheck:
       test:
         [
           "CMD-SHELL",
-          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -167,6 +166,8 @@ services:
   alfred:
     depends_on:
       alfred_db:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     container_name: alfred
     build:
@@ -261,6 +262,8 @@ services:
 # # Tournament container
   coubertin:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: coubertin
@@ -280,6 +283,8 @@ services:
 # # Matchmaking container
   cupidon:
     depends_on:
+      aether:
+        condition: service_healthy
       tutum:
         condition: service_healthy
     container_name: cupidon
@@ -329,6 +334,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 
@@ -396,6 +403,8 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+      aether:
+        condition: service_healthy
     restart: on-failure
 
 # # Game container
@@ -414,6 +423,8 @@ services:
       - atlas
     depends_on:
       tutum:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     restart: on-failure
 
@@ -535,6 +546,8 @@ services:
     depends_on:
       mnemosine_db:
         condition: service_healthy
+      aether:
+        condition: service_healthy
     restart: on-failure
 
 # # Stats database container
@@ -574,6 +587,8 @@ services:
       - "8009:8009"
     depends_on:
       petrus_db:
+        condition: service_healthy
+      aether:
         condition: service_healthy
     networks:
       - atlas
