@@ -52,13 +52,13 @@ services:
 # # Vault & ELK's setup
   vault-setup:
     extends:
-      file: ./requirements/vault_setup/docker-compose.yml
+      file: ./requirements/vault_setup/docker-compose.yaml
       service: vault_setup
 
 # # Django services's databases
   databases:
     extends:
-      file: ./requirements/databases/docker-compose.yml
+      file: ./requirements/databases/docker-compose.yaml
       service: databases
     depends_on:
       vault_setup:

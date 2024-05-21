@@ -25,7 +25,7 @@ DOCKER_FILE        =    docker-compose-nologs.yml
 else ifeq ($(WHO), hgeffroy)
 DOCKER_FILE        =    docker-compose-nologs.yml
 else
-DOCKER_FILE        =    docker-compose.yml
+DOCKER_FILE        =    docker-compose.yaml
 endif
 COMPOSE		=	docker compose
 COMPOSE_F	=	docker compose -f
