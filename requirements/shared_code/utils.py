@@ -38,3 +38,6 @@ def JsonForbiden(error_message):
 
 def JsonNotFound(error_message):
     return JsonErrResponse(error_message, status=404)
+
+def JsonConflict(error_message):
+    return JsonErrResponse(error_message, status=409)
