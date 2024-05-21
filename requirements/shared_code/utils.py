@@ -28,16 +28,16 @@ def JsonErrResponse(error_message, status):
     return JsonResponse({"Err": error_message}, status=status)
 
 def JsonUnauthorized(error_message):
-    return JsonErrResponse(error_message, status=401)
+    return JsonErrResponse("Unauthorized : " + error_message, status=401)
 
 def JsonBadRequest(error_message):
-    return JsonErrResponse(error_message, status=400)
+    return JsonErrResponse("Bad Request : " + error_message, status=400)
 
 def JsonForbiden(error_message):
-    return JsonErrResponse(error_message, status=403)
+    return JsonErrResponse("Forbiden : " + error_message, status=403)
 
 def JsonNotFound(error_message):
-    return JsonErrResponse(error_message, status=404)
+    return JsonErrResponse("Ressource not found : " + error_message, status=404)
 
 def JsonConflict(error_message):
-    return JsonErrResponse(error_message, status=409)
+    return JsonErrResponse("Conflict : " + error_message, status=409)

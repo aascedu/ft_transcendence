@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 import os
 from django.conf import settings
+from logging import warn
 
 from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, save_response, JsonUnauthorized
 
@@ -15,6 +16,27 @@ def int_to_lang(nb):
         return 2
     if nb == "zh":
         return 3
+    warn("Bad format for language defaulting to en")
+    return 2
+
+class signinView(View):
+    def get(self, request, string: str):
+        Ava: bool = True
+        id: int = -1
+        nick: str = "unknown"
+        by_mail = Client.get_by_email(string)
+        by_nick = Client.get_by_nick(string)
+
+        if by_mail is not None:
+            Ava = False
+            id = by_mail.id
+            nick = by_mail.nick
+        elif by_nick is not None:
+            Ava = False
+            id = by_nick.id
+            nick = by_nick.nick
+        return JsonResponse({"Ava": Ava, "Id": id, "Nick": nick})
+
 
 class userInfoView(View):
     def get(self, request, id: int) -> JsonResponse:
@@ -34,8 +56,6 @@ class userInfoView(View):
         if client in target.friends.all():
             return JsonResponse(target.friends_dict())
         return JsonResponse(target.public_dict())
-
-
 
     def patch(self, request, id: int) -> JsonResponse:
         if request.user.is_service is False and request.user.is_admin is False:
