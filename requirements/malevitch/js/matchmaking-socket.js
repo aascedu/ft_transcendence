@@ -1,6 +1,6 @@
 /***************************************** Websockets *****************************************/
 
-const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/'); // Cf ludo pour la secu
+const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/');
 const Id = g_userId;
 
 exampleSocket.onopen = function(event) {
