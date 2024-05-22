@@ -23,11 +23,16 @@ class Consumer(OurBasicConsumer):
     async def connect(self):
         global matches
 
-        if "err" in self.scope:
-            return self.close()
-
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         print("Room name is " + self.roomName)
+        await self.channel_layer.group_add(self.roomName, self.channel_name)
+
+        if self.roomName not in matches:
+            matches[self.roomName] = Match()
+        self.myMatch = matches[self.roomName]
+
+        if "err" in self.scope:
+            return self.close()
 
         count = self.roomName.count('-')
         if count != 2 and count != 3:
@@ -39,21 +44,14 @@ class Consumer(OurBasicConsumer):
         self.isPlayer = False
         if user.id == p1 or user.id == p2:
             self.isPlayer = True
+            self.myMatch.playersId[self.id] = user.id
 
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             self.close()
 
         self.id = len(self.myMatch.players)
-        if self.isPlayer :
-            self.myMatch.playersId[self.id] = user.id
-
-        if self.roomName not in matches:
-            matches[self.roomName] = Match()
-
-        await self.channel_layer.group_add(self.roomName, self.channel_name)
 
         self.lastRequestTime = 0
-        self.myMatch = matches[self.roomName]
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
         await self.accept()
@@ -62,14 +60,14 @@ class Consumer(OurBasicConsumer):
         global matches
 
         if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5:
-            await self.channel_layer.group_send(
-                    self.roomName, {
-                        "type": "gameEnd",
-                        "winner": self.myMatch.players[(self.id + 1) % 2].id
-                    }
-                )
+            if self.myMatch.gameStarted:
+                await self.channel_layer.group_send(
+                        self.roomName, {
+                            "type": "gameEnd",
+                            "winner": self.myMatch.players[(self.id + 1) % 2].id
+                        }
+                    )
 
-        del self.myMatch.players[self.id]
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from front
