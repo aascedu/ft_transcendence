@@ -148,13 +148,8 @@ class gameRequestView(View): # Check ca !
         )
         return JsonResponse({"status": "Game accepted"})
 
-<<<<<<< HEAD
 class tournamentRequestView(View):
     def post(self, request, requester: int, tournament_id: int):
-=======
-class tournamentRequestView(View): # Rajouter l'id du tournoi ?
-    def post(self, request, requester: int):
->>>>>>> ce6d62c0f502783266f80bc7e3d40325575e0235
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
 
@@ -169,12 +164,11 @@ class tournamentRequestView(View): # Rajouter l'id du tournoi ?
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            notified_group,
-                {
+            notified_group, {
                     'type': 'notification.tournament.request',
                     'player1': notified,
                     'player2': requester,
-                    'tournament-name': tournament_name
+                    'tournament-name': tournament_name,
                     'tournament-id': tournament_id
                 }
         )
