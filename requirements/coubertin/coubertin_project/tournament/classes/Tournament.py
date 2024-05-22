@@ -30,7 +30,7 @@ class Tournament:
         game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.ongoingGames -= 1
-        self.players.remove(game['Loser'])
+        self.contenders.remove(game['Loser'])
         # Virer le loser des contenders
 
     def userParticipating(self, userId):
