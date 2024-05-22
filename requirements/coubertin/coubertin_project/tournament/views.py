@@ -111,7 +111,7 @@ class inviteFriend(View):
 class myTournaments(View):
     def get(self, request):
         userId = request.user.id
-        response = []
+        response = {}
 
         for i in tournaments:
             if tournaments[i].userParticipating(userId):
