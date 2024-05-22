@@ -90,6 +90,11 @@ services:
 
 # # Profil container
   alfred:
+    depends_on:
+      alfred_db:
+        condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: alfred
     image: alfred
     build:
@@ -109,11 +114,6 @@ services:
     networks:
       - atlas
       - alfred_network
-    depends_on:
-      alfred_db:
-        condition: service_started
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Profil database container
@@ -138,6 +138,10 @@ services:
       - alfred_data:/var/lib/postgresql/data
     networks:
       - alfred_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
+      interval: 10s
+      retries: 5
 
 # # Tournament container
   coubertin:
@@ -244,6 +248,11 @@ services:
 
 # # Stats container
   mnemosine:
+    depends_on:
+      mnemosine_db:
+        condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: mnemosine
     image: mnemosine
     build:
@@ -263,11 +272,6 @@ services:
     networks:
       - atlas
       - mnemosine_network
-    depends_on:
-      mnemosine_db:
-        condition: service_started
-      tutum:
-        condition: service_healthy
     restart: on-failure
 
 # # Stats database container
@@ -292,9 +296,18 @@ services:
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
+      interval: 10s
+      retries: 5
 
 # # Authentification container
   petrus:
+    depends_on:
+      petrus_db:
+        condition: service_healthy
+      tutum:
+        condition: service_healthy
     container_name: petrus
     image: petrus
     build:
@@ -311,11 +324,6 @@ services:
       - ./tokens/petrus:/app/tokens
     ports:
       - "8009:8009"
-    depends_on:
-      petrus_db:
-        condition: service_started
-      tutum:
-        condition: service_healthy
     networks:
       - atlas
       - petrus_network
@@ -343,6 +351,10 @@ services:
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
+      interval: 10s
+      retries: 5
 
 # # Vault container
   tutum:
