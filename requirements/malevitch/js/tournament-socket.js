@@ -1,5 +1,5 @@
 const roomName = "pierrepierrepierre"
-const url = 'wss://localhost:8000/coubertin/matchmaking/ws/' + roomName + '/'
+const url = 'wss://localhost:8000/coubertin/tournament/ws/' + roomName + '/'
 const tournamentSocket = new WebSocket(url); // Probably add room name
 
 tournamentSocket.onopen = function(event) {
