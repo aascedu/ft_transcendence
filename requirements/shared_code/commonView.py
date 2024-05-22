@@ -14,11 +14,10 @@ class socketConnectionView(View):
         global identificators
 
         if request.user.is_autenticated is False:
-            return JsonForbiden(request.user.error)
+            return JsonForbiden(request, request.user.error)
 
         key = nanoid.generate()
         request.user.date = datetime.now()
         identificators |= {key: request.user}
-
 
         return JsonResponse({"Key": key})
