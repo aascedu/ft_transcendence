@@ -67,6 +67,8 @@ class tournamentEntry(View):
             
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
+        
+        # Deconnecter la websocket
 
         return JsonResponse({})
     
@@ -132,6 +134,7 @@ class gameResult(View): # We need to remove the loser from the player list
         tournament.addGame(data['game']) # Game is a dictionnary
 
         # Envoyer un next round si ongoingGames vaut 0
+        # Deconnecter la websocket du perdant
 
         return JsonResponse({})
 
