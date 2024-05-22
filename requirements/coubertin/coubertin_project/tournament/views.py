@@ -102,11 +102,15 @@ class inviteFriend(View):
         
         tournaments[TournamentId].invited.append(data['Invited']) 
 
-        requests.post(
-            'http://tournament-request/' + str(request.user.id), 
-            json={'Tournament-Id': TournamentId,
-                    'Tournament-Name': tournaments[TournamentId].name,
-                    'Notified': data['Invited']})
+        try:
+            requests.post(
+                'http://tournament-request/' + str(request.user.id), 
+                json={'Tournament-Id': TournamentId,
+                        'Tournament-Name': tournaments[TournamentId].name,
+                        'Notified': data['Invited']})
+            
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__()})
 
 class myTournaments(View):
     def get(self, request):

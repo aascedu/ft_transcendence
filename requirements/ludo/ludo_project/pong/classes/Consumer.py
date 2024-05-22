@@ -29,6 +29,24 @@ class Consumer(OurBasicConsumer):
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         print("Room name is " + self.roomName)
 
+        count = self.roomName.count('-')
+        if count != 2 and count != 3:
+            return self.close()
+        
+        p1 = self.roomName.split('-')[count - 2]
+        p2 = self.roomName.split('-')[count - 1]
+        user = self.scope['user']
+        self.isPlayer = False
+        if user.id == p1 or user.id == p2:
+            self.isPlayer = True
+
+        if self.isPlayer == False and len(self.myMatch.players) < 2:
+            self.close()
+
+        self.id = len(self.myMatch.players)
+        if self.isPlayer :
+            self.myMatch.playersId[self.id] = user.id
+
         if self.roomName not in matches:
             matches[self.roomName] = Match()
 
@@ -38,16 +56,6 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
-        self.id = len(self.myMatch.players)
-        self.isPlayer = True
-        if self.id > 1:
-            self.isPlayer = False # a tester !
-            self.id = 0
-
-        if self.isPlayer :
-            user = self.scope['user']
-            self.myMatch.playersId[self.id] = user.id
-            
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -126,12 +134,10 @@ class Consumer(OurBasicConsumer):
 
         if self.id == 0:
             if self.roomName.count('-') == 2:
-                tournamentId = int(self.roomName.split("-")[0])
-
                 requests.post(
-                    'http://coubertin:8002/tournament/gameResult/', 
-                    json={'tournamentId': tournamentId,
-                        'game': self.myMatch.to_mnemosine()})
+                    'http://coubertin:8002/tournament/gameResult/',
+                    json={'tournamentId': 'test',
+                        'game': self.myMatch.toDict()})
             else:
                 requests.post(
                     'http://mnemosine:8008/memory/pong/match/0/',
