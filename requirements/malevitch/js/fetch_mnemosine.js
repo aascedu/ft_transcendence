@@ -7,5 +7,9 @@ function get_game_history(id) {
 }
 
 function get_tournament_history(id) {
+    return fetch_get(add_mnemosine_to_url("/tournaments-history/" + id));
+}
+
+function get_tournament_by_id(id) {
     return fetch_get(add_mnemosine_to_url("/tournaments/" + id));
 }
