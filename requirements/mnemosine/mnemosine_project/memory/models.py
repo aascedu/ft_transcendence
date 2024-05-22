@@ -36,7 +36,7 @@ class Tournament(baseModel):
 
     @staticmethod
     def from_json_saved(json):
-        tournament = Tournament.objects.create(name='Named')
+        tournament = Tournament.objects.create(name=json['Name'])
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament

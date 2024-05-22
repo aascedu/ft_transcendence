@@ -4,14 +4,13 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.views import View
 
-import requests
-
 from memory.models import Tournament, Game, Player
 from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
 
-
-class tournamentView(View):
+class tournamentHistoryView(View):
     def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized("Connect yourself to fetch this data")
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
@@ -19,6 +18,16 @@ class tournamentView(View):
         return_json = {player.id: [tournament.to_dict() for tournament in player.tournaments.all()]}
 
         return JsonResponse(return_json)
+
+class tournamentView(View):
+    def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized("Connect yourself to fetch this data")
+        try:
+            tournament = Tournament.objects.get(id=id)
+        except ObjectDoesNotExist as e:
+            return JsonNotFound(f'Tournament can\'t be found for this id : {e}')
+        return JsonResponse(tournament.to_dict())
 
     def post(self, request, id:int  = 0):
         if request.user.is_service is False:
@@ -35,8 +44,8 @@ class tournamentView(View):
 
 class gameView(View):
     def post(self, request):
-        #if request.user.is_service is False:
-            #return JsonForbiden("Only services can post games")
+        if request.user.is_service is False:
+            return JsonForbiden("Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
