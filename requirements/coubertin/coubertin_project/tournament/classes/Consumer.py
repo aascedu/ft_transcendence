@@ -84,7 +84,7 @@ class Consumer(OurBasicConsumer):
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = self.myTournament.contenders[opponentIndex]
 
-        roomName = str(min(self.id, opponentId)) + str(max(self.id, opponentId))
+        roomName = str(self.myTournament.id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
         await self.send(json.dumps({
             'Action': "startGame",
             'RoomName': roomName,
