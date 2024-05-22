@@ -33,9 +33,10 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
             return JsonResponse(request, tournaments[data['id']].toFront())
 
     def post(self, request): # Maybe we can set admin here instead.
-        global tournaments
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified players can post tournaments')
+
+        global tournaments
 
         data = request.data
         try:
