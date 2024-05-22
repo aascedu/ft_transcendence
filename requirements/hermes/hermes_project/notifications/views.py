@@ -99,7 +99,7 @@ class friendshipRequestView(View):
         )
         return JsonResponse({"Friendship": "Notified"})
 
-class gameRequestView(View):
+class gameRequestView(View): # Check ca !
     def get(self, request, requester: int):
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
@@ -148,8 +148,13 @@ class gameRequestView(View):
         )
         return JsonResponse({"status": "Game accepted"})
 
+<<<<<<< HEAD
 class tournamentRequestView(View):
     def post(self, request, requester: int, tournament_id: int):
+=======
+class tournamentRequestView(View): # Rajouter l'id du tournoi ?
+    def post(self, request, requester: int):
+>>>>>>> ce6d62c0f502783266f80bc7e3d40325575e0235
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
 
@@ -173,5 +178,5 @@ class tournamentRequestView(View):
                     'tournament-id': tournament_id
                 }
         )
-        return JsonResponse({"status": "Game accepted"})
+        return JsonResponse({"status": "Tournament accepted"})
 

@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
 import logging
+import requests
 # Invite someone to tournament
 # Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
@@ -24,16 +25,16 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
             id += 1
 
         tournaments[id] = Tournament(tournamentName, nbPlayers, id, admin, invited) # 0 = admin id to get
-        
+
         # Faire une requete a Hermes pour inviter les gens
 
         return JsonResponse({'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
-    
+
     def get(self, request):
         data = request.data
         if 'id' not in data:
             return JsonResponse({'Err': "tournament id not provided"})
-        
+
         if data['id'] == -1: # Pour avoir tous les tournois auxquels on peut s'inscrire
             response = {}
             for id in tournaments:
@@ -42,14 +43,14 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
             return JsonResponse(response)
         else:
             return JsonResponse(tournaments[id].toFront())
-        
+
     def patch(self, request):
         global tournaments
 
         data = request.data
         if 'NewName' not in data or 'TournamentId' not in data:
             return JsonResponse({'Err': "missing informations to change tournament name"})
-        
+
         tournaments[data['TournamentId']].name = data['NewName']
 
         return JsonResponse({'Msg': "Tournament name changed"})
@@ -63,15 +64,17 @@ class tournamentEntry(View):
             data = request.data
             tournamentId = data['TournamentId']
             tournaments[tournamentId].removePlayer(playerId)
-            
+
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
 
+        # Deconnecter la websocket
+
         return JsonResponse({})
-    
-    def post(self, request): #Join
+
+    def post(self, request): # Join
         global tournaments
-        
+
         try:
             playerId = request.user.id
             data = request.data
@@ -79,12 +82,13 @@ class tournamentEntry(View):
             if (TournamentId not in tournaments):
                 return JsonResponse({'Err': "tournament does not exists"})
             tournaments[TournamentId].addPlayer(playerId)
-            
+
         except Exception as e:
             return JsonResponse({'Err': e.__str__()})
 
-        return JsonResponse({'Msg': "tournament joined"})
-        
+        url = 'wss://localhost:8000/coubertin/tournament/ws/' + str(TournamentId)
+        return JsonResponse({'Msg': "tournament joined", 'url': url}) # url of the websocket to join
+
 class inviteFriend(View):
     def post(self, request):
         global tournaments
@@ -95,15 +99,22 @@ class inviteFriend(View):
         TournamentId = data['TournamentId']
         if (TournamentId not in tournaments):
             return JsonResponse({'Err': "tournament does not exists"})
-        
-        tournaments[TournamentId].invited.append(data['Invited']) 
 
-        # Send a Hermes
+        tournaments[TournamentId].invited.append(data['Invited'])
+
+        try:
+            requests.post(
+                'http://tournament-request/' + str(request.user.id),
+                json={'Tournament-Id': TournamentId,
+                        'Tournament-Name': tournaments[TournamentId].name,
+                        'Notified': data['Invited']})
+        except Exception as e:
+            return JsonResponse({'Err': e.__str__()})
 
 class myTournaments(View):
     def get(self, request):
         userId = request.user.id
-        response = []
+        response = {}
 
         for i in tournaments:
             if tournaments[i].userParticipating(userId):
@@ -124,6 +135,10 @@ class gameResult(View): # We need to remove the loser from the player list
         printData(data)
         tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game']) # Game is a dictionnary
+
+        # Envoyer un next round si ongoingGames vaut 0
+        # Deconnecter la websocket du perdant
+
         return JsonResponse({})
 
 def tournamentHome(request, tournamentId):
@@ -132,7 +147,7 @@ def tournamentHome(request, tournamentId):
 
 ############## Debug ##############
 def printData(data):
-    print('Tournament name: ', data['tournamentName'])
+    print('Tournament id: ', data['tournamentId'])
     game = data['game']
-    print('Player ', game['Player1'], ' had a score of ', game['Score1'])
-    print('Player ', game['Player2'], ' had a score of ', game['Score2'])
+    print('Winner is ', game['Winner'], ' with a score of ', game['Winner-score'])
+    print('Loser is ', game['Loser'], ' with a score of ', game['Loser-score'])
