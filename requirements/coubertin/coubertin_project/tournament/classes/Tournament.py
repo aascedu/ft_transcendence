@@ -5,9 +5,10 @@ class Tournament:
         self.admin = admin
         self.nbPlayers = nbPlayers
         self.started = False
-        self.onGoingGames = 0
+        self.ongoingGames = 0
         self.currentRound = 0
         self.players = [] # Id du player
+        self.contenders = []
         self.invited = invited
         self.gameHistory = [] # Liste des dictionnaires de games
         print("Tournament created")
@@ -28,7 +29,8 @@ class Tournament:
     def addGame(self, game):
         game['Round'] = self.currentRound
         self.gameHistory.append(game)
-        self.onGoingGames -= 1
+        self.ongoingGames -= 1
+        # Virer le loser des contenders
 
     def userParticipating(self, userId):
         for i in self.players:
@@ -53,11 +55,11 @@ class Tournament:
             gameFront['Score'] = score
             gameFront['Players'] = players
 
-            if game['Round'] == 0:
+            if game['Round'] == 1:
                 roundOne.append(gameFront)
-            elif game['Round'] == 1:
-                roundTwo.append(gameFront)
             elif game['Round'] == 2:
+                roundTwo.append(gameFront)
+            elif game['Round'] == 3:
                 roundThree.append(gameFront)
 
         bracket['RoundOne'] = roundOne
