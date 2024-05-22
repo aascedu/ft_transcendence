@@ -132,7 +132,7 @@ def tournamentHome(request, tournamentId):
 
 ############## Debug ##############
 def printData(data):
-    print('Tournament name: ', data['tournamentName'])
+    print('Tournament id: ', data['tournamentId'])
     game = data['game']
-    print('Player ', game['Player1'], ' had a score of ', game['Score1'])
-    print('Player ', game['Player2'], ' had a score of ', game['Score2'])
+    print('Winner is ', game['Winner'], ' with a score of ', game['Winner-score'])
+    print('Loser is ', game['Loser'], ' with a score of ', game['Loser-score'])

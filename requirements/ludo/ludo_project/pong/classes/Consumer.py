@@ -126,10 +126,12 @@ class Consumer(OurBasicConsumer):
 
         if self.id == 0:
             if self.roomName.count('-') == 2:
+                tournamentId = int(self.roomName.split("-")[0])
+
                 requests.post(
-                    'http://coubertin:8002/tournament/gameResult/',
-                    json={'tournamentId': 'test',
-                        'game': self.myMatch.toDict()})
+                    'http://coubertin:8002/tournament/gameResult/', 
+                    json={'tournamentId': tournamentId,
+                        'game': self.myMatch.to_mnemosine()})
             else:
                 requests.post(
                     'http://mnemosine:8008/memory/pong/match/0/',
