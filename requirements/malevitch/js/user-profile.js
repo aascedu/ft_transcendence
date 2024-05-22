@@ -1,134 +1,159 @@
 // Load user profile
 
 async function loadUserContent(id) {
-	// if (id != g_userId) {
-	// 	var	userInfo = await get_user_info(id);
+	if (id != g_userId) {
+		var	userInfo = await get_user_info(id);
 
-	// 	// Load user general info
-	// 	document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
-	// 	document.querySelector('.user-profile-name').textContent = userInfo.Pic;
-	// }
+		// Load user general info
+		document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
+		document.querySelector('.user-profile-name').textContent = userInfo.Pic;
+	}
 
-	// // Display history
+	// Display history
 
-	// var	history = get_game_history(id);
-	// var	historyContainer = document.querySelector('.user-profile-history');
-	// var	numWins = 0;
-	// var	totalPoints = 0;
-	// var	totalTime = 0;
-	// var	score;
-	// var	opponent;
+	var	history = await get_game_history(id);
+	history = history.History;
+	var	historyContainer = document.querySelector('.user-profile-history');
+	var	numWins = 0;
+	var	totalPoints = 0;
+	var	totalTime = 0;
+	var	score;
+	var	opponent;
 
-	// document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
-	// document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Winner == g_userId) {
+			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
+			opponent = await get_user_info(history[i].Loser);
+			opponent = opponent.Nick;
 
-	// for (i = 0; i < history.length; i++) {
-	// 	if (history[i].Winner == g_userId) {
-	// 		score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
-	// 		opponent = await get_user_info(history[i].Loser);
-	//		opponent = opponent.Nick;
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+				<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
+				<div class="user-profile-history-card-result">` + score + `</div>
+				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+			</div>`);
 
-	// 		historyContainer.insertAdjacentHTML('beforeend', `\
-	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
-	// 			<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
-	// 			<div class="user-profile-history-card-result">` + score + `</div>
-	// 			<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
-	// 		</div>`);
+			numWins++;
+			totalPoints += history[i]["Loser-score"];
+		}
+		else {
+			score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
+			opponent = await get_user_info(history[i].Winner);
+			opponent = opponent.Nick;
 
-	// 		numWins++;
-	// 		totalPoints += history[i]["Loser-score"];
-	// 	}
-	// 	else {
-	// 		score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
-	// 		opponent = await get_user_info(history[i].Winner);
-	//		opponent = opponent.Nick;
+			historyContainer.insertAdjacentHTML('beforeend', `\
+			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
+				<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
+				<div class="user-profile-history-card-result">` + score + `</div>
+				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+			</div>`);
 
-	// 		historyContainer.insertAdjacentHTML('beforeend', `\
-	// 		<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
-	// 			<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
-	// 			<div class="user-profile-history-card-result">` + score + `</div>
-	// 			<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
-	// 		</div>`);
+			totalPoints += history[i]["Winner-score"];
+		}
+		totalTime += history[i].Time;
+	}
 
-	// 		totalPoints += history[i]["Winner-score"];
-	// 	}
-	// 	totalTime += history[i].Time;
-	// }
+	if (history.length == 0) {
+		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+		return ;
+	}
 
-	// if (history.length == 0) {
-	// 	document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
-	// 	document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
-	// 	return ;
-	// }
+	// Display stats
 
-	// // Display stats
+	document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
+	document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
 
-	// document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
-	// document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
-
-	// var	averageTime;
-	// var	averageMinutes;
-	// var	averageSeconds;
+	var	averageTime;
+	var	averageMinutes;
+	var	averageSeconds;
 	
-	// averageTime = Math.round(totalTime / history.length);
-	// averageMinutes = Math.floor(averageTime / 60);
-	// averageSeconds = averageTime % 60;
+	averageTime = Math.round(totalTime / history.length);
+	averageMinutes = Math.floor(averageTime / 60);
+	averageSeconds = averageTime % 60;
 
-	// document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
+	document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
 
-	// // Current shape graph
+	// Current shape graph
 
-	// const canvas = document.querySelector('.user-profile-stats-graph');
-	// if (!canvas.getContext) {
-	// 	return;
-	// }
-	// canvas.width = canvas.parentElement.offsetWidth;
-	// canvas.height = `${getCanvasHeight(history)}`;
+	const canvas = document.querySelector('.user-profile-stats-graph');
+	if (!canvas.getContext) {
+		return;
+	}
+	canvas.width = canvas.parentElement.offsetWidth;
+	canvas.height = `${getCanvasHeight(history)}`;
 
-	// const ctx = canvas.getContext('2d');
+	g_canvasHeight = canvas.height;
 
-	// ctx.strokeStyle = '#7300E6';
-	// ctx.fillStyle = '#7300E6';
-	// ctx.lineWidth = 3;
+	const ctx = canvas.getContext('2d');
 
-	// var	posX = 50;
-	// var	posY = getCanvasStart(history, canvas.height);
-	// var	startX = posX;
-	// var	startY = posY;
+	ctx.strokeStyle = '#7300E6';
+	ctx.fillStyle = '#7300E6';
+	ctx.lineWidth = 3;
 
-	// // draw lines
-	// ctx.beginPath();
-	// ctx.moveTo(startX, startY);
-	// for (i = 0; i < history.length; i++) {
-	// 	if (history[i].Winner == g_userId) {
-	// 		posY += 50;
-	// 	}
-	// 	else {
-	// 		posY -= 50;
-	// 	}
-	// 	posX++;
-	// 	ctx.lineTo(posX, posY);
-	// }
-	// ctx.stroke();
+	var	posX = 50;
+	var	posY = getCanvasStart(history, canvas.height);
+	var	startX = posX;
+	var	startY = posY;
 
-	// posX = startX;
-	// posY = startY;
+	// draw lines
+	ctx.beginPath();
+	ctx.moveTo(startX, startY);
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Winner == g_userId) {
+			posY += 50;
+		}
+		else {
+			posY -= 50;
+		}
+		posX++;
+		ctx.lineTo(posX, posY);
+	}
+	ctx.stroke();
 
-	// // draw points
-	// ctx.beginPath();
-	// ctx.moveTo(startX, startY);
-	// for (i = 0; i < history.length; i++) {
-	// 	if (history[i].Winner == g_userId) {
-	// 		posY += 50;
-	// 	}
-	// 	else {
-	// 		posY -= 50;
-	// 	}
-	// 	posX++;
-	// 	ctx.moveTo(posX, posY);
-	// 	ctx.arc(posX, posY, 5, 0, 2*Math.PI);
-	// }
-	// ctx.fill();
+	posX = startX;
+	posY = startY;
+
+	// draw points
+	ctx.beginPath();
+	ctx.moveTo(startX, startY);
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Winner == g_userId) {
+			posY += 50;
+		}
+		else {
+			posY -= 50;
+		}
+		posX++;
+		ctx.moveTo(posX, posY);
+		ctx.arc(posX, posY, 5, 0, 2*Math.PI);
+	}
+	ctx.fill();
+}
+
+function clearUserContent() {
+	// clear history
+	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
+	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+
+	var	historyContainer = document.querySelector('.user-profile-history');
+
+	historyContainer.querySelectorAll('.content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	// clear stats graph
+
+	const canvas = document.querySelector('.user-profile-stats-graph');
+	if (!canvas.getContext) {
+		console.error('Can\'t erase graph');
+		return;
+	}
+	canvas.width = canvas.parentElement.offsetWidth;
+	canvas.height = `${g_canvasHeight}`;
+
+	const ctx = canvas.getContext('2d');
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
 function getCanvasHeight(history) {

@@ -139,6 +139,7 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 		item.classList.add('visually-hidden');
 	});
 
+	clearMyTournaments();
 	loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
@@ -237,6 +238,7 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 		item.classList.add('visually-hidden');
 	});
 
+	clearFriendsList();
 	loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
@@ -354,6 +356,9 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 
 	// render page
 	document.querySelector('.user-profile-picture-input').focus();
+
+	clearUserContent();
+	loadUserContent(g_userId);
 
 	hideEveryPage();
 

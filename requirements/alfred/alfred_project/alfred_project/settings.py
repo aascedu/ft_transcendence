@@ -18,7 +18,6 @@ try:
 except ModuleNotFoundError:
     print("Warn vault_token not found")
 import os
-from socket import SOCK_STREAM
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,7 +45,6 @@ PROJECT_APPS = [
 INSTALLED_APPS = add_prometheused_apps(PROJECT_APPS)
 
 PROJECT_OWN_MIDDLEWARE = [
-    'shared.Middleware.ensureIdentificationMiddleware',
 ]
 
 MIDDLEWARE = add_prometheused_middleware(shared_middleware + PROJECT_OWN_MIDDLEWARE)

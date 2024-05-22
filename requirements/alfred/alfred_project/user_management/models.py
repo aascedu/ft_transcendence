@@ -90,6 +90,14 @@ class Client(models.Model):
                     .objects
                     .filter(sender=self)]
 
+    @staticmethod
+    def get_by_email(email):
+        return Client.objects.filter(email=email).first()
+
+    @staticmethod
+    def get_by_nick(nick):
+        return Client.objects.filter(nick=nick).first()
+
 
 class FriendshipRequest(models.Model):
     sender = models.ForeignKey(

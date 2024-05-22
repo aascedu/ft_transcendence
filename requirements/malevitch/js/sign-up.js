@@ -10,7 +10,7 @@ function getSignUpNickname(nickname) {
 // ---
 
 async function warnUnavailableUserInfo(userInfo, infoType, element) {
-	return await fetch('/petrus/auth/signin/' + userInfo)
+	return await fetch('/alfred/user/signin/' + userInfo)
 	.then (response => {
 		if (!response.ok) {
 			throw new Error('HTTP error: ' + response.status);
@@ -110,7 +110,7 @@ document.querySelector('.sign-up-nickname-input').addEventListener('input', func
 async function signUpNickname(input) {
 	var	warning = document.querySelector('.sign-up-nickname-input-warning');
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
-	
+
 	if (input.value.length > 0) {
 		// Make the following inputs appear only when the choosen nickname is valid.
 		// Warn and block invalid characters, or nicknames too short or too long.
@@ -135,7 +135,7 @@ async function signUpNickname(input) {
 		catch (error) {
 			console.error('Error: ' + error);
 		}
-	} 
+	}
 	else {
 		warning.classList.add('visually-hidden');
 		document.querySelector('.sign-up-email-input-box').classList.add('visually-hidden');
@@ -154,7 +154,7 @@ document.querySelector('.sign-up-email-input').addEventListener('input', functio
 async function signUpEmail(input) {
 	var	warning = document.querySelector('.sign-up-email-input-warning');
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
-	
+
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
 		// Make the following inputs appear only when the choosen email is valid.
 		try {
@@ -176,7 +176,7 @@ async function signUpEmail(input) {
 		catch(error) {
 			console.error('Error: ' + error);
 		}
-	} 
+	}
 	else {
 		warning.classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
@@ -194,7 +194,7 @@ document.querySelector('.sign-up-password-input').addEventListener('input', func
 function signUpPassword(input) {
 	var	warning = document.querySelector('.sign-up-password-input-warning');
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
-	
+
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
 		// Make the following inputs appear only when the choosen password is valid.
 		if (!warnInvalidPassword(input.value, warning)) {
@@ -208,7 +208,7 @@ function signUpPassword(input) {
 			document.querySelector('.sign-up-password-confirm-input-box').classList.remove('visually-hidden');
 			signUpPasswordConfirm(document.querySelector('.sign-up-password-confirm-input'));
 		}
-	} 
+	}
 	else {
 		warning.classList.add('visually-hidden');
 		document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
@@ -227,7 +227,7 @@ function signUpPasswordConfirm(input) {
 	var	warning = document.querySelector('.sign-up-password-confirm-input-warning');
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
 	var	passToCheck = document.querySelector('.sign-up-password-input');
-	
+
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
 		// Make the following inputs appear only when the choosen password is valid.
 		if (!warnDifferentPasswords(input.value, passToCheck.value, warning)) {
@@ -239,7 +239,7 @@ function signUpPasswordConfirm(input) {
 			warning.classList.add('visually-hidden');
 			container.classList.add('input-container-focused');
 		}
-	} 
+	}
 	else {
 		warning.classList.add('visually-hidden');
 	}
@@ -328,7 +328,7 @@ document.querySelector('.sign-up-sign-in button').addEventListener('click', func
 document.addEventListener('keydown', function(e) {
 	if (!document.querySelector('.sign-up').classList.contains('visually-hidden')) {
 		let isFw =!e.shiftKey;
-	
+
 		if (e.key === 'Tab' && document.querySelector('.sign-up-font-size') === document.activeElement) {
 			if (isFw) {
 				document.querySelector('.sign-up-nickname-input').focus();
@@ -336,7 +336,7 @@ document.addEventListener('keydown', function(e) {
 			else {
 				document.querySelector('.sign-up-sign-in button').focus();
 			}
-	
+
 			e.preventDefault();
 		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-up-nickname-input') === document.activeElement) {

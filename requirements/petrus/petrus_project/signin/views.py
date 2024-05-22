@@ -7,9 +7,10 @@ import requests
 import bcrypt
 import logging
 
+from shared.validators import NickNameValidator
 from signin.models import Client
 from shared.jwt_management import JWT
-from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbiden
+from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbiden, JsonConflict
 
 
 def view_db(request: HttpRequest) -> JsonResponse:
@@ -20,23 +21,6 @@ def view_db(request: HttpRequest) -> JsonResponse:
 
 class signinView(View):
     """ se login """
-    def get(self, request, string: str):
-        Ava: bool = True
-        id: int = -1
-        nick: str = "unknown"
-        by_mail = Client.get_by_email(string)
-        by_nick = Client.get_by_nick(string)
-
-        if by_mail is not None:
-            Ava = False
-            id = by_mail.id
-            nick = by_mail.nick
-        elif by_nick is not None:
-            Ava = False
-            id = by_nick.id
-            nick = by_nick.nick
-        return JsonResponse({"Ava": Ava, "Id": id, "Nick": nick})
-
     def post(self, request, string: str) -> JsonResponse:
         data = request.data
 
@@ -63,7 +47,7 @@ class signinView(View):
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Client": "connected", "ref": refresh_token})
-        response.set_cookie("auth", jwt)
+        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         logging.info("Client connected")
         return response
 
@@ -91,9 +75,16 @@ class signupView(View):
             client.password.encode('utf-8'),
             bcrypt.gensalt()).decode('utf-8')
 
+        try:
+            NickNameValidator(client.nick)
+            if (len(client.nick) > 16):
+                raise ValidationError("nickname can't be longer than 16 chars")
+        except ValidationError as e:
+            return JsonBadRequest(str(e))
+
         response = save_response(client)
         if response.status_code != 200:
-            return response
+            return JsonConflict("Error saving client")
 
         try:
             response = requests.post(
@@ -106,20 +97,20 @@ class signupView(View):
                 json=client.to_mnemosine())
             if response.status_code != 200:
                 raise BaseException("Error : error during mnemosine row creation")
-        except BaseException as e:
-            client.delete()
-            print(f'Error : {e} : during creation of ressources : {client}')
+        except BaseException as error:
+            print(f'Error : {error} : during creation of ressources : {client}')
             try:
                 requests.delete(f'http://alfred:8001/user/users/{client.id}')
                 requests.delete(f'http://mnemosine:8008/memory/players/{client.id}')
             except BaseException as e:
                 print(f'Error: during deleting row. {e}')
-            return JsonErrResponse('Internal error', status=409)
+            client.delete()
+            return JsonConflict(str(error))
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Client": client.id, "ref": refresh_token})
-        response.set_cookie("auth", jwt)
+        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         logging.info("Client created")
         return response
 
@@ -155,5 +146,5 @@ class refreshView(View):
 
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse({"Token": "refreshed"})
-        response.set_cookie("auth", jwt)
+        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         return response
