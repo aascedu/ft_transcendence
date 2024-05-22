@@ -214,14 +214,14 @@ document.querySelector('.user-profile-picture').addEventListener('mouseover', fu
 	// You can upload only if the profile is yours.
 	if (document.querySelector('.user-profile-name').textContent == g_userNick) {
 		document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
-		document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+		setAriaHidden();
 	}
 });
 document.querySelector('.user-profile-picture').addEventListener('focusin', function() {
 	// You can upload only if the profile is yours.
 	if (document.querySelector('.user-profile-name').textContent == g_userNick) {
 		document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
-		document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+		setAriaHidden();
 	}
 });
 
@@ -288,37 +288,37 @@ function sendImageAlert(data) {
 	var locale = document.querySelector('.homepage-header-language-selector button img').alt;
 	switchLanguageContent(locale);
 	document.querySelector('.user-profile-image-alert').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-image-alert').removeAttribute('aria-hidden');
+	setAriaHidden();
 	document.querySelector('.user-profile-image-alert .alert-confirm-button').focus();
 }
 
 // Close alert
 document.querySelector('.user-profile-image-alert .alert-confirm-button').addEventListener('click', function() {
 	document.querySelector('.user-profile-image-alert').classList.add('visually-hidden');
-	document.querySelector('.user-profile-image-alert').setAttribute('aria-hidden', 'true');
+	setAriaHidden();
 });
 document.querySelector('.user-profile-image-alert .alert-confirm-button').addEventListener('keypress', function(e) {
 	if (e.key == 'Enter') {
 		document.querySelector('.user-profile-image-alert').classList.add('visually-hidden');
-		document.querySelector('.user-profile-image-alert').setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	}
 });
 
 // Hide edit button on hover / focus
 document.querySelector('.user-profile-picture').addEventListener('mouseleave', function() {
 	document.querySelector('.user-profile-picture label').classList.add('visually-hidden');
-	document.querySelector('.user-profile-picture label').setAttribute('aria-hidden', 'true');
+	setAriaHidden();
 });
 document.querySelector('.user-profile-picture').addEventListener('focusout', function() {
 	document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-picture label').removeAttribute('aria-hidden');
+	setAriaHidden();
 });
 
 // Ask for confirmation when inviting friend
 
 document.querySelector('.user-profile-add-icon').addEventListener('click', function() {
 	document.querySelector('.user-profile-invite-alert').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-invite-alert').removeAttribute('aria-hidden');
+	setAriaHidden();
 	document.querySelector('.user-profile-invite-alert .alert-confirm-button').focus();
 });
 
@@ -345,12 +345,12 @@ document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEv
 
 document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-	document.querySelector('.user-profile-invite-alert').setAttribute('aria-hidden', 'true');
+	setAriaHidden();
 });
 document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-		document.querySelector('.user-profile-invite-alert').setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	}
 });
 
@@ -358,7 +358,7 @@ document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEve
 
 document.querySelector('.user-profile-remove-icon').addEventListener('click', function() {
 	document.querySelector('.user-profile-remove-alert').classList.remove('visually-hidden');
-	document.querySelector('.user-profile-remove-alert').removeAttribute('aria-hidden');
+	setAriaHidden();
 	document.querySelector('.user-profile-remove-alert .alert-confirm-button').focus();
 });
 
@@ -383,12 +383,12 @@ document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEv
 
 document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-	document.querySelector('.user-profile-remove-alert').setAttribute('aria-hidden', 'true');
+	setAriaHidden();
 });
 document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-		document.querySelector('.user-profile-remove-alert').setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	}
 });
 
@@ -406,6 +406,6 @@ document.addEventListener('keydown', function(e) {
 document.addEventListener('focusout', function(e) {
 	if (e.target === document.querySelector('.user-profile-picture-input')) {
 		document.querySelector('.user-profile-picture label').classList.add('visually-hidden');
-		document.querySelector('.user-profile-picture label').setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	}
 });

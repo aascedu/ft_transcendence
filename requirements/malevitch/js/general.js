@@ -65,13 +65,23 @@ function hideEveryPage() {
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 }
 
+function applyAriaHidden(element) {
+	element.setAttribute('aria-hidden', 'true');
+	element.style.visibility = 'hidden';
+
+	Array.from(element.children).forEach(child => {
+		applyAriaHidden(child);
+	});
+}
+
 function setAriaHidden() {
 	document.querySelectorAll('.visually-hidden').forEach(function(item) {
-		item.setAttribute('aria-hidden', 'true');
+		applyAriaHidden(item);
 	});
 	document.querySelectorAll('[aria-hidden="true"]').forEach(function(item) {
-		if (!item.classList.contains('visually-hidden')) {
+		if (!item.classList.contains('visually-hidden') && !item.closest('.visually-hidden')) {
 			item.removeAttribute('aria-hidden');
+			item.style.visibility = 'visible';
 		}
 	});
 }
