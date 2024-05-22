@@ -4,7 +4,7 @@ document.querySelector('.homepage-id-input').addEventListener('input', function(
 	var	container = this.closest('.homepage-id-input-container');
 	var	warning = document.querySelector('.homepage-id-input-warning');
 	var	locale = document.querySelector('.homepage-id-language-selector button img').alt;
-	
+
 	if (this.value.length > 0) {
 		// Make the submit button appear only when the choosen nickname is valid.
 		// Warn and block invalid characters, or nicknames too short or too long.
@@ -17,7 +17,7 @@ document.querySelector('.homepage-id-input').addEventListener('input', function(
 			warning.classList.add('visually-hidden');
 			container.classList.add('input-container-focused');
 		}
-	} 
+	}
 	else {
 		warning.classList.add('visually-hidden');
 		container.classList.remove('input-container-focused');
@@ -49,7 +49,7 @@ function submitNickname(nickname) {
 	g_userNick = nickname;
 	document.querySelector('.homepage-id').classList.add('visually-hidden');
 
-	fetch('/petrus/auth/signin/' + nickname)
+	fetch('/alfred/user/signin/' + nickname)
 		.then (response => {
 			if (!response.ok) {
 				throw new Error('HTTP error: ' + response.status);
@@ -88,7 +88,7 @@ document.addEventListener('keydown', function(e) {
 		let isFw =!e.shiftKey;
 
 		if (e.key === 'Tab' && document.querySelector('.homepage-id-font-size') === document.activeElement) {
-	
+
 			if (isFw) {
 				document.querySelector('.homepage-id-language-selector button').focus();
 			}
@@ -103,7 +103,7 @@ document.addEventListener('keydown', function(e) {
 					document.querySelector('.homepage-id-submit').focus();
 				}
 			}
-	
+
 			e.preventDefault();
 		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-id-language-selector button') === document.activeElement) {
