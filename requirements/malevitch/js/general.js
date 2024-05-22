@@ -79,7 +79,7 @@ function setAriaHidden() {
 		applyAriaHidden(item);
 	});
 	document.querySelectorAll('[aria-hidden="true"]').forEach(function(item) {
-		if (!item.closest('.visually-hidden')) {
+		if (!item.classList.contains('visually-hidden') && !item.closest('.visually-hidden')) {
 			item.removeAttribute('aria-hidden');
 			item.style.visibility = 'visible';
 		}
