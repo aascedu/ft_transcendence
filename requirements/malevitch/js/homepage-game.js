@@ -32,9 +32,9 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 	render(g_state);
 });
 
-document.querySelector('.homepage-game-content-tournaments').addEventListener('click', function() {
+document.querySelector('.homepage-game-content-tournaments').addEventListener('click', async function() {
 	clearMyTournaments();
-	loadMyTournaments();
+	await loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
 	

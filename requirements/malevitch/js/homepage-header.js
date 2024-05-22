@@ -132,7 +132,7 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 
 // Go to my tournaments
 
-document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
+document.querySelector('.homepage-header-my-tournaments').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -140,7 +140,7 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 	});
 
 	clearMyTournaments();
-	loadMyTournaments();
+	await loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
 
