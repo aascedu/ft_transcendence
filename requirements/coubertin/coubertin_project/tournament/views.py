@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
 import logging
+import requests
 # Invite someone to tournament
 # Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
@@ -98,7 +99,11 @@ class inviteFriend(View):
         
         tournaments[TournamentId].invited.append(data['Invited']) 
 
-        # Send a Hermes
+        requests.post(
+            'http://tournament-request/' + str(request.user.id), 
+            json={'Tournament-Id': TournamentId,
+                    'Tournament-Name': tournaments[TournamentId].name,
+                    'Notified': data['Invited']})
 
 class myTournaments(View):
     def get(self, request):
