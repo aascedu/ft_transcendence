@@ -22,7 +22,7 @@ class Tournament:
         if (playerId not in self.players):
             raise Exception ("This player is not participating in this tournament")
         if self.started == False:
-            self.players.remove(playerId)
+            self.contenders.remove(playerId)
         else: # Debug
             print("you tried to remove a player during a tournament")
 
