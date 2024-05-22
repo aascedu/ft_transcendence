@@ -1,6 +1,6 @@
 const roomName = "pierrepierrepierre"
 const url = 'wss://localhost:8000/coubertin/tournament/ws/' + roomName + '/'
-const tournamentSocket = new WebSocket(url); // Probably add room name
+const tournamentSocket = new WebSocket(url);
 
 tournamentSocket.onopen = function(event) {
     console.log("Tournament socket opened in the front");
