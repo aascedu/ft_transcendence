@@ -44,8 +44,8 @@ class tournamentView(View):
 
 class gameView(View):
     def post(self, request):
-        #if request.user.is_service is False:
-            #return JsonForbiden("Only services can post games")
+        if request.user.is_service is False:
+            return JsonForbiden("Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
