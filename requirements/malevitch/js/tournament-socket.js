@@ -7,7 +7,7 @@ tournamentSocket.onopen = function(event) {
 };
 
 tournamentSocket.onclose = function() {
-    console.log("Socket closed in the front");
+    console.log("Tournament socket closed in the front");
 }
 
 tournamentSocket.onerror = function(event) {

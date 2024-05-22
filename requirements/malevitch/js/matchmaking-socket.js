@@ -4,13 +4,13 @@ const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws
 const Id = g_userId;
 
 exampleSocket.onopen = function(event) {
-    console.log("Socket opened in the front");
+    console.log("Mathcmaking socket opened in the front");
     sendPlayerData("playerData");
 };
 
 exampleSocket.onclose = function() {
-    console.log("Socket closed in the front");
-    sendData("Leaving")
+    console.log("Matchmaking socket closed in the front");
+    sendData("Leaving");
 }
 
 exampleSocket.onerror = function(event) {

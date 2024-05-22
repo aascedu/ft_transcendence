@@ -7,7 +7,7 @@ notificationSocket.onopen = function(event) {
 };
 
 notificationSocket.onclose = function() {
-    console.log("Socket closed in the front");
+    console.log("Hermes socket closed in the front");
 }
 
 notificationSocket.onerror = function(event) {
