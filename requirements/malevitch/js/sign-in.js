@@ -46,7 +46,7 @@ async function submitPassword(password) {
 		});
 
 		const result = await response.json();
-		if ('Err' in result && result.Err == 'invalid password') {
+		if ('Err' in result && result.Err == 'Forbiden : invalid password') {
 			sendInvalidPassword();
 		}
 		else if ('Err' in result) {
