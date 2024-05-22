@@ -13,8 +13,6 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
         data = request.data
-        if 'id' not in data:
-            return JsonBadRequest(request, {'Err': "tournament id not provided"})
         try:
             id = data['id']
         except KeyError as e:
@@ -22,8 +20,8 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
 
         try:
             id = int(id)
-        except (ValueError, TypeError) as e:
-            return JsonBadRequest(request, f'bad request id is not an int')
+        except (ValueError, TypeError):
+            return JsonBadRequest(request, 'bad request id is not an int')
 
         if data['id'] == -1: # Pour avoir tous les tournois auxquels on peut s'inscrire
             response = {}
