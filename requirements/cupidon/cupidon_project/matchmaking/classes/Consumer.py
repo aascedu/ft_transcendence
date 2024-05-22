@@ -2,6 +2,7 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from matchmaking.classes.Player import Player, waitingList
 from shared.BasicConsumer import OurBasicConsumer
+import requests
 
 
 class Consumer(OurBasicConsumer):
@@ -26,13 +27,17 @@ class Consumer(OurBasicConsumer):
 
         text_data_json = json.loads(text_data)
         type = text_data_json['type']
+        playerId = text_data_json['id']
+
+        player = requests.post('http://mnemosine:8008/memory/players' + str(playerId) + '/', json={})
+        elo = player['Elo']
 
         # Send message to room group
         await self.channel_layer.group_send(
             "matchmakingRoom", {
                 'type': type,
-                'id': text_data_json['id'],
-                'elo': text_data_json['elo'],
+                'id': playerId,
+                'elo': elo,
             }
         )
 
