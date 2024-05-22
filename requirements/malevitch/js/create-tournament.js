@@ -150,14 +150,14 @@ document.querySelector('.create-tournament-alert .alert-confirm-button').addEven
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
 	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
-	document.querySelector('.create-tournament-alert').setAttribute('aria-hidden', 'true');
+	setAriaHidden();
 });
 
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('keypress', function (event) {
 	if (event.key === 'Enter') {
 		// Hide alert
 		document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
-		document.querySelector('.create-tournament-alert').setAttribute('aria-hidden', 'true');
+		setAriaHidden();
 	}
 });
 
@@ -165,7 +165,6 @@ document.querySelector('.create-tournament-alert .alert-cancel-button').addEvent
 
 function resetTournamentCreation() {
 	document.querySelector('.create-tournament').classList.add('visually-hidden');
-	document.querySelector('.create-tournament').setAttribute('aria-hidden', 'true');
 
 	document.querySelector('.create-tournament-name-input').value = "";
 	var chosen = document.querySelector('.create-tournament-players-button-chosen');
@@ -175,6 +174,8 @@ function resetTournamentCreation() {
 	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
 		item.classList.remove('create-tournament-invited-friend');
 	});
+
+	setAriaHidden();
 }
 
 // Display created tournament
