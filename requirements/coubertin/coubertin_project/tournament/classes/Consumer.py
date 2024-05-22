@@ -17,7 +17,7 @@ class Consumer(OurBasicConsumer):
         self.myTournament = tournaments[self.tournamentId]
 
         self.admin = False
-        if (self.myTournament):
+        if (self.myTournament.admin == self.id):
             self.admin = True # Do we let the admin chose if he plays or not ?
 
         print ("Tournament room name is " + self.tournamentId)
