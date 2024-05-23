@@ -68,6 +68,7 @@ class Tournament:
         bracket['RoundThree'] = roundThree
 
         response = {
+            'Id': self.id,
             'Name': self.name,
             'NumPlayers': self.nbPlayers,
             'Started': self.started,
@@ -87,6 +88,6 @@ class Tournament:
             'Admin': self.admin,
         }
         return tournamentDict
-    
+
 
 tournaments = {}
