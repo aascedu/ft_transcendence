@@ -7,5 +7,5 @@ urlpatterns = [
     path("friendship/<int:requester>", friendshipView.as_view()),
     path("friend-request/<int:requester>", friendshipRequestView.as_view()),
     path("game-request/<int:requester>", gameRequestView.as_view()),
-    path("tournament-request/<int:requester>", tournamentRequestView.as_view()),
+    path("tournament-request/<int:requester>/<int:tournament>", tournamentRequestView.as_view()),
 ]

@@ -114,14 +114,14 @@ window.addEventListener('click', function ({target}){
 
 // Go to available tournaments
 
-document.querySelector('.homepage-header-available-tournaments').addEventListener('click', function() {
+document.querySelector('.homepage-header-available-tournaments').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
 
-	loadAvailableTournaments();
+	await loadAvailableTournaments();
 
 	document.querySelector('.available-tournaments-icon').focus();
 
@@ -132,7 +132,7 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 
 // Go to my tournaments
 
-document.querySelector('.homepage-header-my-tournaments').addEventListener('click', function() {
+document.querySelector('.homepage-header-my-tournaments').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -140,7 +140,7 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 	});
 
 	clearMyTournaments();
-	loadMyTournaments();
+	await loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
 
@@ -231,7 +231,7 @@ document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(
 
 // Go to friends list
 
-document.querySelector('.homepage-header-friend-list').addEventListener('click', function() {
+document.querySelector('.homepage-header-friend-list').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -239,7 +239,7 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 	});
 
 	clearFriendsList();
-	loadFriendsList();
+	await loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
 

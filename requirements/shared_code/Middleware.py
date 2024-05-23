@@ -1,8 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
-from shared.utils import JsonBadRequest, JsonUnauthorized
-from shared.commonView import identificators
+from shared.utils import JsonNotFound
 from .jwt_management import JWT
 from .common_classes import User
 import json
@@ -77,27 +76,12 @@ class JWTIdentificationMiddleware:
             try:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonResponse({"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
+                response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
                 response.delete_cookie('auth')
                 return response
 
         print("Info: request_user=", str(request.user))
         return None
-
-
-class ensureIdentificationMiddleware:
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request: HttpRequest):
-        response = self.get_response(request)
-        return response
-
-    def process_view(self, request, view_func, view_args, view_kwargs):
-        if request.user.error is not None:
-            return JsonResponse({"Err": f"request can't be authentified {request.user.error}."}, status=401)
-        return None
-
 
 class RawJsonToDataGetMiddleware:
     def __init__(self, get_response):
