@@ -24,6 +24,10 @@
 	height: 100%;
 }
 
+.homepage-game-content-left-top {
+	min-height: 216px;
+}
+
 .homepage-game-content-left-top > * {
 	padding-left: 16px;
 	padding-top: 12px;
