@@ -90,8 +90,8 @@ document.querySelector('.my-tournaments-icon').addEventListener('click', functio
 // Load tournament page when clicking on a tournament
 
 document.querySelectorAll('.my-tournaments-card-container .content-card').forEach(function(item) {
-	item.addEventListener('click', function () {
-		loadTournamentInfo();
+	item.addEventListener('click', async function () {
+		await loadTournamentInfo();
 
 		document.querySelector('.tournament-info-icon').focus();
 		

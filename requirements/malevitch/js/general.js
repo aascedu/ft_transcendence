@@ -14,13 +14,13 @@ let g_state = {
 	pageToDisplay: ".homepage-id"
 };
 
-function render() {
+async function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
 	if (g_state.pageToDisplay == '.homepage-game') {
 		clearHomepageContent();
-		setHomepageContent();
+		await setHomepageContent();
 
 		var	homepageHeader = document.querySelector('.homepage-header');
 		homepageHeader.classList.remove('visually-hidden');
@@ -531,9 +531,9 @@ async function setHomepageContent() {
 	</div>`);
 }
 
-function goToHomepageGame(previous) {
+async function goToHomepageGame(previous) {
 	clearHomepageContent();
-	setHomepageContent();
+	await setHomepageContent();
 
 	// hide previous and display homepage content
 	var prevPage = document.querySelector(previous);
