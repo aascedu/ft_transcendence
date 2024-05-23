@@ -6,7 +6,7 @@ cryptography==42.0.5
 Django==5.0.3
 django-prometheus==2.3.1
 hvac==2.1.0
-idna==3.6
+idna==3.7
 nanoid==2.0.0
 prometheus_client==0.20.0
 psycopg2-binary==2.9.9
@@ -16,7 +16,7 @@ python-logstash==0.4.8
 pytz==2024.1
 requests==2.31.0
 rfc5424-logging-handler==1.4.3
-sqlparse==0.4.4
+sqlparse==0.5.0
 syslog-rfc5424-formatter==1.2.3
 typing_extensions==4.10.0
 tzlocal==5.2

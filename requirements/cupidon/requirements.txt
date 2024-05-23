@@ -15,7 +15,7 @@ Django==5.0.2
 django-prometheus==2.3.1
 hvac==2.1.0
 hyperlink==21.0.0
-idna==3.6
+idna==3.7
 incremental==22.10.0
 msgpack==1.0.8
 nanoid==2.0.0
@@ -32,7 +32,7 @@ requests==2.31.0
 rfc5424-logging-handler==1.4.3
 service-identity==24.1.0
 six==1.16.0
-sqlparse==0.4.4
+sqlparse==0.5.0
 syslog-rfc5424-formatter==1.2.3
 Twisted==24.3.0
 txaio==23.1.1
