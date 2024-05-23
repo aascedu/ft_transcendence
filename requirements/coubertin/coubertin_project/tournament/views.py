@@ -8,36 +8,26 @@ from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, 
 # Online friends not yet subscribed to tournament: avec Brieuc
 # Get matches
 
-class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs ou autre ?
+class availableTournamentView(View):
     def get(self, request):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
-        data = request.data
-        try:
-            id = data['id']
-        except KeyError as e:
-            return JsonBadRequest(request, f'missing key {e}')
+        global tournaments
+        response = [tournament.id for tournament in tournaments if tournament.state == 0]
+        return JsonResponse(request, response)
 
-        try:
-            id = int(id)
-        except (ValueError, TypeError):
-            return JsonBadRequest(request, 'bad request id is not an int')
+class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs ou autre ?
+    def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "Connect yourself to fetch")
+        global tournaments
+        return JsonResponse(request, tournaments[id].toFront())
 
-        if data['id'] == -1: # Pour avoir tous les tournois auxquels on peut s'inscrire
-            response = {}
-            for id in tournaments:
-                if tournaments[id].state == 0:
-                    response[id] = tournaments[id].toFront()
-            return JsonResponse(request, response)
-        else:
-            return JsonResponse(request, tournaments[data['id']].toFront())
 
-    def post(self, request): # Maybe we can set admin here instead.
+    def post(self, request, id: int): # Maybe we can set admin here instead.
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified players can post tournaments')
-
         global tournaments
-
         data = request.data
         try:
             tournamentName = data['Name']
@@ -57,7 +47,7 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
 
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
 
-    def patch(self, request):
+    def patch(self, request, id: int):
         if request.user.is_admin is False:
             return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
         global tournaments
