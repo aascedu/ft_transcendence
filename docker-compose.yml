@@ -358,7 +358,7 @@ services:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD1}
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
       SERVER_SSL_ENABLED: false
       XPACK_REPORTING_ROLES_ENABLED: false
@@ -369,9 +369,6 @@ services:
       SERVER_BASEPATH: /iris
       SERVER_PUBLICBASEURL: https://localhost:8000/iris
       NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
-      # xpack.screenshotting.browser.chromium.disablesandbox: true
-      # xpack.observability.aiassistant: disable
-      # LICENSE: ${LICENSE}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -436,7 +433,6 @@ services:
 
   db_exporter_a:
     container_name: db_exporter_a
-    # image: db_exporter_a
     build:
       context: ./requirements/mensura/db_exporter_a
       dockerfile: Dockerfile
@@ -454,7 +450,6 @@ services:
 
   db_exporter_m:
     container_name: db_exporter_m
-    # image: db_exporter_m
     build:
       context: ./requirements/mensura/db_exporter_m
       dockerfile: Dockerfile
@@ -472,7 +467,6 @@ services:
 
   db_exporter_p:
     container_name: db_exporter_p
-    # image: db_exporter_p
     build:
       context: ./requirements/mensura/db_exporter_p
       dockerfile: Dockerfile
@@ -491,7 +485,6 @@ services:
 # # Data exporter container
   alertmanager:
     container_name: alertmanager
-    # image: alertmanager
     build:
       context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile
@@ -640,7 +633,7 @@ services:
     container_name: setup
     environment:
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD1}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile
