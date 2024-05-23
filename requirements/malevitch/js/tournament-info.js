@@ -1,8 +1,20 @@
-// Load tournament info from db
+// Load tournament info from backend
 
-function loadTournamentInfo(id) {
-	// var	tournamentInfo = get tournament info from db (id)
-	
+// Ongoing tournament : load from Coubertin
+async function loadOngoingTournament(id) {
+	var tournamentInfo = await get_tournament_infos(id);
+
+	await loadTournamentInfo(tournamentInfo);
+}
+
+// Closed tournament : load from Mnemosine
+async function loadClosedTournament(id) {
+	var tournamentInfo = await get_tournament_by_id(id);
+
+	await loadTournamentInfo(tournamentInfo);
+}
+
+function loadTournamentInfo(tournamentInfo) {	
 	// // Display tournament name
 	// document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
 
@@ -450,7 +462,7 @@ async function confirmJoinTournament() {
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
 
-	await loadTournamentInfo();
+	await loadOngoingTournament();
 
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';
