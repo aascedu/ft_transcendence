@@ -22,13 +22,13 @@ async function remove_player_from_tournament(TournamentId) {
 }
 
 async function invite_friend_to_tournament(TournamentId, Invited) {
-    json = {TournamentId: TournamentId, Invited: Invited});
+    json = {TournamentId: TournamentId, Invited: Invited};
 
     return fetch_post(add_coubertin_in_url('entry/'), json);
 }
 
 async function join_tournament(TournamentId) {
-    json = {TournamentId: TournamentId});
+    json = {TournamentId: TournamentId};
 
     return fetch_post(add_coubertin_in_url('entry/'), json);
 }

@@ -45,7 +45,7 @@ document.querySelector('.available-tournaments-icon').addEventListener('click', 
 
 document.querySelectorAll('.available-tournaments-card-container .content-card').forEach(function(item) {
 	item.addEventListener('click', async function () {
-		await loadTournamentInfo();
+		await loadOngoingTournament();
 
 		document.querySelector('.tournament-info-icon').focus();
 

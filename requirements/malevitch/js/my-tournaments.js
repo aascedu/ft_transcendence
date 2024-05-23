@@ -13,50 +13,48 @@ async function loadMyTournaments() {
 		return ;
 	}
 	
-	return ;
+	var	ongoingTournamentsContainer = document.querySelector('.my-tournaments-ongoing');
+	var	closedTournamentsContainer = document.querySelector('.my-tournaments-closed');
+	var	tournamentName;
+	var	tournamentId;
 
-	// var	ongoingTournamentsContainer = document.querySelector('.my-tournaments-ongoing');
-	// var	closedTournamentsContainer = document.querySelector('.my-tournaments-closed');
-	// var	tournamentName;
-	// var	tournamentId;
+	// My ongoing tournaments
+	document.querySelector('.my-tournaments-no-open').classList.add('visually-hidden');
 
-	// // My ongoing tournaments
-	// document.querySelector('.my-tournaments-no-open').classList.add('visually-hidden');
+	for (i = 0; i < ongoingTournaments.length; i++) {
+		tournamentName = ongoingTournaments[i].Name;
+		tournamentId = ongoingTournaments[i].Id;
 
-	// for (i = 0; i < ongoingTournaments.length; i++) {
-	// 	tournamentName = ongoingTournaments[i].Name;
-	// 	tournamentId = ongoingTournaments[i].Id;
+		ongoingTournamentsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
+			<div class="my-tournaments-card-picture position-absolute">
+				<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
+		</button>`);
+	}
+	if (ongoingTournaments.length == 0) {
+		document.querySelector('.my-tournaments-no-open').classList.remove('visually-hidden');
+	}
 
-	// 	ongoingTournamentsContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
-	// 		<div class="my-tournaments-card-picture position-absolute">
-	// 			<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
-	// 		</div>
-	// 		<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
-	// 	</button>`);
-	// }
-	// if (ongoingTournaments.length == 0) {
-	// 	document.querySelector('.my-tournaments-no-open').classList.remove('visually-hidden');
-	// }
+	// Closed tournaments
+	document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
 
-	// // Closed tournaments
-	// document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
+	for (i = 0; i < closedTournaments.length; i++) {
+		tournamentName = closedTournaments[i].Name;
+		tournamentId = closedTournaments[i].Id;
 
-	// for (i = 0; i < closedTournaments.length; i++) {
-	// 	tournamentName = closedTournaments[i].Name;
-	// 	tournamentId = closedTournaments[i].Id;
-
-	// 	closedTournamentsContainer.insertAdjacentHTML('beforeend', `\
-	// 	<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
-	// 		<div class="my-tournaments-card-picture position-absolute">
-	// 			<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
-	// 		</div>
-	// 		<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
-	// 	</button>`);
-	// }
-	// if (closedTournaments.length == 0) {
-	// 	document.querySelector('.my-tournaments-no-closed').classList.remove('visually-hidden');
-	// }
+		closedTournamentsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card d-flex justify-content-center align-items-center purple-shadow" tournament-id="` + tournamentId + `">
+			<div class="my-tournaments-card-picture position-absolute">
+				<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+			<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">` + tournamentName + `</div>
+		</button>`);
+	}
+	if (closedTournaments.length == 0) {
+		document.querySelector('.my-tournaments-no-closed').classList.remove('visually-hidden');
+	}
 }
 
 function clearMyTournaments() {
@@ -89,9 +87,23 @@ document.querySelector('.my-tournaments-icon').addEventListener('click', functio
 
 // Load tournament page when clicking on a tournament
 
-document.querySelectorAll('.my-tournaments-card-container .content-card').forEach(function(item) {
+document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
 	item.addEventListener('click', async function () {
-		await loadTournamentInfo();
+		await loadOngoingTournament();
+
+		document.querySelector('.tournament-info-icon').focus();
+		
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.tournament-info';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	});
+});
+
+document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
+	item.addEventListener('click', async function () {
+		await loadClosedTournament();
 
 		document.querySelector('.tournament-info-icon').focus();
 		
