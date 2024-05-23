@@ -386,27 +386,6 @@ services:
       timeout: 10s
       retries: 120
 
-# # Auth inter-container container
-  lovelace:
-    container_name: lovelace
-    build:
-      context: ./requirements/lovelace
-      dockerfile: Dockerfile
-    volumes:
-      - ./requirements/lovelace/lovelace_project:/app
-      - ./tokens/shared-django:/app/tokens
-      - shared_code:/app/shared
-    ports:
-      - "8005:8005"
-    networks:
-      - atlas
-    depends_on:
-      tutum:
-        condition: service_healthy
-      aether:
-        condition: service_healthy
-    restart: on-failure
-
 # # Game container
   ludo:
     container_name: ludo
