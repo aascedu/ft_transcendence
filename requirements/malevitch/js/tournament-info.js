@@ -432,7 +432,7 @@ document.querySelector('.tournament-info-join-input').addEventListener('keypress
 	}
 });
 
-function confirmJoinTournament() {
+async function confirmJoinTournament() {
 	var	tournamentNick = document.querySelector('.tournament-info-join-input').value;
 	var	warning = document.querySelector('.tournament-info-join-input-warning');
 
@@ -450,7 +450,7 @@ function confirmJoinTournament() {
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
 
-	loadTournamentInfo();
+	await loadTournamentInfo();
 
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';

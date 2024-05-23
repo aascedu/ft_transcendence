@@ -1,6 +1,6 @@
 // Load available tournaments from db
 
-function loadAvailableTournaments() {
+async function loadAvailableTournaments() {
 	// var	availableTournaments = get tournament list from db
 	
 	// // If no tournament at all
@@ -44,8 +44,8 @@ document.querySelector('.available-tournaments-icon').addEventListener('click', 
 // Load tournament page when clicking on a tournament
 
 document.querySelectorAll('.available-tournaments-card-container .content-card').forEach(function(item) {
-	item.addEventListener('click', function () {
-		loadTournamentInfo();
+	item.addEventListener('click', async function () {
+		await loadTournamentInfo();
 
 		document.querySelector('.tournament-info-icon').focus();
 
