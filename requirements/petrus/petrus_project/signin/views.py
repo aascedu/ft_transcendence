@@ -10,7 +10,7 @@ from shared.validators import NickNameValidator
 from signin.models import Client
 from shared.jwt_management import JWT
 from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
-from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbiden, JsonConflict
+from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
 class signinView(View):
     """ se login """
@@ -35,7 +35,7 @@ class signinView(View):
 
         if not bcrypt.checkpw(password.encode('utf-8'),
                           client.hashed_password.encode('utf-8')):
-            return JsonForbiden(request, "invalid password")
+            return JsonForbidden(request, "invalid password")
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Client": "connected", "ref": refresh_token})
@@ -118,7 +118,7 @@ class refreshView(View):
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
         except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
-            return JsonForbiden(request, e.__str__())
+            return JsonForbidden(request, e.__str__())
         except DecodeError as e:
             return JsonErrResponse(request, e.__str__(), status=500)
 
@@ -126,10 +126,10 @@ class refreshView(View):
             id = decoded_token['id']
             expired_id = decoded_expired_token['id']
         except KeyError:
-            return JsonForbiden(request, "Ids not provided in tokens")
+            return JsonForbidden(request, "Ids not provided in tokens")
 
         if id != expired_id:
-            return JsonForbiden(request, "Ids aren't the same")
+            return JsonForbidden(request, "Ids aren't the same")
 
         try:
             client = Client.objects.get(id=id)

@@ -7,7 +7,7 @@ from django.conf import settings
 from logging import warn
 
 from shared.utils import JsonResponseLogging as JsonResponse
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbiden, JsonNotFound, delete_response, save_response
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonNotFound, delete_response, save_response
 
 def int_to_lang(nb):
     if nb == "fr":
@@ -78,7 +78,7 @@ class userInfoView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         if request.user.is_service is not True:
-            return JsonForbiden(request, "Only services can create a user")
+            return JsonForbidden(request, "Only services can create a user")
         data = request.data
         client = Client()
         try:
@@ -94,7 +94,7 @@ class userInfoView(View):
 
     def delete(self, request, id: int) -> JsonResponse:
         if request.user.is_service is not True or request.user.nick != "petrus":
-            return JsonForbiden(request, "Only petrus can delete a user")
+            return JsonForbidden(request, "Only petrus can delete a user")
         try:
             to_delete = Client.objects.get(id=id)
         except ObjectDoesNotExist:
@@ -135,7 +135,7 @@ class friendView(View):
 
     def post(self, request, id: int) -> JsonResponse:
         if request.user.is_autenticated is False:
-            return JsonForbiden("Only user can add FriendshipRequest for themself")
+            return JsonForbidden("Only user can add FriendshipRequest for themself")
         sender = request.model
         if id == request.user.id:
             return JsonBadRequest("invalid id")
@@ -175,11 +175,11 @@ class avatarView(View):
 
 def serve_avatar(request, filename):
     if request.method != 'GET':
-        return JsonForbiden(request, 'Bad Method')
+        return JsonForbidden(request, 'Bad Method')
     file_path = os.path.join(settings.MEDIA_ROOT, 'avatars', filename)
 
     if request.user.is_autenticated is False:
-        return JsonForbiden(request, 'Not authorised')
+        return JsonForbidden(request, 'Not authorised')
 
     try:
         with open(file_path, 'rb') as f:
@@ -189,7 +189,7 @@ def serve_avatar(request, filename):
     except FileNotFoundError:
         return JsonNotFound(request, 'File not found.')
     except PermissionError:
-        return JsonForbiden(request, 'no permission to access')
+        return JsonForbidden(request, 'no permission to access')
     except OSError as e:
         return JsonErrResponse(request, f'An error occurred: {e}', status=500)
 

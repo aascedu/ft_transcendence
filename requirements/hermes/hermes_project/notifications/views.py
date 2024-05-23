@@ -2,7 +2,7 @@ from django.views import View
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from shared.utils import JsonBadRequest, JsonForbiden, JsonUnauthorized
+from shared.utils import JsonBadRequest, JsonForbidden, JsonUnauthorized
 from notifications.cache import get_cache
 import requests
 
@@ -37,7 +37,7 @@ class onlineView(View):
 class notificationsView(View):
     def get(self, request):
         if request.user.is_service is False:
-            return JsonForbiden("Only services can notify")
+            return JsonForbidden("Only services can notify")
         message = "notification_message"
         channel_layer = get_channel_layer()
         print(channel_layer)

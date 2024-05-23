@@ -35,7 +35,7 @@ def JsonUnauthorized(request, error_message):
 def JsonBadRequest(request, error_message):
     return JsonErrResponse(request, "Bad Request : " + error_message, status=400)
 
-def JsonForbiden(request, error_message):
+def JsonForbidden(request, error_message):
     return JsonErrResponse(request, "Forbiden : " + error_message, status=403)
 
 def JsonNotFound(request, error_message):

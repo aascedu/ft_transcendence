@@ -6,7 +6,7 @@ from django.views import View
 
 from memory.models import Tournament, Game, Player
 from shared.utils import JsonResponseLogging as JsonResponse
-from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbidden
 
 class tournamentHistoryView(View):
     def get(self, request, id: int):
@@ -32,7 +32,7 @@ class tournamentView(View):
 
     def post(self, request, id:int  = 0):
         if request.user.is_service is False:
-            return JsonForbiden(request, 'Only Coubertin can create tournaments')
+            return JsonForbidden(request, 'Only Coubertin can create tournaments')
         data = request.data
         try:
             Tournament.from_json_saved(data)
@@ -46,7 +46,7 @@ class tournamentView(View):
 class gameView(View):
     def post(self, request):
         if request.user.is_service is False:
-            return JsonForbiden(request, "Only services can post games")
+            return JsonForbidden(request, "Only services can post games")
         try:
             new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
@@ -60,7 +60,7 @@ class gameView(View):
 
     def delete(self, request):
         if request.user.is_admin is False:
-            return JsonForbiden(request, "Only admin can delete games")
+            return JsonForbidden(request, "Only admin can delete games")
         return JsonErrResponse(request, "Not implemented delete", status=501)
 
 
@@ -79,7 +79,7 @@ class playerView(View):
 
     def post(self, request, id: int = 0):
         if request.user.is_service is False:
-            return JsonForbiden(request, "Only services can create a player")
+            return JsonForbidden(request, "Only services can create a player")
         player = Player()
         try:
             player.id = request.data['Id']
@@ -103,7 +103,7 @@ class playerView(View):
 
     def patch(self, request, id: int = 0):
         if request.user.is_admin is False:
-            return JsonForbiden(request, 'Only admin can patch a player')
+            return JsonForbidden(request, 'Only admin can patch a player')
         try:
             id = request.data['Id']
             elo = request.data['Elo']
