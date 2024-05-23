@@ -358,7 +358,7 @@ services:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD1} #kibanapassword1
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
       SERVER_SSL_ENABLED: false
       XPACK_REPORTING_ROLES_ENABLED: false
@@ -369,9 +369,6 @@ services:
       SERVER_BASEPATH: /iris
       SERVER_PUBLICBASEURL: https://localhost:8000/iris
       NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
-      # xpack.screenshotting.browser.chromium.disablesandbox: true
-      # xpack.observability.aiassistant: disable
-      # LICENSE: ${LICENSE}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -657,7 +654,7 @@ services:
     container_name: setup
     environment:
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD1}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile
