@@ -2,7 +2,7 @@ from django.views import View
 from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from shared.utils import JsonBadRequest, JsonUnauthorized
+from shared.utils import JsonBadRequest, JsonForbidden, JsonUnauthorized
 from notifications.cache import get_cache
 import requests
 
@@ -22,10 +22,9 @@ class onlineView(View):
             return JsonResponse({'Err': f'{e}'})
 
         friends = response.json().get("Friends")
-        print(friends)
         for friend in friends:
             try:
-                id = friend['Id']
+                id = int(friend['Id'])
             except (ValueError, TypeError) as e:
                 return JsonBadRequest(f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
@@ -37,6 +36,8 @@ class onlineView(View):
 
 class notificationsView(View):
     def get(self, request):
+        if request.user.is_service is False:
+            return JsonForbidden("Only services can notify")
         message = "notification_message"
         channel_layer = get_channel_layer()
         print(channel_layer)
@@ -53,7 +54,7 @@ class notificationsView(View):
 class friendshipView(View):
     def post(self, request, requester: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
+            return JsonUnauthorized("Only services can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
@@ -148,8 +149,8 @@ class gameRequestView(View): # Check ca !
         )
         return JsonResponse({"status": "Game accepted"})
 
-class tournamentRequestView(View): # Rajouter l'id du tournoi ?
-    def post(self, request, requester: int):
+class tournamentRequestView(View):
+    def post(self, request, requester: int, tournament_id: int):
         if request.user.is_service is False:
             return JsonUnauthorized("Only service can notify new friendship")
 
@@ -164,12 +165,12 @@ class tournamentRequestView(View): # Rajouter l'id du tournoi ?
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            notified_group,
-                {
+            notified_group, {
                     'type': 'notification.tournament.request',
                     'player1': notified,
                     'player2': requester,
-                    'Tournament-Name': tournament_name
+                    'tournament-name': tournament_name,
+                    'tournament-id': tournament_id
                 }
         )
         return JsonResponse({"status": "Tournament accepted"})

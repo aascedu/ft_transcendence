@@ -1,5 +1,4 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.http import HttpRequest, JsonResponse
 from django.views import View
 from requests.models import DecodeError
 from jwt import ExpiredSignatureError, InvalidTokenError
@@ -10,18 +9,12 @@ import logging
 from shared.validators import NickNameValidator
 from signin.models import Client
 from shared.jwt_management import JWT
-from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbiden, JsonConflict
-
-
-def view_db(request: HttpRequest) -> JsonResponse:
-    request = request
-    clients = [object.toDict() for object in Client.objects.all()]
-    return JsonResponse({"clients": list(clients)})
-
+from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
+from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
 class signinView(View):
     """ se login """
-    def post(self, request, string: str) -> JsonResponse:
+    def post(self, request, string: str):
         data = request.data
 
         try:
@@ -34,19 +27,18 @@ class signinView(View):
         try:
             id = int(id)
         except (ValueError, TypeError):
-            return JsonBadRequest(f"{id} is not a valid id")
-
+            return JsonBadRequest(request, f'{id} is not a valid id')
         try:
             client = Client.objects.get(id=id)
         except ObjectDoesNotExist:
-            return JsonErrResponse("no user found for this id", status=404)
+            return JsonNotFound(request, 'no user found for this id')
 
         if not bcrypt.checkpw(password.encode('utf-8'),
                           client.hashed_password.encode('utf-8')):
-            return JsonForbiden("invalid password")
+            return JsonForbidden(request, "invalid password")
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse({"Client": "connected", "ref": refresh_token})
+        response = JsonResponse(request, {"Client": "connected", "ref": refresh_token})
         response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         logging.info("Client connected")
         return response
@@ -65,12 +57,12 @@ class signupView(View):
         except KeyError as e:
             error_message = f"Key : {str(e)} not provided."
             logging.error(error_message)
-            return JsonBadRequest(error_message)
+            return JsonBadRequest(request, error_message)
 
         try:
             client.check_password()
         except ValidationError as e:
-            return JsonErrResponse(e.__str__(), status=422)
+            return JsonErrResponse(request, e.__str__(), status=422)
         client.hashed_password = bcrypt.hashpw(
             client.password.encode('utf-8'),
             bcrypt.gensalt()).decode('utf-8')
@@ -80,11 +72,11 @@ class signupView(View):
             if (len(client.nick) > 16):
                 raise ValidationError("nickname can't be longer than 16 chars")
         except ValidationError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
 
-        response = save_response(client)
+        response = save_response(request, client)
         if response.status_code != 200:
-            return JsonConflict("Error saving client")
+            return JsonConflict(request, "Error saving client")
 
         try:
             response = requests.post(
@@ -105,11 +97,11 @@ class signupView(View):
             except BaseException as e:
                 print(f'Error: during deleting row. {e}')
             client.delete()
-            return JsonConflict(str(error))
+            return JsonConflict(request, str(error))
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse({"Client": client.id, "ref": refresh_token})
+        response = JsonResponse(request, {"Client": client.id, "ref": refresh_token})
         response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         logging.info("Client created")
         return response
@@ -120,31 +112,31 @@ class refreshView(View):
             token = request.data['ref']
             expired_token = request.COOKIES['auth']
         except KeyError as e:
-            return JsonBadRequest(f"Key : {str(e)} not provided.")
+            return JsonBadRequest(request, f"Key : {str(e)} not provided.")
 
         try:
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
         except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
-            return JsonForbiden(e.__str__())
+            return JsonForbidden(request, e.__str__())
         except DecodeError as e:
-            return JsonErrResponse(e.__str__(), status=500)
+            return JsonErrResponse(request, e.__str__(), status=500)
 
         try:
             id = decoded_token['id']
             expired_id = decoded_expired_token['id']
         except KeyError:
-            return JsonForbiden("Ids not provided in tokens")
+            return JsonForbidden(request, "Ids not provided in tokens")
 
         if id != expired_id:
-            return JsonForbiden("Ids aren't the same")
+            return JsonForbidden(request, "Ids aren't the same")
 
         try:
             client = Client.objects.get(id=id)
         except ObjectDoesNotExist:
-            return JsonErrResponse("Clients doesn't exist anymore", status=404)
+            return JsonErrResponse(request, "Clients doesn't exist anymore", status=404)
 
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse({"Token": "refreshed"})
+        response = JsonResponse(request, {"Token": "refreshed"})
         response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         return response
