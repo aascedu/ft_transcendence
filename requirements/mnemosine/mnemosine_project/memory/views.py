@@ -5,7 +5,7 @@ from django.views import View
 
 from memory.models import Tournament, Game, Player
 from shared.utils import JsonResponseLogging as JsonResponse
-from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse, JsonForbiden
+from shared.utils import JsonNotFound, JsonUnauthorized, delete_response, save_response, JsonBadRequest, JsonErrResponse
 
 class tournamentHistoryView(View):
     def get(self, request, id: int):
