@@ -44,7 +44,7 @@ class tournamentManagement(View):
         for i in invited:
             try:
                 response = requests.post(
-                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(id),
+                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(id) + '/',
                     json={
                         'Tournament-Name': tournaments[id].name,
                         'Notified': i,
@@ -143,7 +143,7 @@ class inviteFriend(View):
 
         try:
             response = requests.post(
-                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId),
+                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId) + '/',
                 json={'Tournament-Id': TournamentId,
                         'Tournament-Name': tournaments[TournamentId].name,
                         'Notified': data['Invited']})
