@@ -42,6 +42,6 @@ async function get_tournaments_available() {
 }
 
 async function get_tournament_infos(tournamentId) {
-    return fetch_get(add_coubertin_in_url('infos/' + tournamentId));
+    return fetch_get(add_coubertin_in_url('infos/' + tournamentId + '/'));
 }
 
