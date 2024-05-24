@@ -102,6 +102,26 @@ class Consumer(OurBasicConsumer):
             self.myTournament.removePlayer(self.id)
             self.close()
 
+    async def TournamentEnd(self, event):
+        global tournaments
+
+        requests.post(
+            f'http://mnemosine:8008/memory/pong/tournaments/0',
+            json=self.myTournament.toDict()
+        )
+        
+        if self.admin:
+            for player in self.myTournament.contenders:
+                if player != self.admin:
+                    await self.channel_layer.group_send(
+                        self.tournamentId, {
+                            'type': 'LeaveTournament',
+                            'player': player,
+                        }
+                    )
+            del tournaments[self.id]
+            self.close()
+        
 
 # To do
 # Remove someone from tournament if admin
