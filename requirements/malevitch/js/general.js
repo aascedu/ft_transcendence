@@ -504,14 +504,14 @@ async function setHomepageContent() {
 	// Winrate
 	statsContainer.insertAdjacentHTML('beforeend', `\
 	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-		<div class="homepage-game-content-stats-card-stat unselectable">` + (numWins / history.length) * 100 + `%</div>
+		<div class="homepage-game-content-stats-card-stat unselectable">` + Math.round((numWins / history.length + Number.EPSILON) * 100) + `%</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="winrate">Win rate</div>
 	</div>`);
 
 	// Average conceded points
 	statsContainer.insertAdjacentHTML('beforeend', `\
 	<div class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow">
-		<div class="homepage-game-content-stats-card-stat unselectable">` + (totalPoints / history.length) + `</div>
+		<div class="homepage-game-content-stats-card-stat unselectable">` + Math.round((totalPoints / history.length + Number.EPSILON) * 100) / 100 + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="points-conceded">Average conceded points</div>
 	</div>`);
 

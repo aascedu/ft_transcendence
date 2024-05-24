@@ -61,8 +61,8 @@ async function loadUserContent(id) {
 
 	// Display stats
 
-	document.querySelector('.user-profile-winrate').textContent = numWins / history.length + '%';
-	document.querySelector('.user-profile-points-conceded').textContent = totalScore / history.length;
+	document.querySelector('.user-profile-winrate').textContent = Math.round((numWins / history.length + Number.EPSILON) * 100) + '%';
+	document.querySelector('.user-profile-points-conceded').textContent = Math.round((totalPoints / history.length + Number.EPSILON) * 100) / 100;
 
 	var	averageTime;
 	var	averageMinutes;
@@ -76,12 +76,14 @@ async function loadUserContent(id) {
 
 	// Current shape graph
 
+	var	spacing = 50;
+
 	const canvas = document.querySelector('.user-profile-stats-graph');
 	if (!canvas.getContext) {
 		return;
 	}
 	canvas.width = canvas.parentElement.offsetWidth;
-	canvas.height = `${getCanvasHeight(history)}`;
+	canvas.height = `${getCanvasHeight(history, spacing)}`;
 
 	g_canvasHeight = canvas.height;
 
@@ -91,8 +93,8 @@ async function loadUserContent(id) {
 	ctx.fillStyle = '#7300E6';
 	ctx.lineWidth = 3;
 
-	var	posX = 50;
-	var	posY = getCanvasStart(history, canvas.height);
+	var	posX = 40;
+	var	posY = getCanvasStart(history, canvas.height, spacing) - 25;
 	var	startX = posX;
 	var	startY = posY;
 
@@ -101,12 +103,12 @@ async function loadUserContent(id) {
 	ctx.moveTo(startX, startY);
 	for (i = 0; i < history.length; i++) {
 		if (history[i].Winner == g_userId) {
-			posY += 50;
+			posY -= spacing;
 		}
 		else {
-			posY -= 50;
+			posY += spacing;
 		}
-		posX++;
+		posX += spacing;
 		ctx.lineTo(posX, posY);
 	}
 	ctx.stroke();
@@ -117,14 +119,15 @@ async function loadUserContent(id) {
 	// draw points
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
+	ctx.arc(startX, startY, 5, 0, 2*Math.PI);
 	for (i = 0; i < history.length; i++) {
 		if (history[i].Winner == g_userId) {
-			posY += 50;
+			posY -= spacing;
 		}
 		else {
-			posY -= 50;
+			posY += spacing;
 		}
-		posX++;
+		posX += spacing;
 		ctx.moveTo(posX, posY);
 		ctx.arc(posX, posY, 5, 0, 2*Math.PI);
 	}
@@ -156,40 +159,31 @@ function clearUserContent() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function getCanvasHeight(history) {
-	var	height = 50;
-	var	prevResult = 0;
-	var	result = 0;
-	var	prevStreak = 0;
-	var	streak = 0;
-
-	for (i = 0; i < history.length; i++) {
-		prevResult = result;
-		if (history[i].Winner = g_userId) {
-			result = 1;
-		}
-		else {
-			result = 0;
-		}
-		if (i == 0 || result != prevResult) {
-			prevStreak = streak;
-			streak = 0;
-		}
-		streak++;
-		if (streak > prevStreak) {
-			height += 50;
-		}
-	}
-	return height;
-}
-
-function getCanvasStart(history, height) {
+function getCanvasHeight(history, spacing) {
 	var	result = 0;
 	var	min = 0;
 	var	max = 0;
 
 	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner = g_userId) {
+		if (history[i].Winner == g_userId) {
+			result++;
+		}
+		else {
+			result--;
+		}
+		min = result < min ? result : min;
+		max = result > max ? result : max;
+	}
+	return ((max - min) * spacing) + spacing;
+}
+
+function getCanvasStart(history, height, spacing) {
+	var	result = 0;
+	var	min = 0;
+	var	max = 0;
+
+	for (i = 0; i < history.length; i++) {
+		if (history[i].Winner == g_userId) {
 			result++;
 		}
 		else {
@@ -199,12 +193,12 @@ function getCanvasStart(history, height) {
 		max = result > max ? result : max;
 	}
 	if (min == 0) {
-		return 0;
+		return height - spacing;
 	}
 	if (max == 0) {
-		return height;
+		return spacing;
 	}
-	return height - (max * 50);
+	return (max * spacing) + spacing;
 }
 
 // Modify avatar (check if it is user profile before !)
