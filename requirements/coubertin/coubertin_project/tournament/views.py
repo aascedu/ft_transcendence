@@ -14,8 +14,10 @@ class availableTournamentView(View):
     def get(self, request):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
-        global tournaments
-        response = [tournament.id for tournament in tournaments if tournament.state == 0]
+        response = {}
+        for tournament in tournaments:
+            if tournaments[tournament].started == False: # Et je ne participe pas au tournoi ?
+                response[tournament] = tournaments[tournament].name
         return JsonResponse(request, response)
 
 class tournamentManagement(View):
@@ -39,14 +41,17 @@ class tournamentManagement(View):
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, {'Err': f'missing {e} to create tournament'})
 
-        tournaments[list(tournaments)[-1] + 1] = Tournament(tournamentName, nbPlayers, id, admin, invited) # 0 = admin id to get
+        tournamentId = 0
+        if len(tournaments) > 0:
+            tournamentId = list(tournaments)[-1] + 1
+        tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited) # 0 = admin id to get
 
         for i in invited:
             try:
                 response = requests.post(
-                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(id) + '/',
+                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(tournamentId) + '/',
                     json={
-                        'Tournament-Name': tournaments[id].name,
+                        'Tournament-Name': tournaments[tournamentId].name,
                         'Notified': i,
                     }
                 )
@@ -56,14 +61,17 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
 
     def patch(self, request, id: int):
-        if request.user.is_admin is False:
-            return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
         global tournaments
+
         data = request.data
         try:
-            tournaments[data['TournamentId']].name = data['NewName']
+            tournamentId = data['TournamentId']
+            if request.user.id != tournaments[tournamentId].admin:
+                return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
+            tournaments[tournamentId].name = data['NewName']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
+        
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
@@ -71,15 +79,15 @@ class tournamentEntry(View):
         global tournaments
 
         try:
-            playerId = request.user.id
             data = request.data
+            playerId = data['PlayerId']
             tournamentId = data['TournamentId']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            tournamentId,
+            str(tournamentId),
             {
                 'type': 'LeaveTournament',
                 'player': playerId,
@@ -92,7 +100,7 @@ class tournamentEntry(View):
         global tournaments
 
         if request.user.is_autenticated is False:
-            return
+            return JsonUnauthorized(request, "Connect yourself to fetch")
         playerId = request.user.id
         data = request.data
 
@@ -109,9 +117,13 @@ class tournamentEntry(View):
         if (TournamentId not in tournaments):
             return JsonNotFound(request, 'Tournament not found')
 
-        tournaments[TournamentId].addPlayer(playerId)
-        if playerId in tournaments[TournamentId].invited:
-            tournaments[TournamentId].invited.remove(playerId)
+        try:
+            tournaments[TournamentId].addPlayer(playerId)
+            if playerId in tournaments[TournamentId].invited:
+                tournaments[TournamentId].invited.remove(playerId)
+        except Exception as e:
+            return JsonErrResponse(request, {'Err': e.__str__()})
+
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(TournamentId)}) # url of the websocket to join
 
@@ -165,16 +177,18 @@ class inviteFriend(View):
 class myTournaments(View):
     def get(self, request):
         userId = request.user.id
-        response = {}
+        response = []
 
+        print('yo')
         for i in tournaments:
+            print('Testing tournament: ' + str(i))
             if tournaments[i].userParticipating(userId):
                 t = {}
                 t['Name'] = tournaments[i].name
                 t['Id'] = tournaments[i].id
                 response.append(t)
 
-        return JsonResponse(request, response)
+        return JsonResponse(request, {'Ongoing': response})
 
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):

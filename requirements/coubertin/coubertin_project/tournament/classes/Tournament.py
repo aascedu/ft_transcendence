@@ -14,9 +14,12 @@ class Tournament:
         print("Tournament created")
 
     def addPlayer(self, player):
-        if (len(self.players) >= self.nbPlayers):
+        if len(self.players) >= self.nbPlayers:
             raise Exception("Too many players already")
-        self.players += player
+        if self.userParticipating(player):
+            raise Exception("Player is already participating in tournament")
+        self.players.append(player)
+        print("Player added") # Debug
 
     def removePlayer(self, playerId):
         if (playerId not in self.players):

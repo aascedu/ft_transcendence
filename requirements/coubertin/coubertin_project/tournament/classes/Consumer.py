@@ -66,7 +66,7 @@ class Consumer(OurBasicConsumer):
             # Check tournament end
             if self.myTournament.NumPlayers == pow(2, self.myTournament.currentRound): # NumPlayers == 2 puissance currentRound
                 requests.post(
-                        f'http://mnemosine:8008/memory/pong/tournaments/0',
+                        f'http://mnemosine:8008/memory/pong/tournaments/0/',
                         json=self.myTournament.toDict())
                 
                 # Deco tout le monde, faire une onction a part
@@ -106,7 +106,7 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         requests.post(
-            f'http://mnemosine:8008/memory/pong/tournaments/0',
+            f'http://mnemosine:8008/memory/pong/tournaments/0/',
             json=self.myTournament.toDict()
         )
         
