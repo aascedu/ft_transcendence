@@ -39,6 +39,9 @@ volumes:
   logstash_data:
     driver: local
 
+  filebeat_data:
+    driver: local
+
   alfred_data:
     driver: local
 
@@ -230,6 +233,7 @@ services:
       discovery.type: single-node
       cluster.name: ${CLUSTER_NAME}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      bootstrap.memory_lock: true
       network.host: 0.0.0.0
       xpack.security.enabled: true
       xpack.security.http.ssl.enabled: true
@@ -242,7 +246,7 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
-      ES_JAVA_OPTS: -Xms512m -Xms512m
+      # ES_JAVA_OPTS: -Xms512m -Xms512m
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
@@ -318,6 +322,34 @@ services:
         condition: service_healthy
     restart: on-failure
 
+  filebeat:
+    container_name: filebeat
+    depends_on:
+      apollo:
+        condition: service_healthy
+    build:
+      context: ./requirements/filebeat
+      dockerfile: Dockerfile
+    user: root
+    volumes:
+      - certificates:/usr/share/filebeat/config/certs:ro
+      - filebeat_data:/usr/share/filebeat/data
+      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
+      - ELASTIC_HOSTS=https://apollo:9200
+      - KIBANA_HOSTS=http://iris:5601
+      - LOGSTASH_HOSTS=http://aether:5044
+    # command:
+    #   - --strict.perms=false
+    networks:
+      - sentinel
+      - internet_access
+      - atlas
+
 # # Notification container
   hermes:
     container_name: hermes
@@ -358,8 +390,9 @@ services:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD1}
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      # ELASTICSEARCH_SSL_VERIFICATIONMODE: none
       SERVER_SSL_ENABLED: false
       XPACK_REPORTING_ROLES_ENABLED: false
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
@@ -633,7 +666,7 @@ services:
     container_name: setup
     environment:
       - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD1}"
+      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile
