@@ -1,8 +1,8 @@
 from django.views import View
-from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from shared.utils import JsonBadRequest, JsonForbidden, JsonUnauthorized
+from shared.utils import JsonResponseLogging as JsonResponse
 from notifications.cache import get_cache
 import requests
 
@@ -12,26 +12,26 @@ class onlineView(View):
     def get(self, request):
         return_json = {}
         if request.user.is_autenticated is False:
-            return JsonUnauthorized("Friendship list can only be get if autenticated")
+            return JsonUnauthorized(request, "Friendship list can only be get if autenticated")
         id = request.user.id
         try:
             response = requests.get(f'http://alfred:8001/user/friends/{id}')
             if response.status_code != 200:
                 raise BaseException(f'Error during fetch: {response.json()['Err']}')
         except BaseException as e:
-            return JsonResponse({'Err': f'{e}'})
+            return JsonResponse(request, {'Err': f'{e}'})
 
         friends = response.json().get("Friends")
         for friend in friends:
             try:
                 id = int(friend['Id'])
             except (ValueError, TypeError) as e:
-                return JsonBadRequest(f'friend id : {friend} must be an int : {e}')
+                return JsonBadRequest(request, f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
                 return_json |= {id: False}
             else:
                 return_json |= {id: True}
-        return JsonResponse({"online-status": return_json})
+        return JsonResponse(request, {"online-status": return_json})
 
 
 class notificationsView(View):
@@ -49,19 +49,19 @@ class notificationsView(View):
                 "message": message,
             }
         )
-        return JsonResponse({"status": "Notification sent"})
+        return JsonResponse(request, {"status": "Notification sent"})
 
 class friendshipView(View):
     def post(self, request, requester: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only services can notify new friendship")
+            return JsonUnauthorized(request, "Only services can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+            return JsonBadRequest(request, "Notified must be an id")
 
         channel_layer = get_channel_layer()
 
@@ -74,19 +74,19 @@ class friendshipView(View):
                 'message': f'friendship: {requester}'
             }
         )
-        return JsonResponse({"Friendship": "Notified"})
+        return JsonResponse(request, {"Friendship": "Notified"})
 
 class friendshipRequestView(View):
     def post(self, request, requester: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
+            return JsonUnauthorized(request, "Only service can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+            return JsonBadRequest(request, "Notified must be an id")
 
         channel_layer = get_channel_layer()
 
@@ -98,19 +98,19 @@ class friendshipRequestView(View):
                 'message': f'friendship-request: {requester}'
             }
         )
-        return JsonResponse({"Friendship": "Notified"})
+        return JsonResponse(request, {"Friendship": "Notified"})
 
 class gameRequestView(View): # Check ca !
     def get(self, request, requester: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
+            return JsonUnauthorized(request, "Only service can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+            return JsonBadRequest(request, "Notified must be an id")
 
         notified_group = f'user_{notified}_group'
 
@@ -123,18 +123,18 @@ class gameRequestView(View): # Check ca !
                     'message': f'game-request: {requester}'
                 }
         )
-        return JsonResponse({"status": "Game requested"})
+        return JsonResponse(request, {"status": "Game requested"})
 
     def post(self, request, requester: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
+            return JsonUnauthorized(request, "Only service can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+            return JsonBadRequest(request, "Notified must be an id")
 
         notified_group = f'user_{notified}_group'
 
@@ -147,20 +147,20 @@ class gameRequestView(View): # Check ca !
                     'player2': requester,
                 }
         )
-        return JsonResponse({"status": "Game accepted"})
+        return JsonResponse(request, {"status": "Game accepted"})
 
 class tournamentRequestView(View):
     def post(self, request, requester: int, tournament_id: int):
         if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
+            return JsonUnauthorized(request, "Only service can notify new friendship")
 
         try:
             notified = int(request.data['Notified'])
             tournament_name = request.data['Tournament-Name']
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+            return JsonBadRequest(request, "Notified must be an id")
         notified_group = f'user_{notified}_group'
 
         channel_layer = get_channel_layer()
@@ -173,5 +173,5 @@ class tournamentRequestView(View):
                     'tournament-id': tournament_id
                 }
         )
-        return JsonResponse({"status": "Tournament accepted"})
+        return JsonResponse(request, {"status": "Tournament accepted"})
 
