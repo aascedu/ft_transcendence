@@ -31,7 +31,6 @@ class Tournament:
         self.gameHistory.append(game)
         self.ongoingGames -= 1
         self.contenders.remove(game['Loser'])
-        # Virer le loser des contenders
 
     def userParticipating(self, userId):
         for i in self.players:

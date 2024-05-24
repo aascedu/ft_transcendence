@@ -68,6 +68,8 @@ class Consumer(OurBasicConsumer):
                 requests.post(
                         f'http://mnemosine:8008/memory/pong/tournaments/0',
                         json=self.myTournament.toDict())
+                
+                # Deco tout le monde, faire une onction a part
                 return
             
             self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)

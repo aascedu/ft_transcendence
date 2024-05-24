@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 import requests
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 
@@ -16,7 +18,7 @@ class availableTournamentView(View):
         response = [tournament.id for tournament in tournaments if tournament.state == 0]
         return JsonResponse(request, response)
 
-class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs ou autre ?
+class tournamentManagement(View):
     def get(self, request, id: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
@@ -42,10 +44,12 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
         for i in invited:
             try:
                 response = requests.post(
-                    'http://tournament-request/' + str(request.user.id),
-                    json={'Tournament-Id': id,
-                            'Tournament-Name': tournaments[id].name,
-                            'Notified': i})
+                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(id),
+                    json={
+                        'Tournament-Name': tournaments[id].name,
+                        'Notified': i,
+                    }
+                )
             except Exception as e:
                 return JsonErrResponse(request, {'Err': e.__str__()}, status = response.status_code)
 
@@ -73,7 +77,14 @@ class tournamentEntry(View):
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
 
-        # Deconnecter la websocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            tournamentId,
+            {
+                'type': 'LeaveTournament',
+                'player': playerId,
+            }
+        )
 
         return JsonResponse(request, {"Ressource": "Patched"})
 
@@ -99,6 +110,8 @@ class tournamentEntry(View):
             return JsonNotFound(request, 'Tournament not found')
 
         tournaments[TournamentId].addPlayer(playerId)
+        if playerId in tournaments[TournamentId].invited:
+            tournaments[TournamentId].invited.remove(playerId)
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(TournamentId)}) # url of the websocket to join
 
@@ -130,14 +143,24 @@ class inviteFriend(View):
 
         try:
             response = requests.post(
-                'http://tournament-request/' + str(request.user.id),
+                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId),
                 json={'Tournament-Id': TournamentId,
                         'Tournament-Name': tournaments[TournamentId].name,
                         'Notified': data['Invited']})
         except Exception as e:
             return JsonErrResponse(request, {'Err': e.__str__()}, status = response.status_code)
 
-        return JsonResponse
+        return JsonResponse({})
+    
+    def patch(self, request): # If someone declines invitation
+        global tournaments
+
+        tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
+        return JsonResponse({
+            'Msg': 'Invitation declined',
+            'PlayerId': request['PlayerId'],
+            'TournamentId': request['TournamentId'],
+        })
 
 class myTournaments(View):
     def get(self, request):
@@ -162,14 +185,25 @@ class gameResult(View): # We need to remove the loser from the player list
             return JsonResponse({'Err': "tournamentId or game not provided"})
         printData(data)
         tournament = tournaments[data['tournamentId']]
-        tournament.addGame(data['game']) # Game is a dictionnary
+        tournament.addGame(data['game'])
 
-        # Envoyer un next round si ongoingGames vaut 0
-        # Deconnecter la websocket du perdant
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            data['tournamentId'],
+            {
+                'type': 'LeaveTournament',
+                'player': data['game']['Loser'],
+            }
+        )
+
+        if tournament.ongoingGames == 0:
+            async_to_sync(channel_layer.group_send)(
+                data['tournamentId'], {
+                    'type': 'StartRound',
+                }
+        )
 
         return JsonResponse(request, {})
-
-# Faire une vue quand qqn decline l'invitation au tournoi
 
 
 ############## Debug ##############
