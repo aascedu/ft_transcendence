@@ -1,11 +1,12 @@
 from django.urls import path
-from notifications.views import onlineView, notificationsView, friendshipView, friendshipRequestView, gameRequestView, tournamentRequestView
+from notifications import views
+# onlineView, notificationsView, friendshipView, friendshipRequestView, gameRequestView, tournamentRequestView
 
 urlpatterns = [
-    path("online-states", onlineView.as_view(), name="online states"),
-    path("send-shit/", notificationsView.as_view(), name="notifications"),
-    path("friendship/<int:requester>", friendshipView.as_view()),
-    path("friend-request/<int:requester>", friendshipRequestView.as_view()),
-    path("game-request/<int:requester>", gameRequestView.as_view()),
-    path("tournament-request/<int:requester>/<int:tournament>", tournamentRequestView.as_view()),
+    path("online-states", views.onlineView.as_view(), name="online states"),
+    path("send-shit/", views.global_notification, name="notifications"),
+    path("friendship/<int:requester>", views.friendship),
+    path("friend-request/<int:requester>", views.friendshipRequest),
+    path("game-request/<int:requester>", views.gameRequest),
+    path("tournament-request/<int:requester>", views.tournamentRequest),
 ]

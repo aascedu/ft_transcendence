@@ -7,7 +7,7 @@ from django.conf import settings
 from logging import warn
 
 from shared.utils import JsonResponseLogging as JsonResponse
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonNotFound, delete_response, save_response
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonNotFound, delete_response, save_response, JsonUnauthorized
 
 def int_to_lang(nb):
     if nb == "fr":
@@ -76,7 +76,7 @@ class userInfoView(View):
         return save_response(request, client)
 
 
-    def post(self, request, id: int) -> JsonResponse:
+    def post(self, request, id: int):
         if request.user.is_service is not True:
             return JsonForbidden(request, "Only services can create a user")
         data = request.data
@@ -92,7 +92,7 @@ class userInfoView(View):
         return save_response(request, client)
 
 
-    def delete(self, request, id: int) -> JsonResponse:
+    def delete(self, request, id: int):
         if request.user.is_service is not True or request.user.nick != "petrus":
             return JsonForbidden(request, "Only petrus can delete a user")
         try:
@@ -104,7 +104,7 @@ class userInfoView(View):
 
 
 class friendView(View):
-    def get(self, request, id: int) -> JsonResponse:
+    def get(self, request, id: int):
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 requestee = Client.objects.get(id=id)
@@ -133,25 +133,27 @@ class friendView(View):
             "Sent": emiter.list_sent_requests(),
         })
 
-    def post(self, request, id: int) -> JsonResponse:
+    def post(self, request, id: int):
         if request.user.is_autenticated is False:
-            return JsonForbidden("Only user can add FriendshipRequest for themself")
+            return JsonForbidden(request, "Only user can add FriendshipRequest for themself")
         sender = request.model
         if id == request.user.id:
-            return JsonBadRequest("invalid id")
+            return JsonBadRequest(request, "invalid id")
         try:
             receiver = Client.objects.get(id=id)
         except ObjectDoesNotExist:
-            return JsonErrResponse("Ressource not found", status=404)
-        return FriendshipRequest.processRequest(sender, receiver)
+            return JsonErrResponse(request, "Ressource not found", status=404)
+        return FriendshipRequest.processRequest(request, sender, receiver)
 
-    def delete(self, request, id: int) -> JsonResponse:
+    def delete(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only user can suppress friend from friendlist')
         emiter = request.model
         try:
             target = Client.objects.get(id=id)
         except ObjectDoesNotExist:
-            return JsonErrResponse("ressource not found", status=404)
-        return FriendshipRequest.deleteFriendship(emiter, target)
+            return JsonErrResponse(request, "ressource not found", status=404)
+        return FriendshipRequest.deleteFriendship(request, emiter, target)
 
 
 class avatarView(View):
@@ -160,7 +162,7 @@ class avatarView(View):
             client = Client.objects.get(id=id)
             url = client.avatar.url if client.avatar else None
         except ObjectDoesNotExist:
-            return JsonErrResponse("ressource not found", status=404)
+            return JsonNotFound(request, 'no client for this id')
         return JsonResponse(request, {"url": url})
 
     def post(self, request, id: int):

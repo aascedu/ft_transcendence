@@ -1,7 +1,7 @@
-from django.contrib.admin.views.autocomplete import JsonResponse
 from django.db import models
 import requests
 from shared.utils import JsonBadRequest
+from shared.utils import JsonResponseLogging as JsonResponse
 from shared.validators import NickNameValidator
 
 
@@ -123,14 +123,14 @@ class FriendshipRequest(models.Model):
         }
 
     @staticmethod
-    def processRequest(sender, receiver) -> JsonResponse:
+    def processRequest(request, sender, receiver):
         if receiver in sender.friends.all():
-            return JsonResponse({"Err": "friendship already established"}, status=400)
+            return JsonResponse(request, {"Err": "friendship already established"}, status=400)
 
         redondantRequest = FriendshipRequest.objects.filter(
             sender=sender, receiver=receiver).first()
         if redondantRequest is not None:
-            return JsonBadRequest("redondant request")
+            return JsonBadRequest(request, "redondant request")
 
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
@@ -140,30 +140,30 @@ class FriendshipRequest(models.Model):
             newRequest = FriendshipRequest.objects.create(
                 sender=sender, receiver=receiver)
             newRequest.save()
-            return JsonResponse({"Friendship": "requested"})
+            return JsonResponse(request, {"Friendship": "requested"})
 
         pastRequest.delete()
         sender.friends.add(receiver)
         requests.post(f'http://hermes:8004/notif/friendship/{sender.id}',
                       json={"Notified": receiver.id})
-        return JsonResponse({"Friendship": "established"})
+        return JsonResponse(request, {"Friendship": "established"})
 
     @staticmethod
-    def deleteFriendship(emiter, target) -> JsonResponse:
+    def deleteFriendship(request, emiter, target):
         if target in emiter.friends.all():
             emiter.friends.remove(target)
-            return JsonResponse({"Friendship": "deleted"})
+            return JsonResponse(request, {"Friendship": "deleted"})
 
         oldRequest = FriendshipRequest.objects.filter(
-            sender=emiter, receiver=target)
+            sender=emiter, receiver=target).first()
         if oldRequest is not None:
-            oldRequest.first().delete()
-            return JsonResponse({"Friendship": "aborted 1"})
+            oldRequest.delete()
+            return JsonResponse(request, {"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
-            sender=target, receiver=emiter)
+            sender=target, receiver=emiter).first()
         if oldRequest is not None:
-            oldRequest.first().delete()
-            return JsonResponse({"Friendship": "aborted 2"})
+            oldRequest.delete()
+            return JsonResponse(request, {"Friendship": "aborted 2"})
 
-        return JsonResponse({"Err": "nothing to get deleted"}, status=404)
+        return JsonResponse(request, {"Err": "nothing to get deleted"}, status=404)
