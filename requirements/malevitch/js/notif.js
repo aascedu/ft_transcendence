@@ -83,7 +83,7 @@ document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('
 function acceptFriendInvite() {
 	// close the notif
 	document.querySelector('.notif-friend-invite').classList.add('visually-hidden');
-	setAriaHidden();
+	// setAriaHidden();
 
 	// add user to friends list
 	// -> POST new friend to our friends list
@@ -187,7 +187,7 @@ document.querySelector('.notif-search-match .notif-dismiss').addEventListener('k
 
 function cancelSearchMatch() {
 	// notif already closed by forEach
-	
+
 	// cancel match searching
 
 	// reset timer
@@ -218,7 +218,7 @@ function matchCountdown(seconds) {
 		// close notif
 		document.querySelector('.notif-match-found').classList.add('visually-hidden');
 		setAriaHidden();
-		
+
 		// start match
 	}
 }
@@ -254,7 +254,7 @@ document.addEventListener('keydown', function(e) {
 	document.querySelectorAll('.notif').forEach(function(item) {
 		if (!item.classList.contains('visually-hidden')) {
 			let isFw =!e.shiftKey;
-	
+
 			// Search match
 			if (e.key === 'Tab' && document.activeElement === document.querySelector('.notif-search-match .notif-dismiss')) {
 				document.querySelector('.homepage-header-logo').focus();

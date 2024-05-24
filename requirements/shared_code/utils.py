@@ -41,5 +41,8 @@ def JsonForbidden(request, error_message):
 def JsonNotFound(request, error_message):
     return JsonErrResponse(request, "Ressource not found : " + error_message, status=404)
 
+def JsonUnallowedMethod(request, error_message):
+    return JsonErrResponse(request, "Method not allowd : " + error_message, status=405)
+
 def JsonConflict(request, error_message):
     return JsonErrResponse(request, "Conflict : " + error_message, status=409)
