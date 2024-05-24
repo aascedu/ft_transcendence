@@ -24,7 +24,7 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
         return JsonResponse(request, tournaments[id].toFront())
 
 
-    def post(self, request, id: int): # Maybe we can set admin here instead.
+    def post(self, request, id: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified players can post tournaments')
         global tournaments
@@ -37,13 +37,17 @@ class tournamentManagement(View): # Faire un patch pour modif le nb de joueurs o
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, {'Err': f'missing {e} to create tournament'})
 
-        id = 0
-        for id in tournaments:
-            id += 1
+        tournaments[list(tournaments)[-1] + 1] = Tournament(tournamentName, nbPlayers, id, admin, invited) # 0 = admin id to get
 
-        tournaments[id] = Tournament(tournamentName, nbPlayers, id, admin, invited) # 0 = admin id to get
-
-        # Faire une requete a Hermes pour inviter les gens
+        for i in invited:
+            try:
+                response = requests.post(
+                    'http://tournament-request/' + str(request.user.id),
+                    json={'Tournament-Id': id,
+                            'Tournament-Name': tournaments[id].name,
+                            'Notified': i})
+            except Exception as e:
+                return JsonErrResponse(request, {'Err': e.__str__()}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
 
@@ -66,7 +70,6 @@ class tournamentEntry(View):
             playerId = request.user.id
             data = request.data
             tournamentId = data['TournamentId']
-            tournaments[tournamentId].removePlayer(playerId)
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
 
@@ -97,8 +100,7 @@ class tournamentEntry(View):
 
         tournaments[TournamentId].addPlayer(playerId)
 
-        url = 'wss://localhost:8000/coubertin/tournament/ws/' + str(TournamentId)
-        return JsonResponse(request, {'Msg': "tournament joined", 'url': url}) # url of the websocket to join
+        return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(TournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
     def post(self, request):
@@ -167,8 +169,7 @@ class gameResult(View): # We need to remove the loser from the player list
 
         return JsonResponse(request, {})
 
-def tournamentHome(request, tournamentId):
-    return render(request, 'tournament/home.html', {'tournamentId': tournamentId})
+# Faire une vue quand qqn decline l'invitation au tournoi
 
 
 ############## Debug ##############

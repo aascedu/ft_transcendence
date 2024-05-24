@@ -79,7 +79,6 @@ class Consumer(OurBasicConsumer):
             )
 
     async def StartGame(self, event):
-
         myIndex = self.myTournament.contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = self.myTournament.contenders[opponentIndex]
@@ -95,6 +94,11 @@ class Consumer(OurBasicConsumer):
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
+        
+    async def LeaveTournament(self, event):
+        if event['player'] == self.id:
+            self.myTournament.removePlayer(self.id)
+            self.close()
 
 
 # To do
