@@ -356,6 +356,7 @@ services:
       - sentinel
       - internet_access
       - atlas
+    restart: unless-stopped
 
 # # Notification container
   hermes:
@@ -417,6 +418,7 @@ services:
       test:
         [
           "CMD-SHELL",
+          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
           "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
         ]
       interval: 10s

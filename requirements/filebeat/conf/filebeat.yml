@@ -1,69 +1,46 @@
-# # filebeat.inputs:
-# #   - type: filestream
-# #     id: default-filestream
-# #     paths:
-# #       - ingest_data/*.log
-
-# filebeat.autodiscover:
-#   providers:
-#     - type: docker
-#       hints.enabled: true
-
-# autodiscover.providers:
-#   - type: docker
-#     templates:
-#       - condition.contains:
-#           docker.container.image: nginx
-#         config:
-#           - type: log
-#             paths:
-#               - "/mnt/logs/${data.docker.container.id}/*.log"
-
-# filebeat.inputs:
-# - type: container
-#   paths: 
-#     - '/var/log/containers/*.log'
-
-# processors:
-#   - add_docker_metadata: ~
-
-# setup.kibana:
-#   host: ${KIBANA_HOSTS}
-#   username: ${ELASTIC_USER}
-#   password: ${ELASTIC_PASSWORD}
-
-# # output.elasticsearch:
-# #   hosts: ${ELASTIC_HOSTS}
-# #   username: ${ELASTIC_USER}
-# #   password: ${ELASTIC_PASSWORD}
-# #   ssl.enabled: true
-# #   ssl.certificate_authorities: "config/certs/ca/ca.crt"
-
-# output.logstash:
-#   hosts: ${LOGSTASH_HOSTS}
+filebeat.config.modules:
+  path: /usr/share/filebeat/modules.d/*.yml
+  reload.enabled: false
 
 filebeat.inputs:
-  - type: container
+  - type: filestream
+    id: filebeat
     paths:
       - '/var/lib/docker/containers/*/*.log'
+    processors:
+      - add_docker_metadata:
+          host: "unix:///var/run/docker.sock"
+      # - decode_json_fields:
+      #     fields: ["log"]
+      #     target: ""
+      #     overwrite_keys: true
 
 processors:
   - add_docker_metadata:
       host: "unix:///var/run/docker.sock"
-  - dissect:
-      tokenizer: '{"log":"[%{time}][%{uuid}][%{channel}][%{id}][%{chaincode}][%{method}] %{specificinfo}\"\n%{}'
-      field: "message"
-      target_prefix: ""
 
-output.elasticsearch:
-  hosts: ${ELASTIC_HOSTS}
+setup.kibana:
+  host: ${KIBANA_HOSTS}
   username: ${ELASTIC_USER}
   password: ${ELASTIC_PASSWORD}
-  ssl.enabled: true
-  ssl.certificate_authorities: "config/certs/ca/ca.crt"
-  indices:
-      - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+  setup.dashboards.enable: true
+
+output.logstash:
+  hosts: ${LOGSTASH_HOSTS}
 
 logging.json: true
 logging.metrics.enabled: false
 setup.ilm.enabled: true
+json.keys_under_root: true
+json.add_error_key: true
+json.message_key: message
+
+# output.elasticsearch:
+#   hosts: ${ELASTIC_HOSTS}
+#   username: ${ELASTIC_USER}
+#   password: ${ELASTIC_PASSWORD}
+#   ssl.enabled: true
+#   ssl.certificate_authorities: "config/certs/ca/ca.crt"
+#   indices:
+#       - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
+
