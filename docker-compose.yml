@@ -159,7 +159,9 @@ services:
       test:
         [
           "CMD-SHELL",
-          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
+          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && \
+          # timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' && \
+          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -246,6 +248,7 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
+      cluster.routing.allocation.enable: all
       # ES_JAVA_OPTS: -Xms512m -Xms512m
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
@@ -325,7 +328,11 @@ services:
   filebeat:
     container_name: filebeat
     depends_on:
+      aether:
+        condition: service_healthy
       apollo:
+        condition: service_healthy
+      iris:
         condition: service_healthy
     build:
       context: ./requirements/filebeat
@@ -342,7 +349,7 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
       - ELASTIC_HOSTS=https://apollo:9200
       - KIBANA_HOSTS=http://iris:5601
-      - LOGSTASH_HOSTS=http://aether:5044
+      - LOGSTASH_HOSTS=aether:5044
     # command:
     #   - --strict.perms=false
     networks:
