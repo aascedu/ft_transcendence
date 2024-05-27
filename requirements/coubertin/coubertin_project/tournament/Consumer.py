@@ -1,5 +1,6 @@
 import json
-from tournament.Tournament import tournaments
+from channels.generic.websocket import AsyncWebsocketConsumer
+from Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
@@ -44,20 +45,20 @@ class Consumer(OurBasicConsumer):
             }
         )
 
-    async def Start(self, event): # Only for admin, to start tournament
-        global tournaments
+    # async def Start(self, event): # Only for admin, to start tournament
+    #     global tournaments
 
-        self.myTournament.started = True
-        self.myTournament.contenders = self.myTournament.players
+    #     self.myTournament.started = True
+    #     self.myTournament.contenders = self.myTournament.players
 
-        await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "StartRound",
-                }
-            )
+    #     await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "StartRound",
+    #             }
+    #         )
 
-    async def StartRound(self, event): # To start a round (Will redirect every player etc...)
-        global tournaments
+    # async def StartRound(self, event): # To start a round (Will redirect every player etc...)
+    #     global tournaments
 
         # if self.admin and self.myTournament.ongoingGames == 0:
         #     self.myTournament.currentRound += 1
@@ -73,11 +74,11 @@ class Consumer(OurBasicConsumer):
             
         #     self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
 
-        await self.channel_layer.group_send(
-            self.tournamentId, {
-                'Type': "StartGame",
-            }
-        )
+        # await self.channel_layer.group_send(
+        #     self.tournamentId, {
+        #         'Type': "StartGame",
+        #     }
+        # )
 
     async def StartGame(self, event):
         myIndex = self.myTournament.contenders.index(self.id)
@@ -90,12 +91,12 @@ class Consumer(OurBasicConsumer):
             'RoomName': roomName,
             }))
 
-    async def TournamentState(self, event): # Update the state of a tournament for the front
+    async def TournamentState(self, event):
         await self.send(json.dumps({
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
-
+        
     async def LeaveTournament(self, event):
         if event['player'] == self.id:
             self.myTournament.removePlayer(self.id)
