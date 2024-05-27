@@ -67,11 +67,11 @@ class Consumer(OurBasicConsumer):
 
             # Check tournament end
             if self.myTournament.NumPlayers == pow(2, self.myTournament.currentRound): # NumPlayers == 2 puissance currentRound
-                requests.post(
-                        f'http://mnemosine:8008/memory/pong/tournaments/0/',
-                        json=self.myTournament.toDict())
-                
-                # Deco tout le monde, faire une onction a part
+                await self.channel_layer.group_send(
+                    self.tournamentId, {
+                        'Type': "TournamentEnd",
+                    }
+                )
                 return
             
             self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
@@ -107,10 +107,13 @@ class Consumer(OurBasicConsumer):
     async def TournamentEnd(self, event):
         global tournaments
 
-        requests.post(
+        request = requests.post(
             f'http://mnemosine:8008/memory/pong/tournaments/0/',
             json=self.myTournament.toDict()
         )
+
+        if request.status_code != 200:
+            print("Warning: tournament could not be registered in database")
         
         if self.admin:
             for player in self.myTournament.contenders:
