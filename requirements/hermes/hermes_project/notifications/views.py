@@ -53,7 +53,7 @@ class availableFriendView(View):
         for friend in friends:
             if get_cache(f'ava_{id}') is True:
                 array.append(friend)
-        return JsonResponse(request, {'Ava': [array]})
+        return JsonResponse(request, {'Ava': array})
 
 
     def post(self, request):
