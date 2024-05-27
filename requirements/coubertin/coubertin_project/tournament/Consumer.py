@@ -1,5 +1,6 @@
 import json
-from tournament.Tournament import tournaments
+from channels.generic.websocket import AsyncWebsocketConsumer
+from Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
@@ -17,9 +18,9 @@ class Consumer(OurBasicConsumer):
         self.tournamentId = self.scope["url_route"]["kwargs"]["tournamentId"]
         self.myTournament = tournaments[self.tournamentId]
 
-        self.admin = False
-        if (self.myTournament.admin == self.id):
-            self.admin = True # Do we let the admin chose if he plays or not ?
+        # self.admin = False
+        # if (self.myTournament.admin == self.id):
+        #     self.admin = True # Do we let the admin chose if he plays or not ?
 
         print ("Tournament room name is " + self.tournamentId)
 
@@ -44,42 +45,40 @@ class Consumer(OurBasicConsumer):
             }
         )
 
-    async def Start(self, event): # Only for admin, to start tournament
-        global tournaments
-        if (self.admin == False):
-            return
+    # async def Start(self, event): # Only for admin, to start tournament
+    #     global tournaments
 
-        self.myTournament.started = True
-        self.myTournament.contenders = self.myTournament.players
+    #     self.myTournament.started = True
+    #     self.myTournament.contenders = self.myTournament.players
 
-        await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "StartRound",
-                }
-            )
+    #     await self.channel_layer.group_send(
+    #             self.tournamentId, {
+    #                 'Type': "StartRound",
+    #             }
+    #         )
 
-    async def StartRound(self, event): # To start a round (Will redirect every player etc...)
-        global tournaments
+    # async def StartRound(self, event): # To start a round (Will redirect every player etc...)
+    #     global tournaments
 
-        if self.admin and self.myTournament.ongoingGames == 0:
-            self.myTournament.currentRound += 1
+        # if self.admin and self.myTournament.ongoingGames == 0:
+        #     self.myTournament.currentRound += 1
 
-            # Check tournament end
-            if self.myTournament.NumPlayers == pow(2, self.myTournament.currentRound): # NumPlayers == 2 puissance currentRound
-                await self.channel_layer.group_send(
-                    self.tournamentId, {
-                        'Type': "TournamentEnd",
-                    }
-                )
-                return
+        #     # Check tournament end
+        #     if self.myTournament.NumPlayers == pow(2, self.myTournament.currentRound): # NumPlayers == 2 puissance currentRound
+        #         await self.channel_layer.group_send(
+        #             self.tournamentId, {
+        #                 'Type': "TournamentEnd",
+        #             }
+        #         )
+        #         return
+            
+        #     self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
 
-            self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
-
-            await self.channel_layer.group_send(
-                self.tournamentId, {
-                    'Type': "StartGame",
-                }
-            )
+        # await self.channel_layer.group_send(
+        #     self.tournamentId, {
+        #         'Type': "StartGame",
+        #     }
+        # )
 
     async def StartGame(self, event):
         myIndex = self.myTournament.contenders.index(self.id)
@@ -92,12 +91,12 @@ class Consumer(OurBasicConsumer):
             'RoomName': roomName,
             }))
 
-    async def TournamentState(self, event): # Update the state of a tournament for the front
+    async def TournamentState(self, event):
         await self.send(json.dumps({
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
-
+        
     async def LeaveTournament(self, event):
         if event['player'] == self.id:
             self.myTournament.removePlayer(self.id)
@@ -106,6 +105,11 @@ class Consumer(OurBasicConsumer):
     async def TournamentEnd(self, event):
         global tournaments
 
+        if self.myTournament.ended is False:
+            return
+        
+        self.myTournament.ended = False
+
         request = requests.post(
             f'http://mnemosine:8008/memory/pong/tournaments/0/',
             json=self.myTournament.toDict()
@@ -113,19 +117,19 @@ class Consumer(OurBasicConsumer):
 
         if request.status_code != 200:
             print("Warning: tournament could not be registered in database")
+        
+        for player in self.myTournament.contenders:
+            if player != self.id:
+                await self.channel_layer.group_send(
+                    self.tournamentId, {
+                        'type': 'LeaveTournament',
+                        'player': player,
+                    }
+                )
 
-        if self.admin:
-            for player in self.myTournament.contenders:
-                if player != self.admin:
-                    await self.channel_layer.group_send(
-                        self.tournamentId, {
-                            'type': 'LeaveTournament',
-                            'player': player,
-                        }
-                    )
-            del tournaments[self.id]
-            self.close()
-
+        del tournaments[self.id]
+        self.close()
+        
 
 # To do
 # Remove someone from tournament if admin

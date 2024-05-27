@@ -44,3 +44,7 @@ async function get_tournament_infos(tournamentId) {
     return fetch_get(add_coubertin_in_url('infos/' + tournamentId + '/'));
 }
 
+async function start_tournament(tournamentId) {
+    return fetch_post(add_coubertin_in_url('startTournament/'));
+}
+
