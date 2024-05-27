@@ -1,6 +1,5 @@
-from django.shortcuts import render
 from django.views import View
-from tournament.classes.Tournament import Tournament, tournaments
+from tournament.Tournament import Tournament, tournaments
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 import requests
@@ -54,7 +53,7 @@ class tournamentManagement(View):
                     'Notified': i,
                 }
             )
-            if response.status_code == 200:
+            if response.status_code != 200:
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
@@ -72,7 +71,7 @@ class tournamentManagement(View):
             tournaments[tournamentId].name = data['NewName']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
-        
+
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
@@ -162,11 +161,11 @@ class inviteFriend(View):
             json={'Tournament-Id': TournamentId,
                     'Tournament-Name': tournaments[TournamentId].name,
                     'Notified': data['Invited']})
-        if response.status_code == 200:
+        if response.status_code != 200:
             return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse({'Msg': "Friend has been invited"})
-    
+
     def delete(self, request): # If someone declines invitation
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authenticated players decline tournament invitation')
@@ -203,12 +202,11 @@ class gameResult(View): # We need to remove the loser from the player list
         global tournaments
 
         if request.user.is_service is False:
-            return JsonUnauthorized(request, "Only services can add game to a tournament")
+            return JsonUnauthorized(request, 'Only services can add game to a tournament')
 
         data = request.data
         if 'tournamentId' not in data or 'game' not in data:
-            return JsonResponse({'Err': "tournamentId or game not provided"})
-        printData(data)
+            return JsonBadRequest(request, {'Err': 'tournamentId or game not provided'})
         tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game'])
 
@@ -228,9 +226,7 @@ class gameResult(View): # We need to remove the loser from the player list
                 }
         )
 
-        return JsonResponse(request, {'Msg': "Tournament game added"})
-
-
+        return JsonResponse(request, {'Msg': 'Tournament game added'})
 ############## Debug ##############
 def printData(data):
     print('Tournament id: ', data['tournamentId'])
