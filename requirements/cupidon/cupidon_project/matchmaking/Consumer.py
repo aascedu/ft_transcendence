@@ -1,4 +1,4 @@
-imclasses.port json
+import json
 from matchmaking.Player import Player, waitingList
 from shared.BasicConsumer import OurBasicConsumer
 

@@ -11,7 +11,7 @@ VOLUMES_DIR		=	certification_data elasticsearch_data \
 					mnemosine_data petrus_data filebeat_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
-DJANGO_CTT		=	alfred coubertin cupidon hermes lovelace ludo \
+DJANGO_CTT		=	alfred coubertin cupidon hermes ludo \
 					mnemosine petrus
 
 #---- docker commands -------------------------------------------------#
