@@ -23,6 +23,7 @@ async function remove_player_from_tournament(TournamentId, PlayerId) {
     return fetch_patch(add_coubertin_in_url('entry/'), json);
 }
 
+// OK
 async function invite_friend_to_tournament(TournamentId, Invited) {
     json = {TournamentId: TournamentId, Invited: Invited};
 
