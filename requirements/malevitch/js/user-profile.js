@@ -3,10 +3,14 @@
 async function loadUserContent(id) {
 	if (id != g_userId) {
 		var	userInfo = await get_user_info(id);
+		var	userPic = userInfo.Pic;
+		if (userPic == null) {
+			userPic = 'assets/general/pong.png';
+		}
 
 		// Load user general info
-		document.querySelector('.user-profile-picture img').setAttribute('src', userInfo.Nick);
-		document.querySelector('.user-profile-name').textContent = userInfo.Pic;
+		document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
+		document.querySelector('.user-profile-name').textContent = userInfo.Nick;
 	}
 
 	// Display history
