@@ -1,6 +1,5 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from tournament.classes.Tournament import tournaments
+from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
@@ -96,7 +95,7 @@ class Consumer(OurBasicConsumer):
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
-        
+
     async def LeaveTournament(self, event):
         if event['player'] == self.id:
             self.myTournament.removePlayer(self.id)

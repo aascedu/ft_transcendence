@@ -14,7 +14,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.security.websocket import AllowedHostsOriginValidator
 from shared.Middleware import socketJWTIdentificationMiddleware
 from django.urls import re_path
-from notifications.classes.Consumer import Consumer
+from notifications.Consumer import Consumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hermes_project.settings')
 
