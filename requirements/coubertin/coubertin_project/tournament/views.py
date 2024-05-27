@@ -252,10 +252,13 @@ class startTournament(View):
         if tournaments[tournamentId].admin != userId:
             return JsonUnauthorized(request, "You need to be admin of tournament to start it")
         
+        if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
+            return JsonErrResponse(request, "Not enough players to start the tournament")
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             tournamentId, {
-                'type': 'StartRound',
+                'type': 'StartGame',
             }
         )
 

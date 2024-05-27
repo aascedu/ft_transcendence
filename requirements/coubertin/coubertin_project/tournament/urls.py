@@ -9,4 +9,5 @@ urlpatterns = [
     path("invite/", views.inviteFriend.as_view(), name="invite"),
     path("mytournaments/", views.myTournaments.as_view(), name="myTournaments"),
     path("gameResult/", views.gameResult.as_view(), name="gameresult"),
+    path("startTournament/", views.startTournament.as_view(), name="startTournament"),
 ]
