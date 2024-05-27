@@ -7,17 +7,10 @@ filebeat.inputs:
     id: filebeat
     paths:
       - '/var/lib/docker/containers/*/*.log'
-    processors:
-      - add_docker_metadata:
-          host: "unix:///var/run/docker.sock"
-      # - decode_json_fields:
-      #     fields: ["log"]
-      #     target: ""
-      #     overwrite_keys: true
 
-processors:
-  - add_docker_metadata:
-      host: "unix:///var/run/docker.sock"
+# processors:
+#   - add_docker_metadata:
+#       host: "unix:///var/run/docker.sock"
 
 setup.kibana:
   host: ${KIBANA_HOSTS}
@@ -41,6 +34,3 @@ json.message_key: message
 #   password: ${ELASTIC_PASSWORD}
 #   ssl.enabled: true
 #   ssl.certificate_authorities: "config/certs/ca/ca.crt"
-#   indices:
-#       - index: "filebeat-%{[agent.version]}-%{+yyyy.MM.dd}"
-
