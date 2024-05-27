@@ -16,7 +16,7 @@ class availableTournamentView(View):
             return JsonUnauthorized(request, "Connect yourself to fetch")
         response = {}
         for tournament in tournaments:
-            if tournaments[tournament].started == False: # Et je ne participe pas au tournoi ?
+            if tournaments[tournament].started == False and request.user.id not in tournaments[tournament].players: # Et je ne participe pas au tournoi ?
                 response[tournament] = tournaments[tournament].name
         return JsonResponse(request, response)
 
