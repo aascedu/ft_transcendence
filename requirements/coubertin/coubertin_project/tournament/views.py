@@ -189,9 +189,7 @@ class myTournaments(View):
         userId = request.user.id
         response = []
 
-        print('yo')
         for i in tournaments:
-            print('Testing tournament: ' + str(i))
             if tournaments[i].userParticipating(userId):
                 t = {}
                 t['Name'] = tournaments[i].name
