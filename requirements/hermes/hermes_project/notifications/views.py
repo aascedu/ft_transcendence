@@ -4,7 +4,7 @@ from asgiref.sync import async_to_sync
 from django.views.generic.base import logging
 from shared.utils import JsonBadRequest, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
 from shared.utils import JsonResponseLogging as JsonResponse
-from notifications.cache import get_cache
+from notifications.cache import get_cache, set_cache
 from notifications.decorators import notification_by_notified_id, notification_global
 import requests
 
@@ -35,6 +35,41 @@ class onlineView(View):
                 return_json |= {id: True}
         return JsonResponse(request, {"online-status": return_json})
 
+
+class availableFriendView(View):
+    def get(self, request):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Available friend can only be fetch if autenticated')
+        id = request.user.id
+        try:
+            response = requests.get(f'http://alfred:8001/user/friends/{id}')
+            if response.status_code != 200:
+                raise BaseException(f'Error during fetch: {response.json()['Err']}')
+        except BaseException as e:
+            return JsonResponse(request, {'Err': f'{e}'})
+
+        friends = response.json().get('Friends')
+        array = []
+        for friend in friends:
+            if get_cache(f'ava_{id}') is True:
+                array.append(friend)
+        return JsonResponse(request, {'Ava': [array]})
+
+
+    def post(self, request):
+        if request.user.is_service is False:
+            return JsonForbidden(request, 'Only service can modify availability')
+        id = request.data['Id']
+        set_cache(f'ava_{id}', True)
+        return JsonResponse(request, {'Ava': True})
+
+    def delete(self, request):
+        if request.user.is_service is False:
+            return JsonForbidden(request, 'Only service can modify availability')
+        id = request.data['Id']
+        set_cache(f'ava_{id}', False)
+        return JsonResponse(request, {'Ava': False})
+
 @notification_global
 def global_notification(request, requester: int):
     response = JsonResponse(request, {'status': 'Notification sent'})
@@ -48,8 +83,6 @@ def global_notification(request, requester: int):
         'message': message,
     }
     return response, content, None
-
-
 
 @notification_by_notified_id
 def friendship(request, requester: int):
