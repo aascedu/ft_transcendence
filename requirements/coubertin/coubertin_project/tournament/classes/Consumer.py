@@ -4,6 +4,8 @@ from tournament.classes.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
+# Check ce qui se passe si l'admin quitte le tournoi
+
 class Consumer(OurBasicConsumer):
     async def connect(self):
         global tournaments

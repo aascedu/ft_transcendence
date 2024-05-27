@@ -55,14 +55,16 @@ class tournamentManagement(View):
                         'Notified': i,
                     }
                 )
-            except Exception as e:
-                return JsonErrResponse(request, {'Err': e.__str__()}, status = response.status_code)
+            except Exception as e: # Bien une exception
+                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
 
     def patch(self, request, id: int):
-        global tournaments
+        if request.user.is_authenticated is False:
+            return JsonUnauthorized(request, "Only authenticated players can patch a tournament")
 
+        global tournaments
         data = request.data
         try:
             tournamentId = data['TournamentId']
@@ -75,7 +77,10 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
-    def patch(self, request): # Leave
+    def delete(self, request): # Leave
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
+
         global tournaments
 
         try:
@@ -94,13 +99,13 @@ class tournamentEntry(View):
             }
         )
 
-        return JsonResponse(request, {"Ressource": "Patched"})
+        return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
     def post(self, request): # Join
         global tournaments
 
         if request.user.is_autenticated is False:
-            return JsonUnauthorized(request, "Connect yourself to fetch")
+            return JsonUnauthorized(request, "Connect yourself to join")
         playerId = request.user.id
         data = request.data
 
@@ -159,14 +164,18 @@ class inviteFriend(View):
                 json={'Tournament-Id': TournamentId,
                         'Tournament-Name': tournaments[TournamentId].name,
                         'Notified': data['Invited']})
-        except Exception as e:
-            return JsonErrResponse(request, {'Err': e.__str__()}, status = response.status_code)
+        except Exception as e: # Bien une exception
+            return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
-        return JsonResponse({})
+        return JsonResponse({'Msg': "Friend has been invited"})
     
-    def patch(self, request): # If someone declines invitation
-        global tournaments
+    def delete(self, request): # If someone declines invitation
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only authenticated players decline tournament invitation')
 
+        global tournaments
+        if request['PlayerId'] not in tournaments[request['TournamentId']].invited:
+            return JsonNotFound(request, "Player is not in the invited list of the tournament")
         tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
         return JsonResponse({
             'Msg': 'Invitation declined',
@@ -176,6 +185,9 @@ class inviteFriend(View):
 
 class myTournaments(View):
     def get(self, request):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "You need to be authenticated to see your tournaments")
+
         userId = request.user.id
         response = []
 
@@ -193,6 +205,9 @@ class myTournaments(View):
 class gameResult(View): # We need to remove the loser from the player list
     def post(self, request):
         global tournaments
+
+        if request.user.is_service is False:
+            return JsonUnauthorized(request, "Only services can add game to a tournament")
 
         data = request.data
         if 'tournamentId' not in data or 'game' not in data:
@@ -217,7 +232,7 @@ class gameResult(View): # We need to remove the loser from the player list
                 }
         )
 
-        return JsonResponse(request, {})
+        return JsonResponse(request, {'Msg': "Tournament game added"})
 
 
 ############## Debug ##############

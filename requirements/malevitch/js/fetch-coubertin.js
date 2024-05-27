@@ -20,7 +20,7 @@ async function change_tournament_name(NewName, TournamentId) {
 async function remove_player_from_tournament(TournamentId, PlayerId) {
     json = {TournamentId: TournamentId, PlayerId: PlayerId};
 
-    return fetch_patch(add_coubertin_in_url('entry/'), json);
+    return fetch_delete(add_coubertin_in_url('entry/'), json);
 }
 
 // OK
