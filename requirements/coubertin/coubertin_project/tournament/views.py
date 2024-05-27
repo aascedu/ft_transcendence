@@ -47,15 +47,14 @@ class tournamentManagement(View):
         tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited) # 0 = admin id to get
 
         for i in invited:
-            try:
-                response = requests.post(
-                    'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(tournamentId) + '/',
-                    json={
-                        'Tournament-Name': tournaments[tournamentId].name,
-                        'Notified': i,
-                    }
-                )
-            except Exception as e: # Bien une exception
+            response = requests.post(
+                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(tournamentId) + '/',
+                json={
+                    'Tournament-Name': tournaments[tournamentId].name,
+                    'Notified': i,
+                }
+            )
+            if response.status_code == 200:
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
@@ -158,13 +157,12 @@ class inviteFriend(View):
 
         tournaments[TournamentId].invited.append(data['Invited'])
 
-        try:
-            response = requests.post(
-                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId) + '/',
-                json={'Tournament-Id': TournamentId,
-                        'Tournament-Name': tournaments[TournamentId].name,
-                        'Notified': data['Invited']})
-        except Exception as e: # Bien une exception
+        response = requests.post(
+            'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId) + '/',
+            json={'Tournament-Id': TournamentId,
+                    'Tournament-Name': tournaments[TournamentId].name,
+                    'Notified': data['Invited']})
+        if response.status_code == 200:
             return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse({'Msg': "Friend has been invited"})
