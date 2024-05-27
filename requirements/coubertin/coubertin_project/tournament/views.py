@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.views import View
 from tournament.classes.Tournament import Tournament, tournaments
 import requests
@@ -166,10 +165,6 @@ class gameResult(View): # We need to remove the loser from the player list
         # Deconnecter la websocket du perdant
 
         return JsonResponse(request, {})
-
-def tournamentHome(request, tournamentId):
-    return render(request, 'tournament/home.html', {'tournamentId': tournamentId})
-
 
 ############## Debug ##############
 def printData(data):
