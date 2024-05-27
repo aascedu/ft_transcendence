@@ -4,6 +4,8 @@ from tournament.classes.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
+# Check ce qui se passe si l'admin quitte le tournoi
+
 class Consumer(OurBasicConsumer):
     async def connect(self):
         global tournaments
@@ -65,9 +67,11 @@ class Consumer(OurBasicConsumer):
 
             # Check tournament end
             if self.myTournament.NumPlayers == pow(2, self.myTournament.currentRound): # NumPlayers == 2 puissance currentRound
-                requests.post(
-                        f'http://mnemosine:8008/memory/pong/tournaments/0',
-                        json=self.myTournament.toDict())
+                await self.channel_layer.group_send(
+                    self.tournamentId, {
+                        'Type': "TournamentEnd",
+                    }
+                )
                 return
             
             self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
@@ -79,7 +83,6 @@ class Consumer(OurBasicConsumer):
             )
 
     async def StartGame(self, event):
-
         myIndex = self.myTournament.contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = self.myTournament.contenders[opponentIndex]
@@ -95,7 +98,35 @@ class Consumer(OurBasicConsumer):
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
+        
+    async def LeaveTournament(self, event):
+        if event['player'] == self.id:
+            self.myTournament.removePlayer(self.id)
+            self.close()
 
+    async def TournamentEnd(self, event):
+        global tournaments
+
+        request = requests.post(
+            f'http://mnemosine:8008/memory/pong/tournaments/0/',
+            json=self.myTournament.toDict()
+        )
+
+        if request.status_code != 200:
+            print("Warning: tournament could not be registered in database")
+        
+        if self.admin:
+            for player in self.myTournament.contenders:
+                if player != self.admin:
+                    await self.channel_layer.group_send(
+                        self.tournamentId, {
+                            'type': 'LeaveTournament',
+                            'player': player,
+                        }
+                    )
+            del tournaments[self.id]
+            self.close()
+        
 
 # To do
 # Remove someone from tournament if admin

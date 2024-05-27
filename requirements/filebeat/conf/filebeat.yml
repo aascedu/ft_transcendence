@@ -8,9 +8,9 @@ filebeat.inputs:
     paths:
       - '/var/lib/docker/containers/*/*.log'
 
-# processors:
-#   - add_docker_metadata:
-#       host: "unix:///var/run/docker.sock"
+processors:
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
 
 setup.kibana:
   host: ${KIBANA_HOSTS}
