@@ -6,10 +6,6 @@ from channels.layers import get_channel_layer
 import requests
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 
-# Invite someone to tournament
-# Online friends not yet subscribed to tournament: avec Brieuc
-# Get matches
-
 class availableTournamentView(View):
     def get(self, request):
         if request.user.is_autenticated is False:
@@ -44,7 +40,7 @@ class tournamentManagement(View):
         tournamentId = 0
         if len(tournaments) > 0:
             tournamentId = list(tournaments)[-1] + 1
-        tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited) # 0 = admin id to get
+        tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited)
 
         for i in invited:
             response = requests.post(
@@ -57,7 +53,7 @@ class tournamentManagement(View):
             if response.status_code == 200:
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
-        return JsonResponse(request, {'Msg': "Tournament created"}) # Redirect on the tournament url, or join URL ?
+        return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
         if request.user.is_authenticated is False:
@@ -76,7 +72,7 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
-    def delete(self, request): # Leave
+    def delete(self, request):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
 
@@ -100,7 +96,7 @@ class tournamentEntry(View):
 
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
-    def post(self, request): # Join
+    def post(self, request):
         global tournaments
 
         if request.user.is_autenticated is False:
@@ -198,7 +194,7 @@ class myTournaments(View):
 
         return JsonResponse(request, {'Ongoing': response})
 
-class gameResult(View): # We need to remove the loser from the player list
+class gameResult(View):
     def post(self, request):
         global tournaments
 
@@ -222,14 +218,50 @@ class gameResult(View): # We need to remove the loser from the player list
         )
 
         if tournament.ongoingGames == 0:
+            tournament.currentRound += 1
+
+            # Check tournament end
+            if tournament.NumPlayers == pow(2, tournament.currentRound): # NumPlayers == 2 puissance currentRound
+                async_to_sync(channel_layer.group_send)(
+                    data['tournamentId'], {
+                        'Type': "TournamentEnd",
+                    }
+                )
+                return JsonResponse(request, {'Msg': "Tournament ended"})
+            
+            tournament.ongoingGames = pow(2, tournament.nbPlayers) / pow(2, tournament.currentRound)
+
             async_to_sync(channel_layer.group_send)(
                 data['tournamentId'], {
                     'type': 'StartRound',
                 }
-        )
+            )
 
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
+class startTournament(View):  
+    def post(self, request):
+        if request.user.is_autenticated is False:
+                return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
+        
+        data = request.data
+        userId = request.user.id
+        try:
+            tournamentId = data['TournamentId']
+        except KeyError as e:
+            return JsonBadRequest(request, f'Missing key {e}')
+        
+        if tournaments[tournamentId].admin != userId:
+            return JsonUnauthorized(request, "You need to be admin of tournament to start it")
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            tournamentId, {
+                'type': 'StartRound',
+            }
+        )
+
+        return JsonResponse(request, "Tournament started")
 
 ############## Debug ##############
 def printData(data):

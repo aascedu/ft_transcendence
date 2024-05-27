@@ -5,6 +5,7 @@ class Tournament:
         self.admin = admin
         self.nbPlayers = nbPlayers
         self.started = False
+        self.ended = False
         self.ongoingGames = 0
         self.currentRound = 0
         self.players = [] # Id du player
