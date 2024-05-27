@@ -177,8 +177,8 @@ clean: down
 
 fclean: clean
 	- $(STOP) $$(docker compose ps -qa)
+	- $(RM_IMG) $$(docker compose images -q)
 	- $(RM) $$(docker compose ps -qa)
-	- $(RM_IMG) $$(docker compose images -qa)
 	- $(NETWORK) rm $$(docker network ls -q) 2>/dev/null
 
 prune:
