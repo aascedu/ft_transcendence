@@ -2,23 +2,22 @@ function add_coubertin_in_url(url) {
     return ("/coubertin/tournament/" + url)
 }
 
-// Functions working
 async function create_tournament(Name, NumPlayers, Invited, Admin) {
     json = {Name: Name, NumPlayers: NumPlayers, Invited: Invited, Admin: Admin};
 
-    return fetch_post(add_coubertin_in_url('infos/'), json);
+    return fetch_post(add_coubertin_in_url('infos/0/'), json);
 }
 
 async function change_tournament_name(NewName, TournamentId) {
     json = {NewName: NewName, TournamentId: TournamentId};
 
-    return fetch_patch(add_coubertin_in_url('infos/'), json);
+    return fetch_patch(add_coubertin_in_url('infos/0/'), json);
 }
 
-async function remove_player_from_tournament(TournamentId) {
-    json = {TournamentIdId: TournamentId};
+async function remove_player_from_tournament(TournamentId, PlayerId) {
+    json = {TournamentId: TournamentId, PlayerId: PlayerId};
 
-    return fetch_patch(add_coubertin_in_url('entry/'), json);
+    return fetch_delete(add_coubertin_in_url('entry/'), json);
 }
 
 async function invite_friend_to_tournament(TournamentId, Invited) {
@@ -42,6 +41,6 @@ async function get_tournaments_available() {
 }
 
 async function get_tournament_infos(tournamentId) {
-    return fetch_get(add_coubertin_in_url('infos/' + tournamentId));
+    return fetch_get(add_coubertin_in_url('infos/' + tournamentId + '/'));
 }
 
