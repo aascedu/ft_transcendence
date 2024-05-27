@@ -4,12 +4,12 @@ from django.http import HttpRequest, JsonResponse
 from shared.utils import JsonNotFound
 from .jwt_management import JWT
 from .common_classes import User
+from shared.commonView import identificators
 import json
 import information
 
 
 from urllib.parse import parse_qs
-
 
 class socketJWTIdentificationMiddleware:
     def __init__(self, application) -> None:

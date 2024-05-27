@@ -1,9 +1,11 @@
 from django.views import View
-from django.http import JsonResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
-from shared.utils import JsonBadRequest, JsonForbidden, JsonUnauthorized
+from django.views.generic.base import logging
+from shared.utils import JsonBadRequest, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
+from shared.utils import JsonResponseLogging as JsonResponse
 from notifications.cache import get_cache
+from notifications.decorators import notification_by_notified_id, notification_global
 import requests
 
 # Create your views here.
@@ -12,166 +14,92 @@ class onlineView(View):
     def get(self, request):
         return_json = {}
         if request.user.is_autenticated is False:
-            return JsonUnauthorized("Friendship list can only be get if autenticated")
+            return JsonUnauthorized(request, "Friendship list can only be get if autenticated")
         id = request.user.id
         try:
             response = requests.get(f'http://alfred:8001/user/friends/{id}')
             if response.status_code != 200:
                 raise BaseException(f'Error during fetch: {response.json()['Err']}')
         except BaseException as e:
-            return JsonResponse({'Err': f'{e}'})
+            return JsonResponse(request, {'Err': f'{e}'})
 
         friends = response.json().get("Friends")
         for friend in friends:
             try:
                 id = int(friend['Id'])
             except (ValueError, TypeError) as e:
-                return JsonBadRequest(f'friend id : {friend} must be an int : {e}')
+                return JsonBadRequest(request, f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
                 return_json |= {id: False}
             else:
                 return_json |= {id: True}
-        return JsonResponse({"online-status": return_json})
+        return JsonResponse(request, {"online-status": return_json})
+
+@notification_global
+def global_notification(request, requester: int):
+    response = JsonResponse(request, {'status': 'Notification sent'})
+    data = request.data
+    try:
+        message = data['msg']
+    except KeyError:
+        message = 'generic message'
+    content = {
+        'type': 'notification.message',
+        'message': message,
+    }
+    return response, content, None
 
 
-class notificationsView(View):
-    def get(self, request):
-        if request.user.is_service is False:
-            return JsonForbidden("Only services can notify")
-        message = "notification_message"
-        channel_layer = get_channel_layer()
-        print(channel_layer)
-        print("going to group send")
-        async_to_sync(channel_layer.group_send)(
-            "notification_group",
-            {
-                "type": "notification.message",
-                "message": message,
-            }
-        )
-        return JsonResponse({"status": "Notification sent"})
 
-class friendshipView(View):
-    def post(self, request, requester: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Only services can notify new friendship")
+@notification_by_notified_id
+def friendship(request, requester: int):
+    response = JsonResponse(request, {'Friendship': 'Notified'})
+    content = {
+            'type': 'notification.new.friendship',
+            'message': f'friendship: {requester}'
+        }
+    error = 'Only services can notify friendship'
+    return response, content, error
 
-        try:
-            notified = int(request.data['Notified'])
-        except KeyError as e:
-            return JsonBadRequest(str(e))
-        except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
+@notification_by_notified_id
+def friendshipRequest(request, requester: int):
+    response = JsonResponse(request, {'Friendship': 'Notified'})
+    content = {
+            'type': 'notification.new.friendship',
+            'message': f'friendship-request: {requester}'
+        }
+    error = 'Only service can notify new friendship request'
+    return response, content, error
 
-        channel_layer = get_channel_layer()
+@notification_by_notified_id
+def gameRequest(request, requester : int):
+    notified = request.data['Notified']
+    content = {
+            'type': 'notification.game.request',
+            'player1': notified,
+            'player2': requester,
+        }
+    response = JsonResponse(request, {'status': 'Game accepted'})
+    return response, content, None
 
-        notified_group = f'user_{notified}_group'
-        print("notifying this group ", notified_group)
-        async_to_sync(channel_layer.group_send)(
-            notified_group,
-            {
-                'type': 'notification.new.friendship',
-                'message': f'friendship: {requester}'
-            }
-        )
-        return JsonResponse({"Friendship": "Notified"})
-
-class friendshipRequestView(View):
-    def post(self, request, requester: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
-
-        try:
-            notified = int(request.data['Notified'])
-        except KeyError as e:
-            return JsonBadRequest(str(e))
-        except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
-
-        channel_layer = get_channel_layer()
-
-        notified_group = f'user_{notified}_group'
-        async_to_sync(channel_layer.group_send)(
-            notified_group,
-            {
-                'type': 'notification.new.friendship',
-                'message': f'friendship-request: {requester}'
-            }
-        )
-        return JsonResponse({"Friendship": "Notified"})
-
-class gameRequestView(View): # Check ca !
-    def get(self, request, requester: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
-
-        try:
-            notified = int(request.data['Notified'])
-        except KeyError as e:
-            return JsonBadRequest(str(e))
-        except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
-
-        notified_group = f'user_{notified}_group'
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            notified_group,
-                {
-                    'type': 'notification.game.request',
-                    'notified': notified,
-                    'message': f'game-request: {requester}'
-                }
-        )
-        return JsonResponse({"status": "Game requested"})
-
-    def post(self, request, requester: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
-
-        try:
-            notified = int(request.data['Notified'])
-        except KeyError as e:
-            return JsonBadRequest(str(e))
-        except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
-
-        notified_group = f'user_{notified}_group'
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            notified_group,
-                {
-                    'type': 'notification.game.accepted',
-                    'player1': notified,
-                    'player2': requester,
-                }
-        )
-        return JsonResponse({"status": "Game accepted"})
-
-class tournamentRequestView(View):
-    def post(self, request, requester: int, tournament_id: int):
-        if request.user.is_service is False:
-            return JsonUnauthorized("Only service can notify new friendship")
-
+@notification_by_notified_id
+def tournamentRequest(request, requester: int):
         try:
             notified = int(request.data['Notified'])
             tournament_name = request.data['Tournament-Name']
+            tournament_id = int(request.data['Tournament-Id'])
         except KeyError as e:
-            return JsonBadRequest(str(e))
+            return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
-            return JsonBadRequest("Notified must be an id")
-        notified_group = f'user_{notified}_group'
+            return JsonBadRequest(request, 'Notified must be an id')
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            notified_group, {
-                    'type': 'notification.tournament.request',
-                    'player1': notified,
-                    'player2': requester,
-                    'tournament-name': tournament_name,
-                    'tournament-id': tournament_id
-                }
-        )
-        return JsonResponse({"status": "Tournament accepted"})
+        content = {
+                'type': 'notification.tournament.request',
+                'player1': notified,
+                'player2': requester,
+                'tournament-name': tournament_name,
+                'tournament-id': tournament_id
+            }
+        response = JsonResponse(request, {'status': 'Tournament requested'})
+        return response, content, None
 

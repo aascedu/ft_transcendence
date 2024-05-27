@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import IntegrityError
 from django.db.models import Q
-from django.http import JsonResponse
 from django.views import View
 
 from memory.models import Tournament, Game, Player
@@ -88,9 +87,8 @@ class playerView(View):
         return save_response(request, player)
 
     def delete(self, request, id: int = 0):
-        if request.user.is_service is False \
-            or request.user.nick != "petrus":
-            return JsonErrResponse("Only petrus can delete a player", status=401)
+        if request.user.is_service is False:
+            return JsonUnauthorized(request, 'Only service can delete a player')
         try:
             id = request.data['Id']
         except KeyError as e:
@@ -99,7 +97,7 @@ class playerView(View):
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
             return JsonNotFound(request, 'no player found for the id')
-        return delete_response(player)
+        return delete_response(request, player)
 
     def patch(self, request, id: int = 0):
         if request.user.is_admin is False:
@@ -121,4 +119,4 @@ class playerView(View):
         except ObjectDoesNotExist:
             return JsonNotFound(request, 'no player for the id')
         player.elo = elo
-        return save_response(player)
+        return save_response(request, player)
