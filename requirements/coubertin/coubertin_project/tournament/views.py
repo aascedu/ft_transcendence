@@ -1,5 +1,5 @@
 from django.views import View
-from tournament.classes.Tournament import Tournament, tournaments
+from tournament.Tournament import Tournament, tournaments
 import requests
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 

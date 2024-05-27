@@ -1,6 +1,5 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from tournament.classes.Tournament import tournaments
+from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 
@@ -69,7 +68,7 @@ class Consumer(OurBasicConsumer):
                         f'http://mnemosine:8008/memory/pong/tournaments/0',
                         json=self.myTournament.toDict())
                 return
-            
+
             self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
 
             await self.channel_layer.group_send(
