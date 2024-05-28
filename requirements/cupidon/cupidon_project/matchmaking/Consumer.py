@@ -1,6 +1,5 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
-from matchmaking.classes.Player import Player, waitingList
+from matchmaking.Player import Player, waitingList
 from shared.BasicConsumer import OurBasicConsumer
 
 
@@ -54,14 +53,14 @@ class Consumer(OurBasicConsumer):
             #                 + str(waitingList[event['player2']])
             #                 + "/"
             #         }))
-            
+
             await self.send(json.dumps({
                     'type': "start.game",
                     'player1': str(waitingList[event['player1']]),
                     'player2': str(waitingList[event['player2']]),
                     }))
-            
-            del waitingList[self.me.id]            
+
+            del waitingList[self.me.id]
 
     async def Ping(self, event):
         global waitingList

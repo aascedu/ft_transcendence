@@ -19,6 +19,8 @@ class Consumer(OurBasicConsumer):
             apparel_count = 0
         apparel_count = apparel_count + 1
         set_cache(f'user_{user.id}', apparel_count)
+        if get_cache(f'ava_{user.id}') is None:
+            set_cache(f'ava_{user.id}', True)
         self.get_friends()
 
         await self.channel_layer.group_add(
@@ -43,6 +45,7 @@ class Consumer(OurBasicConsumer):
         apparel_count = get_cache(f'user_{user.id}')
         apparel_count = apparel_count - 1
         if apparel_count == 0:
+            delete_cache(f'ava_{user.id}')
             delete_cache(f'user_{user.id}')
         else:
             set_cache(f'user_{user.id}', apparel_count)
