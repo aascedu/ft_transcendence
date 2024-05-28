@@ -1,6 +1,6 @@
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
-from Tournament import tournaments
+from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
 

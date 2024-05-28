@@ -80,12 +80,12 @@
 }
 
 .my-tournaments-card-container
-.content-card:nth-child(even) {
+.content-card:nth-child(odd) {
 	margin-right: 8px;
 }
 
 .my-tournaments-card-container
-.content-card:nth-child(odd) {
+.content-card:nth-child(even) {
 	margin-left: 8px;
 }
 

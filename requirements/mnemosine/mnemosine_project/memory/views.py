@@ -30,8 +30,8 @@ class tournamentView(View):
         return JsonResponse(request, tournament.to_dict())
 
     def post(self, request, id:int  = 0):
-        if request.user.is_service is False:
-            return JsonForbidden(request, 'Only Coubertin can create tournaments')
+        # if request.user.is_service is False:
+        #     return JsonForbidden(request, 'Only Coubertin can create tournaments')
         data = request.data
         try:
             Tournament.from_json_saved(data)

@@ -2,6 +2,7 @@
 
 async function loadMyTournaments() {
 	var	ongoingTournaments = await get_my_tournaments();
+	ongoingTournaments = ongoingTournaments.Ongoing;
 	var	closedTournaments = await get_tournament_history(g_userId);
 	closedTournaments = closedTournaments[g_userId];
 	
@@ -38,6 +39,7 @@ async function loadMyTournaments() {
 	}
 
 	// Closed tournaments
+	document.querySelector('.my-tournaments-closed').classList.remove('visually-hidden');
 	document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
 
 	for (i = 0; i < closedTournaments.length; i++) {
@@ -55,9 +57,40 @@ async function loadMyTournaments() {
 	if (closedTournaments.length == 0) {
 		document.querySelector('.my-tournaments-no-closed').classList.remove('visually-hidden');
 	}
+
+	// Load tournament page when clicking on a tournament
+
+	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
+		item.addEventListener('click', function () {
+			loadOngoingTournament(item.getAttribute('tournament-id'));
+
+			document.querySelector('.tournament-info-icon').focus();
+			
+			hideEveryPage();
+
+			g_state.pageToDisplay = '.tournament-info';
+			window.history.pushState(g_state, null, "");
+			render(g_state);
+		});
+	});
+
+	document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
+		item.addEventListener('click', function () {
+			loadClosedTournament(item.getAttribute('tournament-id'));
+
+			document.querySelector('.tournament-info-icon').focus();
+			
+			hideEveryPage();
+
+			g_state.pageToDisplay = '.tournament-info';
+			window.history.pushState(g_state, null, "");
+			render(g_state);
+		});
+	});
 }
 
 function clearMyTournaments() {
+	document.querySelector('.my-tournaments-card-container').classList.remove('visually-hidden');
 	document.querySelector('.my-tournaments-ongoing').classList.remove('visually-hidden');
 	document.querySelector('.my-tournaments-closed').classList.remove('visually-hidden');
 	document.querySelector('.my-tournaments-empty').classList.add('visually-hidden');
@@ -83,36 +116,6 @@ document.querySelector('.my-tournaments-icon').addEventListener('click', functio
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
-});
-
-// Load tournament page when clicking on a tournament
-
-document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
-	item.addEventListener('click', async function () {
-		await loadOngoingTournament();
-
-		document.querySelector('.tournament-info-icon').focus();
-		
-		hideEveryPage();
-
-		g_state.pageToDisplay = '.tournament-info';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
-	});
-});
-
-document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
-	item.addEventListener('click', async function () {
-		await loadClosedTournament();
-
-		document.querySelector('.tournament-info-icon').focus();
-		
-		hideEveryPage();
-
-		g_state.pageToDisplay = '.tournament-info';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
-	});
 });
 
 // Keyboard navigation
