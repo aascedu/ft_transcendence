@@ -10,6 +10,9 @@ function getSignUpNickname(nickname) {
 // ---
 
 async function warnUnavailableUserInfo(userInfo, infoType, element) {
+	if (userInfo.includes('/')) {
+		return false;
+	}
 	return await fetch('/alfred/user/signin/' + userInfo)
 	.then (response => {
 		if (!response.ok) {
@@ -252,7 +255,7 @@ document.querySelectorAll('.sign-up input').forEach(function (item) {
 	item.addEventListener('keypress', function (event) {
 		var submit = document.querySelector('.sign-up-submit');
 
-		if (event.key === 'Enter' && window.getComputedStyle(submit).visibility !== 'hidden') {
+		if (event.key === 'Enter' && window.getComputedStyle(submit).width != '0px') {
 			submitCreateAccount();
 		}
 	});
@@ -266,6 +269,7 @@ async function submitCreateAccount() {
 	var	nick = document.querySelector('.sign-up-nickname-input').value;
 	var	email = document.querySelector('.sign-up-email-input').value;
 	var	password = document.querySelector('.sign-up-password-input').value;
+	var	passwordConfirm = document.querySelector('.sign-up-password-confirm-input').value;
 	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
 	var	font = document.querySelector('.sign-up-font-size').value;
 
