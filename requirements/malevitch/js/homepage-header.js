@@ -294,6 +294,17 @@ document.querySelector('.homepage-header-add-friend-submit').addEventListener('k
 	}
 });
 
+function sendFriendRequest(nickname) {
+    const message = JSON.stringify({
+        type: "notification_friendship_request",
+        notified: nickname,
+        message: "friendRequest",
+        source: g_userNick,
+    });
+    socket.send(message);
+    console.log(`Friend request sent ${message}`);
+}
+
 function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	
@@ -301,24 +312,25 @@ function addFriend() {
 	if (nickname == g_userNick || !nickname.length) {
 		return ;
 	}
-
+    sendFriendRequest(nickname);
+    //get_id_by_nickname(nickname);
 	// check if user exists in the db
-	fetch('/petrus/auth/signin/' + nickname)
-		.then (response => {
-			if (!response.ok) {
-				throw new Error('HTTP error: ' + response.status);
-			}
-			return response.json();
-		})
-		.then (data => {
-			if (data.Ava) {
-				// input warning
-				document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-input').value = '';
-				document.querySelector('.homepage-header-add-friend-input').focus();
-			}
-			else {
+	//fetch('/petrus/auth/signin/' + nickname)
+	//	.then (response => {
+	//		if (!response.ok) {
+	//			throw new Error('HTTP error: ' + response.status);
+	//		}
+	//		return response.json();
+	//	})
+	//	.then (data => {
+	//		if (data.Ava) {
+	//			// input warning
+	//			document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
+	//			document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+	//			document.querySelector('.homepage-header-add-friend-input').value = '';
+	//			document.querySelector('.homepage-header-add-friend-input').focus();
+	//		}
+	//		else {
 				// send invite
 
 				// show notif to tell invite has been sent
@@ -331,12 +343,12 @@ function addFriend() {
 				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
 				document.querySelector('.homepage-header-add-friend-input').value = '';
 				document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
-			}
+			//}
 			setAriaHidden();
-		})
-		.catch (error => {
-			console.error('Fetch problem:', error.message);
-		});
+		//})
+		//.catch (error => {
+		//	console.error('Fetch problem:', error.message);
+		//});
 }
 
 // --- OTHER ---

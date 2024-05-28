@@ -534,7 +534,7 @@ async function setHomepageContent() {
 async function goToHomepageGame(previous) {
 	clearHomepageContent();
 	await setHomepageContent();
-
+    init_session_socket(); // Start Hermes Socket
 	// hide previous and display homepage content
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');

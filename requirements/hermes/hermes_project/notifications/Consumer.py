@@ -11,7 +11,7 @@ class Consumer(OurBasicConsumer):
         if self.security_check() is False:
             return self.close()
         user = self.scope['user']
-
+        self.name = user.nick
         await self.channel_layer.group_add("notification_group", self.channel_name)
 
         apparel_count = get_cache(f'user_{user.id}')
@@ -57,24 +57,24 @@ class Consumer(OurBasicConsumer):
 
     # Receive message from WebSocket
     async def receive(self, text_data):
-        pass
-        # text_data_json = json.loads(text_data)
-        # type = text_data_json['type']
-        # source = text_data_json['source']
-        # target = text_data_json['target']
+        #pass
+         text_data_json = json.loads(text_data)
+         type = text_data_json['type']
+         source = text_data_json['source']
+         notified = text_data_json['notified']
 
-        # # Send message to room group
-        # await self.channel_layer.group_send(
-        #     "notification_group", {
-        #         "type": type,
-        #         "target": target,
-        #         "source": source,
-        #     }
-        # )
+         # Send message to room group
+         await self.channel_layer.group_send(
+             "notification_group", {
+                 "type": type,
+                 "notified": notified,
+                 "source": source,
+             }
+         )
 
     async def new_client_connected(self, event):
         await self.send(text_data=json.dumps({
-            "message": event['message'],
+            "message": "new client",
         }))
 
     async def notification_message(self, event):
@@ -91,14 +91,18 @@ class Consumer(OurBasicConsumer):
         }))
 
     # Receive message from room group
-    # async def notification_friendship_request(self, event):
-    #     if event['target'] == self.name:
-    #         await self.send (text_data=json.dumps({
-    #             "type": "notification.message",
-    #             "message": event['message'],
-    #             # "type": "friendRequest",
-    #             # "source": event['source'],
-    #         }))
+    async def notification_friendship_request(self, event):
+        print("test websocket")
+        print(event['source'])
+        if event['notified'] == self.name:
+            await self.send (text_data=json.dumps({
+                "type": "notification.message",
+                "message": event['message'],
+                "notified": event['notified'],
+                "source": "AFTER",
+                # "type": "friendRequest",
+                # "source": event['source'],
+            }))
 
     async def notification_game_request(self, event):
         user = self.scope['user']

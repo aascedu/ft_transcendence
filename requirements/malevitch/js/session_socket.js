@@ -20,11 +20,12 @@ async function get_socket_connection_token(path) {
 }
 
 async function init_session_socket() {
+    console.log("Init session socket");
     unique_use_token = await get_socket_connection_token("/hermes/")
     console.log(unique_use_token)
     url = "wss://localhost:8000/hermes/session/" + g_userNick + "?token=" + unique_use_token
     console.log(url)
-    const socket = new WebSocket(url)
+    socket = new WebSocket(url)
     socket.onopen = function(event) {
         console.log("connection has occured")
     }
@@ -35,6 +36,7 @@ async function init_session_socket() {
 }
 
 async function connect(id, password) {
+        console.log("ici")
 		const response = await fetch('/petrus/auth/signin/youpi', {
 			method: "POST",
 			headers: {
