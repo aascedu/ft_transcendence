@@ -12,11 +12,26 @@ async function loadUserContent(id) {
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
 		}
-
+		// // if user is your friend
+		// document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+		// document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+		// document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+		// // else if invitation is pending
+		// document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+		// document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
+		// document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
+		// // else
+		document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
 	}
 	else {
 		userNick = g_userNick;
 		userPic = g_userPic;
+
+		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+		document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
