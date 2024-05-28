@@ -9,7 +9,16 @@ else
     DOCKER_FILE="docker-compose-nologs.yml"
 fi
 
-sleep 10
+while true; do
+    launched=$(docker inspect -f '{{.State.Running}}' tutum)
+    if [ "$launched" = "true" ]; then
+        echo "tutum launched"
+        break
+    else
+        echo "waiting for tutum to launch"
+        sleep 1
+    fi
+done
 
 export ELASTIC_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=EPW env/epw' | tr -cd '[:alnum:]_-')"
 export KIBANA_PASSWORD="$(docker exec -it tutum sh -c 'export VAULT_TOKEN=$(cat /tokens/env/env-token.txt) && vault kv get -mount=secret -format=json -field=EPW env/epw' | tr -cd '[:alnum:]_-')"
