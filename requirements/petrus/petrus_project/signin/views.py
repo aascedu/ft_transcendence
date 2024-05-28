@@ -22,7 +22,7 @@ class signinView(View):
             password = data['Pass']
         except KeyError as e:
             logging.info(f"no {str(e)} provided")
-            return JsonBadRequest(f"no {str(e)} provided")
+            return JsonBadRequest(request, f"no {str(e)} provided")
 
         try:
             id = int(id)
@@ -38,7 +38,7 @@ class signinView(View):
             return JsonForbidden(request, "invalid password")
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Client": "connected", "ref": refresh_token})
+        response = JsonResponse(request, {"Client": "connected", "Ref": refresh_token})
         response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
         logging.info("Client connected")
         return response
@@ -113,7 +113,6 @@ class refreshView(View):
             expired_token = request.COOKIES['auth']
         except KeyError as e:
             return JsonBadRequest(request, f"Key : {str(e)} not provided.")
-
         try:
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)

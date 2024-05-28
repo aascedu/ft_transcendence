@@ -1,5 +1,4 @@
 import json
-from channels.generic.websocket import AsyncWebsocketConsumer
 from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
@@ -71,7 +70,7 @@ class Consumer(OurBasicConsumer):
         #             }
         #         )
         #         return
-            
+
         #     self.myTournament.ongoingGames = pow(2, self.myTournament.nbPlayers) / pow(2, self.myTournament.currentRound)
 
         # await self.channel_layer.group_send(
@@ -96,7 +95,7 @@ class Consumer(OurBasicConsumer):
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
             }))
-        
+
     async def LeaveTournament(self, event):
         if event['player'] == self.id:
             self.myTournament.removePlayer(self.id)
@@ -107,7 +106,7 @@ class Consumer(OurBasicConsumer):
 
         if self.myTournament.ended is False:
             return
-        
+
         self.myTournament.ended = False
 
         request = requests.post(
@@ -117,7 +116,7 @@ class Consumer(OurBasicConsumer):
 
         if request.status_code != 200:
             print("Warning: tournament could not be registered in database")
-        
+
         for player in self.myTournament.contenders:
             if player != self.id:
                 await self.channel_layer.group_send(
@@ -129,7 +128,7 @@ class Consumer(OurBasicConsumer):
 
         del tournaments[self.id]
         self.close()
-        
+
 
 # To do
 # Remove someone from tournament if admin
