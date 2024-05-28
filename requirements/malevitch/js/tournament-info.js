@@ -368,7 +368,7 @@ document.querySelectorAll('.tournament-info-players .content-card').forEach(func
 	});
 });
 
-function loadUserProfile(id) {
+async function loadUserProfile(id) {
 	if (id == g_userId) {
 		document.querySelector('.user-profile-picture-input').focus();
 	}
@@ -379,7 +379,7 @@ function loadUserProfile(id) {
 	}
 
 	clearUserContent();
-	loadUserContent(id);
+	await loadUserContent(id);
 
 	hideEveryPage();
 
