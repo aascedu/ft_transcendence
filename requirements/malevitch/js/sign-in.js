@@ -3,12 +3,12 @@
 document.querySelector('.sign-in-input').addEventListener('input', function() {
 	var	container = this.closest('.sign-in-input-container');
 	var	warning = document.querySelector('.sign-in-input-warning');
-	
+
 	if (this.value.length > 0) {
 		container.classList.add('input-container-focused');
 		warning.classList.add('visually-hidden');
 		setAriaHidden();
-	} 
+	}
 	else {
 		container.classList.remove('input-container-focused');
 	}
@@ -26,7 +26,7 @@ document.querySelector('.sign-in-input').addEventListener('keypress', function(e
 
 document.querySelector('.sign-in-submit').addEventListener('click', function() {
 	var	input = document.querySelector('.sign-in-input');
-	
+
 	submitPassword(input.value);
 });
 
@@ -35,7 +35,7 @@ document.querySelector('.sign-in-submit').addEventListener('click', function() {
 async function submitPassword(password) {
 	var	nickname = document.querySelector('.sign-in-message b').textContent;
 	nickname = nickname.trim();
-	
+
 	try {
 		const response = await fetch('/petrus/auth/signin/' + nickname, {
 			method: "POST",
@@ -54,8 +54,7 @@ async function submitPassword(password) {
 		}
 		else {
 			console.log('Success sign-in : ' + result); // Remove after test (ELK).
-			g_jwt = result.Auth;
-			g_refreshToken = result.Ref;
+            refreshLoopThis(result.Ref)
 			goToHomepageGame('.sign-in');
 		}
 	}
@@ -70,7 +69,7 @@ function sendInvalidPassword() {
 	var	input = document.querySelector('.sign-in-input');
 	var	warning = document.querySelector('.sign-in-input-warning');
 	var	locale = document.querySelector('.sign-in-language-selector button img').alt;
-	
+
 	switchLanguageContent(locale);
 	warning.classList.remove('visually-hidden');
 	setAriaHidden();
@@ -100,7 +99,7 @@ document.querySelector('.sign-in-other-nickname button').addEventListener('click
 document.addEventListener('keydown', function(e) {
 	if (!document.querySelector('.sign-in').classList.contains('visually-hidden')) {
 		let isFw =!e.shiftKey;
-	
+
 		if (e.key === 'Tab' && document.querySelector('.sign-in-font-size') === document.activeElement) {
 			if (isFw) {
 				document.querySelector('.sign-in-language-selector button').focus();
@@ -108,7 +107,7 @@ document.addEventListener('keydown', function(e) {
 			else {
 				document.querySelector('.sign-in-other-nickname button').focus();
 			}
-	
+
 			e.preventDefault();
 		}
 		if (e.key === 'Tab' && !isFw && document.querySelector('.sign-in-language-selector button') === document.activeElement) {
