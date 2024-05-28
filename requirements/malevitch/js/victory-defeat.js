@@ -17,6 +17,7 @@ document.querySelector('.victory-defeat-tournament').addEventListener('click', a
 
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
 
+	clearTournamentInfo();
 	await loadTournamentInfo();
 
 	g_state.pageToDisplay = '.tournament-info';
