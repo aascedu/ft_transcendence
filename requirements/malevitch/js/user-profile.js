@@ -1,17 +1,26 @@
 // Load user profile
 
 async function loadUserContent(id) {
+	var userInfo;
+	var userNick;
+	var userPic;
+
 	if (id != g_userId) {
-		var	userInfo = await get_user_info(id);
-		var	userPic = userInfo.Pic;
+		userInfo = await get_user_info(id);
+		userNick = userInfo.Nick;
+		userPic = userInfo.Pic;
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
 		}
 
-		// Load user general info
-		document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
-		document.querySelector('.user-profile-name').textContent = userInfo.Nick;
 	}
+	else {
+		userNick = g_userNick;
+		userPic = g_userPic;
+	}
+	// Load user general info
+	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
+	document.querySelector('.user-profile-name').textContent = userNick;
 
 	// Display history
 
@@ -24,8 +33,8 @@ async function loadUserContent(id) {
 	var	score;
 	var	opponent;
 
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
+	for (i = history.length - 1; i >= 0; i--) {
+		if (history[i].Winner == id) {
 			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
 			opponent = await get_user_info(history[i].Loser);
 			opponent = opponent.Nick;
@@ -87,7 +96,7 @@ async function loadUserContent(id) {
 		return;
 	}
 	canvas.width = canvas.parentElement.offsetWidth;
-	canvas.height = `${getCanvasHeight(history, spacing)}`;
+	canvas.height = `${getCanvasHeight(id, history, spacing)}`;
 
 	g_canvasHeight = canvas.height;
 
@@ -98,15 +107,15 @@ async function loadUserContent(id) {
 	ctx.lineWidth = 3;
 
 	var	posX = 40;
-	var	posY = getCanvasStart(history, canvas.height, spacing) - 25;
+	var	posY = getCanvasStart(id, history, canvas.height, spacing) - 25;
 	var	startX = posX;
 	var	startY = posY;
 
 	// draw lines
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
+	for (i = history.length - 1; i >= 0; i--) {
+		if (history[i].Winner == id) {
 			posY -= spacing;
 		}
 		else {
@@ -124,8 +133,8 @@ async function loadUserContent(id) {
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
 	ctx.arc(startX, startY, 5, 0, 2*Math.PI);
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
+	for (i = history.length - 1; i >= 0; i--) {
+		if (history[i].Winner == id) {
 			posY -= spacing;
 		}
 		else {
@@ -163,13 +172,13 @@ function clearUserContent() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function getCanvasHeight(history, spacing) {
+function getCanvasHeight(id, history, spacing) {
 	var	result = 0;
 	var	min = 0;
 	var	max = 0;
 
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
+	for (i = history.length - 1; i >= 0; i--) {
+		if (history[i].Winner == id) {
 			result++;
 		}
 		else {
@@ -181,13 +190,13 @@ function getCanvasHeight(history, spacing) {
 	return ((max - min) * spacing) + spacing;
 }
 
-function getCanvasStart(history, height, spacing) {
+function getCanvasStart(id, history, height, spacing) {
 	var	result = 0;
 	var	min = 0;
 	var	max = 0;
 
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
+	for (i = history.length - 1; i >= 0; i--) {
+		if (history[i].Winner == id) {
 			result++;
 		}
 		else {
@@ -197,7 +206,7 @@ function getCanvasStart(history, height, spacing) {
 		max = result > max ? result : max;
 	}
 	if (min == 0) {
-		return height - spacing;
+		return height;
 	}
 	if (max == 0) {
 		return spacing;

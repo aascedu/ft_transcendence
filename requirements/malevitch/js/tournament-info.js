@@ -274,8 +274,14 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	}
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', function(event) {
-			loadUserProfile(event.target.getAttribute('user-id'));
+		item.addEventListener('click', async function(event) {
+			var userId = await event.target.getAttribute('user-id');
+			if (userId == null) {
+				setTimeout(async () => {
+					userId = await event.target.getAttribute('user-id');
+				}, 500);
+			}
+			await loadUserProfile(userId);
 		});
 	});
 }
@@ -363,12 +369,21 @@ document.querySelector('.tournament-info-icon').addEventListener('click', functi
 // Load user profile page when clicking on a player
 
 document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', function(event) {
-		loadUserProfile(event.target.getAttribute('user-id'));
+	item.addEventListener('click', async function(event) {
+		var userId = await event.target.getAttribute('user-id');
+		if (userId == null) {
+			setTimeout(async () => {
+				userId = await event.target.getAttribute('user-id');
+			}, 500);
+		}
+		await loadUserProfile(userId);
 	});
 });
 
 async function loadUserProfile(id) {
+	if (id == null) {
+		return ;
+	}
 	if (id == g_userId) {
 		document.querySelector('.user-profile-picture-input').focus();
 	}
@@ -787,8 +802,14 @@ function addInvitedPlayerToTournament(nick, pic) {
     </button>`);
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', function(event) {
-			loadUserProfile(event.target.getAttribute('user-id'));
+		item.addEventListener('click', async function(event) {
+			var userId = await event.target.getAttribute('user-id');
+			if (userId == null) {
+				setTimeout(async () => {
+					userId = await event.target.getAttribute('user-id');
+				}, 500);
+			}
+			await loadUserProfile(userId);
 		});
 	});
 
