@@ -79,5 +79,5 @@ function fetch_error(error) {
 }
 
 function custom_error(response) {
-    return new Error('HTTP error: ' + response.status + "-" + response.Err)
+    return new Error('HTTP error: ' + response.status + "-" + response.json().Err)
 }

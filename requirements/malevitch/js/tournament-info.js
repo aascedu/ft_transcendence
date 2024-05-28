@@ -20,9 +20,10 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// Display tournament name
 	document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
 	
-	var	confirmedPlayers = tournamentInfo.Players;
 	var	playersContainer = document.querySelector('.tournament-info-players');
-	var	numPlayers = tournamentInfo.Players.length;
+	var	confirmedPlayers = [];
+	var pendingPlayers = [];
+	var	numPlayers;
 	var userId;
 	var	userInfo;
 	var	userPic;
@@ -54,26 +55,55 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		// 	document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
 		// }
 
-		// // If you are owner
-		// if (tournamentInfo.Owner == g_userId) {
-		// 	document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
-		// 	document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-		// 		item.classList.add('visually-hidden');
-		// 	});
-		// }
-		document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
-		for (i = 0; i < confirmedPlayers.length; i++) {
-			userId = confirmedPlayers[i].Id;
-			if (userId == g_userId) {
-				document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
-				break ;
+		// If you are owner, display edit and kick buttons
+		if (tournamentInfo.Owner == g_userId) {
+			document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
+			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
+				item.classList.remove('visually-hidden');
+			});
+		}
+		else {
+			document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
+			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
+				item.classList.add('visually-hidden');
+			});
+		}
+		setAriaHidden();
+		
+		// Display icons only if tournament has not yet started
+		if (tournamentInfo.Started == false) {
+			document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
+			for (i = 0; i < confirmedPlayers.length; i++) {
+				userId = confirmedPlayers[i].Id;
+				if (userId == g_userId) {
+					document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
+					break ;
+				}
+			}
+			if (document.querySelector('.tournament-info-leave-icon').classList.contains('visually-hidden')) {
+				document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
 			}
 		}
-		if (document.querySelector('.tournament-info-leave-icon').classList.contains('visually-hidden')) {
-			document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
+		else {
+			// Hide all icons
+			document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
+			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
+				item.classList.add('visually-hidden');
+			});
+			document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
+			document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
+			document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
+			document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
 		}
+		setAriaHidden();
+
+		// Update info
+		numPlayers = tournamentInfo.NumPlayers;
+		confirmedPlayers = tournamentInfo.Confirmed;
+		pendingPlayers = tournamentInfo.Pending;
 	}
 	else {
+		// Hide all icons
 		document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
 		document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
 			item.classList.add('visually-hidden');
@@ -82,17 +112,25 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
+		setAriaHidden();
+
+		// Update info
+
+		numPlayers = tournamentInfo.Players.length;
+		confirmedPlayers = tournamentInfo.Players;
 	}
 	
 	// Display players
 	
 	// If no player at all
-	if (confirmedPlayers.length == 0) {
+	if ((confirmedPlayers.length + pendingPlayers.length) == 0) {
 		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
+		setAriaHidden();
 		return ;
 	}
 	
 	document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+	setAriaHidden();
 
 	// Display number of players
 	document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + numPlayers;
@@ -119,29 +157,28 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	}
 	
 	if (ongoing == true) {
-		// // Display invited players that haven't joined (pending)
-		// var	pendingPlayers = tournamentInfo.Pending;
-		// for (i = 0; i < pendingPlayers.length; i++) {
-		// 	userInfo = get_user_info(pendingPlayers[i]);
-		// 	userPic = userInfo.Pic;
-		// 	if (userPic == null) {
-		// 		userPic = 'assets/general/pong.png';
-		// 	}
+		// Display invited players that haven't joined (pending)
+		for (i = 0; i < pendingPlayers.length; i++) {
+			userInfo = await get_user_info(pendingPlayers[i]);
+			userPic = userInfo.Pic;
+			if (userPic == null) {
+				userPic = 'assets/general/pong.png';
+			}
 	
-		// 	playersContainer.insertAdjacentHTML('beforeend', `\
-		// 	<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + userId + `">
-		// 		<div class="d-flex flex-nowrap align-items-center">
-		// 			<div class="user-card-name unselectable">`+ userInfo.Nick + `</div>
-		// 			<div class="user-card-pending" data-language="pending">(pending...)</div>
-		// 		</div>
-		// 		<div class="user-card-picture">
-		// 			<img src="` + userPic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-		// 		</div>
-		// 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
-		// 			<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
-		// 		</div>
-		// 	</button>`);
-		// }
+			playersContainer.insertAdjacentHTML('beforeend', `\
+			<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + userId + `">
+				<div class="d-flex flex-nowrap align-items-center">
+					<div class="user-card-name unselectable">`+ userInfo.Nick + `</div>
+					<div class="user-card-pending" data-language="pending">(pending...)</div>
+				</div>
+				<div class="user-card-picture">
+					<img src="` + userPic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+				</div>
+				<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
+					<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
+				</div>
+			</button>`);
+		}
 	}
 
 	// Display tournament bracket
@@ -158,8 +195,9 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
 			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
 			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+			document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+			setAriaHidden();
 		}
-		document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
 
 		// Load info
 
@@ -192,6 +230,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
 			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
 			document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+			setAriaHidden();
 		}
 
 		// Load info
