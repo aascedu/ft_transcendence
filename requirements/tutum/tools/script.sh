@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep 5
+echo -n "start" > /state.txt
 
 vault operator init -status
 
@@ -116,3 +116,5 @@ else
     KEY=`cat /tokens/tutum.txt | head -n 1`
     vault operator unseal $KEY
 fi
+
+echo -n "ready" > /state.txt
