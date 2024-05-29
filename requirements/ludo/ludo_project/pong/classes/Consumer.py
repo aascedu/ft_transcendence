@@ -40,11 +40,11 @@ class Consumer(OurBasicConsumer):
         
         p1 = self.roomName.split('-')[count - 2]
         p2 = self.roomName.split('-')[count - 1]
-        user = self.scope['user']
+        self.user = self.scope['user']
         self.isPlayer = False
-        if user.id == p1 or user.id == p2:
+        if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
-            self.myMatch.playersId[self.id] = user.id
+            self.myMatch.playersId[self.id] = self.user.id
 
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             self.close()
@@ -54,6 +54,10 @@ class Consumer(OurBasicConsumer):
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
+        requests.delete(
+            'http://hermes:8004/notif/available-states/',
+            json={'Id': self.user.id})
+        
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -67,6 +71,10 @@ class Consumer(OurBasicConsumer):
                             "winner": self.myMatch.players[(self.id + 1) % 2].id
                         }
                     )
+                
+        requests.post(
+            'http://hermes:8004/notif/available-states/',
+            json={'Id': self.user.id})
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 

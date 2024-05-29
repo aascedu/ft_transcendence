@@ -23,12 +23,21 @@ class Consumer(OurBasicConsumer):
 
         print ("Tournament room name is " + self.tournamentId)
 
+        requests.delete(
+            'http://hermes:8004/notif/available-states/',
+            json={'Id': self.id})
+
         await self.channel_layer.group_add(self.tournamentId, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global tournaments
+
+        requests.post(
+            'http://hermes:8004/notif/available-states/',
+            json={'Id': self.id})
+
         await self.channel_layer.group_discard(self.tournamentId, self.channel_name)
 
     # Receive message from WebSocket
