@@ -20,6 +20,7 @@ async function init_matchmaking_socket() {
         const data = JSON.parse(event.data);
         if (data.action === "redirect") {
             init_socket("test")
+            // Launch la game...
         }
     };
     
