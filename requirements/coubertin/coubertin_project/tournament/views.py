@@ -60,7 +60,7 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
-        if request.user.is_authenticated is False:
+        if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Only authenticated players can patch a tournament")
 
         global tournaments

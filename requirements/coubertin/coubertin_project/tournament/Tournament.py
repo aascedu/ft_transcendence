@@ -60,13 +60,13 @@ class Tournament:
 
         gamesAlreadyPlayed = len(games)
         i = gamesAlreadyPlayed
-        while i <= self.nbPlayers / 2:
+        while i <= int(self.nbPlayers) / 2:
             self.appendEmptyGameToTab(games, round = 1)
             i += 1
-        while i <= self.nbPlayers / 2 + self.nbPlayers / 4:
+        while i <= int(self.nbPlayers) / 2 + int(self.nbPlayers) / 4:
             self.appendEmptyGameToTab(games, round = 2)
             i += 1
-        if self.nbPlayers == 8:
+        if int(self.nbPlayers) == 8:
             self.appendEmptyGameToTab(games, round = 3)
             i += 1
 

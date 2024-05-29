@@ -17,6 +17,9 @@ async function loadClosedTournament(id) {
 }
 
 async function loadTournamentInfo(tournamentInfo, ongoing) {	
+	// Save tournament id on the page
+	document.querySelector('.tournament-info-name').setAttribute('tournament-id', tournamentInfo.Id);
+
 	// Display tournament name
 	document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
 	
@@ -626,7 +629,7 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 
 // Confirm / cancel the leaving
 
-document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', function () {
+document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', async function () {
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
@@ -634,6 +637,10 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 	// Update tournament name
 	var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
 	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
+
+	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+	await change_tournament_name(tournamentNameInput.value, tournamentId);
 
 	leaveTournamentEditMode();
 });
