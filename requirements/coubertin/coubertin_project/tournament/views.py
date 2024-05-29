@@ -43,8 +43,9 @@ class tournamentManagement(View):
 
         for i in invited:
             response = requests.post(
-                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(tournamentId) + '/',
+                'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
                 json={
+                    'Tournament-Id': tournamentId,
                     'Tournament-Name': tournaments[tournamentId].name,
                     'Notified': i,
                 }
@@ -86,8 +87,7 @@ class tournamentEntry(View):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            str(tournamentId),
-            {
+            str(tournamentId), {
                 'type': 'LeaveTournament',
                 'player': playerId,
             }
@@ -153,10 +153,13 @@ class inviteFriend(View):
         tournaments[TournamentId].invited.append(data['Invited'])
 
         response = requests.post(
-            'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId) + '/',
-            json={'Tournament-Id': TournamentId,
+            'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
+            json={
+                    'Tournament-Id': TournamentId,
                     'Tournament-Name': tournaments[TournamentId].name,
-                    'Notified': data['Invited']})
+                    'Notified': data['Invited']
+                }
+            )
         if response.status_code != 200:
             return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
