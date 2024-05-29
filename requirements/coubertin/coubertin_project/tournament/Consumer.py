@@ -23,12 +23,31 @@ class Consumer(OurBasicConsumer):
 
         print ("Tournament room name is " + self.tournamentId)
 
+        try:
+            request = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
+
         await self.channel_layer.group_add(self.tournamentId, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global tournaments
+
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
+
         await self.channel_layer.group_discard(self.tournamentId, self.channel_name)
 
     # Receive message from WebSocket
@@ -109,13 +128,15 @@ class Consumer(OurBasicConsumer):
 
         self.myTournament.ended = False
 
-        request = requests.post(
-            f'http://mnemosine:8008/memory/pong/tournaments/0/',
-            json=self.myTournament.toDict()
-        )
-
-        if request.status_code != 200:
-            print("Warning: tournament could not be registered in database")
+        try:
+            request = requests.post(
+                f'http://mnemosine:8008/memory/pong/tournaments/0/',
+                json=self.myTournament.toDict()
+            )
+            if request.status_code != 200:
+                print("Warning: tournament could not be registered in database")
+        except Exception as e:
+            self.close()
 
         for player in self.myTournament.contenders:
             if player != self.id:

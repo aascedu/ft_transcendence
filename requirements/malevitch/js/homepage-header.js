@@ -121,6 +121,7 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 		item.classList.add('visually-hidden');
 	});
 
+	clearAvailableTournaments();
 	await loadAvailableTournaments();
 
 	document.querySelector('.available-tournaments-icon').focus();
@@ -151,12 +152,14 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 
 // Go to new tournament
 
-document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
+document.querySelector('.homepage-header-new-tournament').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
+
+	await loadCreateTournament();
 
 	g_state.pageToDisplay = '.create-tournament';
 	window.history.pushState(g_state, null, "");

@@ -134,6 +134,7 @@
 	padding: 16px 8px;
 	border-radius: 12px;
 	background-color: #7300E6;
+	border: 0;
 }
 
 .create-tournament-submit img {

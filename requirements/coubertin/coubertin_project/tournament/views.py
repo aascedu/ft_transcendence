@@ -42,15 +42,20 @@ class tournamentManagement(View):
         tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited)
 
         for i in invited:
-            response = requests.post(
-                'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(tournamentId) + '/',
-                json={
-                    'Tournament-Name': tournaments[tournamentId].name,
-                    'Notified': i,
-                }
-            )
-            if response.status_code != 200:
-                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+            try:
+                response = requests.post(
+                    'http://hermes:8004/notif/tournament-request/' + str(request.user.id) + '/',
+                    json={
+                        'Tournament-Id': tournamentId,
+                        'Tournament-Name': tournaments[tournamentId].name,
+                        'Notified': i,
+                    }
+                )
+                if response.status_code != 200:
+                    return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+
+            except Exception as e:
+                return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"})
 
@@ -86,8 +91,7 @@ class tournamentEntry(View):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            str(tournamentId),
-            {
+            str(tournamentId), {
                 'type': 'LeaveTournament',
                 'player': playerId,
             }
@@ -152,13 +156,20 @@ class inviteFriend(View):
 
         tournaments[TournamentId].invited.append(data['Invited'])
 
-        response = requests.post(
-            'http://hermes:8004/hermes/notifications/tournament-request/' + str(request.user.id) + '/' + str(TournamentId) + '/',
-            json={'Tournament-Id': TournamentId,
-                    'Tournament-Name': tournaments[TournamentId].name,
-                    'Notified': data['Invited']})
-        if response.status_code != 200:
-            return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+        try:
+            response = requests.post(
+                'http://hermes:8004/notif/tournament-request/' + str(request.user.id) + '/',
+                json={
+                        'Tournament-Id': TournamentId,
+                        'Tournament-Name': tournaments[TournamentId].name,
+                        'Notified': data['Invited']
+                    }
+                )
+            if response.status_code != 200:
+                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+
+        except Exception as e:
+            return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse({'Msg': "Friend has been invited"})
 
@@ -194,7 +205,7 @@ class myTournaments(View):
         return JsonResponse(request, {'Ongoing': response})
 
 class gameResult(View):
-    def post(self, request):
+    def post(self, request): # Maybe send un tournamentState
         global tournaments
 
         if request.user.is_service is False:
@@ -208,10 +219,15 @@ class gameResult(View):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            data['tournamentId'],
-            {
+            data['tournamentId'], {
                 'type': 'LeaveTournament',
                 'player': data['game']['Loser'],
+            }
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            data['tournamentId'], {
+                'type': 'tournamentState',
             }
         )
 

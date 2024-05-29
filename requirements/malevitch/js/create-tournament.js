@@ -1,3 +1,44 @@
+// Clear and load available friends
+
+async function loadCreateTournament() {
+	// Clear previous available friends
+	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	document.querySelector('.create-tournament-no-friends').classList.add('visually-hidden');
+
+	// Load available friends
+	var	availableFriends = await get_available_friends();
+	availableFriends = availableFriends.Ava;
+
+	if (availableFriends.length == 0) {
+		document.querySelector('.create-tournament-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
+
+	var	availableFriendsContainer = document.querySelector('.create-tournament-invite-container');
+	var	userInfo;
+	var	userPic;
+
+	for (i = 0; i < availableFriends.length; i++) {
+		userInfo = await get_user_info(availableFriends[i].Id);
+		userPic = userInfo.Pic;
+		if (userPic == null) {
+			userPic = 'assets/general/pong.png';
+		}
+
+		availableFriendsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
+			<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
+			<div class="user-card-picture">
+				<img src="` + userPic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+		</button>`);
+	}
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.create-tournament-icon').addEventListener('click', function() {
@@ -127,11 +168,20 @@ function checkToSubmitTournament() {
 
 // Confirm / cancel
 
-document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('click', function () {
+document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('click', async function () {
 	// Hide alert
 	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
 
-	// Send info to db
+	// Send info to coubertin
+	var	tournamentName = document.querySelector('.create-tournament-name-input').value;
+	var	numPlayers = document.querySelector('.create-tournament-players-button-chosen').textContent;
+	var	invitedFriends = [];
+
+	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
+		invitedFriends.push(item.getAttribute('user-id'));
+	});
+
+	await create_tournament(tournamentName, numPlayers, invitedFriends, g_userId);
 	// Send invites to selected friends
 	displayCreatedTournament();
 });
