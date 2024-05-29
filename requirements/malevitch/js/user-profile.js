@@ -1,6 +1,11 @@
 // Load user profile
 
 async function loadUserContent(id) {
+	var	playIcon = document.querySelector('.user-profile-play-icon');
+	var	addIcon = document.querySelector('.user-profile-add-icon');
+	var	pendingIcon = document.querySelector('.user-profile-pending-icon');
+	var	removeIcon = document.querySelector('.user-profile-remove-icon');
+
 	var userInfo;
 	var userNick;
 	var userPic;
@@ -12,26 +17,72 @@ async function loadUserContent(id) {
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
 		}
-		// // if user is your friend
-		// document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-		// document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
-		// document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
-		// // else if invitation is pending
-		// document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-		// document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
-		// document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
-		// // else
-		document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
-		document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
+		
+		var	friendsInfo = await get_friend(g_userId);
+		var	friendsList = friendsInfo.Friends;
+		var	friendsInvited = friendsInfo.Sent;
+		var isFriend = false;
+		var	isAvailable = false;
+		var	isInvited = false;
+
+		for (i = 0; i < friendsList.length; i++) {
+			if (friendsList[i].Id == id) {
+				isFriend = true;
+				break ;
+			}
+		}
+		for (i = 0; i < friendsInvited.length; i++) {
+			if (friendsInvited[i].Id == id) {
+				isInvited = true;
+				break ;
+			}
+		}
+
+		if (isFriend) {
+			var availableFriends = await get_available_friends();
+			availableFriends = availableFriends.Ava;
+
+			for (i = 0; i < availableFriends.length; i++) {
+				if (availableFriends[i].Id == id) {
+					isAvailable = true;
+					break ;
+				}
+			}
+			if (isAvailable) {
+				playIcon.classList.remove('visually-hidden');
+			}
+			else {
+				playIcon.classList.add('visually-hidden');
+			}
+			addIcon.classList.add('visually-hidden');
+			pendingIcon.classList.add('visually-hidden');
+			removeIcon.classList.remove('visually-hidden');
+		}
+		else if (isInvited) {
+			playIcon.classList.add('visually-hidden');
+			addIcon.classList.add('visually-hidden');
+			pendingIcon.classList.remove('visually-hidden');
+			removeIcon.classList.add('visually-hidden');
+		}
+		else {
+			playIcon.classList.add('visually-hidden');
+			addIcon.classList.remove('visually-hidden');
+			pendingIcon.classList.add('visually-hidden');
+			removeIcon.classList.add('visually-hidden');
+		}
+
+		addIcon.setAttribute('user-id', id);
+		removeIcon.setAttribute('user-id', id);
 	}
 	else {
 		userNick = g_userNick;
 		userPic = g_userPic;
 
-		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
+		addIcon.classList.add('visually-hidden');
+		addIcon.removeAttribute('user-id');
+		pendingIcon.classList.add('visually-hidden');
+		removeIcon.classList.add('visually-hidden');
+		removeIcon.removeAttribute('user-id');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
@@ -346,22 +397,12 @@ document.querySelector('.user-profile-add-icon').addEventListener('click', funct
 
 	// Confirm / cancel the invitation
 
-document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', function () {
-	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-
-	inviteSentNotif(document.querySelector('.user-profile-name').textContent);
-	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-	document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
-	setAriaHidden();
+document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', async function () {
+	await userProfileFriendInvite();
 });
-document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', function (event) {
+document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
 	if (event.key === 'Enter') {
-		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-
-		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
-		document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
-		setAriaHidden();
+		await userProfileFriendInvite();
 	}
 });
 
@@ -376,6 +417,36 @@ document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEve
 	}
 });
 
+async function userProfileFriendInvite() {
+	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
+
+	var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
+
+	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
+	
+	var	friendRequests = await get_friend(g_userId);
+	friendRequests = friendRequests.Requests;
+	var	hasInvitedMe = false;
+	
+	for (i = 0; i < friendRequests.length; i++) {
+		if (friendRequests[i].Id == invitedId) {
+			hasInvitedMe = true;
+			break ;
+		}
+	}
+	if (hasInvitedMe) {
+		document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+	}
+	else {
+		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
+		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
+	}
+
+	await post_friend(invitedId);
+
+	setAriaHidden();
+}
+
 // Ask for confirmation when removing friend
 
 document.querySelector('.user-profile-remove-icon').addEventListener('click', function() {
@@ -386,20 +457,12 @@ document.querySelector('.user-profile-remove-icon').addEventListener('click', fu
 
 	// Confirm / cancel the remove
 
-document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('click', function () {
-	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-
-	document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
-	document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
-	setAriaHidden();
+document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('click', async function () {
+	await userProfileFriendRemove();
 });
-document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('keypress', function (event) {
+document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('keypress', async function(event) {
 	if (event.key === 'Enter') {
-		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-
-		document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
-		document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
-		setAriaHidden();
+		await userProfileFriendRemove();
 	}
 });
 
@@ -412,6 +475,27 @@ document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEve
 		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
 		setAriaHidden();
 	}
+});
+
+async function userProfileFriendRemove() {
+	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
+
+	var removedId = document.querySelector('.user-profile-remove-icon').getAttribute('user-id');
+
+	await delete_friend(removedId);
+
+	document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-play-icon').classList.add('visually-hidden');
+	setAriaHidden();
+}
+
+// Invite friend to play
+
+document.querySelector('.user-profile-play-icon').addEventListener('click', function() {
+	// send invite to friend
+
+	this.classList.add('visually-hidden');
 });
 
 // Keyboard navigation
