@@ -45,8 +45,10 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 	render(g_state);
 });
 
-document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', function() {	
+document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', async function() {	
 	hideEveryPage();
+
+	await loadCreateTournament();
 
 	g_state.pageToDisplay = '.create-tournament';
 	window.history.pushState(g_state, null, "");
