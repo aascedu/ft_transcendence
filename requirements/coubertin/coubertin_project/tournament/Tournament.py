@@ -42,7 +42,7 @@ class Tournament:
                 return True
         return False
 
-    def appendEmptyGameToTab(tab, round):
+    def appendEmptyGameToTab(self, tab, round):
         newGame = {}
         newGame['Round'] = round # A trouver, vaut 3 2 ou 1 en fonction de i, commencer par la finale
         newGame['Game'] = {}
