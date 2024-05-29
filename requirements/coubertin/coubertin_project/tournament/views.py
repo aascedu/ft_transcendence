@@ -194,7 +194,7 @@ class myTournaments(View):
         return JsonResponse(request, {'Ongoing': response})
 
 class gameResult(View):
-    def post(self, request):
+    def post(self, request): # Maybe send un tournamentState
         global tournaments
 
         if request.user.is_service is False:
@@ -208,10 +208,15 @@ class gameResult(View):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            data['tournamentId'],
-            {
+            data['tournamentId'], {
                 'type': 'LeaveTournament',
                 'player': data['game']['Loser'],
+            }
+        )
+
+        async_to_sync(channel_layer.group_send)(
+            data['tournamentId'], {
+                'type': 'tournamentState',
             }
         )
 
