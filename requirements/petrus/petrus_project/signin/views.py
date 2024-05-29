@@ -39,7 +39,7 @@ class signinView(View):
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Client": "connected", "Ref": refresh_token})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response.set_cookie("auth", jwt, samesite='Strict', httponly=True)
         logging.info("Client connected")
         return response
 
@@ -102,7 +102,7 @@ class signupView(View):
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Client": client.id, "ref": refresh_token})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response.set_cookie("auth", jwt, samesite='Strict', httponly=True)
         logging.info("Client created")
         return response
 
@@ -137,5 +137,5 @@ class refreshView(View):
 
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Token": "refreshed"})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response.set_cookie("auth", jwt, samesite='Strict', httponly=True)
         return response
