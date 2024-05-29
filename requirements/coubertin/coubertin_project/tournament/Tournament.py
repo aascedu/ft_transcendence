@@ -42,33 +42,33 @@ class Tournament:
                 return True
         return False
 
+    def appendEmptyGameToTab(tab, round):
+        newGame = {}
+        newGame['Round'] = round # A trouver, vaut 3 2 ou 1 en fonction de i, commencer par la finale
+        newGame['Game'] = {}
+        newGame['Played'] = False
+        tab.append(newGame)
+
     def toFront(self):
-        bracket = {}
-        roundOne = []
-        roundTwo = []
-        roundThree = []
-
+        games = []
         for game in self.gameHistory:
-            score = []
-            score.append(game['Winner-score'])
-            score.append(game['Loser-score'])
-            players = []
-            players.append(game['Winner'])
-            players.append(game['Loser'])
-            gameFront = {}
-            gameFront['Score'] = score
-            gameFront['Players'] = players
+            newGame = {}
+            newGame['Round'] = game['Round']
+            newGame['Game'] = game
+            newGame['Played'] = True
+            games.append(newGame)
 
-            if game['Round'] == 1:
-                roundOne.append(gameFront)
-            elif game['Round'] == 2:
-                roundTwo.append(gameFront)
-            elif game['Round'] == 3:
-                roundThree.append(gameFront)
-
-        bracket['RoundOne'] = roundOne
-        bracket['RoundTwo'] = roundTwo
-        bracket['RoundThree'] = roundThree
+        gamesAlreadyPlayed = len(games)
+        i = gamesAlreadyPlayed
+        while i <= self.nbPlayers / 2:
+            self.appendEmptyGameToTab(games, round = 1)
+            i += 1
+        while i <= self.nbPlayers / 2 + self.nbPlayers / 4:
+            self.appendEmptyGameToTab(games, round = 2)
+            i += 1
+        if self.nbPlayers == 8:
+            self.appendEmptyGameToTab(games, round = 3)
+            i += 1
 
         response = {
             'Id': self.id,
@@ -78,7 +78,7 @@ class Tournament:
             'Owner': self.admin,
             'Pending': self.invited,
             'Confirmed': self.players,
-            'Bracket': bracket,
+            'Games': games,
         }
         return response
 
