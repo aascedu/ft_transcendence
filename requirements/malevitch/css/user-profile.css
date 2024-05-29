@@ -71,21 +71,22 @@
 	color: #7300E6;
 }
 
-.user-profile-general-info
-.category-icon {
+.user-profile-add-icon,
+.user-profile-pending-icon,
+.user-profile-remove-icon {
 	top: 16px;
 	right: 16px;
+}
+
+.user-profile-play-icon {
+	top: 16px;
+	right: 68px;
 }
 
 .user-profile-general-info
 .category-icon img {
 	height: 20px;
 	margin-left: 1px;
-}
-
-.user-profile-general-info
-.category-icon img:first-child {
-	margin-left: 0;
 }
 
 .user-profile-add-icon img {
