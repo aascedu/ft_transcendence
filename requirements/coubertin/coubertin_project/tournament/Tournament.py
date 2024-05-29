@@ -42,7 +42,7 @@ class Tournament:
                 return True
         return False
 
-    def appendEmptyGameToTab(tab, round):
+    def appendEmptyGameToTab(self, tab, round):
         newGame = {}
         newGame['Round'] = round # A trouver, vaut 3 2 ou 1 en fonction de i, commencer par la finale
         newGame['Game'] = {}
@@ -61,13 +61,13 @@ class Tournament:
         gamesAlreadyPlayed = len(games)
         i = gamesAlreadyPlayed
         while i <= self.nbPlayers / 2:
-            self.appendEmptyGameToTab(games, round = 1)
+            self.appendEmptyGameToTab(games, 1)
             i += 1
         while i <= self.nbPlayers / 2 + self.nbPlayers / 4:
-            self.appendEmptyGameToTab(games, round = 2)
+            self.appendEmptyGameToTab(games, 2)
             i += 1
         if self.nbPlayers == 8:
-            self.appendEmptyGameToTab(games, round = 3)
+            self.appendEmptyGameToTab(games, 3)
             i += 1
 
         response = {
