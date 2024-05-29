@@ -1,8 +1,8 @@
 from django.urls import path
-from pong.views import pong
+from pong.views import ongoingGames
 from shared.commonView import socketConnectionView
 
 urlpatterns = [
-    path("games/<str:roomName>/", pong, name="pong"),
     path("connectionView/", socketConnectionView.as_view()),
+    path("ongoingGames/", ongoingGames.as_view(), name="pong"),
 ]

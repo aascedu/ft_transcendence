@@ -19,7 +19,8 @@ async function init_matchmaking_socket() {
     exampleSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.action === "redirect") {
-            window.location.href = data.url; // NON (Pas SPA)
+            init_socket("test")
+            // Launch la game...
         }
     };
     
