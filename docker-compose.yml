@@ -232,6 +232,8 @@ services:
       - sentinel
     environment:
       node.name: elasticsearch
+      node.attr.rack: r1
+      indices.lifecycle.poll_interval: 10s
       discovery.type: single-node
       cluster.name: ${CLUSTER_NAME}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
@@ -394,22 +396,17 @@ services:
       - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
       - ./tokens:/vault
+    ports:
+      - 5601:5601
     environment:
-      SERVERNAME: kibana
-      ELASTICSEARCH_HOSTS: https://apollo:9200
-      ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
-      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
-      # ELASTICSEARCH_SSL_VERIFICATIONMODE: none
-      SERVER_SSL_ENABLED: false
-      XPACK_REPORTING_ROLES_ENABLED: false
-      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
-      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
-      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      SERVER_REWRITEBASEPATH: true
-      SERVER_BASEPATH: /iris
-      SERVER_PUBLICBASEURL: https://localhost:8000/iris
-      NODE_EXTRA_CA_CERTS: config/certs/ca/ca.crt
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=https://apollo:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}
+      - XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -418,8 +415,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
-          "curl -k -I https://${ELASTIC_USER}:${ELASTIC_PASSWORD}@apollo:9200 | grep -q 'HTTP/1.1 200 OK'",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
         ]
       interval: 10s
       timeout: 10s
