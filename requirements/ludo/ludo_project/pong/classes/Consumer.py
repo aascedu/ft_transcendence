@@ -54,9 +54,14 @@ class Consumer(OurBasicConsumer):
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
-        requests.delete(
-            'http://hermes:8004/notif/available-states/',
-            json={'Id': self.user.id})
+        try:
+            request = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.user.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
         
         await self.accept()
 
@@ -71,10 +76,16 @@ class Consumer(OurBasicConsumer):
                             "winner": self.myMatch.players[(self.id + 1) % 2].id
                         }
                     )
-                
-        requests.post(
-            'http://hermes:8004/notif/available-states/',
-            json={'Id': self.user.id})
+        
+        # Ne faire ca que si ce n'est pas une game de tournoi !!
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.user.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 

@@ -42,16 +42,20 @@ class tournamentManagement(View):
         tournaments[tournamentId] = Tournament(tournamentName, nbPlayers, tournamentId, admin, invited)
 
         for i in invited:
-            response = requests.post(
-                'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
-                json={
-                    'Tournament-Id': tournamentId,
-                    'Tournament-Name': tournaments[tournamentId].name,
-                    'Notified': i,
-                }
-            )
-            if response.status_code != 200:
-                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+            try:
+                response = requests.post(
+                    'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
+                    json={
+                        'Tournament-Id': tournamentId,
+                        'Tournament-Name': tournaments[tournamentId].name,
+                        'Notified': i,
+                    }
+                )
+                if response.status_code != 200:
+                    return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+
+            except Exception as e:
+                return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"})
 
@@ -152,16 +156,20 @@ class inviteFriend(View):
 
         tournaments[TournamentId].invited.append(data['Invited'])
 
-        response = requests.post(
-            'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
-            json={
-                    'Tournament-Id': TournamentId,
-                    'Tournament-Name': tournaments[TournamentId].name,
-                    'Notified': data['Invited']
-                }
-            )
-        if response.status_code != 200:
-            return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+        try:
+            response = requests.post(
+                'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
+                json={
+                        'Tournament-Id': TournamentId,
+                        'Tournament-Name': tournaments[TournamentId].name,
+                        'Notified': data['Invited']
+                    }
+                )
+            if response.status_code != 200:
+                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+
+        except Exception as e:
+            return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse({'Msg': "Friend has been invited"})
 
