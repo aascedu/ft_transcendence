@@ -121,6 +121,7 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 		item.classList.add('visually-hidden');
 	});
 
+	clearAvailableTournaments();
 	await loadAvailableTournaments();
 
 	document.querySelector('.available-tournaments-icon').focus();
