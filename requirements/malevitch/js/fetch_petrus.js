@@ -21,7 +21,8 @@ async function post_signup(id, password, mail) {
 }
 
 async function post_jwt_refresh(refresh_token) {
-    json = {ref: refresh_token,};
+    json = {ref: sessionStorage.getItem(g_refreshTokenName)};
+    console.log('refreshToken' + g_userId)
 
     return await fetch_post(add_petrus_in_url('/JWT-refresh'), json)
             .then(data => {
@@ -30,10 +31,10 @@ async function post_jwt_refresh(refresh_token) {
 }
 
 
-async function refreshLoopThis(refresh_token) {
-    milliseconds = 150000;
-    console.log(refresh_token);
+async function refreshLoop() {
+    milliseconds = 100000;
+    console.log(sessionStorage.getItem('refreshToken' + g_userId));
     const interval_refresh = setInterval(() => {
-        post_jwt_refresh(refresh_token)
+        post_jwt_refresh()
     }, milliseconds);
 }

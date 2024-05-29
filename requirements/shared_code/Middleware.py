@@ -53,12 +53,12 @@ class JWTIdentificationMiddleware:
             return None
 
 
-        if 'auth' not in request.COOKIES:
+        if 'Auth' not in request.headers:
             request.user = User(error="No JWT provided")
             print("Info : request with no jwt")
             return None
 
-        autorisationJWT = request.COOKIES['auth']
+        autorisationJWT = request.headers['Auth']
 
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
@@ -77,7 +77,7 @@ class JWTIdentificationMiddleware:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
-                response.delete_cookie('auth')
+                response.delete_cookie('Auth')
                 return response
 
         print("Info: request_user=", str(request.user))

@@ -1,5 +1,11 @@
 async function fetch_get(url) {
-    return fetch(url)
+    return fetch_with_jwt(url,
+        {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
         .then(response => {
             if (!response.ok)
                 throw custom_error(response)
@@ -13,11 +19,12 @@ async function fetch_get(url) {
 }
 
 async function fetch_post(url, json) {
-    return fetch(url,
+    return fetch_with_jwt(url,
         {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+
             },
             body: JSON.stringify(json)
         })
@@ -35,7 +42,7 @@ async function fetch_post(url, json) {
 }
 
 async function fetch_delete(url) {
-    return fetch (url, {
+    return fetch_with_jwt(url, {
                 method: 'DELETE',
             }
         )
@@ -53,7 +60,7 @@ async function fetch_delete(url) {
 }
 
 async function fetch_patch(url, json) {
-    return fetch (url, {
+    return fetch_with_jwt(url, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -71,6 +78,13 @@ async function fetch_patch(url, json) {
             return data;
         })
         .catch ( error => fetch_error(error) );
+}
+
+async function fetch_with_jwt(url, request) {
+    if (typeof g_jwtName!=="undefined") {
+        request.headers.Auth = sessionStorage.getItem(g_jwtName);
+    }
+    return fetch(url, request)
 }
 
 

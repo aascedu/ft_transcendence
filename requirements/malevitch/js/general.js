@@ -4,7 +4,7 @@ let	g_userNick;
 let	g_userPic = '/assets/general/pong.png';
 let	g_prevFontSize = 0;
 let	g_jwt;
-let	g_refreshToken;
+let	g_refreshTokenName;
 let	g_translations = null;
 let	g_canvasHeight = 0;
 
@@ -416,7 +416,7 @@ async function setHomepageContent() {
 	var	friendId;
 	var	friendNick;
 	var	friendPic;
-	
+
 	for (i = 0; i < friendsList.length; i++) {
 		if (friendsOnline[friendsList[i].Id] == true) {
 
@@ -426,7 +426,7 @@ async function setHomepageContent() {
 			if (friendPic == null) {
 				friendPic = '/assets/general/pong.png';
 			}
-			
+
 			friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
 			<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
 			<div class="user-card-name unselectable">` + friendNick + `</div>
@@ -518,7 +518,7 @@ async function setHomepageContent() {
 	var	averageTime;
 	var	averageMinutes;
 	var	averageSeconds;
-	
+
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
