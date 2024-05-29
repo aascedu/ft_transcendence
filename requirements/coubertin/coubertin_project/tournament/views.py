@@ -185,7 +185,7 @@ class myTournaments(View):
         response = []
 
         for i in tournaments:
-            if tournaments[i].userParticipating(userId):
+            if tournaments[i].userParticipating(userId) or userId == tournaments[i].admin:
                 t = {}
                 t['Name'] = tournaments[i].name
                 t['Id'] = tournaments[i].id
@@ -226,7 +226,7 @@ class gameResult(View):
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
-            
+
             tournament.ongoingGames = pow(2, tournament.nbPlayers) / pow(2, tournament.currentRound)
 
             async_to_sync(channel_layer.group_send)(
@@ -237,21 +237,21 @@ class gameResult(View):
 
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
-class startTournament(View):  
+class startTournament(View):
     def post(self, request):
         if request.user.is_autenticated is False:
                 return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
-        
+
         data = request.data
         userId = request.user.id
         try:
             tournamentId = data['TournamentId']
         except KeyError as e:
             return JsonBadRequest(request, f'Missing key {e}')
-        
+
         if tournaments[tournamentId].admin != userId:
             return JsonUnauthorized(request, "You need to be admin of tournament to start it")
-        
+
         if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
             return JsonErrResponse(request, "Not enough players to start the tournament")
 

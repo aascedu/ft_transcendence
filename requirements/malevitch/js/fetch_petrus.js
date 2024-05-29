@@ -21,10 +21,19 @@ async function post_signup(id, password, mail) {
 }
 
 async function post_jwt_refresh(refresh_token) {
-    json = {Ref: refresh_token,};
+    json = {ref: refresh_token,};
 
-    return fetch_post(add_petrus_in_url('/JWT-refresh'), json)
+    return await fetch_post(add_petrus_in_url('/JWT-refresh'), json)
             .then(data => {
                 return data.Ref
             });
+}
+
+
+async function refreshLoopThis(refresh_token) {
+    milliseconds = 150000;
+    console.log(refresh_token);
+    const interval_refresh = setInterval(() => {
+        post_jwt_refresh(refresh_token)
+    }, milliseconds);
 }

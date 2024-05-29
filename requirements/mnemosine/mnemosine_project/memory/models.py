@@ -29,9 +29,10 @@ class Tournament(baseModel):
 
     def to_dict(self):
         return {
-            'TournamentName': self.name,
+			'Id': self.id,
+            'Name': self.name,
             'Games': [a.to_dict() for a in self.games.all()],
-            'players': [player.to_dict() for player in self.players.all()],
+            'Players': [player.to_dict() for player in self.players.all()],
         }
 
     @staticmethod

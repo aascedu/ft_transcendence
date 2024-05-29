@@ -110,6 +110,18 @@
 	color: #7300E6;
 }
 
+.user-profile-history .content-card {
+	margin-right: 16px;
+}
+
+.user-profile-history .content-card:nth-child(5),
+.user-profile-history .content-card:nth-child(8),
+.user-profile-history .content-card:nth-child(11),
+.user-profile-history .content-card:nth-child(14),
+.user-profile-history .content-card:nth-child(17) {
+	margin-right: 0;
+}
+
 .user-profile-history-card-color {
 	left: 12px;
 	height: 60%;
