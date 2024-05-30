@@ -98,14 +98,7 @@ function reconnection_alert() {
 }
 
 function fetch_error(error) {
-    if (error == REFRESH_TOKEN_EXPIRED_ERROR) {
-        reconnection_allert();
-    }
     console.error('Fetch problem:', error.message);
-}
-
-function refresh_token_expired() {
-    return new Error(REFRESH_TOKEN_EXPIRED_ERROR);
 }
 
 function custom_error(response) {

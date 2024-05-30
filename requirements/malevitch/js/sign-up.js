@@ -294,7 +294,6 @@ async function submitCreateAccount() {
 			g_userId = result.Client;
             jwt_management(result.Auth, result.Ref);
 			patchUserContent();
-            refreshLoop();
 			goToHomepageGame('.sign-up');
 		}
 	}
