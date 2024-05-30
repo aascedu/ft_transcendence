@@ -40,6 +40,8 @@ class signinView(View):
 
 class userInfoView(View):
     def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "Autentify yourself to fetch user info")
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 return JsonResponse(request, Client.objects.get(id=id).personal_dict())

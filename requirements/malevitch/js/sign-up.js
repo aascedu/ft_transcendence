@@ -292,7 +292,11 @@ async function submitCreateAccount() {
 		else {
 			console.log('Success sign-up : ' + result); // Remove after test (ELK)
 			g_userId = result.Client;
-            refreshLoopThis(result.Ref);
+            g_refreshTokenName = 'refreshToken' + g_userId;
+            g_jwtName = 'JWT' + g_userId;
+            sessionStorage.setItem(g_jwtName, result.Auth);
+            sessionStorage.setItem(g_refreshTokenName, result.Ref);
+            refreshLoop();
 			patchUserContent();
 			goToHomepageGame('.sign-up');
 		}
