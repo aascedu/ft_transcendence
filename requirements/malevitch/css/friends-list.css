@@ -77,6 +77,24 @@
 	margin-left: 8px;
 }
 
+.friends-list-card-container
+.friends-list-requests
+.content-card:nth-child(even) {
+	margin-left: 0;
+	margin-right: 8px;
+}
+
+.friends-list-card-container
+.friends-list-requests
+.content-card:nth-child(odd) {
+	margin-right: 0;
+	margin-left: 8px;
+}
+
+.friends-list-requests {
+	margin-bottom: 16px;
+}
+
 .friends-list-offline {
 	margin-top: 16px;
 }

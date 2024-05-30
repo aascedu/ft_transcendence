@@ -179,6 +179,32 @@
 				</div>
 			</div>
 		</div>
+		<!-- RECONNECTION ALERT -->
+		<div class="reconnection-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="session-expired">
+					Your session has expired.
+				</div>
+				<div class="reconnection-input-container w-100 d-flex flex-column justify-content-center align-items-center">
+					<div class="alert-input-message w-100 text-center unselectable" data-language="retype-password">
+						Please type your password again :
+					</div>
+					<div class="reconnection-input-box input-box w-100 d-flex justify-content-between align-items-center bg-white purple-shadow">
+						<label for="reconnection-input" data-language="password" class="visually-hidden">Enter your password...</label>
+						<input id="reconnection-input" type="password" name="password" label="password" data-language="password" placeholder="Enter your password..." autocomplete="off" class="reconnection-input input w-100 border-0 text-center">
+						<button type="button" value="" class="border-0 bg-transparent position-absolute d-flex align-items-center justify-content-center">
+							<img src="assets/auth/view-purple.png" alt="view password">
+						</button>
+					</div>
+					<div class="reconnection-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-password">Invalid password.</div>
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<button class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="sign-in" >
+						Sign in
+					</button>
+				</div>
+			</div>
+		</div>
 		<!-- HOMEPAGE-HEADER -->
 		<div class="homepage-header w-100 d-flex justify-content-between align-items-center position-absolute visually-hidden">
 			<button class="homepage-header-logo d-flex justify-content-center align-items-center">
@@ -353,8 +379,12 @@
 					</button>
 					<p data-language="friends-list" class="unselectable">Friends list</p>
 				</div>
-				<!-- EXAMPLE OF FRIENDS -->
 				<div class="friends-list-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
+					<div class="friends-list-requests w-100 d-flex flex-wrap">
+						<div class="friends-list-requests-title friends-list-title w-100">
+							<p data-language="friends-requests" class="unselectable">Friends requests</p>
+						</div>
+					</div>
 					<div class="friends-list-online w-100 d-flex flex-wrap align-items-center">
 						<div class="friends-list-online-title friends-list-title w-100">
 							<p data-language="online-friends" class="unselectable">Friends online</p>
