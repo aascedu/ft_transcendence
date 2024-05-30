@@ -29,11 +29,12 @@ class Consumer(OurBasicConsumer):
 
         await self.accept()
 
+
         for friend in self.scope['friends']:
-            friend_groupe = f'user_{friend}_group'
+            friend_group = f'user_{friend['Id']}_group'
 
             await self.channel_layer.group_send(
-                friend_groupe,
+                friend_group,
                 {
                     "type": "new.client.connected",
                     "message": f'{{"connected":{self.scope['user'].id}}}',
@@ -55,7 +56,7 @@ class Consumer(OurBasicConsumer):
                 self.channel_name)
         await self.channel_layer.group_discard("notification_group", self.channel_name)
 
-    # Receive message from WebSocket
+    # This socket is read only
     async def receive(self, text_data):
         pass
         # text_data_json = json.loads(text_data)
@@ -86,32 +87,31 @@ class Consumer(OurBasicConsumer):
     async def notification_new_friendship(self, event):
         print(self.scope['user'].id, " is self notifying")
         await self.send(text_data=json.dumps({
-            "type": "notification.message",
+            "type": "notification.new.friendship",
             "message": event['message'],
         }))
 
     # Receive message from room group
-    # async def notification_friendship_request(self, event):
-    #     if event['target'] == self.name:
-    #         await self.send (text_data=json.dumps({
-    #             "type": "notification.message",
-    #             "message": event['message'],
-    #             # "type": "friendRequest",
-    #             # "source": event['source'],
-    #         }))
+    async def notification_friendship_request(self, event):
+        if event['target'] == self.name:
+            await self.send (text_data=json.dumps({
+                "type": "notification.friendship.request",
+                "message": event['message'],
+                "source": event['source'],
+            }))
 
     async def notification_game_request(self, event):
         user = self.scope['user']
 
         if event['notified'] == user.id:
             await self.send (text_data=json.dumps({
-                "type": "notification.message",
+                "type": "notification.game.request",
                 "message": event['message'],
             }))
 
     async def notification_tournament_request(self, event):
         await self.send(text_data=json.dumps({
-            "type": "notification.message",
+            "type": "notification.tournament.request",
             "message": event['message'],
         }))
 
