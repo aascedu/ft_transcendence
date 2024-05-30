@@ -107,11 +107,14 @@ class userInfoView(View):
 
 class friendView(View):
     def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Autentify to fetch friend data')
+
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 requestee = Client.objects.get(id=id)
             except ObjectDoesNotExist as e:
-                return JsonErrResponse(e.__str__(), status=404)
+                return JsonNotFound(request, e.__str__())
 
             if request.user.is_service is True:
                 return JsonResponse(request, {

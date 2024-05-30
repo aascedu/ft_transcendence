@@ -81,6 +81,7 @@ async function fetch_patch(url, json) {
 }
 
 async function fetch_with_jwt(url, request) {
+    console.log('fetch with jwt called');
     jwt = sessionStorage.getItem(JWT_NAME)
     if (jwt !== null) {
         request.headers.Auth = sessionStorage.getItem(JWT_NAME);
@@ -94,7 +95,17 @@ async function fetch_with_jwt(url, request) {
     return response;
 }
 
-function reconnection_alert() {
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function reconnection_alert() {
+    var alert = document.querySelector('.reconnection-alert')
+    alert.classList.remove('visually-hidden');
+    setAriaHidden();
+    while (!alert.classList.contains('visually-hidden')) {
+        await sleep(200);
+    }
 }
 
 function fetch_error(error) {
