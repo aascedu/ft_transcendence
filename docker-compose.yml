@@ -484,6 +484,8 @@ services:
     depends_on:
       mensura:
         condition: service_started
+      alfred_db:
+        condition: service_healthy
     restart: on-failure
 
   db_exporter_m:
@@ -501,6 +503,8 @@ services:
     depends_on:
       mensura:
         condition: service_started
+      mnemosine_db:
+        condition: service_healthy
     restart: on-failure
 
   db_exporter_p:
@@ -518,6 +522,8 @@ services:
     depends_on:
       mensura:
         condition: service_started
+      petrus_db:
+        condition: service_healthy
     restart: on-failure
 
 # # Data exporter container
