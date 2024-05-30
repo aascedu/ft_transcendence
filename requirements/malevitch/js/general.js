@@ -4,7 +4,9 @@ let	g_userNick;
 let	g_userPic = '/assets/general/pong.png';
 let	g_prevFontSize = 0;
 let	g_jwt;
-let	g_refreshTokenName;
+let REFRESH_TOKEN_EXPIRED_ERROR = 'error: refresh token expired'
+let JWT_NAME = 'Auth'
+let REF_TOKEN_NAME = 'Ref'
 let	g_translations = null;
 let	g_canvasHeight = 0;
 

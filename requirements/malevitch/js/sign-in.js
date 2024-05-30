@@ -53,12 +53,7 @@ async function submitPassword(password) {
 			console.error(result.Err);
 		}
 		else {
-			console.log('Success sign-in : ' + result); // Remove after test (ELK).
-            g_refreshTokenName = 'refreshToken' + g_userId;
-            g_jwtName = 'JWT' + g_userId;
-            sessionStorage.setItem(g_jwtName, result.Auth);
-            sessionStorage.setItem(g_refreshTokenName, result.Ref);
-            refreshLoop()
+            jwt_management(result.Auth, result.Ref);
 			goToHomepageGame('.sign-in');
 		}
 	}

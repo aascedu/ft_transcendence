@@ -20,20 +20,30 @@ async function post_signup(id, password, mail) {
     return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json);
 }
 
-async function post_jwt_refresh(refresh_token) {
-    json = {ref: sessionStorage.getItem(g_refreshTokenName)};
-    console.log('refreshToken' + g_userId)
+async function post_jwt_refresh() {
+    json = {Ref: sessionStorage.getItem(REF_TOKEN_NAME)};
+    content = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Auth' : sessionStorage.getItem(JWT_NAME),
+            },
+            body: JSON.stringify(json)
+        };
 
-    return await fetch_post(add_petrus_in_url('/JWT-refresh'), json)
+    sessionStorage.setItem(JWT_NAME, await fetch(add_petrus_in_url('/JWT-refresh'), content)
+            .then(response => {
+                return response.json();
+            })
             .then(data => {
-                return data.Ref
-            });
+                return data.Auth;
+            })
+        );
 }
 
 
 async function refreshLoop() {
-    milliseconds = 100000;
-    console.log(sessionStorage.getItem('refreshToken' + g_userId));
+    milliseconds = 150000;
     const interval_refresh = setInterval(() => {
         post_jwt_refresh()
     }, milliseconds);

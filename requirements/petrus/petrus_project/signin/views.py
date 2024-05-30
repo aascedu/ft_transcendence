@@ -107,8 +107,8 @@ class signupView(View):
 class refreshView(View):
     def post(self, request):
         try:
-            token = request.data['ref']
-            expired_token = request.headers['auth']
+            token = request.data['Ref']
+            expired_token = request.headers['Auth']
         except KeyError as e:
             return JsonBadRequest(request, f"Key : {str(e)} not provided.")
         try:

@@ -81,17 +81,34 @@ async function fetch_patch(url, json) {
 }
 
 async function fetch_with_jwt(url, request) {
-    if (typeof g_jwtName!=="undefined") {
-        request.headers.Auth = sessionStorage.getItem(g_jwtName);
+    jwt = sessionStorage.getItem(JWT_NAME)
+    if (jwt !== null) {
+        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
     }
-    return fetch(url, request)
+    response = await fetch(url, request);
+    if (response.status == 401) {
+        await reconnection_alert();
+        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
+        response = await fetch(url, request);
+    }
+    return response;
 }
 
+function reconnection_alert() {
+}
 
 function fetch_error(error) {
+    if (error == REFRESH_TOKEN_EXPIRED_ERROR) {
+        reconnection_allert();
+    }
     console.error('Fetch problem:', error.message);
 }
 
+function refresh_token_expired() {
+    return new Error(REFRESH_TOKEN_EXPIRED_ERROR);
+}
+
 function custom_error(response) {
-    return new Error('HTTP error: ' + response.status + "-" + response.json().Err)
+    console.error(response.json());
+    return new Error('HTTP error: ' + response.status + "-" + response.json())
 }
