@@ -53,24 +53,24 @@ class tournamentManagement(View):
                 )
                 if response.status_code != 200:
                     return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
-
             except Exception as e:
                 return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
+        global tournaments
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Only authenticated players can patch a tournament")
 
-        global tournaments
         data = request.data
         try:
-            tournamentId = data['TournamentId']
+            tournamentId = int(data['TournamentId'])
             if request.user.id != tournaments[tournamentId].admin:
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
             tournaments[tournamentId].name = data['NewName']
-        except KeyError as e:
+        except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'missing key {e}')
 
         return JsonResponse(request, {'Msg': "Tournament name changed"})
