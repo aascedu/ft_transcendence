@@ -56,17 +56,14 @@ class tournamentManagement(View):
             except Exception as e:
                 return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
-        print("tournament created")
-        print(tournaments)
         return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
         global tournaments
-        print(tournaments)
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Only authenticated players can patch a tournament")
 
-        print(tournaments)
         data = request.data
         try:
             tournamentId = int(data['TournamentId'])
