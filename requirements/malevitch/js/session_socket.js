@@ -67,23 +67,23 @@ async function connect(id, password) {
 }
 
 async function notificationNewFriendship(data) {
-    console.log("new friendship")
+    console.log("new friendship" + data);
 }
 async function notificationTournamentRequest(data) {
-    console.log("new tournament request")
+    console.log("new tournament request");
 }
 async function notificationGameAccepted(data) {
-    console.log("game accepted")
+    console.log("game accepted");
 }
 async function notificationGameRequest(data) {
-    console.log("game request")
+    console.log("game request");
 }
 async function notificationNewFriendship(data) {
-    console.log("new friendship")
+    console.log("new friendship");
 }
 async function notificationNewClientConnected(data) {
-    console.log("new friend connected")
+    console.log("new friend connected");
 }
 async function notificationMessage(data) {
-    console.log("new message")
+    console.log("new message");
 }
