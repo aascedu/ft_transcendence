@@ -36,7 +36,7 @@ class Consumer(OurBasicConsumer):
             await self.channel_layer.group_send(
                 friend_group,
                 {
-                    "type": "new.client.connected",
+                    "type": "new.friend.connected",
                     "message": f'{{"connected":{self.scope['user'].id}}}',
                 })
 
@@ -73,21 +73,22 @@ class Consumer(OurBasicConsumer):
         #     }
         # )
 
-    async def new_client_connected(self, event):
+    async def new_friend_connected(self, event):
         await self.send(text_data=json.dumps({
+            "type": "new.friend.connected",
             "message": event['message'],
         }))
 
     async def notification_message(self, event):
         await self.send(text_data=json.dumps({
-            "type": "notification.message",
+            "type": "message",
             "message": event['message'],
         }))
 
     async def notification_new_friendship(self, event):
         print(self.scope['user'].id, " is self notifying")
         await self.send(text_data=json.dumps({
-            "type": "notification.new.friendship",
+            "type": "new.friendship",
             "message": event['message'],
         }))
 
@@ -95,7 +96,7 @@ class Consumer(OurBasicConsumer):
     async def notification_friendship_request(self, event):
         if event['target'] == self.name:
             await self.send (text_data=json.dumps({
-                "type": "notification.friendship.request",
+                "type": "friendship.request",
                 "message": event['message'],
                 "source": event['source'],
             }))
@@ -105,13 +106,13 @@ class Consumer(OurBasicConsumer):
 
         if event['notified'] == user.id:
             await self.send (text_data=json.dumps({
-                "type": "notification.game.request",
+                "type": "game.request",
                 "message": event['message'],
             }))
 
     async def notification_tournament_request(self, event):
         await self.send(text_data=json.dumps({
-            "type": "notification.tournament.request",
+            "type": "tournament.request",
             "message": event['message'],
         }))
 
@@ -120,7 +121,7 @@ class Consumer(OurBasicConsumer):
 
         if event['player1'] == user.id or event['player2'] == user.id:
             await self.send (text_data=json.dumps({
-                "type": "start.game",
+                "type": "game.accepted",
                 "player1": event['player1'],
                 "Player2": event['player2'],
             }))

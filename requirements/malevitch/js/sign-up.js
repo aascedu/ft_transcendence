@@ -13,7 +13,7 @@ async function warnUnavailableUserInfo(userInfo, infoType, element) {
 	if (userInfo.includes('/')) {
 		return false;
 	}
-	return await fetch('/alfred/user/signin/' + userInfo)
+	return await fetch('/alfred/user/signin/' + userInfo + '/')
 	.then (response => {
 		if (!response.ok) {
 			throw new Error('HTTP error: ' + response.status);
@@ -276,7 +276,7 @@ async function submitCreateAccount() {
 	g_userNick = nick;
 
 	try {
-		const response = await fetch('/petrus/auth/signup', {
+		const response = await fetch('/petrus/auth/signup/', {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
