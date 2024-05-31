@@ -1,5 +1,5 @@
 function add_coubertin_in_url(url) {
-    return ("/coubertin/tournament/" + url)
+    return ("/coubertin/tournament/" + url + "/")
 }
 
 async function create_tournament(Name, NumPlayers, Invited, Admin) {

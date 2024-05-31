@@ -14,42 +14,36 @@ async function init_session_socket() {
     }
 
     socket.onmessage = function(event) {
-        console.log(`Message du serveur : ${event.data}`)
-        const data = JSON.parse(event.data);
+        const data = event.data;
 
-        if (data.type === "new.friendship") {
-            console.log("new.friendship");
-            notificationNewFriendship(data);
+        obj = JSON.parse(data);
+
+        if (obj.type === "notification.new.friendship") {
+            notificationNewFriendship(obj);
             return ;
         }
-        if (data.type === "new.friend.connected") {
-            console.log("new.friend.connected");
-            notificationNewClientConnected(data);
+        if (obj.type === "notification.new.friend.connected") {
+            notificationNewClientConnected(obj);
             return ;
         }
-        if (data.type === "message") {
-            notificationMessage(data);
-            console.log("message");
+        if (obj.type === "notification.message") {
+            notificationMessage(obj);
             return ;
         }
-        if (data.type === "friendship.request") {
-            notificationFriendshipRequest(data);
-            console.log("friendship.request");
+        if (obj.type === "notification.friendship.request") {
+            notificationFriendshipRequest(obj);
             return ;
         }
-        if (data.type === "game.request") {
-            notificationGameRequest(data);
-            console.log("game.request");
+        if (obj.type === "notification.game.request") {
+            notificationGameRequest(obj);
             return ;
         }
-        if (data.type === "tournament.request") {
-            notificationTournamentRequest(data);
-            console.log("tournament.request");
+        if (obj.type === "notification.tournament.request") {
+            notificationTournamentRequest(obj);
             return ;
         }
-        if (data.type === "game.accepted") {
-            notificationGameAccepted(data);
-            console.log("start.game");
+        if (obj.type === "notification.game.accepted") {
+            notificationGameAccepted(obj);
             return ;
         }
     }
@@ -66,24 +60,32 @@ async function connect(id, password) {
 		});
 }
 
+async function notificationFriendshipRequest(data) {
+    console.log('FriendshipRequest');
+    console.log(data)
+}
+
 async function notificationNewFriendship(data) {
-    console.log("new friendship" + data);
+    console.log('NewFriendship');
+    console.log(data);
 }
 async function notificationTournamentRequest(data) {
-    console.log("new tournament request");
+    console.log('TournamentRequest');
+    console.log(data);
 }
 async function notificationGameAccepted(data) {
     console.log("game accepted");
+    console.log(data);
 }
 async function notificationGameRequest(data) {
     console.log("game request");
-}
-async function notificationNewFriendship(data) {
-    console.log("new friendship");
+    console.log(data);
 }
 async function notificationNewClientConnected(data) {
     console.log("new friend connected");
+    console.log(data);
 }
 async function notificationMessage(data) {
     console.log("new message");
+    console.log(data);
 }
