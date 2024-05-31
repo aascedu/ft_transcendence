@@ -98,7 +98,7 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 async function get_unique_use_token() {
     try {
         console.log("damned");
-        const response = await fetch("/ludo/pong/connectionView/");
+        const response = await fetch_get("/ludo/pong/connectionView/");
 
         const result = await response.json();
         if ('Err' in result) {

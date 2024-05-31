@@ -35,11 +35,11 @@ class Consumer(OurBasicConsumer):
             return self.close()
 
         count = self.roomName.count('-')
-        if count != 2 and count != 3:
+        if count != 1 and count != 2:
             return self.close()
         
-        p1 = self.roomName.split('-')[count - 2]
-        p2 = self.roomName.split('-')[count - 1]
+        p1 = self.roomName.split('-')[count - 1]
+        p2 = self.roomName.split('-')[count]
         self.user = self.scope['user']
         self.isPlayer = False
         if self.user.id == p1 or self.user.id == p2:
