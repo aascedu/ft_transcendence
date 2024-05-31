@@ -1,4 +1,3 @@
-from channels.generic.websocket import AsyncWebsocketConsumer
 from pong.classes.Match import matches, Match
 from pong.classes.Player import Player
 from pong.classes.GameSettings import gameSettings
@@ -36,9 +35,9 @@ class Consumer(OurBasicConsumer):
         count = self.roomName.count('-')
         if count != 2 and count != 3:
             await self.close()
-        
-        p1 = self.roomName.split('-')[count - 2]
-        p2 = self.roomName.split('-')[count - 1]
+
+        p1 = self.roomName.split('-')[count - 1]
+        p2 = self.roomName.split('-')[count]
         self.user = self.scope['user']
         self.isPlayer = False
         if self.user.id == p1 or self.user.id == p2:
@@ -63,7 +62,7 @@ class Consumer(OurBasicConsumer):
                 await self.close()
         except Exception as e:
             await self.close()
-        
+
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -77,7 +76,7 @@ class Consumer(OurBasicConsumer):
                         "winner": self.myMatch.players[(self.id + 1) % 2].id
                     }
                 )
-        
+
         # Ne faire ca que si ce n'est pas une game de tournoi !!
         try:
             request = requests.post(

@@ -26,7 +26,7 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 
 	hideEveryPage();
 
-	init_socket("testRoom");
+	init_socket("1-2");
 	g_state.pageToDisplay = '.game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
