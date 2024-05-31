@@ -1,6 +1,6 @@
 import json
 
-from notifications.cache import get_cache, set_cache
+from notifications.cache import get_cache, set_cache, delete_cache
 
 from shared.BasicConsumer import OurBasicConsumer
 
