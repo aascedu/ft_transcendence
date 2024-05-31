@@ -1,22 +1,6 @@
 async function get_socket_connection_token(path) {
-    try {
-        console.log("damned")
-        const response = await fetch(path + "connectionView/");
-
-        const result = await response.json();
-        if ('Err' in result) {
-            console.log("une erreure a occured")
-            console.log(result.Err);
-
-        } else {
-            console.log("no mistake")
-            const unique_use_token = result.Key
-        }
-        return await result.Key
-    }
-    catch (error) {
-        console.error("Error:", error);
-    }
+    const response = await fetch_get(path + "connectionView/");
+    return response.Key
 }
 
 async function init_session_socket() {
@@ -31,6 +15,12 @@ async function init_session_socket() {
 
     socket.onmessage = function(event) {
         console.log(`Message du serveur : ${event.data}`)
+        const data = JSON.parse(event.data);
+
+        if (data.type === "notification.new.friendship") {
+            notificationNewFriendship(data);
+            return
+        }
     }
 }
 
@@ -42,4 +32,8 @@ async function connect(id, password) {
 			},
 			body: JSON.stringify({Id: id, Pass: password,}),
 		});
+}
+
+async function notificationNewFriendship(data) {
+    console.log(data);
 }
