@@ -84,7 +84,7 @@ async function fetch_patch(url, json) {
 }
 
 async function fetch_with_jwt(url, request) {
-    jwt = sessionStorage.getItem(JWT_NAME)
+    jwt = await sessionStorage.getItem(JWT_NAME)
     if (jwt !== null) {
         console.log('fetch with jwt called');
         request.headers.Auth = sessionStorage.getItem(JWT_NAME);

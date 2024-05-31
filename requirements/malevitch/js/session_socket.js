@@ -17,12 +17,44 @@ async function init_session_socket() {
         console.log(`Message du serveur : ${event.data}`)
         const data = JSON.parse(event.data);
 
-        if (data.type === "notification.new.friendship") {
+        if (data.type === "new.friendship") {
+            console.log("new.friendship");
             notificationNewFriendship(data);
-            return
+            return ;
+        }
+        if (data.type === "new.friend.connected") {
+            console.log("new.friend.connected");
+            notificationNewClientConnected(data);
+            return ;
+        }
+        if (data.type === "message") {
+            notificationMessage(data);
+            console.log("message");
+            return ;
+        }
+        if (data.type === "friendship.request") {
+            notificationFriendshipRequest(data);
+            console.log("friendship.request");
+            return ;
+        }
+        if (data.type === "game.request") {
+            notificationGameRequest(data);
+            console.log("game.request");
+            return ;
+        }
+        if (data.type === "tournament.request") {
+            notificationTournamentRequest(data);
+            console.log("tournament.request");
+            return ;
+        }
+        if (data.type === "game.accepted") {
+            notificationGameAccepted(data);
+            console.log("start.game");
+            return ;
         }
     }
 }
+
 
 async function connect(id, password) {
 		const response = await fetch('/petrus/auth/signin/youpi', {
@@ -35,5 +67,23 @@ async function connect(id, password) {
 }
 
 async function notificationNewFriendship(data) {
-    console.log(data);
+    console.log("new friendship")
+}
+async function notificationTournamentRequest(data) {
+    console.log("new tournament request")
+}
+async function notificationGameAccepted(data) {
+    console.log("game accepted")
+}
+async function notificationGameRequest(data) {
+    console.log("game request")
+}
+async function notificationNewFriendship(data) {
+    console.log("new friendship")
+}
+async function notificationNewClientConnected(data) {
+    console.log("new friend connected")
+}
+async function notificationMessage(data) {
+    console.log("new message")
 }

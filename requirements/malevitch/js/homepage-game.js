@@ -3,7 +3,7 @@ document.querySelector('.homepage-game-content-friends-icon').addEventListener('
 	await loadFriendsList();
 
 	document.querySelector('.friends-list-icon').focus();
-	
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.friends-list';
@@ -20,7 +20,7 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 
 	var	homepageHeader = document.querySelector('.homepage-header');
 	homepageHeader.classList.add('visually-hidden');
-	
+
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.add('visually-hidden');
 
@@ -37,7 +37,7 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 	await loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
-	
+
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.my-tournaments';
@@ -45,7 +45,7 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 	render(g_state);
 });
 
-document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', async function() {	
+document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', async function() {
 	hideEveryPage();
 
 	await loadCreateTournament();
@@ -79,7 +79,7 @@ document.addEventListener('keydown', function(e) {
 	if (!document.querySelector('.homepage-game').classList.contains('visually-hidden')) {
 		let isFw =!e.shiftKey;
 		var	noFriends = document.querySelector('.homepage-game-content-no-friends');
-	
+
 		// If no friends are online, switch focus to header logo after friends icon
 		if (e.key === 'Tab' && document.querySelector('.homepage-game-content-friends-icon') === document.activeElement) {
 			if (isFw && !noFriends.classList.contains('visually-hidden')) {
@@ -95,7 +95,7 @@ document.addEventListener('keydown', function(e) {
 				e.preventDefault();
 			}
 		}
-	
+
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-game-content-play') === document.activeElement) {
 			document.querySelector('.homepage-header-profile').focus();
 			e.preventDefault();
