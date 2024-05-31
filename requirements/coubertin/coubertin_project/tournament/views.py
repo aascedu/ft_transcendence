@@ -125,7 +125,7 @@ class tournamentEntry(View):
             if playerId in tournaments[TournamentId].invited:
                 tournaments[TournamentId].invited.remove(playerId)
         except Exception as e:
-            return JsonBadRequest(request, {'Err': e.__str__()}, status=400)
+            return JsonBadRequest(request, {'Err': e.__str__()})
 
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(TournamentId)}) # url of the websocket to join
