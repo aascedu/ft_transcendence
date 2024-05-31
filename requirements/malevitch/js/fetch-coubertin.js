@@ -2,6 +2,10 @@ function add_coubertin_in_url(url) {
     return ("/coubertin/tournament/" + url)
 }
 
+async function get_tournament_infos(tournamentId) {
+    return fetch_get(add_coubertin_in_url('infos/' + toString(tournamentId) + '/'));
+}
+
 async function create_tournament(Name, NumPlayers, Invited, Admin) {
     json = {Name: Name, NumPlayers: NumPlayers, Invited: Invited, Admin: Admin};
 
@@ -29,18 +33,14 @@ async function invite_friend_to_tournament(TournamentId, Invited) {
 }
 
 async function get_my_tournaments() {
-    return fetch_get(add_coubertin_in_url('mytournaments/'));
+    return fetch_get(add_coubertin_in_url('my-tournaments/'));
 }
 
 async function get_tournaments_available() {
     return fetch_get(add_coubertin_in_url('available-tournaments/'));
 }
 
-async function get_tournament_infos(tournamentId) {
-    return fetch_get(add_coubertin_in_url('infos/' + toString(tournamentId) + '/'));
-}
-
 async function start_tournament(tournamentId) {
-    return fetch_post(add_coubertin_in_url('startTournament/'));
+    return fetch_post(add_coubertin_in_url('start-tournament/'));
 }
 
