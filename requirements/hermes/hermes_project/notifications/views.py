@@ -86,7 +86,6 @@ def global_notification(request, requester: int):
 
 @notification_by_notified_id
 def friendship(request, requester: int):
-    print('friendship called')
     response = JsonResponse(request, {'Friendship': 'Notified'})
     content = {
             'type': 'notification.new.friendship',
