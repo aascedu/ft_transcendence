@@ -49,7 +49,7 @@ function submitNickname(nickname) {
 	g_userNick = nickname;
 	document.querySelector('.homepage-id').classList.add('visually-hidden');
 
-	fetch('/alfred/user/signin/' + nickname)
+	fetch('/alfred/user/signin/' + nickname + '/')
 		.then (response => {
 			if (!response.ok) {
 				throw new Error('HTTP error: ' + response.status);
