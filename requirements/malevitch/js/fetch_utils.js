@@ -105,6 +105,8 @@ function sleep(ms) {
 async function reconnection_alert() {
     var alert = document.querySelector('.reconnection-alert')
     alert.classList.remove('visually-hidden');
+
+	document.querySelector('.reconnection-input').focus();
     setAriaHidden();
     while (!alert.classList.contains('visually-hidden')) {
         await sleep(200);

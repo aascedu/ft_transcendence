@@ -84,7 +84,7 @@ async function submitPassword(input, warning, locale, nickname, isAlert) {
 			console.error(result.Err);
 		}
 		else {
-            jwt_management(result.Auth, result.Ref);
+            await jwt_management(result.Auth, result.Ref);
 			if (isAlert) {
 				input.value = '';
 				document.querySelector('.reconnection-alert').classList.add('visually-hidden');
