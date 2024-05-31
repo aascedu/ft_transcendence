@@ -45,7 +45,7 @@ class tournamentManagement(View):
         for i in invited:
             try:
                 response = requests.post(
-                    'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
+                    'http://hermes:8004/notif/tournament-request/' + str(request.user.id) + '/',
                     json={
                         'Tournament-Id': tournamentId,
                         'Tournament-Name': tournaments[tournamentId].name,
@@ -55,7 +55,6 @@ class tournamentManagement(View):
                 if response.status_code != 200:
                     logging.warning("Failed to send invitation to player " + str(invited))
                     return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
-
             except Exception as e:
                 logging.error("Failed to send invitation to player " + str(invited))
                 return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
@@ -63,17 +62,18 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
-        if request.user.is_authenticated is False:
+        global tournaments
+
+        if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Only authenticated players can patch a tournament")
 
-        global tournaments
         data = request.data
         try:
-            tournamentId = data['TournamentId']
+            tournamentId = int(data['TournamentId'])
             if request.user.id != tournaments[tournamentId].admin:
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
             tournaments[tournamentId].name = data['NewName']
-        except KeyError as e:
+        except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'missing key {e}')
 
         logging.info("Tournament " + str(tournamentId) + " has been renamed " + data['NewName'])
@@ -163,7 +163,7 @@ class inviteFriend(View):
 
         try:
             response = requests.post(
-                'http://hermes:8004/notif/tournament-request/' + str(request.user.id),
+                'http://hermes:8004/notif/tournament-request/' + str(request.user.id) + '/',
                 json={
                         'Tournament-Id': TournamentId,
                         'Tournament-Name': tournaments[TournamentId].name,

@@ -121,6 +121,7 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 		item.classList.add('visually-hidden');
 	});
 
+	clearAvailableTournaments();
 	await loadAvailableTournaments();
 
 	document.querySelector('.available-tournaments-icon').focus();
@@ -151,12 +152,14 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 
 // Go to new tournament
 
-document.querySelector('.homepage-header-new-tournament').addEventListener('click', function() {
+document.querySelector('.homepage-header-new-tournament').addEventListener('click', async function() {
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
+
+	await loadCreateTournament();
 
 	g_state.pageToDisplay = '.create-tournament';
 	window.history.pushState(g_state, null, "");
@@ -278,23 +281,23 @@ document.querySelector('.homepage-header-add-friend-input').addEventListener('in
 	setAriaHidden();
 });
 
-document.querySelector('.homepage-header-add-friend-input').addEventListener('keypress', function(e) {
+document.querySelector('.homepage-header-add-friend-input').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		addFriend();
+		await addFriend();
 	}
 });
 
-document.querySelector('.homepage-header-add-friend-submit').addEventListener('click', function() {
-	addFriend();
+document.querySelector('.homepage-header-add-friend-submit').addEventListener('click', async function() {
+	await addFriend();
 });
 
-document.querySelector('.homepage-header-add-friend-submit').addEventListener('keypress', function(e) {
+document.querySelector('.homepage-header-add-friend-submit').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		addFriend();
+		await addFriend();
 	}
 });
 
-function addFriend() {
+async function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	
 	// check if user is yourself
@@ -302,41 +305,42 @@ function addFriend() {
 		return ;
 	}
 
-	// check if user exists in the db
-	fetch('/petrus/auth/signin/' + nickname)
-		.then (response => {
-			if (!response.ok) {
-				throw new Error('HTTP error: ' + response.status);
-			}
-			return response.json();
-		})
-		.then (data => {
-			if (data.Ava) {
-				// input warning
-				document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-input').value = '';
-				document.querySelector('.homepage-header-add-friend-input').focus();
-			}
-			else {
-				// send invite
-
-				// show notif to tell invite has been sent
-				inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
-
-				// close menu
-				document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
-				document.querySelector('.homepage-header-add-friend-input-box').classList.add('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-input-warning').classList.add('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
-				document.querySelector('.homepage-header-add-friend-input').value = '';
-				document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
-			}
-			setAriaHidden();
-		})
-		.catch (error => {
-			console.error('Fetch problem:', error.message);
-		});
+	try {
+        const response = await fetch('/alfred/user/signin/' + nickname);
+        
+        if (!response.ok) {
+            throw new Error('HTTP error: ' + response.status);
+        }
+        
+        const data = await response.json();
+        
+        console.log(data);
+        
+        if (data.Ava) {
+            document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
+            document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+            document.querySelector('.homepage-header-add-friend-input').value = '';
+            document.querySelector('.homepage-header-add-friend-input').focus();
+        } else {
+            await post_friend(data.Id);
+            
+            // Show notif that the invite has been sent
+            inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
+            
+            // Close menu and reset UI elements
+            document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
+            document.querySelector('.homepage-header-add-friend-input-box').classList.add('visually-hidden');
+            document.querySelector('.homepage-header-add-friend-input-warning').classList.add('visually-hidden');
+            document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+            document.querySelector('.homepage-header-add-friend-input').value = '';
+            document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
+        }
+        
+        setAriaHidden();
+        
+    } catch (error) {
+        console.error('Fetch problem:', error.message);
+    }
 }
 
 // --- OTHER ---

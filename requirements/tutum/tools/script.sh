@@ -1,10 +1,17 @@
 #!/bin/bash
 
-sleep 5
+while vault status &> /dev/null && [ $? -eq 1 ]; do
+    sleep 1
+done
+
+echo -n "start" > /state.txt
+
+export VAULT_ADDR=http://127.0.0.1:8200
 
 vault operator init -status
+status=$?
 
-if [ $? -eq 2 ]; then
+if [ $status -eq 2 ]; then
     vault operator init -n 1 -t 1 | grep 'Token\|Unseal' | awk '{print $4}' > tutum.txt
     mv tutum.txt /tokens/tutum.txt
     export VAULT_TOKEN=`cat /tokens/tutum.txt | tail -n 1`
@@ -116,3 +123,5 @@ else
     KEY=`cat /tokens/tutum.txt | head -n 1`
     vault operator unseal $KEY
 fi
+
+echo -n "ready" > /state.txt

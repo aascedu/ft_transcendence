@@ -1,7 +1,7 @@
 from django.views import View
 from shared.utils import JsonBadRequest, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
 from shared.utils import JsonResponseLogging as JsonResponse
-from classes.Match import matches
+from pong.classes.Match import matches
 
 # Create your views here.
 

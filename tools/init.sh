@@ -10,8 +10,8 @@ else
 fi
 
 while true; do
-    launched=$(docker inspect -f '{{.State.Running}}' tutum)
-    if [ "$launched" = "true" ]; then
+    launched=$(docker exec -it tutum cat /state.txt)
+    if [ "$launched" = "ready" ]; then
         echo "tutum launched"
         break
     else

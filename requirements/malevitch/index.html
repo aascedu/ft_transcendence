@@ -179,6 +179,32 @@
 				</div>
 			</div>
 		</div>
+		<!-- RECONNECTION ALERT -->
+		<div class="reconnection-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="session-expired">
+					Your session has expired.
+				</div>
+				<div class="reconnection-input-container w-100 d-flex flex-column justify-content-center align-items-center">
+					<div class="alert-input-message w-100 text-center unselectable" data-language="retype-password">
+						Please type your password again :
+					</div>
+					<div class="reconnection-input-box input-box w-100 d-flex justify-content-between align-items-center bg-white purple-shadow">
+						<label for="reconnection-input" data-language="password" class="visually-hidden">Enter your password...</label>
+						<input id="reconnection-input" type="password" name="password" label="password" data-language="password" placeholder="Enter your password..." autocomplete="off" class="reconnection-input input w-100 border-0 text-center">
+						<button type="button" value="" class="border-0 bg-transparent position-absolute d-flex align-items-center justify-content-center">
+							<img src="assets/auth/view-purple.png" alt="view password">
+						</button>
+					</div>
+					<div class="reconnection-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-password">Invalid password.</div>
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<button class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="sign-in">
+						Sign in
+					</button>
+				</div>
+			</div>
+		</div>
 		<!-- HOMEPAGE-HEADER -->
 		<div class="homepage-header w-100 d-flex justify-content-between align-items-center position-absolute visually-hidden">
 			<button class="homepage-header-logo d-flex justify-content-center align-items-center">
@@ -295,7 +321,7 @@
 							</div>
 							<p data-language="history" class="unselectable">History</p>
 						</div>
-						<div class="homepage-history-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
+						<div class="homepage-history-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
@@ -311,7 +337,7 @@
 							</button>
 							<p data-language="online-friends" class="unselectable">Friends online</p>
 						</div>
-						<div class="homepage-friend-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
+						<div class="homepage-friend-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 							<div class="homepage-game-content-no-friends w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
@@ -325,7 +351,7 @@
 							</div>
 							<p data-language="stats" class="unselectable">Statistics</p>
 						</div>
-						<div class="homepage-stats-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto" tabindex="-1">
+						<div class="homepage-stats-content-card-container content-card-container w-100 d-flex flex-column align-items-center overflow-x-hidden overflow-y-auto">
 							<div class="homepage-game-content-empty-history w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
 								<img src="assets/general/no-history.svg" alt="empty history icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="empty-history" class="text-center unselectable">You haven't played any game yet...</p>
@@ -353,8 +379,12 @@
 					</button>
 					<p data-language="friends-list" class="unselectable">Friends list</p>
 				</div>
-				<!-- EXAMPLE OF FRIENDS -->
-				<div class="friends-list-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto" tabindex="-1">
+				<div class="friends-list-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
+					<div class="friends-list-requests w-100 d-flex flex-wrap">
+						<div class="friends-list-requests-title friends-list-title w-100">
+							<p data-language="friends-requests" class="unselectable">Friends requests</p>
+						</div>
+					</div>
 					<div class="friends-list-online w-100 d-flex flex-wrap align-items-center">
 						<div class="friends-list-online-title friends-list-title w-100">
 							<p data-language="online-friends" class="unselectable">Friends online</p>
@@ -387,14 +417,8 @@
 					</button>
 					<p data-language="tournaments" class="unselectable">Available tournaments</p>
 				</div>
-				<div class="available-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto" tabindex="-1">
+				<div class="available-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
 					<div class="w-100 d-flex flex-wrap align-items-start">
-						<button class="content-card d-flex justify-content-center align-items-center purple-shadow">
-							<div class="available-tournaments-card-picture position-absolute">
-								<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="available-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi1</div>
-						</button>
 					</div>
 				</div>
 				<div class="available-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
@@ -413,7 +437,7 @@
 					<p data-language="my-tournaments" class="unselectable">My tournaments</p>
 				</div>
 				<!-- EXAMPLE OF TOURNAMENTS -->
-				<div class="my-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto visually-hidden" tabindex="-1">
+				<div class="my-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto visually-hidden">
 					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
 						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
 							<p data-language="my-ongoing-tournaments" class="unselectable">My ongoing tournaments</p>
@@ -488,7 +512,7 @@
 						<img src="assets/general/leave.svg" alt="leave tournament" draggable="false" (dragstart)="false;" class="unselectable">
 					</button>
 				</div>
-				<div class="tournament-info-card-container w-100 overflow-x-hidden overflow-y-auto" tabindex="-1">
+				<div class="tournament-info-card-container w-100 overflow-x-hidden overflow-y-auto">
 					<div class="tournament-info-players w-100 d-flex flex-wrap align-items-center">
 						<div class="tournament-info-players-title tournament-info-title w-100 d-flex justify-content-between align-items-center">
 							<p data-language="players" class="unselectable">Players</p>
@@ -714,7 +738,7 @@
 					</button>
 					<p data-language="new-tournament" class="unselectable">New tournament</p>
 				</div>
-				<div class="create-tournament-card-container w-100 d-flex justify-content-center flex-wrap overflow-x-hidden overflow-y-auto" tabindex="-1">
+				<div class="create-tournament-card-container w-100 d-flex justify-content-center flex-wrap overflow-x-hidden overflow-y-auto">
 					<div class="w-100 d-flex flex-column align-items-center">
 						<div class="create-tournament-title w-50 d-flex justify-content-center align-items-center text-center unselectable" data-language="tournament-name-message">
 							Tournament name
@@ -752,18 +776,6 @@
 								<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 								<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 							</div>
-							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" >
-								<div class="user-card-name unselectable">Ami9</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button>
-							<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" >
-								<div class="user-card-name unselectable">Ami9</div>
-								<div class="user-card-picture">
-									<img src="assets/general/friend.png" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-								</div>
-							</button>
 						</div>
 					</div>
 					<div class="w-100 d-flex flex-column align-items-center">
@@ -805,6 +817,9 @@
 						</label>
 					</div>
 					<div class="user-profile-name text-center unselectable">user</div>
+					<button class="user-profile-play-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
+						<img src="assets/general/play.svg" alt="invite friend to play" draggable="false" (dragstart)="false;" class="unselectable">
+					</button>
 					<button class="user-profile-add-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/invite-friend.svg" alt="invite friend icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</button>
@@ -938,7 +953,7 @@
 					</button>
 					<p data-language="accessibility" class="unselectable">Accessibility</p>
 				</div>
-				<div class="accessibility-card-container w-100 overflow-x-hidden overflow-y-auto" tabindex="-1">
+				<div class="accessibility-card-container w-100 overflow-x-hidden overflow-y-auto">
 					<div class="w-100 d-flex flex-column align-items-center">
 						<div class="accessibility-contrast w-50 d-flex justify-content-center align-items-center">
 							<div class="accessibility-title text-center unselectable" data-language="contrast">
@@ -1076,6 +1091,7 @@
 		<script src="js/victory-defeat.js"></script>
 		<script src="js/create-tournament.js"></script>
 		<script src="js/accessibility.js"></script>
+        <script src="js/authentication.js"></script>
 		<script src="js/notif.js"></script>
 		<script src="js/pong.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

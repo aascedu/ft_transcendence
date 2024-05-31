@@ -3,8 +3,8 @@ from notifications import views
 # onlineView, notificationsView, friendshipView, friendshipRequestView, gameRequestView, tournamentRequestView
 
 urlpatterns = [
-    path("online-states", views.onlineView.as_view(), name="online states"),
-    path('available-states', views.availableFriendView.as_view()),
+    path("online-states/", views.onlineView.as_view(), name="online states"),
+    path('available-states/', views.availableFriendView.as_view()),
     path("send-shit/", views.global_notification, name="notifications"),
     path("friendship/<int:requester>", views.friendship),
     path("friend-request/<int:requester>", views.friendshipRequest),

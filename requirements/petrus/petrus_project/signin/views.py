@@ -38,8 +38,7 @@ class signinView(View):
             return JsonForbidden(request, "invalid password")
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Client": "connected", "Ref": refresh_token})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response = JsonResponse(request, {"Client": "connected", "Ref": refresh_token, "Auth": jwt})
         logging.info("Client connected")
         return response
 
@@ -101,16 +100,15 @@ class signupView(View):
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Client": client.id, "ref": refresh_token})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response = JsonResponse(request, {"Client": client.id, "ref": refresh_token, 'Auth': jwt})
         logging.info("Client created")
         return response
 
 class refreshView(View):
     def post(self, request):
         try:
-            token = request.data['ref']
-            expired_token = request.COOKIES['auth']
+            token = request.data['Ref']
+            expired_token = request.headers['Auth']
         except KeyError as e:
             return JsonBadRequest(request, f"Key : {str(e)} not provided.")
         try:
@@ -136,6 +134,5 @@ class refreshView(View):
             return JsonErrResponse(request, "Clients doesn't exist anymore", status=404)
 
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Token": "refreshed"})
-        response.set_cookie("auth", jwt, samesite='Lax', httponly=True)
+        response = JsonResponse(request, {"Token": "refreshed", 'Auth': jwt})
         return response

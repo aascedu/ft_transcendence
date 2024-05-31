@@ -40,6 +40,8 @@ class signinView(View):
 
 class userInfoView(View):
     def get(self, request, id: int):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "Autentify yourself to fetch user info")
         if request.user.is_service is True or request.user.is_admin is True:
             try:
                 return JsonResponse(request, Client.objects.get(id=id).personal_dict())
@@ -109,7 +111,7 @@ class friendView(View):
             try:
                 requestee = Client.objects.get(id=id)
             except ObjectDoesNotExist as e:
-                return JsonErrResponse(e.__str__(), status=404)
+                return JsonNotFound(request, e.__str__())
 
             if request.user.is_service is True:
                 return JsonResponse(request, {
@@ -124,7 +126,8 @@ class friendView(View):
                         "Received": requestee.list_received_requests(),
                         "Sent": requestee.list_sent_requests(),
                     })
-
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Autentify to fetch friend data')
         emiter = request.model
         return JsonResponse(request, {
             "Id": request.user.id,

@@ -1,3 +1,44 @@
+// Clear and load available friends
+
+async function loadCreateTournament() {
+	// Clear previous available friends
+	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
+	document.querySelector('.create-tournament-no-friends').classList.add('visually-hidden');
+
+	// Load available friends
+	var	availableFriends = await get_available_friends();
+	availableFriends = availableFriends.Ava;
+
+	if (availableFriends.length == 0) {
+		document.querySelector('.create-tournament-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
+
+	var	availableFriendsContainer = document.querySelector('.create-tournament-invite-container');
+	var	userInfo;
+	var	userPic;
+
+	for (i = 0; i < availableFriends.length; i++) {
+		userInfo = await get_user_info(availableFriends[i].Id);
+		userPic = userInfo.Pic;
+		if (userPic == null) {
+			userPic = 'assets/general/pong.png';
+		}
+
+		availableFriendsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
+			<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
+			<div class="user-card-picture">
+				<img src="` + userPic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+			</div>
+		</button>`);
+	}
+}
+
 // Hide when clicking top left button
 
 document.querySelector('.create-tournament-icon').addEventListener('click', function() {
@@ -127,23 +168,13 @@ function checkToSubmitTournament() {
 
 // Confirm / cancel
 
-document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('click', function () {
-	// Hide alert
-	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
-
-	// Send info to db
-	// Send invites to selected friends
-	displayCreatedTournament();
+document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('click', async function () {
+	await createTournament();
 });
 
-document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('keypress', function (event) {
+document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
 	if (event.key === 'Enter') {
-		// Hide alert
-		document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
-	
-		// Send info to db
-		// Send invites to selected friends
-		displayCreatedTournament();
+		await createTournament();
 	}
 });
 
@@ -161,6 +192,37 @@ document.querySelector('.create-tournament-alert .alert-cancel-button').addEvent
 	}
 });
 
+async function createTournament() {
+	// Hide alert
+	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
+
+	// Send info to coubertin
+	var	tournamentName = document.querySelector('.create-tournament-name-input').value;
+	var	numPlayers = document.querySelector('.create-tournament-players-button-chosen').textContent;
+	numPlayers = numPlayers.replace(/\D/g, '');
+	var	invitedFriends = [];
+
+	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
+		invitedFriends.push(item.getAttribute('user-id'));
+	});
+
+	await create_tournament(tournamentName, numPlayers, invitedFriends, g_userId);
+
+	// Send invites to selected friends
+
+	// Go to my tournaments
+	clearMyTournaments();
+	await loadMyTournaments();
+
+	document.querySelector('.my-tournaments-icon').focus();
+	
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.my-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+}
+
 // Reset tournament creation
 
 function resetTournamentCreation() {
@@ -176,83 +238,6 @@ function resetTournamentCreation() {
 	});
 
 	setAriaHidden();
-}
-
-// Display created tournament
-
-function displayCreatedTournament() {
-	var	tournamentName = document.querySelector('.create-tournament-name-input').value;
-	document.querySelector('.tournament-info-name').textContent = tournamentName;
-
-	var	numberOfPlayers = document.querySelector('.create-tournament-players-button-chosen').textContent;
-	document.querySelector('.tournament-info-players-num').textContent = "0/" + numberOfPlayers.trim();
-
-	// Parse invited friends in array
-	var	invitedFriends = [];
-	document.querySelectorAll('.create-tournament-invited-friend').forEach(function(item) {
-		var	friendInfo = [];
-
-		friendInfo.push(item.querySelector('.user-card-name').textContent);
-		friendInfo.push(item.querySelector('.user-card-picture img').getAttribute('src'));
-
-		invitedFriends.push(friendInfo);
-	});
-
-	// Go through the array and create a content card for each friend
-	for(i = 0; i < invitedFriends.length; i++) {
-		var playersList = document.querySelector('.tournament-info-players');
-		var	nick = invitedFriends[i][0];
-		var	pic = invitedFriends[i][1];
-	
-		playersList.insertAdjacentHTML('beforeend', `\
-		<div class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow">
-			<div class="d-flex flex-nowrap align-items-center">
-				<div class="user-card-name unselectable">`+ nick + `</div>
-				<div class="user-card-pending" data-language="pending">(pending...)</div>
-			</div>
-			<div class="user-card-picture">
-				<img src="` + pic + `" alt="profile picture of friend" draggable="false" (dragstart)="false;" class="unselectable">
-			</div>
-			<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
-				<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
-			</div>
-		</div>`);
-	}
-
-	// Reveal "no players" if no friend was invited
-	if (invitedFriends.length === 0) {
-		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
-		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-			item.parentNode.removeChild(item);	
-		});
-	}
-	else {
-		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
-	}
-
-	// Modify the bracket if it's 4 players mode
-	if (numberOfPlayers.trim() == '4') {
-		if (document.querySelector('.bracket-round-two') != null) {
-			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
-			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
-		}
-		document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
-	}
-	else if (document.querySelector('.bracket-round-one-four') != null) {
-		document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
-		document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
-		document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
-		document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
-		document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
-	}
-
-	// Render the tournament page
-	hideEveryPage();
-	g_state.pageToDisplay = '.tournament-info';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
 }
 
 // Keyboard navigation

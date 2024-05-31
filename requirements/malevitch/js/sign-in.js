@@ -18,7 +18,12 @@ document.querySelector('.sign-in-input').addEventListener('input', function() {
 
 document.querySelector('.sign-in-input').addEventListener('keypress', function(event) {
 	if (event.key === 'Enter' && this.value.length > 0) {
-		submitPassword(this.value);
+		var	warning = document.querySelector('.sign-in-input-warning');
+		var	locale = document.querySelector('.sign-in-language-selector button img').alt;
+		var	nickname = document.querySelector('.sign-in-message b').textContent;
+		nickname = nickname.trim();
+
+		submitPassword(this, warning, locale, nickname, false);
 	}
 });
 
@@ -26,36 +31,68 @@ document.querySelector('.sign-in-input').addEventListener('keypress', function(e
 
 document.querySelector('.sign-in-submit').addEventListener('click', function() {
 	var	input = document.querySelector('.sign-in-input');
+	var	warning = document.querySelector('.sign-in-input-warning');
+	var	locale = document.querySelector('.sign-in-language-selector button img').alt;
+	var	nickname = document.querySelector('.sign-in-message b').textContent;
+	nickname = nickname.trim();
 
-	submitPassword(input.value);
+	submitPassword(input, warning, locale, nickname, false);
+});
+
+// RECONNECTION ALERT
+
+// Submit password using Enter key.
+
+document.querySelector('.reconnection-input').addEventListener('keypress', function(event) {
+	if (event.key === 'Enter' && this.value.length > 0) {
+		var	warning = document.querySelector('.reconnection-input-warning');
+		var	locale = document.querySelector('.homepage-header-language-selector button img').alt;
+
+		submitPassword(this, warning, locale, g_userNick, true);
+	}
+});
+
+// Submit password using button.
+
+document.querySelector('.reconnection-alert .alert-confirm-button').addEventListener('click', function() {
+	var	input = document.querySelector('.sign-in-input');
+	var	warning = document.querySelector('.reconnection-input-warning');
+	var	locale = document.querySelector('.homepage-header-language-selector button img').alt;
+
+	if (input.value.length > 0) {
+		submitPassword(input, warning, locale, g_userNick, true);
+	}
 });
 
 // Submit password to database.
 
-async function submitPassword(password) {
-	var	nickname = document.querySelector('.sign-in-message b').textContent;
-	nickname = nickname.trim();
-
+async function submitPassword(input, warning, locale, nickname, isAlert) {
 	try {
 		const response = await fetch('/petrus/auth/signin/' + nickname, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({Id: g_userId, Pass: password,}),
+			body: JSON.stringify({Id: g_userId, Pass: input.value,}),
 		});
 
 		const result = await response.json();
 		if ('Err' in result && result.Err == 'Forbiden : invalid password') {
-			sendInvalidPassword();
+			sendInvalidPassword(input, warning, locale);
 		}
 		else if ('Err' in result) {
 			console.error(result.Err);
 		}
 		else {
-			console.log('Success sign-in : ' + result); // Remove after test (ELK).
-            refreshLoopThis(result.Ref)
-			goToHomepageGame('.sign-in');
+            await jwt_management(result.Auth, result.Ref);
+			if (isAlert) {
+				input.value = '';
+				document.querySelector('.reconnection-alert').classList.add('visually-hidden');
+				setAriaHidden();
+			}
+			else {
+				goToHomepageGame('.sign-in');
+			}
 		}
 	}
 	catch (error) {
@@ -65,11 +102,7 @@ async function submitPassword(password) {
 
 // Send warning if password is invalid.
 
-function sendInvalidPassword() {
-	var	input = document.querySelector('.sign-in-input');
-	var	warning = document.querySelector('.sign-in-input-warning');
-	var	locale = document.querySelector('.sign-in-language-selector button img').alt;
-
+function sendInvalidPassword(input, warning, locale) {
 	switchLanguageContent(locale);
 	warning.classList.remove('visually-hidden');
 	setAriaHidden();
