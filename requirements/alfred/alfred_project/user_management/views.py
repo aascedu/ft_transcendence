@@ -126,6 +126,7 @@ class friendView(View):
                         "Received": requestee.list_received_requests(),
                         "Sent": requestee.list_sent_requests(),
                     })
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Autentify to fetch friend data')
         emiter = request.model

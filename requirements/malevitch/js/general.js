@@ -442,9 +442,28 @@ async function setHomepageContent() {
 			numOfFriendsOnline++;
 		}
 	}
+
 	if (friendsList.length == 0 || numOfFriendsOnline == 0) {
 		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
 	}
+
+    // Load friends profile
+    document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
+        item.addEventListener('click', function () {
+            document.querySelector('.user-profile-remove-icon').focus();
+
+            clearUserContent();
+            console.log(item.getAttribute('user-id'));
+            loadUserContent(item.getAttribute('user-id'));
+
+            hideEveryPage();
+
+            g_state.pageToDisplay = '.user-profile';
+            window.history.pushState(g_state, null, "");
+            render(g_state);
+        });
+    });
+
 
 	// History and stats
 
@@ -533,6 +552,7 @@ async function setHomepageContent() {
 		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
 	</div>`);
+
 }
 
 async function goToHomepageGame(previous) {

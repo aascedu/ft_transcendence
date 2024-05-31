@@ -24,7 +24,6 @@ class Consumer(OurBasicConsumer):
         global matches
 
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
-        print("Room name is " + self.roomName)
         await self.channel_layer.group_add(self.roomName, self.channel_name)
 
         if self.roomName not in matches:
@@ -32,11 +31,11 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
-            return self.close()
+            await self.close()
 
         count = self.roomName.count('-')
-        if count != 1 and count != 2:
-            return self.close()
+        if count != 2 and count != 3:
+            await self.close()
         
         p1 = self.roomName.split('-')[count - 1]
         p2 = self.roomName.split('-')[count]
@@ -47,35 +46,37 @@ class Consumer(OurBasicConsumer):
             self.myMatch.playersId[self.id] = self.user.id
 
         if self.isPlayer == False and len(self.myMatch.players) < 2:
-            self.close()
+            await self.close()
 
         self.id = len(self.myMatch.players)
 
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
+        logging.info("Player " + str(self.user.id) + "has entered game room " + self.roomName)
+
         try:
             request = requests.delete(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.user.id})
             if request.status_code != 200:
-                self.close()
+                await self.close()
         except Exception as e:
-            self.close()
+            await self.close()
         
         await self.accept()
 
     async def disconnect(self, close_code):
         global matches
 
-        if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5:
-            if self.myMatch.gameStarted:
-                await self.channel_layer.group_send(
-                        self.roomName, {
-                            "type": "gameEnd",
-                            "winner": self.myMatch.players[(self.id + 1) % 2].id
-                        }
-                    )
+        if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5 and self.myMatch.gameStarted:
+            logging.warning("Player " + str(self.user.id) + "has unexpectedly left game room " + self.roomName)
+            await self.channel_layer.group_send(
+                    self.roomName, {
+                        "type": "gameEnd",
+                        "winner": self.myMatch.players[(self.id + 1) % 2].id
+                    }
+                )
         
         # Ne faire ca que si ce n'est pas une game de tournoi !!
         try:
@@ -83,9 +84,11 @@ class Consumer(OurBasicConsumer):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.user.id})
             if request.status_code != 200:
-                self.close()
+                logging.error("Player " + str(self.user.id) + " state update request has failed")
         except Exception as e:
-            self.close()
+            logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
+
+        logging.info("Player " + str(self.user.id) + " has left game room " + self.roomName)
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -122,7 +125,6 @@ class Consumer(OurBasicConsumer):
                 )
 
         except Exception as e:
-            print(e)
             await self.send (text_data=json.dumps({'err': e}))
             await self.close()
 
@@ -173,6 +175,8 @@ class Consumer(OurBasicConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             }))
+
+        logging.info("Game in room " + self.roomName + " has ended")
 
         await self.close()
 

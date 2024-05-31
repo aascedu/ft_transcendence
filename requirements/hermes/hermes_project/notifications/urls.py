@@ -6,8 +6,8 @@ urlpatterns = [
     path("online-states/", views.onlineView.as_view(), name="online states"),
     path('available-states/', views.availableFriendView.as_view()),
     path("send-shit/", views.global_notification, name="notifications"),
-    path("friendship/<int:requester>", views.friendship),
-    path("friend-request/<int:requester>", views.friendshipRequest),
-    path("game-request/<int:requester>", views.gameRequest),
-    path("tournament-request/<int:requester>", views.tournamentRequest),
+    path("friendship/<int:requester>/", views.friendship),
+    path("friend-request/<int:requester>/", views.friendshipRequest),
+    path("game-request/<int:requester>/", views.gameRequest),
+    path("tournament-request/<int:requester>/", views.tournamentRequest),
 ]

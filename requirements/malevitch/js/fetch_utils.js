@@ -44,6 +44,9 @@ async function fetch_post(url, json) {
 async function fetch_delete(url) {
     return fetch_with_jwt(url, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             }
         )
         .then (response => {
@@ -81,9 +84,9 @@ async function fetch_patch(url, json) {
 }
 
 async function fetch_with_jwt(url, request) {
-    console.log('fetch with jwt called');
     jwt = sessionStorage.getItem(JWT_NAME)
     if (jwt !== null) {
+        console.log('fetch with jwt called');
         request.headers.Auth = sessionStorage.getItem(JWT_NAME);
     }
     response = await fetch(url, request);
