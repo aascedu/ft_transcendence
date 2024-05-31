@@ -2,12 +2,6 @@ function add_petrus_in_url(url) {
     return ("/petrus/auth" + url);
 }
 
-///async function get_id_by_nickname(nick_name) {
-    ///return fetch_get(add_petrus_in_url("/signin/" + nick_name + '/'))
-            ///.then(data => {
-                ///return data.Id
-            ///});
-///}
 async function post_signin(id, password) {
     json = {Id: id, Pass : password};
 
@@ -21,7 +15,6 @@ async function post_signup(id, password, mail) {
 
 async function post_jwt_refresh() {
     json = {Ref: sessionStorage.getItem(REF_TOKEN_NAME)};
-    console.log(json);
     content = {
             method: 'POST',
             headers: {
