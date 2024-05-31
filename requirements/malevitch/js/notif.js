@@ -60,13 +60,13 @@ function dismissTournamentInvite() {
 
 // Friend invite
 
-document.querySelector('.notif-friend-invite .notif-accept').addEventListener('click', function() {
-	acceptFriendInvite();
+document.querySelector('.notif-friend-invite .notif-accept').addEventListener('click', async function() {
+	await acceptFriendInvite();
 });
 
-document.querySelector('.notif-friend-invite .notif-accept').addEventListener('keypress', function(e) {
+document.querySelector('.notif-friend-invite .notif-accept').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		acceptFriendInvite();
+		await acceptFriendInvite();
 	}
 });
 
@@ -80,13 +80,15 @@ document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('
 	}
 });
 
-function acceptFriendInvite() {
+async function acceptFriendInvite() {
 	// close the notif
 	document.querySelector('.notif-friend-invite').classList.add('visually-hidden');
-	// setAriaHidden();
+	setAriaHidden();
 
 	// add user to friends list
-	// -> POST new friend to our friends list
+	var userId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+
+	await post_friend(userId);
 }
 
 function dismissFriendInvite() {
@@ -244,6 +246,19 @@ function inviteSentCountdown(seconds) {
 	else {
 		// close notif
 		document.querySelector('.notif-invite-sent').classList.add('visually-hidden');
+		setAriaHidden();
+	}
+}
+
+// 
+
+function newFriendshipCountdown(seconds) {
+	if (seconds > 0) {
+		setTimeout(() => newFriendshipCountdown(seconds - 1), 1000);
+	}
+	else {
+		// close notif
+		document.querySelector('.notif-new-friendship').classList.add('visually-hidden');
 		setAriaHidden();
 	}
 }

@@ -41,10 +41,13 @@ async function loadCreateTournament() {
 
 // Hide when clicking top left button
 
-document.querySelector('.create-tournament-icon').addEventListener('click', function() {
+document.querySelector('.create-tournament-icon').addEventListener('click', async function() {
 	document.querySelector('.homepage-header-logo').focus();
 
 	hideEveryPage();
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");

@@ -1,7 +1,10 @@
 // Back to homepage
 
-document.querySelector('.homepage-header-logo').addEventListener('click', function() {
+document.querySelector('.homepage-header-logo').addEventListener('click', async function() {
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	var	currentPage = g_state.pageToDisplay;
 

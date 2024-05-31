@@ -49,7 +49,6 @@ async function init_session_socket() {
     }
 }
 
-
 async function connect(id, password) {
 		const response = await fetch('/petrus/auth/signin/youpi', {
 			method: "POST",
@@ -62,12 +61,64 @@ async function connect(id, password) {
 
 async function notificationFriendshipRequest(data) {
     console.log('FriendshipRequest');
-    console.log(data)
+    console.log(data);
+
+	var	userInfo = await get_user_info(data.requester);
+	var	senderElement = document.querySelector('.notif-friend-invite .notif-sender');
+
+	senderElement.textContent = userInfo.Nick;
+	senderElement.setAttribute('user-id', data.requester);
+
+	document.querySelector('.notif-friend-invite').classList.remove('visually-hidden');
+	setAriaHidden();
 }
 
 async function notificationNewFriendship(data) {
     console.log('NewFriendship');
     console.log(data);
+
+	// Send notif to tell invite has been accepted
+	var	userInfo = await get_user_info(data.requester);
+	document.querySelector('.notif-new-friendship .notif-info').textContent = userInfo.Nick;
+	document.querySelector('.notif-new-friendship').classList.remove('visually-hidden');
+	setAriaHidden();
+
+	newFriendshipCountdown(2);
+
+	// if we are on homepage-game, add new friend to friends online
+	if (g_state.pageToDisplay == '.homepage-game') {
+		clearHomepageContent();
+		await setHomepageContent();
+
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+
+	// if we are on friends list, add new friend to friends list
+	if (g_state.pageToDisplay == '.friends-list') {
+		clearFriendsList();
+		await loadFriendsList();
+	
+		document.querySelector('.friends-list-icon').focus();
+	
+		hideEveryPage();
+	
+		g_state.pageToDisplay = '.friends-list';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	
+	// if we are on the new friend profile, change button to 'remove' instead of pending
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+
+		if (userId == data.requester) {
+			document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+			document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+			setAriaHidden();
+		}
+	}
 }
 async function notificationTournamentRequest(data) {
     console.log('TournamentRequest');
