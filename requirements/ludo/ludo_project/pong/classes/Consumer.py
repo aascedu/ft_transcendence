@@ -37,8 +37,8 @@ class Consumer(OurBasicConsumer):
         if count != 2 and count != 3:
             await self.close()
         
-        p1 = self.roomName.split('-')[count - 2]
-        p2 = self.roomName.split('-')[count - 1]
+        p1 = self.roomName.split('-')[count - 1]
+        p2 = self.roomName.split('-')[count]
         self.user = self.scope['user']
         self.isPlayer = False
         if self.user.id == p1 or self.user.id == p2:
