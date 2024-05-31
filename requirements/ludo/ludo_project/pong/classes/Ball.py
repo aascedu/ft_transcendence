@@ -1,5 +1,4 @@
 import math as m
-import logging
 
 # La balle est dans le repere de l'hote
 class Ball:
@@ -17,7 +16,6 @@ class Ball:
         self.size = gameSettings.ballSize
         player1.pos = gameSettings.screenHeight / 2
         player2.pos = gameSettings.screenHeight / 2
-        logging.info("New point is starting")
 
     def isPlayerCollision(self, player):
         if self.pos[1] + self.size / 3 > player.pos - (player.height / 2) and self.pos[1] - self.size / 3 < player.pos + (player.height / 2):
