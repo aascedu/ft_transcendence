@@ -1,12 +1,12 @@
 {
-    "index_patterns": ["myilm-*"],
-    "template": "mytemplate",
+    "index_patterns": ["my_policy_index-*"],
+    "template": "my_template",
     "version": 1,
     "settings": {
       "number_of_shards": 1,
       "number_of_replicas": 0,
-      "index.lifecycle.name": "myilm-policy",
-      "index.lifecycle.rollover_alias": "myilm"
+      "index.lifecycle.name": "my_policy",
+      "index.lifecycle.rollover_alias": "my_policy_index"
     },
     "mappings": {
         "dynamic": false,
@@ -52,6 +52,4 @@
           }
         }
       }
-    }
-  
-  
+}
