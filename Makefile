@@ -139,9 +139,11 @@ db_reset: db_suppr copyfile
 #---- re ----#
 
 ifeq ($(WHO), twang)
-re: fclean debug
+re: | fclean
+	make debug
 else
-re: down debug
+re: | down
+	make debug
 endif
 # pour la prod: remettre up
 
