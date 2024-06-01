@@ -2,10 +2,8 @@
 
 #---- variables -------------------------------------------------------#
 
-ENV_FILE		=	.env
-
 include .env
-
+ENV_FILE		=	.env
 VOLUMES_DIR		=	certification_data elasticsearch_data \
 					logstash_data kibana_data alfred_data \
 					mnemosine_data petrus_data filebeat_data
@@ -56,11 +54,10 @@ build: | copyfile volumes modsec
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
-down:
-	$(COMPOSE) down
+#---- build rules ----#
 
-down_restart:
-	$(COMPOSE) down -v
+build_parallel:
+	$(COMPOSE) build --parallel
 
 watch:
 	$(COMPOSE) watch
@@ -68,18 +65,23 @@ watch:
 dry_run:
 	$(COMPOSE) --dry-run up --build -d
 
-kill:
-	$(COMPOSE) kill
+#---- stop rules ----#
+
+down:
+	$(COMPOSE) down
+
+down_restart:
+	$(COMPOSE) down -v
 
 restart:
 	$(COMPOSE) restart
 
+kill:
+	$(COMPOSE) kill
+
 reset: | fclean
 	make debug
 
-re: down
-	make debug
-# docker compose build --parallel -> a test
 #---- setups ----#
 
 volumes:
@@ -91,101 +93,43 @@ copyfile:
 modsec:
 	./tools/modsec.sh
 
-#---- debug ----#
-
-#  ??
-test: copyfile
-	./tools/test.sh $(DJANGO_CTT)
-
-aegis:
-	$(COMPOSE) up -d aegis
-	$(COMPOSE_F) $(DOCKER_FILE) exec aegis sh
-
-aether:
-	$(COMPOSE) up -d aether
-	$(COMPOSE_F) $(DOCKER_FILE) exec aether /bin/bash
-
-alfred:
-	$(COMPOSE) up -d alfred
-	$(COMPOSE_F) $(DOCKER_FILE) exec alfred bash
-
-apollo:
-	$(COMPOSE) up -d apollo
-	$(COMPOSE_F) $(DOCKER_FILE) exec apollo /bin/bash
-
-coubertin:
-	$(COMPOSE) up -d coubertin
-	$(COMPOSE_F) $(DOCKER_FILE) exec coubertin bash
-
-cupidon:
-	$(COMPOSE) up -d cupidon
-	$(COMPOSE_F) $(DOCKER_FILE) exec cupidon bash
-
-davinci:
-	$(COMPOSE) up -d davinci
-	$(COMPOSE_F) $(DOCKER_FILE) exec davinci /bin/bash
-
-hermes:
-	$(COMPOSE) up -d hermes
-	$(COMPOSE_F) $(DOCKER_FILE) exec hermes bash
-
-iris:
-	$(COMPOSE) up -d iris
-	$(COMPOSE_F) $(DOCKER_FILE) exec iris /bin/bash
-
-lovelace:
-	$(COMPOSE) up -d lovelace
-	$(COMPOSE_F) $(DOCKER_FILE) exec lovelace bash
-
-ludo:
-	$(COMPOSE) up -d ludo
-	$(COMPOSE_F) $(DOCKER_FILE) exec ludo bash
-
-malevitch:
-	$(COMPOSE) up -d malevitch
-	$(COMPOSE_F) $(DOCKER_FILE) exec malevitch /bin/bash
-
-mensura:
-	$(COMPOSE) up -d mensura
-	$(COMPOSE_F) $(DOCKER_FILE) exec mensura /bin/bash
-
-mnemosine:
-	$(COMPOSE) up -d mnemosine
-	$(COMPOSE_F) $(DOCKER_FILE) exec mnemosine bash
-
-orion:
-	$(COMPOSE) up -d orion
-	$(COMPOSE_F) $(DOCKER_FILE) exec orion /bin/bash
-
-petrus:
-	$(COMPOSE) up -d petrus
-	$(COMPOSE_F) $(DOCKER_FILE) exec petrus bash
-
 tutum:
 	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
 
+test: copyfile
+	./tools/test.sh $(DJANGO_CTT)
+
 #---- clean ----#
+# - Stops all running containers
+# - Removes all stopped containers
+# - Stops Docker Compose services
+# - Cleans specific directories and files (migrations, tokens, vault)
+clean: | down
+	- docker stop $$(docker ps -qa) || true
+	- docker rm $$(docker ps -qa) || true
+	- $(COMPOSE) stop || true
+	- rm -rf `find . | grep migrations | grep -v env` || true
+	- rm -rf ./tokens || true
+	- rm -rf ./requirements/tutum/vault || true
+#	- rm -rf ./requirements/aegis/ModSecurity || true
 
-clean: down
-	- $(STOP) $$(docker compose ps -qa)
-	- $(COMPOSE) down --rmi all --volumes --remove-orphans
-	- rm -rf `find . | grep migrations | grep -v env`
+# - Completely removes Docker Compose services, including images, volumes, and orphans
+# - Removes all Docker images
+# - Removes all Docker volumes
+# - Removes all Docker networks
+# - Cleans the specified volume path
+fclean: | clean
+	- $(COMPOSE) down --rmi all --volumes --remove-orphans || true
+	- docker rmi $$(docker images -q) || true
+	- docker volume rm $$(docker volume ls -q) || true
+	- docker network rm $$(docker network ls -q) 2>/dev/null || true
 	- rm -rf $(VOLUMES_PATH)/*
-	- rm -rf ./tokens
-	- rm -rf ./requirements/tutum/vault
-#	- rm -rf ./requirements/aegis/ModSecurity
 
-fclean: clean
-	- $(STOP) $$(docker compose ps -qa)
-	- $(RM_IMG) $$(docker compose images -q)
-	- $(RM) $$(docker compose ps -qa)
-	- $(NETWORK) rm $$(docker network ls -q) 2>/dev/null
-
-prune:
-	- $(STOP) $$(docker compose ps -qa)
-	- $(SYSTEM) prune -af
-	- $(VOLUME) prune -af
-#	- rm -rf ./requirements/aegis/ModSecurity/
+# - Removes all unused Docker data, including images, containers, volumes, and networks
+prune: | fclean
+	- docker system prune -af || true
+	- docker volume prune -af || true
+#	- rm -rf ./requirements/aegis/ModSecurity/ || true
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
@@ -205,7 +149,7 @@ endif
 
 .SILENT:
 .DEFAULT: debug # pour la prod: remettre all
-.PHONY: all up build down volumes copyfile debug clean fclean prune re \
-aegis alfred apollo coubertin cupidon davinci hermes iris lovelace \
-ludo malevitch mensura mnemosine petrus aether modsec db_suppr db_reset \
-tutum
+.PHONY: all up build down build_parallel down_restart restart kill reset \
+        volumes copyfile modsec tutum test clean fclean prune \
+        db_suppr db_reset re
+
