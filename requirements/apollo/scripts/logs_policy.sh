@@ -32,7 +32,7 @@ curl -X PUT -u elastic:elastic123 "$ELASTICSEARCH_URL/_ilm/policy/my_policy?pret
         "actions": {
           "rollover": {
             "max_primary_shard_size": "50GB",
-            "max_age": "30s"
+            "max_age": "30d"
           },
           "set_priority": {
             "priority": 50
@@ -40,7 +40,7 @@ curl -X PUT -u elastic:elastic123 "$ELASTICSEARCH_URL/_ilm/policy/my_policy?pret
         }
       },
       "warm": {
-        "min_age": "7s",
+        "min_age": "7d",
         "actions": {
           "forcemerge": {
             "max_num_segments": 1
@@ -59,7 +59,7 @@ curl -X PUT -u elastic:elastic123 "$ELASTICSEARCH_URL/_ilm/policy/my_policy?pret
         }
       },
       "cold": {
-        "min_age": "30s",
+        "min_age": "30d",
         "actions": {
           "set_priority": {
             "priority": 0
@@ -73,7 +73,7 @@ curl -X PUT -u elastic:elastic123 "$ELASTICSEARCH_URL/_ilm/policy/my_policy?pret
         }
       },
       "delete": {
-        "min_age": "60s",
+        "min_age": "60d",
         "actions": {
           "delete": {}
         }
@@ -83,3 +83,5 @@ curl -X PUT -u elastic:elastic123 "$ELASTICSEARCH_URL/_ilm/policy/my_policy?pret
 }'
 
 echo -e "${COLOR_GREEN}ILM policy configuration completed.${COLOR_RESET}"
+
+sleep 10
