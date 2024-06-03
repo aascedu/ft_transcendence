@@ -1,5 +1,16 @@
 // Clear and load available friends
 
+function clearCreateTournament() {
+	resetTournamentCreation();
+	clearCreateTournamentAvailableFriends();
+}
+
+function clearCreateTournamentAvailableFriends() {
+	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+}
+
 async function loadCreateTournament() {
 	// Clear previous available friends
 	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
@@ -9,6 +20,10 @@ async function loadCreateTournament() {
 	document.querySelector('.create-tournament-no-friends').classList.add('visually-hidden');
 
 	// Load available friends
+	await createTournamentLoadAvailableFriends();
+}
+
+async function createTournamentLoadAvailableFriends() {
 	var	availableFriends = await get_available_friends();
 	availableFriends = availableFriends.Ava;
 

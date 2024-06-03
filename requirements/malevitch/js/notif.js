@@ -15,13 +15,13 @@ document.querySelectorAll('.notif-dismiss').forEach(function(item) {
 
 // Tournament invite
 
-document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', function() {
-	acceptTournamentInvite();
+document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', async function() {
+	await acceptTournamentInvite();
 });
 
-document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('keypress', function(e) {
+document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		acceptTournamentInvite();
+		await acceptTournamentInvite();
 	}
 });
 
@@ -35,22 +35,29 @@ document.querySelector('.notif-tournament-invite .notif-dismiss').addEventListen
 	}
 });
 
-function acceptTournamentInvite() {
+async function acceptTournamentInvite() {
 	// close the notif
 	document.querySelector('.notif-tournament-invite').classList.add('visually-hidden');
 
-	// add user to tournament
-	// -> POST new player to the tournament players list
-
 	// display tournament page
-	// var tournamentId;
-	// -> GET tournament info thanks to tournamentId
+	await loadOngoingTournament(item.getAttribute('tournament-id'));
 
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.tournament-info';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+
+	// let user choose his nickname for the tournament
 	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
 	setAriaHidden();
 
-	document.querySelector('.tournament-info-join-input').value = 'cha'; // replace with user nick
+	document.querySelector('.tournament-info-join-input').value = g_userId;
 	document.querySelector('.tournament-info-join-input').focus();
+
+	// add user to tournament
+	var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
+	await join_tournament(tournamentId);
 }
 
 function dismissTournamentInvite() {
@@ -127,6 +134,8 @@ function acceptPlayInvite() {
 	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
 	document.querySelector('.notif-match-found .notif-sender').textContent = opponent;
 	matchFound();
+
+	// play
 }
 
 function dismissPlayInvite() {

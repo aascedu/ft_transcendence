@@ -37,7 +37,7 @@ class Consumer(OurBasicConsumer):
                 friend_group,
                 {
                     "type": "notification.new.friend.connected",
-                    "message": f'{{"connected":{self.scope['user'].id}}}',
+                    "message": f'{self.scope['user'].id}',
                 })
 
     async def disconnect(self, close_code):

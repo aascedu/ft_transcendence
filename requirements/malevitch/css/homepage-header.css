@@ -42,6 +42,7 @@
 }
 
 .homepage-header-open-play {
+	min-height: 160px;
 	max-height: 448px;
 }
 
