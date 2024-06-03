@@ -29,7 +29,7 @@ def request_to_dict(request):
         'query_string': query_string,
         'remote_addr': remote_addr,
         'ip_client': ip_client,
-        'data': data,
+        'body': data,
     }
 
 def response_to_dict(response):
