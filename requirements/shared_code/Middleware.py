@@ -81,7 +81,6 @@ class JWTIdentificationMiddleware:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
-                response.delete_cookie('Auth')
                 return response
 
         print("Info: request_user=", str(request.user))
@@ -111,6 +110,5 @@ class LoggingRequestMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        if request.is_json is True:
-            log_info(request, response)
+        log_info(request, response)
         return response

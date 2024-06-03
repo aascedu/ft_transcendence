@@ -18,7 +18,10 @@ def request_to_dict(request):
     query_string = request.META.get('QUERY_STRING', '')
     remote_addr = request.META.get('REMOTE_ADDR', '')
     ip_client = request.META.get('HTTP_X_FORWARDED_FOR', '')
-    data = request.data
+    if request.is_json is True:
+        data = request.data
+    else:
+        data = {}
     if ip_client != '':
         ip_client = ip_client.split(',')[0]
     else:
