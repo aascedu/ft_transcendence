@@ -135,6 +135,8 @@ services:
         condition: service_healthy
       iris:
         condition: service_healthy
+      policy:
+        condition: service_healthy
     container_name: aether
     build:
       context: ./requirements/aether
@@ -222,10 +224,10 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
-    # build: 
-    #   context: ./requirements/apollo
-    #   dockerfile: Dockerfile
+    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    build: 
+      context: ./requirements/apollo
+      dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
@@ -256,9 +258,6 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
-      # cluster.routing.allocation.enable: all
-      # index.lifecycle.name: "timeseries_policy"
-      # index.lifecycle.rollover_alias: "timeseries"
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
@@ -273,6 +272,24 @@ services:
         ]
       interval: 10s
       timeout: 10s
+      retries: 120
+
+  policy:
+    depends_on:
+      apollo:
+        condition: service_healthy
+    container_name: policy
+    image: docker:latest
+    networks:
+      - sentinel
+      - internet_access
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    entrypoint: /bin/sh -c "while ! docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'; do sleep 5; done"
+    healthcheck:
+      test: ["CMD-SHELL", "docker logs policy | grep -q 'ILM policy configuration completed.'"]
+      interval: 1s
+      timeout: 5s
       retries: 120
 
 # # Tournament container
