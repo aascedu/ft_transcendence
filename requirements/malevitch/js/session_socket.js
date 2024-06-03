@@ -50,13 +50,13 @@ async function init_session_socket() {
 }
 
 async function connect(id, password) {
-		const response = await fetch('/petrus/auth/signin/youpi', {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({Id: id, Pass: password,}),
-		});
+	const response = await fetch('/petrus/auth/signin/youpi', {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({Id: id, Pass: password,}),
+	});
 }
 
 async function notificationFriendshipRequest(data) {
@@ -94,7 +94,6 @@ async function notificationNewFriendship(data) {
 		window.history.pushState(g_state, null, "");
 		render(g_state);
 	}
-
 	// if we are on friends list, add new friend to friends list
 	if (g_state.pageToDisplay == '.friends-list') {
 		clearFriendsList();
@@ -108,7 +107,6 @@ async function notificationNewFriendship(data) {
 		window.history.pushState(g_state, null, "");
 		render(g_state);
 	}
-	
 	// if we are on the new friend profile, change button to 'remove' instead of pending
 	if (g_state.pageToDisplay == '.user-profile') {
 		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
@@ -119,10 +117,26 @@ async function notificationNewFriendship(data) {
 			setAriaHidden();
 		}
 	}
+	// if we are on a tournament page, load it back so that new friend can appear in available friends
+	if (g_state.pageToDisplay == '.tournament-info') {
+		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
+			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+			await loadOngoingTournament(tournamentId);
+		}
+	}
 }
 async function notificationTournamentRequest(data) {
     console.log('TournamentRequest');
     console.log(data);
+
+	var	userInfo = await get_user_info(data.requester);
+	var	senderElement = document.querySelector('.notif-tournament-invite .notif-sender');
+
+	senderElement.textContent = userInfo.Nick;
+
+	document.querySelector('.notif-tournament-invite').classList.remove('visually-hidden');
+	setAriaHidden();
 }
 async function notificationGameAccepted(data) {
     console.log("game accepted");

@@ -46,7 +46,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			}
 	
 			friendsContainer.insertAdjacentHTML('beforeend', `\
-			<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i] + `">
+			<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
 				<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
 				<div class="user-card-picture">
 					<img src="` + userPic + `" alt="profile picture of ` + availableFriends[i].Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
@@ -415,6 +415,11 @@ async function loadBracketPlayerContent(playerId, playerScore, playerSelector) {
 }
 
 function clearTournamentInfo() {
+	// clear available friends list
+	document.querySelectorAll('.tournament-info-invite .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+
 	// remove players content cards
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.parentElement.removeChild(item);

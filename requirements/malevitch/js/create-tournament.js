@@ -37,6 +37,20 @@ async function loadCreateTournament() {
 			</div>
 		</button>`);
 	}
+
+	// Invite friends
+
+	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
+		item.addEventListener('click', function() {
+			item.classList.toggle('create-tournament-invited-friend');
+		});
+
+		item.addEventListener('keypress', function(event) {
+			if (event.key == 'Enter') {
+				item.classList.toggle('create-tournament-invited-friend');
+			}
+		});
+	});
 }
 
 // Hide when clicking top left button
@@ -111,20 +125,6 @@ function checkSelectedNumberOfPlayers() {
         return item.classList.contains('create-tournament-players-button-chosen');
     });
 }
-
-// Invite friends
-
-document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
-	item.addEventListener('click', function() {
-		item.classList.toggle('create-tournament-invited-friend');
-	});
-
-	item.addEventListener('keypress', function(event) {
-		if (event.key == 'Enter') {
-			item.classList.toggle('create-tournament-invited-friend');
-		}
-	});
-});
 
 // Submit tournament creation
 
