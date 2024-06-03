@@ -18,6 +18,7 @@ def request_to_dict(request):
     query_string = request.META.get('QUERY_STRING', '')
     remote_addr = request.META.get('REMOTE_ADDR', '')
     ip_client = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    data = request.data
     if ip_client != '':
         ip_client = ip_client.split(',')[0]
     else:
@@ -28,6 +29,7 @@ def request_to_dict(request):
         'query_string': query_string,
         'remote_addr': remote_addr,
         'ip_client': ip_client,
+        'data': data,
     }
 
 def response_to_dict(response):

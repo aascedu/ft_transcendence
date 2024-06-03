@@ -98,6 +98,7 @@ class RawJsonToDataGetMiddleware:
     def process_view(self, request, view_func, view_args, view_kwargs):
         try:
             request.data = json.loads(request.body.decode('utf-8'))
+            request.is_json = True
         except BaseException as e:
             request.data = {"Err": e}
         return None
@@ -109,4 +110,6 @@ class LoggingRequestMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        log_info(request, response)
+        if request.is_json is True:
+            log_info(request, response)
+        return response

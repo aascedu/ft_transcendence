@@ -4,9 +4,9 @@ from socket import SOCK_STREAM
 SHARED_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
-    'shared.Middleware.LoggingRequestMiddleware',
     'shared.Middleware.RawJsonToDataGetMiddleware',
     'shared.Middleware.JWTIdentificationMiddleware',
+    'shared.Middleware.LoggingRequestMiddleware',
     # 'shared.Middleware.ensureIdentificationMiddleware',
 ]
 
