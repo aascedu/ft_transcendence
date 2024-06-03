@@ -17,6 +17,7 @@ def request_to_dict(request):
     path = request.path_info
     query_string = request.META.get('QUERY_STRING', '')
     remote_addr = request.META.get('REMOTE_ADDR', '')
+    #mettre le body 
     ip_client = request.META.get('HTTP_X_FORWARDED_FOR', '')
     if ip_client != '':
         ip_client = ip_client.split(',')[0]
@@ -39,13 +40,13 @@ def response_to_dict(response):
     }
 
 def log_info(request, response):
-    logging_django(request, message, response, info)
+    logging_django(request, response, info)
 
 def log_warn(request, response):
-    logging_django(request, message, response, warn)
+    logging_django(request, response, warn)
 
 def log_debug(request, response):
-    logging_django(request, message, response, debug)
+    logging_django(request, response, debug)
 
 def log_error(request, response):
-    logging_django(request, message, response, error)
+    logging_django(request, response, error)
