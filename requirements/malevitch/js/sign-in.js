@@ -68,7 +68,7 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {
 	try {
-		const response = await fetch('/petrus/auth/signin/' + nickname, {
+		const response = await fetch('/petrus/auth/signin/' + nickname + '/', {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",

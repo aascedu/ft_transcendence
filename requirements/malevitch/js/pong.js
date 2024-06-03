@@ -95,32 +95,10 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 /***************************************** Websockets *****************************************/
 
-async function get_unique_use_token() {
-    try {
-        console.log("damned");
-        const response = await fetch("/ludo/pong/connectionView/");
-
-        const result = await response.json();
-        if ('Err' in result) {
-            console.log("une erreure a occured");
-            console.log(result.Err);
-
-        } else {
-            console.log("no mistake");
-            const unique_use_token = result.Key;
-        }
-        return await result.Key;
-    }
-    catch (error) {
-        console.error("Error:", error);
-    }
-}
-
-
 async function init_socket(roomName) {
     console.log(roomName);
 
-    unique_use_token = await get_unique_use_token();
+    unique_use_token = await get_socket_connection_token('/ludo/');
     console.log(unique_use_token);
     url = 'wss://localhost:8000/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name

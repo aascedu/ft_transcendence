@@ -2,6 +2,7 @@ import json
 from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
+import logging
 
 # Check ce qui se passe si l'admin quitte le tournoi
 
@@ -118,6 +119,7 @@ class Consumer(OurBasicConsumer):
     async def LeaveTournament(self, event):
         if event['player'] == self.id:
             self.myTournament.removePlayer(self.id)
+            logging.info("Player " + str(self.id) + " has left tournament " + str(self.myTournament.id))
             self.close()
 
     async def TournamentEnd(self, event):
@@ -134,9 +136,9 @@ class Consumer(OurBasicConsumer):
                 json=self.myTournament.toDict()
             )
             if request.status_code != 200:
-                print("Warning: tournament could not be registered in database")
+                logging.warning("Tournament registration in database may be corrupted")
         except Exception as e:
-            self.close()
+            logging.error("Tournament could not be registered in database")
 
         for player in self.myTournament.contenders:
             if player != self.id:
@@ -148,6 +150,7 @@ class Consumer(OurBasicConsumer):
                 )
 
         del tournaments[self.id]
+        logging.info("Tournament " + str(self.myTournament.id) + " ended")
         self.close()
 
 

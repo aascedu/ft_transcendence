@@ -306,14 +306,8 @@ async function addFriend() {
 	}
 
 	try {
-        const response = await fetch('/alfred/user/signin/' + nickname);
-        
-        if (!response.ok) {
-            throw new Error('HTTP error: ' + response.status);
-        }
-        
-        const data = await response.json();
-        
+        const data = await fetch_get('/alfred/user/signin/' + nickname + '/');
+                
         console.log(data);
         
         if (data.Ava) {

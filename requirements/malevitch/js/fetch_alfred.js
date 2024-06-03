@@ -10,7 +10,7 @@ function add_alfred_in_url(url) {
 }
 
 function user_url(id) {
-    return add_alfred_in_url("/users/" + id)
+    return add_alfred_in_url("/users/" + id + "/")
 }
 
 
@@ -40,11 +40,11 @@ async function patch_user_info(id, lang, font, nick, email, contrast_mode) {
 }
 
 function friend_url(id) {
-    return add_alfred_in_url("/friends/" + id)
+    return add_alfred_in_url("/friends/" + id + "/")
 }
 
 function avatar_url(id) {
-    return add_alfred_in_url("/avatar/" + id)
+    return add_alfred_in_url("/avatar/" + id + "/")
 }
 
 async function get_friend(id) {
@@ -60,7 +60,7 @@ async function delete_friend(id) {
 }
 
 function avatar_url(id) {
-    return add_alfred_in_url("/avatar/" + id)
+    return add_alfred_in_url("/avatar/" + id + "/")
 }
 
 async function get_media_from_url(url) {

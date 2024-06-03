@@ -89,7 +89,7 @@ def friendship(request, requester: int):
     response = JsonResponse(request, {'Friendship': 'Notified'})
     content = {
             'type': 'notification.new.friendship',
-            'message': f'friendship: {requester}'
+            'requester': requester,
         }
     error = 'Only services can notify friendship'
     return response, content, error
@@ -98,8 +98,8 @@ def friendship(request, requester: int):
 def friendshipRequest(request, requester: int):
     response = JsonResponse(request, {'Friendship': 'Notified'})
     content = {
-            'type': 'notification.new.friendship',
-            'message': f'friendship-request: {requester}'
+            'type': 'notification.friendship.request',
+            'requester': requester
         }
     error = 'Only service can notify new friendship request'
     return response, content, error

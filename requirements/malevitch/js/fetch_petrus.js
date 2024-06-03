@@ -2,22 +2,15 @@ function add_petrus_in_url(url) {
     return ("/petrus/auth" + url);
 }
 
-async function get_id_by_nickname(nick_name) {
-    return fetch_get(add_petrus_in_url("/signin/" + nick_name))
-            .then(data => {
-                return data.Id
-            });
-}
-
 async function post_signin(id, password) {
     json = {Id: id, Pass : password};
 
-    return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json);
+    return fetch_post(add_petrus_in_url('/signin/nickname/'), json);
 }
 
 async function post_signup(id, password, mail) {
     json = {Id: id, Pass: password, Email: mail};
-    return fetch_post(add_petrus_in_url('/signin/' + "nickname"), json);
+    return fetch_post(add_petrus_in_url('/signin/nickname/'), json);
 }
 
 async function post_jwt_refresh() {
@@ -31,7 +24,7 @@ async function post_jwt_refresh() {
             body: JSON.stringify(json)
         };
 
-    sessionStorage.setItem(JWT_NAME, await fetch(add_petrus_in_url('/JWT-refresh'), content)
+    sessionStorage.setItem(JWT_NAME, await fetch(add_petrus_in_url('/JWT-refresh/'), content)
             .then(response => {
                 return response.json();
             })
@@ -43,7 +36,7 @@ async function post_jwt_refresh() {
 
 
 async function refreshLoop() {
-    milliseconds = 150000;
+    milliseconds = 15000;
     const interval_refresh = setInterval(() => {
         post_jwt_refresh()
     }, milliseconds);
