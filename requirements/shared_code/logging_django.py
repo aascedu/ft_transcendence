@@ -1,4 +1,4 @@
-from logging import info, debug, warn, error
+from logging import info, debug, warn, error, critical
 
 def logging_django(request, response, logging_function):
     log = {}
@@ -39,13 +39,16 @@ def response_to_dict(response):
     }
 
 def log_info(request, response):
-    logging_django(request, message, response, info)
+    logging_django(request, response, info)
 
 def log_warn(request, response):
-    logging_django(request, message, response, warn)
+    logging_django(request, response, warn)
 
 def log_debug(request, response):
-    logging_django(request, message, response, debug)
+    logging_django(request, response, debug)
 
 def log_error(request, response):
-    logging_django(request, message, response, error)
+    logging_django(request, response, error)
+
+def log_critical(request, response):
+    logging_django(request, response, critical)
