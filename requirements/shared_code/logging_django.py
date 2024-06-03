@@ -1,14 +1,14 @@
 from logging import info, debug, warn, error
 
-
-def logging_django(request, message, response, logging_function):
+def logging_django(request, response, logging_function):
     log = {}
     if request is not None:
         log |= {'request': request_to_dict(request)}
-    if message is not None:
-        log |= {'message' : message}
     if response is not None:
         log |= {'response' : response_to_dict(response)}
+    message = log['response'].get('Err', None)
+    if message is not None:
+        log |= {'message' : message}
     logging_function(str(log))
 
 
@@ -38,14 +38,14 @@ def response_to_dict(response):
         'response_body': response_body if status_code != 500 else "FATAL ERROR"
     }
 
-def log_info(request, message, response):
+def log_info(request, response):
     logging_django(request, message, response, info)
 
-def log_warn(request, message, response):
+def log_warn(request, response):
     logging_django(request, message, response, warn)
 
-def log_debug(request, message, response):
+def log_debug(request, response):
     logging_django(request, message, response, debug)
 
-def log_error(request, message, response):
+def log_error(request, response):
     logging_django(request, message, response, error)

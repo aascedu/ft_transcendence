@@ -9,6 +9,9 @@ import json
 import information
 from shared.logging_django import log_info
 
+from django.middleware.security import SecurityMiddleware
+from django.middleware.common import CommonMiddleware
+
 
 from urllib.parse import parse_qs
 
@@ -106,5 +109,4 @@ class LoggingRequestMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        log_info(request, 'request logging', response)
-        return response
+        log_info(request, response)
