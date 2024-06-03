@@ -17,4 +17,4 @@ inhibit_rules:
 receivers:
   - name: 'team-X-mails'
     email_configs:
-      - to: 'brainisog@gmail.com' #, twang@student.42lyon.fr, delafforest.brieuc@gmail.com'
+      - to: 'arthurascedusnkrs@gmail.com' #, twang@student.42lyon.fr, delafforest.brieuc@gmail.com'
