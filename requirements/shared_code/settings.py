@@ -4,7 +4,7 @@ from socket import SOCK_STREAM
 SHARED_MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
-
+    'shared.Middleware.LoggingRequestMiddleware',
     'shared.Middleware.RawJsonToDataGetMiddleware',
     'shared.Middleware.JWTIdentificationMiddleware',
     # 'shared.Middleware.ensureIdentificationMiddleware',
@@ -23,7 +23,28 @@ def add_prometheused_apps(apps):
 
 if os.getenv('NOLOGS'):
     print("No logs mode set")
-    LOGGING = None
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "logstash": {
+                "()": "syslog_rfc5424_formatter.RFC5424Formatter"
+            }
+        },
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG",
+            },
+        },
+        "loggers": {
+            "": {
+                "handlers": ["console"],
+                "level": "DEBUG",
+                "propagate": False,
+            },
+        },
+    }
 else:
     print("Logging mode set")
     LOGGING = {
