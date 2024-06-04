@@ -95,7 +95,7 @@ class RawJsonToDataGetMiddleware:
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except BaseException as e:
-            request.Error_Data = {"Err": e}
+            request.Error_Data = e
         return None
 
 

@@ -37,7 +37,7 @@ def request_to_dict(request):
         'remote_addr': remote_addr,
         'ip_client': ip_client,
         'body': data,
-        'error': error
+        'error': str(error)
     }
 
 def response_to_dict(response):
