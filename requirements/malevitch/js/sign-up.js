@@ -13,13 +13,7 @@ async function warnUnavailableUserInfo(userInfo, infoType, element) {
 	if (userInfo.includes('/')) {
 		return false;
 	}
-	return await fetch('/alfred/user/signin/' + userInfo + '/')
-	.then (response => {
-		if (!response.ok) {
-			throw new Error('HTTP error: ' + response.status);
-		}
-		return response.json();
-	})
+	return await get_info_from_nick(userInfo)
 	.then (data => {
 		if (!data.Ava) {
 			element.setAttribute('data-language', infoType + '-taken');
@@ -276,13 +270,16 @@ async function submitCreateAccount() {
 	g_userNick = nick;
 
 	try {
-		const response = await fetch('/petrus/auth/signup/', {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({Nick: nick, Email:email, Pass: password, Lang: lang, Font: font,}),
-		});
+		const response = await fetch_post(
+            '/petrus/auth/signup/',
+            {
+                Nick: nick,
+                Email:email,
+                Pass: password,
+                Lang: lang,
+                Font: font,
+            }
+        );
 
 		const result = await response.json();
 

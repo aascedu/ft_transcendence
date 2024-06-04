@@ -17,7 +17,7 @@ async function loadUserContent(id) {
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
 		}
-		
+
 		var	friendsInfo = await get_friend(g_userId);
 		var	friendsList = friendsInfo.Friends;
 		var	friendsInvited = friendsInfo.Sent;
@@ -146,7 +146,7 @@ async function loadUserContent(id) {
 	var	averageTime;
 	var	averageMinutes;
 	var	averageSeconds;
-	
+
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
@@ -339,10 +339,7 @@ function uploadImageToDB(file, url) {
     var formData = new FormData();
     formData.append('avatar', file, file.name);
 
-    fetch('/alfred/user/avatar/' + g_userId, {
-        method: 'POST',
-        body: formData,
-    })
+    post_avatar(formData)
    .then(response => response.json())
    .then(data => {
         console.log('Success:', data);
@@ -423,11 +420,11 @@ async function userProfileFriendInvite() {
 	var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
 
 	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-	
+
 	var	friendRequests = await get_friend(g_userId);
 	friendRequests = friendRequests.Requests;
 	var	hasInvitedMe = false;
-	
+
 	for (i = 0; i < friendRequests.length; i++) {
 		if (friendRequests[i].Id == invitedId) {
 			hasInvitedMe = true;

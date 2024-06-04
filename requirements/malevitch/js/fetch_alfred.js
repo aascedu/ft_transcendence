@@ -39,6 +39,14 @@ async function patch_user_info(id, lang, font, nick, email, contrast_mode) {
     fetch_patch(url, json)
 }
 
+function signin_url(nickname) {
+    return add_alfred_in_url("/signin/" + nickname + "/")
+}
+
+function get_info_from_nick(nickname) {
+    return fetch_get(signin_url(nickname));
+}
+
 function friend_url(id) {
     return add_alfred_in_url("/friends/" + id + "/")
 }
@@ -65,6 +73,14 @@ function avatar_url(id) {
 
 async function get_media_from_url(url) {
     return await fetch_get(add_alfred_in_url(url))
+}
+
+async function post_avatar(formData) {
+    return fetch_with_jwt(avatar_url(0),
+        {
+            method: 'POST',
+            headers: formData
+        });
 }
 
 async function get_avatar_from_id(id) {

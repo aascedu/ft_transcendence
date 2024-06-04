@@ -49,13 +49,8 @@ function submitNickname(nickname) {
 	g_userNick = nickname;
 	document.querySelector('.homepage-id').classList.add('visually-hidden');
 
-	fetch('/alfred/user/signin/' + nickname + '/')
-		.then (response => {
-			if (!response.ok) {
-				throw new Error('HTTP error: ' + response.status);
-			}
-			return response.json();
-		})
+
+    get_info_from_nick(nickname)
 		.then (data => {
 			g_userId = data.Id;
 			if (data.Ava) {
