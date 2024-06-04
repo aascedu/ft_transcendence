@@ -7,6 +7,7 @@ from .common_classes import User
 from shared.commonView import identificators
 import json
 import information
+from shared.logging_django import log_info
 
 
 from urllib.parse import parse_qs
@@ -77,7 +78,6 @@ class JWTIdentificationMiddleware:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
-                response.delete_cookie('Auth')
                 return response
 
         print("Info: request_user=", str(request.user))
@@ -95,5 +95,15 @@ class RawJsonToDataGetMiddleware:
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except BaseException as e:
-            request.data = {"Err": e}
+            request.Error_Data = {"Err": e}
         return None
+
+
+class LoggingRequestMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        log_info(request, response)
+        return response
