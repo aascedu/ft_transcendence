@@ -49,15 +49,6 @@ async function init_session_socket() {
     }
 }
 
-async function connect(id, password) {
-	const response = await fetch('/petrus/auth/signin/youpi', {
-		method: "POST",
-		headers: {
-			"Content-Type": "application/json",
-		},
-		body: JSON.stringify({Id: id, Pass: password,}),
-	});
-}
 
 async function notificationFriendshipRequest(data) {
     console.log('FriendshipRequest');
@@ -98,11 +89,11 @@ async function notificationNewFriendship(data) {
 	if (g_state.pageToDisplay == '.friends-list') {
 		clearFriendsList();
 		await loadFriendsList();
-	
+
 		document.querySelector('.friends-list-icon').focus();
-	
+
 		hideEveryPage();
-	
+
 		g_state.pageToDisplay = '.friends-list';
 		window.history.pushState(g_state, null, "");
 		render(g_state);
@@ -194,11 +185,11 @@ async function notificationNewClientConnected(data) {
 	if (g_state.pageToDisplay == '.friends-list') {
 		clearFriendsList();
 		await loadFriendsList();
-	
+
 		document.querySelector('.friends-list-icon').focus();
-	
+
 		hideEveryPage();
-	
+
 		g_state.pageToDisplay = '.friends-list';
 		window.history.pushState(g_state, null, "");
 		render(g_state);

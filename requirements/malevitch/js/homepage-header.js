@@ -34,19 +34,19 @@ async function loadHomepageHeader() {
 				item.classList.add('visually-hidden');
 			});
 			document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
-	
+
 			setAriaHidden();
-	
+
 			// send invite
 			// var	friendId = item.getAttribute('user-id');
 			// await invite_friend_to_play(friendId);
-	
+
 			// remove invited friend from list
 			item.parentNode.removeChild(item);
-	
+
 			// show notif 3 seconds to confirm invite
 			inviteSentNotif(item.querySelector('p').textContent);
-	
+
 			// put focus back on header
 			document.querySelector('.homepage-header-play').focus();
 		});
@@ -340,7 +340,7 @@ document.querySelector('.homepage-header-add-friend-submit').addEventListener('k
 
 async function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
-	
+
 	// check if user is yourself
 	if (nickname == g_userNick || !nickname.length) {
 		return ;
@@ -348,9 +348,9 @@ async function addFriend() {
 
 	try {
         const data = await fetch_get('/alfred/user/signin/' + nickname + '/');
-                
+
         console.log(data);
-        
+
         if (data.Ava) {
             document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
             document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
@@ -358,10 +358,10 @@ async function addFriend() {
             document.querySelector('.homepage-header-add-friend-input').focus();
         } else {
             await post_friend(data.Id);
-            
+
             // Show notif that the invite has been sent
             inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
-            
+
             // Close menu and reset UI elements
             document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
             document.querySelector('.homepage-header-add-friend-input-box').classList.add('visually-hidden');
@@ -370,9 +370,9 @@ async function addFriend() {
             document.querySelector('.homepage-header-add-friend-input').value = '';
             document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
         }
-        
+
         setAriaHidden();
-        
+
     } catch (error) {
         console.error('Fetch problem:', error.message);
     }
@@ -423,7 +423,7 @@ document.querySelector('.homepage-header-accessibility').addEventListener('click
 document.addEventListener('keydown', function(e) {
 	if (!document.querySelector('.homepage-header').classList.contains('visually-hidden')) {
 		let isFw =!e.shiftKey;
-		
+
 		// navigate through header
 		if (e.key === 'Tab' && isFw && document.querySelector('.homepage-header-profile') === document.activeElement) {
 			// pages
@@ -445,7 +445,7 @@ document.addEventListener('keydown', function(e) {
 		if (e.key === 'Tab' && !isFw && document.querySelector('.homepage-header-logo') === document.activeElement) {
 			if (!document.querySelector('.homepage-game').classList.contains('visually-hidden')) {
 				var	noFriends = document.querySelector('.homepage-game-content-no-friends');
-			
+
 				if (!noFriends.classList.contains('visually-hidden')) {
 					document.querySelector('.homepage-game-content-friends-icon').focus();
 				}

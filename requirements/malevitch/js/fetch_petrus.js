@@ -34,6 +34,10 @@ async function post_jwt_refresh() {
         );
 }
 
+async function connect(id, password, nickname) {
+    const response = await fetch_post(add_petrus_in_url("/" + nickname + "/"), {Id: id, Pass: password,});
+    return response
+}
 
 async function refreshLoop() {
     milliseconds = 15000;

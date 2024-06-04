@@ -17,13 +17,13 @@ class onlineView(View):
             return JsonUnauthorized(request, "Friendship list can only be get if autenticated")
         id = request.user.id
         try:
-            response = requests.get(f'http://alfred:8001/user/friends/{id}')
+            response = requests.get(f'http://alfred:8001/user/friends/{id}/')
             if response.status_code != 200:
                 raise BaseException(f'Error during fetch: {response.json()['Err']}')
         except BaseException as e:
             return JsonResponse(request, {'Err': f'{e}'})
 
-        friends = response.json().get("Friends")
+        friends = response.json().get('Friends', [])
         for friend in friends:
             try:
                 id = int(friend['Id'])
@@ -42,13 +42,13 @@ class availableFriendView(View):
             return JsonUnauthorized(request, 'Available friend can only be fetch if autenticated')
         id = request.user.id
         try:
-            response = requests.get(f'http://alfred:8001/user/friends/{id}')
+            response = requests.get(f'http://alfred:8001/user/friends/{id}/')
             if response.status_code != 200:
                 raise BaseException(f'Error during fetch: {response.json()['Err']}')
         except BaseException as e:
             return JsonResponse(request, {'Err': f'{e}'})
 
-        friends = response.json().get('Friends')
+        friends = response.json().get('Friends', [])
         array = []
         for friend in friends:
             if get_cache(f'ava_{id}') is True:
@@ -99,7 +99,7 @@ def friendshipRequest(request, requester: int):
     response = JsonResponse(request, {'Friendship': 'Notified'})
     content = {
             'type': 'notification.friendship.request',
-            'requester': requester
+            'requester': requester,
         }
     error = 'Only service can notify new friendship request'
     return response, content, error
