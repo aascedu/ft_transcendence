@@ -109,8 +109,7 @@ def gameRequest(request, requester : int):
     notified = request.data['Notified']
     content = {
             'type': 'notification.game.request',
-            'player1': notified,
-            'player2': requester,
+            'requester': requester,
         }
     response = JsonResponse(request, {'status': 'Game accepted'})
     return response, content, None
@@ -128,8 +127,7 @@ def tournamentRequest(request, requester: int):
 
         content = {
                 'type': 'notification.tournament.request',
-                'player1': notified,
-                'player2': requester,
+                'requester': requester,
                 'tournament-name': tournament_name,
                 'tournament-id': tournament_id
             }

@@ -62,7 +62,9 @@ async function loadMyTournaments() {
 
 	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
 		item.addEventListener('click', async function () {
-			await loadOngoingTournament(item.getAttribute('tournament-id'));
+			tournamentId = item.getAttribute('tournament-id');
+			await loadOngoingTournament(tournamentId);
+
 
 			document.querySelector('.tournament-info-icon').focus();
 			
@@ -109,9 +111,12 @@ function clearMyTournaments() {
 
 // Hide when clicking top left button
 
-document.querySelector('.my-tournaments-icon').addEventListener('click', function() {
+document.querySelector('.my-tournaments-icon').addEventListener('click', async function() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");

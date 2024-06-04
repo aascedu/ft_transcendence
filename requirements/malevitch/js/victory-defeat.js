@@ -1,9 +1,12 @@
 // Go home when clicking the home button
 
-document.querySelector('.victory-defeat-home').addEventListener('click', function() {
+document.querySelector('.victory-defeat-home').addEventListener('click', async function() {
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
 
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");

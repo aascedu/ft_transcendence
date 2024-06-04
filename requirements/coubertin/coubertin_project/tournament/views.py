@@ -80,19 +80,11 @@ class tournamentManagement(View):
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
 class tournamentEntry(View):
-    def delete(self, request):
+    def delete(self, request, tournamentId: int, playerId: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
 
         global tournaments
-
-        try:
-            data = request.data
-            playerId = data['PlayerId']
-            tournamentId = data['TournamentId']
-        except KeyError as e:
-            return JsonBadRequest(request, f'missing key {e}')
-
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             str(tournamentId), {
@@ -104,36 +96,30 @@ class tournamentEntry(View):
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
-    def post(self, request):
+    def post(self, request, tournamentId: int):
         global tournaments
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to join")
         playerId = request.user.id
-        data = request.data
 
         try:
-            TournamentId = data['TournamentId']
-        except KeyError as e:
-            return JsonBadRequest(request, f'Missing key {e}')
-
-        try:
-            TournamentId = int(TournamentId)
+            tournamentId = int(tournamentId)
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
-        if (TournamentId not in tournaments):
+        if (tournamentId not in tournaments):
             return JsonNotFound(request, 'Tournament not found')
 
         try:
-            tournaments[TournamentId].addPlayer(playerId)
-            if playerId in tournaments[TournamentId].invited:
-                tournaments[TournamentId].invited.remove(playerId)
+            tournaments[tournamentId].addPlayer(playerId)
+            if playerId in tournaments[tournamentId].invited:
+                tournaments[tournamentId].invited.remove(playerId)
         except Exception as e:
             return JsonBadRequest(request, {'Err': e.__str__()})
 
-        logging.info("Player " + str(playerId) + " has joined tournament " + str(TournamentId))
-        return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(TournamentId)}) # url of the websocket to join
+        logging.info("Player " + str(playerId) + " has joined tournament " + str(tournamentId))
+        return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
     def post(self, request):

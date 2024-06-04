@@ -36,8 +36,8 @@ class Consumer(OurBasicConsumer):
             await self.channel_layer.group_send(
                 friend_group,
                 {
-                    "type": "new.friend.connected",
-                    "message": f'{{"connected":{self.scope['user'].id}}}',
+                    "type": "notification.new.friend.connected",
+                    "message": f'{self.scope['user'].id}',
                 })
 
     async def disconnect(self, close_code):
@@ -61,7 +61,7 @@ class Consumer(OurBasicConsumer):
     async def receive(self, text_data):
         pass
 
-    async def new_friend_connected(self, event):
+    async def notification_new_friend_connected(self, event):
         await self.send(text_data=json.dumps(event))
 
     async def notification_message(self, event):

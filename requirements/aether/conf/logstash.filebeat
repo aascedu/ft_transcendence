@@ -1,0 +1,108 @@
+input {
+    tcp {
+        host => "0.0.0.0"
+        port => 5141
+        type => "syslog5424"
+    }
+    udp {
+        host => "0.0.0.0"
+        port => 5141
+        type => "syslog5424"
+    }
+    # beats {
+    #     host => "0.0.0.0"
+    #     port => 5044
+    #     type => "filebeat"
+    # }
+}
+
+filter {
+    # if [type] == "filebeat" {
+    #     json {
+    #         source => "message"
+    #         target => "parsed_message"
+    #         skip_on_invalid_json => true
+    #     }
+    #     if [parsed_message][message] {
+    #         mutate {
+    #             add_field => { "log_message" => "%{[parsed_message][message]}" }
+    #         }
+    #     }
+    #     if [container][name] {
+    #         mutate {
+    #             add_field => { "program" => "%{[container][name]}" }
+    #         }
+    #     }
+    #     else if [container][image][name] {
+    #         mutate {
+    #             add_field => { "program" => "%{[container][image][name]}" }
+    #         }
+    #     }
+    #     else {
+    #         mutate {
+    #             add_field => { "program" => "setup" }
+    #         }
+    #     }
+    #     mutate {
+    #         remove_field => ["beat","input","prospector","offset", "ecs"]
+    #         add_tag => ["filebeat"]
+    #     }
+#        else {
+#            mutate {
+#                add_field => { "is_debug" => true }
+#            }
+#        }
+    # }
+    if [type] == "syslog5424" {
+        grok {
+            match => { "message" => "%{POSINT:syslog_version} %{TIMESTAMP_ISO8601:syslog_timestamp} (?:-|%{SYSLOGHOST:syslog_hostname})? (?:-|%{DATA:syslog_program}) (?:-|%{DATA:syslog_pid})? (?:-|%{DATA:syslog_msgid})? %{GREEDYDATA:syslog_message}" }
+            add_field => [ "received_at", "%{@timestamp}" ]
+            add_field => [ "received_from", "%{host}" ]
+            add_field => [ "program", "%{syslog_program}" ]
+        }
+        date {
+            match => [ "syslog_timestamp", "ISO8601" ]
+        }
+        mutate {
+            replace => { "program" => "%{[@metadata][input][tcp][source][name]}" }
+            add_tag => ["logstash"]
+        }
+    }
+}
+
+output {
+    if "logstash" in [tags] {
+        elasticsearch {
+            index => "%{[program]}-logstash-%{+YYYY.MM.dd}"
+            hosts => "${ELASTIC_HOSTS}"
+            user => "${ELASTIC_USER}"
+            password => "${ELASTIC_PASSWORD}"
+            ssl_enabled => true
+            ssl_certificate_authorities => ["config/certs/ca/ca.crt"]
+            ssl_certificate => "config/certs/aether/aether.crt"
+            ssl_key => "config/certs/aether/aether.pkcs8.key"
+        }
+    }
+    # else if "filebeat" in [tags] {
+    #     elasticsearch {
+    #         index => "%{[program]}-filebeat-%{+YYYY.MM.dd}"
+    #         hosts => "${ELASTIC_HOSTS}"
+    #         user => "${ELASTIC_USER}"
+    #         password => "${ELASTIC_PASSWORD}"
+    #         ssl_enabled => true
+    #         ssl_certificate_authorities => ["config/certs/ca/ca.crt"]
+    #         ssl_certificate => "config/certs/aether/aether.crt"
+    #         ssl_key => "config/certs/aether/aether.pkcs8.key"
+
+    #         # ilm_rollover_alias => "myilm"
+    #         # ilm_pattern => "000001"
+    #         # ilm_policy => "myilm-policy"
+    #         # manage_template => true
+    #         # template => "/etc/logstash/ilm.json"
+    #         # template_name => "mytemplate"
+    #     }
+    # }
+    else if [is_debug] {
+        stdout { codec => rubydebug }
+    }
+}
