@@ -22,7 +22,7 @@ def request_to_dict(request):
         data = request.data
     else:
         data = {}
-    if hasattr(request, 'Error'):
+    if hasattr(request, 'Error_Data'):
         error = request.Error_Data
     else:
         error = "none"
