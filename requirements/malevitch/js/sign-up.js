@@ -263,14 +263,13 @@ async function submitCreateAccount() {
 	var	nick = document.querySelector('.sign-up-nickname-input').value;
 	var	email = document.querySelector('.sign-up-email-input').value;
 	var	password = document.querySelector('.sign-up-password-input').value;
-	var	passwordConfirm = document.querySelector('.sign-up-password-confirm-input').value;
 	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
 	var	font = document.querySelector('.sign-up-font-size').value;
 
 	g_userNick = nick;
 
 	try {
-		const response = await fetch_post(
+		const result = await fetch_post(
             '/petrus/auth/signup/',
             {
                 Nick: nick,

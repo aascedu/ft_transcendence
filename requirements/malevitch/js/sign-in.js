@@ -67,9 +67,8 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 // Submit password to database.
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {
-	try {
-		const result = await connect(g_userId, input.value, nickname);
-
+	await connect(g_userId, input.value, nickname).then(async result => {
+	
 		if ('Err' in result && result.Err == 'Forbiden : invalid password') {
 			sendInvalidPassword(input, warning, locale);
 		}
@@ -77,7 +76,7 @@ async function submitPassword(input, warning, locale, nickname, isAlert) {
 			console.error(result.Err);
 		}
 		else {
-            await jwt_management(result.Auth, result.Ref);
+			await jwt_management(result.Auth, result.Ref);
 			if (isAlert) {
 				input.value = '';
 				document.querySelector('.reconnection-alert').classList.add('visually-hidden');
@@ -87,10 +86,14 @@ async function submitPassword(input, warning, locale, nickname, isAlert) {
 				goToHomepageGame('.sign-in');
 			}
 		}
-	}
-	catch (error) {
-		console.error("Error:", error);
-	}
+		
+		return result;
+	})
+	.then (data => {
+		console.log(data);
+		return data;
+	})
+	.catch ( error => console.error(error) )
 }
 
 // Send warning if password is invalid.

@@ -44,14 +44,6 @@ async function render() {
 	}
 
 	setAriaHidden();
-
-	// A ENLEVER
-
-	// var	homepageHeader = document.querySelector('.homepage-header');
-	// homepageHeader.classList.remove('visually-hidden');
-
-	// var	homepagePicture = document.querySelector('.homepage-game-picture');
-	// homepagePicture.classList.remove('visually-hidden');
 }
 
 window.history.replaceState(g_state, null, "");

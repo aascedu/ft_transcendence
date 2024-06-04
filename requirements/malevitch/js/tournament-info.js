@@ -223,6 +223,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	if (ongoing == true) {
 		// Display invited players that haven't joined (pending)
 		for (i = 0; i < pendingPlayers.length; i++) {
+			userId = pendingPlayers[i];
 			userInfo = await get_user_info(pendingPlayers[i]);
 			userPic = userInfo.Pic;
 			if (userPic == null) {
@@ -245,97 +246,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		}
 	}
 
-	// Display tournament bracket
-	
-	var	matchInRound = 0;
-	var	games = tournamentInfo.Games;
-	var	matchSelector;
-	var	res;
-
-	if (numPlayers == 4) {
-		// Display 4 players bracket
-		if (document.querySelector('.bracket-round-two') != null) {
-			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
-			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
-			document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
-			setAriaHidden();
-		}
-
-		// Load info
-
-		for (i = 0; i < games.length; i++) {
-			if (games[i].Round == 1) {
-				matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 1) {
-					matchInRound = 0;
-				}
-			}
-			else if (games[i].Round == 2) {
-				matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-			}
-		}
-	}
-	else {
-		// Display 8 players bracket if needed
-		if (document.querySelector('.bracket-round-one-four') != null) {
-			document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
-			document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
-			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
-			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
-			document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
-			setAriaHidden();
-		}
-
-		// Load info
-
-		var	matchInRound = 0;
-		var	games = tournamentInfo.Games;
-		var	matchSelector;
-		var	res;
-
-		for (i = 0; i < games.length; i++) {
-			if (games[i].Round == 1) {
-				matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 3) {
-					matchInRound = 0;
-				}
-			}
-			else if (games[i].Round == 2) {
-				matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 1) {
-					matchInRound = 0;
-				}
-			}
-			else {
-				matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-			}
-		}
-	}
+	// Load user profile page when clicking on a player
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', async function(event) {
@@ -348,6 +259,112 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			await loadUserProfile(userId);
 		});
 	});
+
+	if (!ongoing) {
+		// Display tournament bracket
+		
+		var	matchInRound = 0;
+		var	games = tournamentInfo.Games;
+		var	matchSelector;
+		var	res;
+	
+		if (numPlayers == 4) {
+			// Display 4 players bracket
+			if (document.querySelector('.bracket-round-two') != null) {
+				document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+				document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+				document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+				document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+				document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+				setAriaHidden();
+			}
+	
+			// Load info
+	
+			for (i = 0; i < games.length; i++) {
+				if (games[i].Round == 1) {
+					matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 1) {
+						matchInRound = 0;
+					}
+				}
+				else if (games[i].Round == 2) {
+					matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+				}
+			}
+		}
+		else {
+			// Display 8 players bracket if needed
+			if (document.querySelector('.bracket-round-one-four') != null) {
+				document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
+				document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
+				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
+				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
+				document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+				setAriaHidden();
+			}
+	
+			// Load info
+	
+			var	matchInRound = 0;
+			var	games = tournamentInfo.Games;
+			var	matchSelector;
+			var	res;
+	
+			for (i = 0; i < games.length; i++) {
+				if (games[i].Round == 1) {
+					matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 3) {
+						matchInRound = 0;
+					}
+				}
+				else if (games[i].Round == 2) {
+					matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 1) {
+						matchInRound = 0;
+					}
+				}
+				else {
+					matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+				}
+			}
+		}
+	
+		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+			item.addEventListener('click', async function(event) {
+				var userId = await event.target.getAttribute('user-id');
+				if (userId == null) {
+					setTimeout(async () => {
+						userId = await event.target.getAttribute('user-id');
+					}, 500);
+				}
+				await loadUserProfile(userId);
+			});
+		});
+	}
 
 	// Keyboard navigation
 
@@ -442,20 +459,6 @@ document.querySelector('.tournament-info-icon').addEventListener('click', async 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
-});
-
-// Load user profile page when clicking on a player
-
-document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', async function(event) {
-		var userId = await event.target.getAttribute('user-id');
-		if (userId == null) {
-			setTimeout(async () => {
-				userId = await event.target.getAttribute('user-id');
-			}, 500);
-		}
-		await loadUserProfile(userId);
-	});
 });
 
 async function loadUserProfile(id) {

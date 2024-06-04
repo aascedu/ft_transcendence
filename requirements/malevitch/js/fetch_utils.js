@@ -38,7 +38,7 @@ async function fetch_post(url, json) {
             console.log(data)
             return data
         })
-        .catch ( error => console.error(error) )
+		.catch ( error => console.error(error) )
 }
 
 async function fetch_delete(url) {
@@ -119,5 +119,5 @@ function fetch_error(error) {
 
 function custom_error(response) {
     console.error(response.json());
-    return new Error('HTTP error: ' + response.status + "-" + response.json())
+    return new Error('HTTP error: ' + response.status + " - " + response.json())
 }
