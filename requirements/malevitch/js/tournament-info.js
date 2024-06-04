@@ -2,7 +2,6 @@
 
 // Ongoing tournament : load from Coubertin
 async function loadOngoingTournament(id) {
-	console.log(id);
 	var tournamentInfo = await get_tournament_infos(id);
 
 	clearTournamentInfo();
