@@ -128,9 +128,8 @@ class inviteFriend(View):
 
         global tournaments
 
-        data = request.data
-
         try:
+            data = request.data
             TournamentId = data['TournamentId']
             invited = data['Invited']
         except KeyError as e:
@@ -141,8 +140,8 @@ class inviteFriend(View):
         except (TypeError, ValueError) as e:
             return JsonBadRequest(request, f'bad content {e}')
 
-        TournamentId = data['TournamentId']
-        if (TournamentId not in tournaments):
+        TournamentId = int(data['TournamentId'])
+        if TournamentId not in tournaments:
             return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[TournamentId].invited.append(invited)
@@ -164,8 +163,8 @@ class inviteFriend(View):
             logging.error("Failed to send invitation to player " + str(invited))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
-        logging.info("Player " + invited + " has been invited to tournament " + str(TournamentId))
-        return JsonResponse({'Msg': "Friend has been invited"})
+        logging.info("Player " + str(invited) + " has been invited to tournament " + str(TournamentId))
+        return JsonResponse(request, {'Msg': "Friend has been invited"})
 
     def delete(self, request): # If someone declines invitation
         if request.user.is_autenticated is False:
@@ -175,7 +174,7 @@ class inviteFriend(View):
         if request['PlayerId'] not in tournaments[request['TournamentId']].invited:
             return JsonNotFound(request, "Player is not in the invited list of the tournament")
         tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
-        return JsonResponse({
+        return JsonResponse(request, {
             'Msg': 'Invitation declined',
             'PlayerId': request['PlayerId'],
             'TournamentId': request['TournamentId'],
