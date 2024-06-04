@@ -62,7 +62,9 @@ async function loadMyTournaments() {
 
 	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
 		item.addEventListener('click', async function () {
-			await loadOngoingTournament(item.getAttribute('tournament-id'));
+			tournamentId = item.getAttribute('tournament-id');
+			await loadOngoingTournament(tournamentId);
+
 
 			document.querySelector('.tournament-info-icon').focus();
 			
