@@ -35,8 +35,13 @@ async function render() {
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
 	}
-	clearHomepageHeader();
-	await loadHomepageHeader();
+	if (g_state.pageToDisplay != '.homepage-id' 
+		&& g_state.pageToDisplay != '.sign-in' 
+		&& g_state.pageToDisplay != '.sign-up'
+		&& g_state.pageToDisplay == '.game') {
+		clearHomepageHeader();
+		await loadHomepageHeader();
+	}
 
 	setAriaHidden();
 
