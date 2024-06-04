@@ -281,8 +281,6 @@ async function submitCreateAccount() {
             }
         );
 
-		const result = await response.json();
-
 		if ('Err' in result) {
 			console.error('Error: ' + result.Err);
 		}

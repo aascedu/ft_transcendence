@@ -49,10 +49,6 @@ async function init_session_socket() {
     }
 }
 
-async function connect(id, password, nickname) {
-    const response = await fetch_post(add_petrus_in_url(nickname), {Id: id, Pass: password,});
-    return response
-}
 
 async function notificationFriendshipRequest(data) {
     console.log('FriendshipRequest');
