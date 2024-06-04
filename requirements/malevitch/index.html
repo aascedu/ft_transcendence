@@ -271,10 +271,6 @@
 				<img src="assets/general/no-friends.svg" alt="no friends icon" draggable="false" (dragstart)="false;" class="unselectable">
 				<p data-language="no-friends-online" class="text-center unselectable">No friends are online...</p>
 			</div>
-			<button class="homepage-header-play-friend-card homepage-header-category w-100 d-flex justify-content-between align-items-center text-center purple-shadow visually-hidden">
-				<p class="unselectable">Ami1</p>
-				<img src="assets/general/friend.png" alt="search icon" draggable="false" (dragstart)="false;" class="unselectable">
-			</button>
 		</div>
 		<div class="homepage-header-open-friends homepage-header-open-menu w-25 d-flex flex-column justify-content-between align-items-center position-absolute start-50 translate-middle-x purple-shadow visually-hidden">
 			<button class="homepage-header-friend-list homepage-header-category w-100 d-flex justify-content-center align-items-center text-center purple-shadow">
@@ -1068,6 +1064,13 @@
 				You have successfully invited
 			</div>
 			<div class="notif-info w-100 text-center unselectable">Friend</div>
+		</div>
+		<!-- NEW FRIENDSHIP -->
+		<div class="notif-new-friendship notif position-absolute visually-hidden">
+			<div class="notif-info w-100 text-center unselectable">Friend</div>
+			<div class="notif-message w-100 text-center unselectable" data-language="notif-new-friendship">
+				has accepted your friend request
+			</div>
 		</div>
 		<!-- GAME -->
 		<div class="game w-100 visually-hidden" id="test-target">

@@ -35,6 +35,8 @@ async function render() {
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
 	}
+	clearHomepageHeader();
+	await loadHomepageHeader();
 
 	setAriaHidden();
 
@@ -464,7 +466,6 @@ async function setHomepageContent() {
         });
     });
 
-
 	// History and stats
 
 	var	history = await get_game_history(g_userId);
@@ -552,7 +553,6 @@ async function setHomepageContent() {
 		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
 	</div>`);
-
 }
 
 async function goToHomepageGame(previous) {
@@ -602,6 +602,9 @@ function leaveTournamentEditMode() {
 document.querySelectorAll('.alert').forEach(function(item) {
 	item.addEventListener('click', function(event) {
 		if (this !== event.target) {
+			return ;
+		}
+		if (item.classList.contains('reconnection-alert')) {
 			return ;
 		}
 		item.classList.add('visually-hidden');

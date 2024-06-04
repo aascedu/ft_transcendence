@@ -10,6 +10,8 @@ async function loadUserContent(id) {
 	var userNick;
 	var userPic;
 
+	document.querySelector('.user-profile-name').setAttribute('user-id', id);
+
 	if (id != g_userId) {
 		userInfo = await get_user_info(id);
 		userNick = userInfo.Nick;

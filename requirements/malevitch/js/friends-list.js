@@ -129,9 +129,12 @@ function clearFriendsList() {
 
 // Hide when clicking top left button
 
-document.querySelector('.friends-list-icon').addEventListener('click', function() {
+document.querySelector('.friends-list-icon').addEventListener('click', async function() {
 	document.querySelector('.friends-list').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");

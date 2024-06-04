@@ -109,9 +109,12 @@ function clearMyTournaments() {
 
 // Hide when clicking top left button
 
-document.querySelector('.my-tournaments-icon').addEventListener('click', function() {
+document.querySelector('.my-tournaments-icon').addEventListener('click', async function() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
