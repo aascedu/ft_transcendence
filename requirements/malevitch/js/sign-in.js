@@ -68,7 +68,7 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {
 	try {
-		const response = await connect(g_userId, input.value, nickname);
+		const result = await connect(g_userId, input.value, nickname);
 
 		if ('Err' in result && result.Err == 'Forbiden : invalid password') {
 			sendInvalidPassword(input, warning, locale);
