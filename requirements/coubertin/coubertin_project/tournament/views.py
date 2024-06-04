@@ -143,7 +143,7 @@ class inviteFriend(View):
             return JsonBadRequest(request, f'bad content {e}')
 
         TournamentId = data['TournamentId']
-        if (TournamentId not in tournaments.keys()):
+        if (TournamentId in tournaments is False):
             print(3)
             print('TournamentId: ' + TournamentId)
             for i in tournaments:
