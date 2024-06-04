@@ -1,3 +1,4 @@
+curl -X PUT -u elastic:elastic123 "https://localhost:9200/_index_template/my_policy_template?pretty" -H 'Content-Type: application/json' --cacert config/certs/ca/ca.crt -d '
 {
   "index_patterns": ["my_policy_index-*"],
   "version": 1,
@@ -59,3 +60,4 @@
     }
   }
 }
+'

@@ -1,6 +1,6 @@
 #---- base image ------------------------------------------------------#
 
-FROM    docker.elastic.co/logstash/logstash:8.12.2
+FROM    docker.elastic.co/logstash/logstash:8.13.1
 
 #---- configuration files ---------------------------------------------#
 
