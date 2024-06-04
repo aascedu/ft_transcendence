@@ -837,6 +837,11 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 	// Hide alert
 	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
 
+	// Send invite through Coubertin
+	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+	await invite_friend_to_tournament(tournamentId, id);
+
+	// Create player card
 	var playersList = document.querySelector('.tournament-info-players');
 	
 	playersList.insertAdjacentHTML('beforeend', `\
@@ -868,10 +873,6 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
 		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
 	}
-
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	await invite_friend_to_tournament(tournamentId, id);
 
 	setAriaHidden();
 }

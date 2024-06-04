@@ -604,6 +604,9 @@ document.querySelectorAll('.alert').forEach(function(item) {
 		if (this !== event.target) {
 			return ;
 		}
+		if (item.classList.contains('reconnection-alert')) {
+			return ;
+		}
 		item.classList.add('visually-hidden');
 		setAriaHidden();
 	});
