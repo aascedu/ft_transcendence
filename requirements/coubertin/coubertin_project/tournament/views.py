@@ -127,9 +127,9 @@ class inviteFriend(View):
             return JsonUnauthorized(request, 'Only authentified player can invite friends')
 
         global tournaments
+        data = request.data
 
         try:
-            data = request.data
             TournamentId = data['TournamentId']
             invited = data['Invited']
         except KeyError as e:
@@ -137,12 +137,12 @@ class inviteFriend(View):
         try:
             TournamentId = int(TournamentId)
             invited = int(invited)
+            TournamentId = int(data['TournamentId'])
+            if TournamentId not in tournaments:
+                return JsonNotFound(request, 'tournament does not exists')
         except (TypeError, ValueError) as e:
             return JsonBadRequest(request, f'bad content {e}')
 
-        TournamentId = int(data['TournamentId'])
-        if TournamentId not in tournaments:
-            return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[TournamentId].invited.append(invited)
 
