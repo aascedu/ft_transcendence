@@ -9,9 +9,6 @@ import json
 import information
 from shared.logging_django import log_info
 
-from django.middleware.security import SecurityMiddleware
-from django.middleware.common import CommonMiddleware
-
 
 from urllib.parse import parse_qs
 
