@@ -135,6 +135,8 @@ services:
         condition: service_healthy
       iris:
         condition: service_healthy
+      policy:
+        condition: service_healthy
     container_name: aether
     build:
       context: ./requirements/aether
@@ -159,9 +161,9 @@ services:
       test:
         [
           "CMD-SHELL",
-          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && \
-          # timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' && \
-          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
+          "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && \
+          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
+          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -222,20 +224,26 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
+    build: 
+      context: ./requirements/apollo
+      dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: elasticsearch
     volumes:
       - certificates:/usr/share/elasticsearch/config/certs:ro
       - elastic_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
     networks:
       - sentinel
+      - internet_access
     environment:
       node.name: elasticsearch
       node.attr.rack: r1
       indices.lifecycle.poll_interval: 10s
-      discovery.type: single-node
       cluster.name: ${CLUSTER_NAME}
+      discovery.type: single-node
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       bootstrap.memory_lock: true
       network.host: 0.0.0.0
@@ -250,8 +258,6 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
-      cluster.routing.allocation.enable: all
-      # ES_JAVA_OPTS: -Xms512m -Xms512m
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
@@ -266,6 +272,24 @@ services:
         ]
       interval: 10s
       timeout: 10s
+      retries: 120
+
+  policy:
+    depends_on:
+      apollo:
+        condition: service_healthy
+    container_name: policy
+    image: docker:latest
+    networks:
+      - sentinel
+      - internet_access
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    entrypoint: /bin/sh -c "while ! docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'; do sleep 5; done"
+    healthcheck:
+      test: ["CMD-SHELL", "docker logs policy | grep -q 'ILM policy configuration completed.'"]
+      interval: 1s
+      timeout: 5s
       retries: 120
 
 # # Tournament container
@@ -352,13 +376,13 @@ services:
       - ELASTIC_HOSTS=https://apollo:9200
       - KIBANA_HOSTS=http://iris:5601
       - LOGSTASH_HOSTS=aether:5044
-    # command:
-    #   - --strict.perms=false
     networks:
       - sentinel
       - internet_access
       - atlas
     restart: unless-stopped
+  #   # command:
+  #   #   - --strict.perms=false
 
 # # Notification container
   hermes:
@@ -399,14 +423,16 @@ services:
     ports:
       - 5601:5601
     environment:
-      - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=https://apollo:9200
-      - ELASTICSEARCH_USERNAME=kibana_system
-      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWORD}
-      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
-      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPT_KEY}
-      - XPACK_REPORTING_ENCRYPTIONKEY=${REP_ENCRYPT_KEY}
-      - XPACK_SECURITY_ENCRYPTIONKEY=${SEC_ENCRYPT_KEY}
+      SERVERNAME: kibana
+      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
+      XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
+      XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
+      XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
+      # XPACK_SECURITY_SESSION_IDLETIMEOUT: 3d
+      # SERVER_PUBLICBASEURL: http://localhost:5601
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
