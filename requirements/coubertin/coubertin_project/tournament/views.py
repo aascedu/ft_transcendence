@@ -142,11 +142,6 @@ class inviteFriend(View):
 
         TournamentId = int(data['TournamentId'])
         if TournamentId not in tournaments:
-            print(3)
-            print('TournamentId: ' + TournamentId)
-            print(TournamentId == i)
-            for i in tournaments:
-                print ('Tournament in the global:' + i)
             return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[TournamentId].invited.append(invited)
