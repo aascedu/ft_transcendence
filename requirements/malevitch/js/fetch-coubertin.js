@@ -9,13 +9,13 @@ async function get_tournament_infos(TournamentId) {
 async function create_tournament(Name, NumPlayers, Invited, Admin) {
     json = {Name: Name, NumPlayers: NumPlayers, Invited: Invited, Admin: Admin};
 
-    return fetch_post(add_coubertin_in_url('infos/0/'), json);
+    return fetch_post(add_coubertin_in_url('infos/0'), json);
 }
 
 async function change_tournament_name(NewName, TournamentId) {
     json = {NewName: NewName, TournamentId: TournamentId};
 
-    return fetch_patch(add_coubertin_in_url('infos/0/'), json);
+    return fetch_patch(add_coubertin_in_url('infos/0'), json);
 }
 
 async function remove_player_from_tournament(TournamentId, PlayerId) {
@@ -30,6 +30,12 @@ async function invite_friend_to_tournament(TournamentId, Invited) {
     json = {TournamentId: TournamentId, Invited: Invited};
 
     return fetch_post(add_coubertin_in_url('invite/'), json);
+}
+
+async function join_tournament(TournamentId) {
+    json = {TournamentId: TournamentId};
+
+    return fetch_post(add_coubertin_in_url('entry/'), json);
 }
 
 async function get_my_tournaments() {

@@ -1,7 +1,73 @@
+// Load available friends to play
+
+async function loadHomepageHeader() {
+	var	availableFriends = await get_available_friends();
+	availableFriends = availableFriends.Ava;
+
+	var	friendId;
+	var	friendNick;
+	var	friendPic;
+
+	var	availableFriendsContainer = document.querySelector('.homepage-header-open-play');
+
+	for (i = 0; i < availableFriends.length; i++) {
+		friendId = availableFriends[i].Id;
+		friendNick = availableFriends[i].Nick;
+		friendPic = availableFriends[i].Pic;
+		if (friendPic == null) {
+			friendPic = 'assets/general/pong.png';
+		}
+
+		availableFriendsContainer.insertAdjacentHTML('beforeend', `\
+		<button class="homepage-header-play-friend-card homepage-header-category w-100 d-flex justify-content-between align-items-center text-center purple-shadow visually-hidden" user-id="` + friendId + `">
+			<p class="unselectable">` + friendNick + `</p>
+			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+		</button>`);
+	}
+
+	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+		item.addEventListener('click', function() {
+			// close header menu and toggle back invites
+			document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
+			document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
+			document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
+				item.classList.add('visually-hidden');
+			});
+			document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
+	
+			setAriaHidden();
+	
+			// send invite
+			// var	friendId = item.getAttribute('user-id');
+			// await invite_friend_to_play(friendId);
+	
+			// remove invited friend from list
+			item.parentNode.removeChild(item);
+	
+			// show notif 3 seconds to confirm invite
+			inviteSentNotif(item.querySelector('p').textContent);
+	
+			// put focus back on header
+			document.querySelector('.homepage-header-play').focus();
+		});
+	});
+}
+
+function clearHomepageHeader() {
+	document.querySelectorAll('.homepage-header-open-play .homepage-header-play-friend-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+	document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
+	setAriaHidden();
+}
+
 // Back to homepage
 
-document.querySelector('.homepage-header-logo').addEventListener('click', function() {
+document.querySelector('.homepage-header-logo').addEventListener('click', async function() {
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
+
+	clearHomepageContent();
+	await setHomepageContent();
 
 	var	currentPage = g_state.pageToDisplay;
 
@@ -203,31 +269,6 @@ document.querySelector('.homepage-header-play-friend').addEventListener('click',
 		document.querySelector('.homepage-header-no-friends').classList.toggle('visually-hidden');
 	}
 	setAriaHidden();
-});
-
-document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-	item.addEventListener('click', function() {
-		// close header menu and toggle back invites
-		document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
-		document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
-		document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-			item.classList.add('visually-hidden');
-		});
-		document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
-
-		setAriaHidden();
-
-		// send invite
-
-		// remove invited friend from list
-		item.parentNode.removeChild(item);
-
-		// show notif 3 seconds to confirm invite
-		inviteSentNotif(item.querySelector('p').textContent);
-
-		// put focus back on header
-		document.querySelector('.homepage-header-play').focus();
-	});
 });
 
 // --- FRIENDS ---
