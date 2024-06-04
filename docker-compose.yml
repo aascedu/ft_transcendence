@@ -351,36 +351,36 @@ services:
         condition: service_healthy
     restart: on-failure
 
-  # filebeat:
-  #   container_name: filebeat
-  #   depends_on:
-  #     aether:
-  #       condition: service_healthy
-  #     apollo:
-  #       condition: service_healthy
-  #     iris:
-  #       condition: service_healthy
-  #   build:
-  #     context: ./requirements/filebeat
-  #     dockerfile: Dockerfile
-  #   user: root
-  #   volumes:
-  #     - certificates:/usr/share/filebeat/config/certs:ro
-  #     - filebeat_data:/usr/share/filebeat/data
-  #     - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
-  #     - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
-  #     - "/var/run/docker.sock:/var/run/docker.sock:ro"
-  #   environment:
-  #     - ELASTIC_USER=elastic
-  #     - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
-  #     - ELASTIC_HOSTS=https://apollo:9200
-  #     - KIBANA_HOSTS=http://iris:5601
-  #     - LOGSTASH_HOSTS=aether:5044
-  #   networks:
-  #     - sentinel
-  #     - internet_access
-  #     - atlas
-  #   restart: unless-stopped
+  filebeat:
+    container_name: filebeat
+    depends_on:
+      aether:
+        condition: service_healthy
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_healthy
+    build:
+      context: ./requirements/filebeat
+      dockerfile: Dockerfile
+    user: root
+    volumes:
+      - certificates:/usr/share/filebeat/config/certs:ro
+      - filebeat_data:/usr/share/filebeat/data
+      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
+      - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      - ELASTIC_USER=elastic
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
+      - ELASTIC_HOSTS=https://apollo:9200
+      - KIBANA_HOSTS=http://iris:5601
+      - LOGSTASH_HOSTS=aether:5044
+    networks:
+      - sentinel
+      - internet_access
+      - atlas
+    restart: unless-stopped
   #   # command:
   #   #   - --strict.perms=false
 
