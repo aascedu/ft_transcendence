@@ -50,14 +50,9 @@ async function init_session_socket() {
 }
 
 
-async function connect(id, password) {
-		const response = await fetch('/petrus/auth/signin/youpi', {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({Id: id, Pass: password,}),
-		});
+async function connect(id, password, nickname) {
+    const response = await fetch_post(add_petrus_in_url(nickname), {Id: id, Pass: password,});
+    return response
 }
 
 async function notificationFriendshipRequest(data) {

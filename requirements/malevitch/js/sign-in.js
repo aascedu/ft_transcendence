@@ -68,13 +68,7 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {
 	try {
-		const response = await fetch('/petrus/auth/signin/' + nickname + '/', {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({Id: g_userId, Pass: input.value,}),
-		});
+		const response = await connect(g_userId, input.value, nickname);
 
 		const result = await response.json();
 		if ('Err' in result && result.Err == 'Forbiden : invalid password') {
