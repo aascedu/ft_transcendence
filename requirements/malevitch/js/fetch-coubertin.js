@@ -9,13 +9,13 @@ async function get_tournament_infos(TournamentId) {
 async function create_tournament(Name, NumPlayers, Invited, Admin) {
     json = {Name: Name, NumPlayers: NumPlayers, Invited: Invited, Admin: Admin};
 
-    return fetch_post(add_coubertin_in_url('infos/0'), json);
+    return fetch_post(add_coubertin_in_url('infos/0/'), json);
 }
 
 async function change_tournament_name(NewName, TournamentId) {
     json = {NewName: NewName, TournamentId: TournamentId};
 
-    return fetch_patch(add_coubertin_in_url('infos/0'), json);
+    return fetch_patch(add_coubertin_in_url('infos/0/'), json);
 }
 
 async function remove_player_from_tournament(TournamentId, PlayerId) {
