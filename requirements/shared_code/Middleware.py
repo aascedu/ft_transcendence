@@ -95,7 +95,7 @@ class RawJsonToDataGetMiddleware:
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except BaseException as e:
-            request.Error_Data = e
+            request.Error_Data = "Warn body couldn't be read : ignore if body is supposed to be empty"
         return None
 
 
