@@ -1,16 +1,28 @@
 // Load my tournaments from DB
 
 async function loadMyTournaments() {
-	var	ongoingTournaments = await get_my_tournaments();
-	ongoingTournaments = ongoingTournaments.Ongoing;
-	var	closedTournaments = await get_tournament_history(g_userId);
-	closedTournaments = closedTournaments[g_userId];
+	var	ongoingTournaments;
+	var	closedTournaments;
+
+	try {
+		ongoingTournaments = await get_my_tournaments();
+		ongoingTournaments = ongoingTournaments.Ongoing;
+		closedTournaments = await get_tournament_history(g_userId);
+		closedTournaments = closedTournaments[g_userId];
+	} catch (error) {
+		document.querySelector('.my-tournaments-ongoing').classList.add('visually-hidden');
+		document.querySelector('.my-tournaments-closed').classList.add('visually-hidden');
+		document.querySelector('.my-tournaments-empty').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 	
 	// If no tournament at all
 	if ((Object.entries(ongoingTournaments).length + closedTournaments.length) == 0) {
 		document.querySelector('.my-tournaments-ongoing').classList.add('visually-hidden');
 		document.querySelector('.my-tournaments-closed').classList.add('visually-hidden');
 		document.querySelector('.my-tournaments-empty').classList.remove('visually-hidden');
+		setAriaHidden();
 		return ;
 	}
 	

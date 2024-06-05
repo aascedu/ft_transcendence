@@ -1,8 +1,17 @@
 // Load available friends to play
 
 async function loadHomepageHeader() {
-	var	availableFriends = await get_available_friends();
-	availableFriends = availableFriends.Ava;
+	var	availableFriends;
+
+	try {
+		availableFriends = await get_available_friends();
+		availableFriends = availableFriends.Ava;
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.homepage-header-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 
 	var	friendId;
 	var	friendNick;
@@ -23,6 +32,12 @@ async function loadHomepageHeader() {
 			<p class="unselectable">` + friendNick + `</p>
 			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
 		</button>`);
+	}
+
+	if (availableFriends.length == 0) {
+		document.querySelector('.homepage-header-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
 	}
 
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
@@ -382,7 +397,7 @@ async function addFriend() {
 
 // Go to profile
 
-document.querySelector('.homepage-header-profile').addEventListener('click', function() {
+document.querySelector('.homepage-header-profile').addEventListener('click', async function() {
 	// Load user profile content
 	// pic and nick
 	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
@@ -397,7 +412,7 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 	document.querySelector('.user-profile-picture-input').focus();
 
 	clearUserContent();
-	loadUserContent(g_userId);
+	await loadUserContent(g_userId);
 
 	hideEveryPage();
 

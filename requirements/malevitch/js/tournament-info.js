@@ -2,7 +2,14 @@
 
 // Ongoing tournament : load from Coubertin
 async function loadOngoingTournament(id) {
-	var tournamentInfo = await get_tournament_infos(id);
+	var	tournamentInfo;
+
+	try {		
+		tournamentInfo = await get_tournament_infos(id);	
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 
 	clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
@@ -10,8 +17,15 @@ async function loadOngoingTournament(id) {
 
 // Closed tournament : load from Mnemosine
 async function loadClosedTournament(id) {
-	var tournamentInfo = await get_tournament_by_id(id);
-	
+	var	tournamentInfo;
+
+	try {		
+		tournamentInfo = await get_tournament_by_id(id);		
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, false);
 }
@@ -33,28 +47,33 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	
 	if (ongoing == true) {
 		// Display online friends that aren't already invited to tournament
-		var	availableFriends = await get_available_friends();
-		availableFriends = availableFriends.Ava;
-		var	friendsContainer = document.querySelector('.tournament-info-invite');
-	
-		document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
-	
-		for (i = 0; i < availableFriends.length; i++) {
-			userPic = availableFriends[i].Pic;
-			if (userPic == null) {
-				userPic = 'assets/general/pong.png';
+		try {
+			var	availableFriends = await get_available_friends();
+			availableFriends = availableFriends.Ava;
+			var	friendsContainer = document.querySelector('.tournament-info-invite');
+		
+			document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
+		
+			for (i = 0; i < availableFriends.length; i++) {
+				userPic = availableFriends[i].Pic;
+				if (userPic == null) {
+					userPic = 'assets/general/pong.png';
+				}
+		
+				friendsContainer.insertAdjacentHTML('beforeend', `\
+				<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
+					<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
+					<div class="user-card-picture">
+						<img src="` + userPic + `" alt="profile picture of ` + availableFriends[i].Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+				</button>`);
 			}
-	
-			friendsContainer.insertAdjacentHTML('beforeend', `\
-			<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
-				<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
-				<div class="user-card-picture">
-					<img src="` + userPic + `" alt="profile picture of ` + availableFriends[i].Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-			</button>`);
-		}
-		// if no friend available
-		if (availableFriends.length == 0) {
+			// if no friend available
+			if (availableFriends.length == 0) {
+				document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
+			}
+		} catch (error) {
+			console.error(error);
 			document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
 		}
 
@@ -406,7 +425,15 @@ async function loadBracketMatchContent(tournamentPlayers, matchInfo, matchSelect
 }
 
 async function loadBracketPlayerContent(playerId, playerScore, playerSelector) {
-	var	userInfo = await get_user_info(playerId);
+	var userInfo;
+
+	try {
+		userInfo = await get_user_info(playerId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	var	userPic = userInfo.Pic;
 
 	if (userPic == null) {
@@ -464,25 +491,6 @@ document.querySelector('.tournament-info-icon').addEventListener('click', async 
 async function loadUserProfile(id) {
 	if (id == null) {
 		return ;
-	}
-	var	friendsList = await get_friend(g_userId);
-	var	isFriend = false;
-	friendsList = friendsList.Friends;
-	for (i = 0; i < friendsList.length; i++) {
-		if (friendsList[i] == id) {
-			isFriend = true;
-			break ;
-		}
-	}
-
-	if (id == g_userId) {
-		document.querySelector('.user-profile-picture-input').focus();
-	}
-	else if (isFriend) {
-		document.querySelector('.user-profile-remove-icon').focus();
-	}
-	else {
-		document.querySelector('.user-profile-add-icon').focus();
 	}
 
 	clearUserContent();
@@ -544,13 +552,18 @@ async function confirmJoinTournament() {
 		return ;
 	}
 
+	try {
+		await join_tournament(tournamentId);
+	} catch (error) {
+		console.error();
+		return ;
+	}
+
 	document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
 	document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
-
-	await join_tournament(tournamentId);
 
 	await loadOngoingTournament();
 
@@ -679,6 +692,13 @@ function kickPlayer(item) {
 }
 
 async function confirmKick(playerToHide) {
+	try {
+		await remove_player_from_tournament(tournamentId, playerId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
 
@@ -689,8 +709,6 @@ async function confirmKick(playerToHide) {
 	if (playerToHide && playerToHide.parentNode) {
 		playerToHide.parentNode.removeChild(playerToHide);
 	}
-
-	await remove_player_from_tournament(tournamentId, playerId);
 }
 
 // Leave edit mode
@@ -730,6 +748,25 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 // Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', async function () {
+	await changeTournamentName();
+	leaveTournamentEditMode();
+});
+
+document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
+	if (event.key === 'Enter') {
+		await changeTournamentName();
+		leaveTournamentEditMode();
+	}
+});
+
+async function changeTournamentName() {
+	try {
+		await change_tournament_name(tournamentNameInput.value, tournamentId);
+	} catch (error) {
+		console.error();
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
@@ -739,25 +776,7 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 
 	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	await change_tournament_name(tournamentNameInput.value, tournamentId);
-
-	leaveTournamentEditMode();
-});
-
-document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		// Hide alert
-		document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	
-		// Update tournament name
-		var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
-		document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
-	
-		leaveTournamentEditMode();
-	}
-});
+}
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
@@ -837,12 +856,17 @@ function cancelInviteFriendToTournament() {
 }
 
 async function addInvitedPlayerToTournament(id, nick, pic) {
+	try {
+		// Send invite through Coubertin
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		await invite_friend_to_tournament(tournamentId, id);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
-
-	// Send invite through Coubertin
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-	await invite_friend_to_tournament(tournamentId, id);
 
 	// Create player card
 	var playersList = document.querySelector('.tournament-info-players');
@@ -924,7 +948,6 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 		else {
 			confirmedPlayers = tournamentInfo.Players;
 		}
-
 
 		// tournament icon -> next
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-icon')) {
