@@ -14,8 +14,7 @@ async function fetch_get(url) {
         .then(data => {
             console.log(data)
             return data
-        })
-        .catch ( error => console.error(error) )
+        });
 }
 
 async function fetch_post(url, json) {
@@ -37,8 +36,7 @@ async function fetch_post(url, json) {
         .then (data => {
             console.log(data)
             return data
-        })
-        .catch ( error => console.error(error) )
+        });
 }
 
 async function fetch_delete(url) {
@@ -58,8 +56,7 @@ async function fetch_delete(url) {
         .then (data => {
             console.log(data);
             return data;
-        })
-        .catch ( error => console.error(error) )
+        });
 }
 
 async function fetch_patch(url, json) {
@@ -79,20 +76,13 @@ async function fetch_patch(url, json) {
         .then (data => {
             console.log(data);
             return data;
-        })
-        .catch ( error => fetch_error(error) );
+        });
 }
 
 async function fetch_with_jwt(url, request) {
-    jwt = await sessionStorage.getItem(JWT_NAME)
-    if (jwt !== null) {
-        console.log('fetch with jwt called');
-        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
-    }
     response = await fetch(url, request);
     if (response.status == 401) {
         await reconnection_alert();
-        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
         response = await fetch(url, request);
     }
     return response;
@@ -113,11 +103,15 @@ async function reconnection_alert() {
     }
 }
 
-function fetch_error(error) {
-    console.error('Fetch problem:', error.message);
-}
-
-function custom_error(response) {
-    console.error(response.json());
-    return new Error('HTTP error: ' + response.status + "-" + response.json())
+async function custom_error(response) {
+    json = await response.json()
+    if (json.Err === undefined) {
+        console.error("Error not from transcendence Django api");
+    } else {
+        console.error(json.Err)
+    }
+    const error = new Error('HTTP error: ' + response.status + ' : ' + json.Err)
+    error.name = json.Err
+    error.value = json
+    return error
 }

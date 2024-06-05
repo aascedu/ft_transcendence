@@ -54,12 +54,12 @@ class JWTIdentificationMiddleware:
             return None
 
 
-        if 'Auth' not in request.headers:
+        if 'Auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
             print("Info : request with no jwt")
             return None
 
-        autorisationJWT = request.headers['Auth']
+        autorisationJWT = request.COOKIES['Auth']
 
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
@@ -95,7 +95,7 @@ class RawJsonToDataGetMiddleware:
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except BaseException as e:
-            request.Error_Data = e
+            request.Error_Data = "Warn body couldn't be read : ignore if body is supposed to be empty"
         return None
 
 
