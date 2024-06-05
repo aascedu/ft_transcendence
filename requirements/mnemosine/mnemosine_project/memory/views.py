@@ -11,6 +11,7 @@ class tournamentHistoryView(View):
     def get(self, request, id: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Connect yourself to fetch this data')
+        
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
@@ -87,12 +88,8 @@ class playerView(View):
         return save_response(request, player)
 
     def delete(self, request, id: int = 0):
-        if request.user.is_service is False:
+        if request.user.is_service is False or request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only service can delete a player')
-        try:
-            id = request.data['Id']
-        except KeyError as e:
-            return JsonBadRequest(request, f'misses value for key : {e.__str__()}')
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
