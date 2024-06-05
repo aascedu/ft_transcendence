@@ -103,10 +103,6 @@ async function reconnection_alert() {
     }
 }
 
-function fetch_error(error) {
-    console.error('Fetch problem:', error.message);
-}
-
 async function custom_error(response) {
     json = await response.json()
     if (json.Err === undefined) {
@@ -114,5 +110,8 @@ async function custom_error(response) {
     } else {
         console.error(json.Err)
     }
-    return new Error('HTTP error: ' + response.status)
+    const error = new Error('HTTP error: ' + response.status + ' : ' + json.Err)
+    error.name = json.Err
+    error.value = json
+    return error
 }

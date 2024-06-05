@@ -81,11 +81,13 @@ async function submitPassword(input, warning, locale, nickname, isAlert) {
             goToHomepageGame('.sign-in');
         }
     })
-    .catch (error => {
-        sendInvalidPassword(input, warning, locale);
-        //if ('Err' in result && result.Err == 'Forbiden : invalid password') {
-         //   sendInvalidPassword(input, warning, locale);
-        //}
+    .catch (async (errorPromise) => {
+        const error = await errorPromise;
+        if (error.name.includes('invalid password')) {
+            sendInvalidPassword(input, warning, locale);
+        } else {
+            console.error('An error occured : connection may be impossible');
+        }
     });
 }
 
