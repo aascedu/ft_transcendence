@@ -77,7 +77,7 @@ class JWTIdentificationMiddleware:
             try:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
+                response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
                 return response
 
         print("Info: request_user=", str(request.user))
