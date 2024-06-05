@@ -14,8 +14,8 @@ from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonFor
 
 def connection_response(request, jwt, refresh_token):
     response = JsonResponse(request, {"client": "Created"})
-    response.set_cookie("Auth", jwt)
-    response.set_cookie("Ref", refresh_token, path="/petrus/auth/JWT-refresh/")
+    response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
+    response.set_cookie("Ref", refresh_token, samesite='Strict', httponly=True, path="/petrus/auth/JWT-refresh/")
     return response
 
 class signinView(View):
@@ -141,5 +141,5 @@ class refreshView(View):
 
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Token": "refreshed"})
-        response.set_cookie('Auth', jwt)
+        response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
         return response
