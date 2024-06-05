@@ -39,14 +39,14 @@ class Client(models.Model):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
         }
 
     def friends_dict(self):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
         }
 
     def personal_dict(self):
@@ -56,7 +56,7 @@ class Client(models.Model):
             "Email": self.email,
             "Lang": self.lang_state(),
             "Font": self.font,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
             "Contrast-mode": self.contrast_mode,
             "Friends": self.list_friends(),
         }
@@ -97,6 +97,9 @@ class Client(models.Model):
     @staticmethod
     def get_by_nick(nick):
         return Client.objects.filter(nick=nick).first()
+
+def name_to_path(name):
+    return "/alfred/user/media/" + name + '/'
 
 
 class FriendshipRequest(models.Model):
