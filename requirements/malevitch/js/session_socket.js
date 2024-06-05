@@ -78,7 +78,7 @@ async function notificationNewFriendship(data) {
 
 	// if we are on homepage-game, add new friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
+		await clearHomepageContent();
 		await setHomepageContent();
 
 		g_state.pageToDisplay = '.homepage-game';
@@ -174,7 +174,7 @@ async function notificationNewClientConnected(data) {
 
 	// if we are on homepage-game, add friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
+		await clearHomepageContent();
 		await setHomepageContent();
 
 		g_state.pageToDisplay = '.homepage-game';

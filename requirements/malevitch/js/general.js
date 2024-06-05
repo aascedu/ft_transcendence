@@ -22,18 +22,24 @@ async function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
-	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
-		await setHomepageContent();
+	var	homepageHeader = document.querySelector('.homepage-header');
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
 
-		var	homepageHeader = document.querySelector('.homepage-header');
-		homepageHeader.classList.remove('visually-hidden');
-
-		var	homepagePicture = document.querySelector('.homepage-game-picture');
-		homepagePicture.classList.remove('visually-hidden');
-	}
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
+	}
+	if (g_state.pageToDisplay == '.homepage-id'
+		|| g_state.pageToDisplay == '.sign-in'
+		|| g_state.pageToDisplay == '.sign-up') {
+		homepageHeader.classList.add('visually-hidden');
+		homepagePicture.classList.add('visually-hidden');
+	}
+	if (g_state.pageToDisplay == '.homepage-game') {
+		await clearHomepageContent();
+		await setHomepageContent();
+
+		homepageHeader.classList.remove('visually-hidden');
+		homepagePicture.classList.remove('visually-hidden');
 	}
 	if (g_state.pageToDisplay != '.homepage-id' 
 		&& g_state.pageToDisplay != '.sign-in' 
@@ -144,7 +150,13 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 		var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
 		var	locale = prevSelectorImg.getAttribute('alt');
 
-		var	nextSelector = document.querySelector(next + '-language-selector');
+		var	nextSelector;
+		if (next == '.homepage-game') {
+			nextSelector = document.querySelector('.homepage-header-language-selector');
+		}
+		else {
+			nextSelector = document.querySelector(next + '-language-selector');
+		}
 		var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
 
 		if (nextSelectorImg.getAttribute('alt') !== locale) {
@@ -333,11 +345,17 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 	var	prevFontSizeInput = document.querySelector(previous + '-font-size');
 
 	if (prevFontSizeInput !== null) {
-		var	nextFontSizeInput = document.querySelector(next + '-font-size');
+		var	nextFontSizeInput;
+		if (next == '.homepage-game') {
+			nextFontSizeInput = document.querySelector('.accessibility-font-size');
+		}
+		else {
+			nextFontSizeInput = document.querySelector(next + '-font-size');
+		}
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
 
-		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
+		updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
 
@@ -553,7 +571,7 @@ async function setHomepageContent() {
 }
 
 async function goToHomepageGame(previous) {
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	// hide previous and display homepage content

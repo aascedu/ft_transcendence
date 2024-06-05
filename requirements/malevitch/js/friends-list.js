@@ -133,7 +133,7 @@ document.querySelector('.friends-list-icon').addEventListener('click', async fun
 	document.querySelector('.friends-list').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';

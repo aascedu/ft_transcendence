@@ -58,7 +58,7 @@ document.querySelector('.available-tournaments-icon').addEventListener('click', 
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';

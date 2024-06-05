@@ -115,7 +115,7 @@ document.querySelector('.my-tournaments-icon').addEventListener('click', async f
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';

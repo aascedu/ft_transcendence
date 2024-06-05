@@ -453,7 +453,7 @@ function clearTournamentInfo() {
 document.querySelector('.tournament-info-icon').addEventListener('click', async function() {
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';

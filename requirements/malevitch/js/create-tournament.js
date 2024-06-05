@@ -75,7 +75,7 @@ document.querySelector('.create-tournament-icon').addEventListener('click', asyn
 
 	hideEveryPage();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
