@@ -14,24 +14,14 @@ async function post_signup(id, password, mail) {
 }
 
 async function post_jwt_refresh() {
-    json = {Ref: sessionStorage.getItem(REF_TOKEN_NAME)};
     content = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Auth' : sessionStorage.getItem(JWT_NAME),
             },
-            body: JSON.stringify(json)
         };
 
-    sessionStorage.setItem(JWT_NAME, await fetch(add_petrus_in_url('/JWT-refresh/'), content)
-            .then(response => {
-                return response.json();
-            })
-            .then(data => {
-                return data.Auth;
-            })
-        );
+    return fetch(add_petrus_in_url('/JWT-refresh/'), content);
 }
 
 async function connect(id, password, nickname) {

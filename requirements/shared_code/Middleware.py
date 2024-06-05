@@ -54,12 +54,12 @@ class JWTIdentificationMiddleware:
             return None
 
 
-        if 'Auth' not in request.headers:
+        if 'Auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
             print("Info : request with no jwt")
             return None
 
-        autorisationJWT = request.headers['Auth']
+        autorisationJWT = request.COOKIES['Auth']
 
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
