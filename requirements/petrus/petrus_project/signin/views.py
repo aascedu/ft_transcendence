@@ -12,8 +12,8 @@ from shared.jwt_management import JWT
 from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
 from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
-def connection_response(request, jwt, refresh_token):
-    response = JsonResponse(request, {'client': 'Connected'})
+def connection_response(request, jwt, refresh_token, content={}):
+    response = JsonResponse(request, {'client': 'Connected'} | content)
     response.set_cookie('Auth', jwt, samesite='Strict', httponly=True)
     response.set_cookie('Ref', refresh_token, samesite='Strict', httponly=True, path='/petrus/auth/JWT-refresh/')
     return response
@@ -107,7 +107,8 @@ class signupView(View):
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = connection_response(request, jwt, refresh_token)
+        content = {"Client": client.id}
+        response = connection_response(request, jwt, refresh_token, content=content)
         return response
 
 class refreshView(View):
