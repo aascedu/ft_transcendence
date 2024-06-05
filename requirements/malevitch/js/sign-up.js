@@ -268,7 +268,7 @@ async function submitCreateAccount() {
 
 	g_userNick = nick;
 
-		const response = fetch_post(
+		const response = await fetch_post(
             '/petrus/auth/signup/',
             {
                 Nick: nick,
@@ -277,7 +277,7 @@ async function submitCreateAccount() {
                 Lang: lang,
                 Font: font,
             })
-        response.then(result => {
+        .then(result => {
 			g_userId = result.Client;
             jwt_management(result.Auth, result.Ref);
 			patchUserContent();
