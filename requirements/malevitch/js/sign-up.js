@@ -269,8 +269,7 @@ async function submitCreateAccount() {
 
 	g_userNick = nick;
 
-	try {
-		const response = await fetch_post(
+		const response = fetch_post(
             '/petrus/auth/signup/',
             {
                 Nick: nick,
@@ -278,23 +277,14 @@ async function submitCreateAccount() {
                 Pass: password,
                 Lang: lang,
                 Font: font,
-            }
-        );
-
-		if ('Err' in result) {
-			console.error('Error: ' + result.Err);
-		}
-		else {
-			console.log('Success sign-up : ' + result); // Remove after test (ELK)
+            })
+        response.then(result => {
 			g_userId = result.Client;
             jwt_management(result.Auth, result.Ref);
 			patchUserContent();
 			goToHomepageGame('.sign-up');
-		}
-	}
-	catch (error) {
-		console.error("Error:", error);
-	}
+		})
+        .catch(error => {console.error(error)});
 }
 
 async function patchUserContent() {
