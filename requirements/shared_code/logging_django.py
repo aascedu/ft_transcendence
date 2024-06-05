@@ -2,10 +2,13 @@ from logging import info, debug, warn, error, critical
 
 def logging_django(request, response, logging_function):
     log = {}
+
     if request is not None:
         log |= {'request': request_to_dict(request)}
     if response is not None:
         log |= {'response' : response_to_dict(response)}
+        if log['request']['path'] == '/metrics/metrics':
+            log['response']['response_body'] = 'Body ignored for this request'
     message = log['response'].get('Err', None)
     if message is not None:
         log |= {'message' : message}
