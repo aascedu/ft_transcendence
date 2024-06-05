@@ -80,14 +80,9 @@ async function fetch_patch(url, json) {
 }
 
 async function fetch_with_jwt(url, request) {
-    jwt = await sessionStorage.getItem(JWT_NAME)
-    if (jwt !== null) {
-        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
-    }
     response = await fetch(url, request);
     if (response.status == 401) {
         await reconnection_alert();
-        request.headers.Auth = sessionStorage.getItem(JWT_NAME);
         response = await fetch(url, request);
     }
     return response;
