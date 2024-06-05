@@ -41,7 +41,10 @@ def request_to_dict(request):
     }
 
 def response_to_dict(response):
-    response_body = response.content.decode('utf-8')
+    try:
+        response_body = response.content.decode('utf-8')
+    except UnicodeDecodeError:
+        response_body = {}
     status_code = response.status_code
     return {
         'status_code': status_code,
