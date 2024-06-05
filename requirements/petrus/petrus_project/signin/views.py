@@ -13,9 +13,9 @@ from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
 from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
 def connection_response(request, jwt, refresh_token):
-    response = JsonResponse(request, {"client": "Created"})
-    response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
-    response.set_cookie("Ref", refresh_token, samesite='Strict', httponly=True, path="/petrus/auth/JWT-refresh/")
+    response = JsonResponse(request, {'client': 'Connected'})
+    response.set_cookie('Auth', jwt, samesite='Strict', httponly=True)
+    response.set_cookie('Ref', refresh_token, samesite='Strict', httponly=True, path='/petrus/auth/JWT-refresh/')
     return response
 
 class signinView(View):
