@@ -224,7 +224,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     build: 
       context: ./requirements/apollo
       dockerfile: Dockerfile
@@ -244,6 +243,7 @@ services:
       indices.lifecycle.poll_interval: 10s
       cluster.name: ${CLUSTER_NAME}
       discovery.type: single-node
+      ELASTIC_USER: ${ELASTIC_USER}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       bootstrap.memory_lock: true
       network.host: 0.0.0.0
@@ -258,6 +258,7 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
@@ -278,8 +279,13 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      iris:
+        condition: service_healthy
     container_name: policy
     image: docker:latest
+    environment:
+      - "ELASTIC_USER=${ELASTIC_USER}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
     networks:
       - sentinel
       - internet_access
