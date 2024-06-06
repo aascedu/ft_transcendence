@@ -35,7 +35,7 @@ class RequestGame(View):
         return JsonResponse(request, 'Invitation successfully sent')
 
 class RequestGameResponse(View):
-    def post(self, request, requester: int, notified: int):
+    def post(self, request, requester: int, invited: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
         
@@ -44,22 +44,21 @@ class RequestGameResponse(View):
             str(requester), {
                 'type': 'SendToGame',
                 'player1': requester,
-                'player2': notified,
+                'player2': invited,
             }
         )
 
         # Sauf si on fait a la main dans le front ?
         async_to_sync(channel_layer.group_send)(
-            str(notified), {
+            str(invited), {
                 'type': 'SendToGame',
                 'player1': requester,
-                'player2': notified,
+                'player2': invited,
             }
         )
-        # Il faut envoyer a la bonne websocket
         # Mettre le mec unavailable pdt la recherche ?
 
-    def delete(self, request, requester: int, notified: int):
+    def delete(self, request, requester: int, invited: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
 
