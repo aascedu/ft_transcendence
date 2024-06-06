@@ -2,36 +2,23 @@
 
 FROM    nginx:1-alpine3.18
 
-#---- variables -------------------------------------------------------#
-
-ARG     PROXY_CONF
-RUN     export PROXY_CONF=PROXY_CONF
-
 #---- ModSecurity -----------------------------------------------------#
 
 COPY    requirements.txt /requirements.txt
-COPY    ModSecurity /ModSecurity
 
-#RUN     apk update && \
-#        apk upgrade && \
-#        cat requirements.txt | xargs apk add --no-cache && \
-#        rm requirements.txt && \
-#        git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity && \
-#        cd ModSecurity && \
-#        git submodule init && \
-#        git submodule update && \
-#        ./build.sh && \
-#        ./configure && \
-#        make && \
-#        make install
-
-#---- ModSecurity connector -------------------------------------------#
-
-RUN apk update && \
+RUN     apk update && \
         apk upgrade && \
         cat requirements.txt | xargs apk add --no-cache && \
-        make install -C /ModSecurity && \
         rm requirements.txt && \
+        git clone --depth 1 -b v3/master --single-branch https://github.com/SpiderLabs/ModSecurity && \
+        cd ModSecurity && \
+        git submodule init && \
+        git submodule update && \
+        ./build.sh && \
+        ./configure && \
+        make && \
+        make install && \
+        cd / && \
         git clone --depth 1 https://github.com/SpiderLabs/ModSecurity-nginx.git && \
         export NGINX_VERSION=$(nginx -v 2>&1 | cut -d'/' -f2) && \
         wget http://nginx.org/download/nginx-$NGINX_VERSION.tar.gz && \
@@ -59,7 +46,7 @@ COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
 
 COPY    conf/ /etc/nginx/modsec
 
-COPY    conf/${PROXY_CONF} /etc/nginx/nginx.conf
+COPY    conf/proxy.conf /etc/nginx/nginx.conf
 COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
@@ -82,7 +69,7 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
             -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
             { echo "SSL elastic certification failed"; exit 1; }
 
-# By default the Alphine image automatically streams Nginx logs (access and error logs) to stdout and stderr
+# By default the Alpine image automatically streams Nginx logs (access and error logs) to stdout and stderr
 # by creating a symbolic link from stdout to /var/log/nginx/access.log and stderr to /var/log/nginx/error.log
 # Lets remove these symbolic links so that we can setup a volume and persist the logs so that they are available
 # between restarts
