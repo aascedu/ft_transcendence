@@ -46,6 +46,18 @@ async function init_session_socket() {
             notificationGameAccepted(obj);
             return ;
         }
+		if (obj.type === "notification.game.refused") {
+            notificationGameRefused(obj);
+            return ;
+        }
+		if (obj.type === "notification.friendship.refused") {
+            notificationFriendshipRefused(obj);
+            return ;
+        }
+		if (obj.type === "notification.tournament.refused") {
+            notificationTournamentRefused(obj);
+            return ;
+        }
     }
 }
 
@@ -136,6 +148,7 @@ async function notificationTournamentRequest(data) {
 	var	tournamentElement = document.querySelector('.notif-tournament-invite .notif-info');
 
 	senderElement.textContent = userInfo.Nick;
+	senderElement.setAttribute('user-id', data.requester);
 	tournamentElement.textContent = data["tournament-name"];
 	tournamentElement.setAttribute('tournament-id', data["tournament-id"]);
 
@@ -163,6 +176,7 @@ async function notificationGameRequest(data) {
 	var	senderElement = document.querySelector('.notif-play-invite .notif-sender');
 
 	senderElement.textContent = userInfo.Nick;
+	senderElement.setAttribute('user-id', data.requester);
 
 	document.querySelector('.notif-play-invite').classList.remove('visually-hidden');
 	setAriaHidden();
@@ -209,6 +223,61 @@ async function notificationNewClientConnected(data) {
 	}
 	// load back header to add friend to available friends to play with
 	await loadHomepageHeader();
+}
+
+async function notificationGameRefused(data) {
+	clearHomepageHeader();
+	await loadHomepageHeader();
+
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			document.querySelector('.user-profile-play-icon').classList.remove('visually-hidden');
+			setAriaHidden();
+		}
+	}
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	if (g_state.pageToDisplay == '.tournament-info') {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+		await loadOngoingTournament(tournamentId);
+	}
+}
+
+async function notificationFriendshipRefused(data) {
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+			document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
+			setAriaHidden();
+		}
+	}
+}
+
+async function notificationTournamentRefused(data) {
+	clearHomepageHeader();
+	await loadHomepageHeader();
+
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			document.querySelector('.user-profile-play-icon').classList.remove('visually-hidden');
+			setAriaHidden();
+		}
+	}
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	if (g_state.pageToDisplay == '.tournament-info') {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+		await loadOngoingTournament(tournamentId);
+	}
 }
 
 async function notificationMessage(data) {

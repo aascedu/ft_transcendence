@@ -5,6 +5,7 @@ async function loadUserContent(id) {
 	var	addIcon = document.querySelector('.user-profile-add-icon');
 	var	pendingIcon = document.querySelector('.user-profile-pending-icon');
 	var	removeIcon = document.querySelector('.user-profile-remove-icon');
+	var	disconnectIcon = document.querySelector('.user-profile-disconnect-icon');
 
 	var userInfo;
 	var userNick = 'User';
@@ -98,6 +99,7 @@ async function loadUserContent(id) {
 		pendingIcon.classList.add('visually-hidden');
 		removeIcon.classList.add('visually-hidden');
 		removeIcon.removeAttribute('user-id');
+		disconnectIcon.classList.remove('visually-hidden');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
@@ -549,12 +551,32 @@ async function userProfileFriendRemove() {
 
 // Invite friend to play
 
-document.querySelector('.user-profile-play-icon').addEventListener('click', function() {
-	// send invite to friend
-	// var	friendId = document.querySelector('.user-profile-name').getAttribute('user-id');
-	// await invite_friend_to_play(friendId);
+document.querySelector('.user-profile-play-icon').addEventListener('click', async function() {
+	try {
+		// send invite to friend
+		var	friendId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		await invite_friend_to_game(friendId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 
 	this.classList.add('visually-hidden');
+});
+
+// Disconnect
+
+document.querySelector('.user-profile-disconnect-icon').addEventListener('click', function() {
+	hideEveryPage();
+	clearHomepageId();
+
+	// clear cookies
+
+	document.querySelector('.homepage-id-input').focus();
+
+	g_state.pageToDisplay = '.homepage-id';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 });
 
 // Keyboard navigation

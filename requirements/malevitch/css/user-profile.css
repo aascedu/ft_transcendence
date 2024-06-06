@@ -73,7 +73,8 @@
 
 .user-profile-add-icon,
 .user-profile-pending-icon,
-.user-profile-remove-icon {
+.user-profile-remove-icon,
+.user-profile-disconnect-icon {
 	top: 16px;
 	right: 16px;
 }
