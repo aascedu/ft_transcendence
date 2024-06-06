@@ -9,7 +9,7 @@ urlpatterns = [
     path("friendship/<int:requester>/", views.friendship),
     path("delete-friend-request/<int:requester>/", views.friendshipRequest),
     path("friend-request/<int:requester>/", views.friendshipRequest),
-    path("delete-friend/<int:requester>/", views.frienshipSuppressed),
+    path("delete-friend/<int:requester>/", views.friendshipSuppressed),
     path("game-request/<int:requester>/", views.gameRequest),
     path("tournament-request/<int:requester>/", views.tournamentRequest),
 ]
