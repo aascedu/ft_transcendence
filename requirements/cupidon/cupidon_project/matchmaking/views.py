@@ -34,6 +34,20 @@ class RequestGame(View):
 
         return JsonResponse(request, {'Msg': 'Invitation successfully sent'})
 
+    def delete(self, request):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only authentified player can cancel invitation')
+
+        # Check if the room exists ?
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            request.user.id, {
+                'type': 'Leave',
+           }
+        )
+
+        return JsonResponse(request, {'Msg': 'Invitation successfully canceled'})    
+
 class RequestGameResponse(View):
     def post(self, request, requester: int, invited: int):
         if request.user.is_autenticated is False:
@@ -48,17 +62,9 @@ class RequestGameResponse(View):
             }
         )
 
-        # Sauf si on fait a la main dans le front ?
-        async_to_sync(channel_layer.group_send)(
-            str(invited), {
-                'type': 'SendToGame',
-                'player1': requester,
-                'player2': invited,
-            }
-        )
         # Mettre le mec unavailable pdt la recherche ?
 
-        return JsonResponse(request, {'Msg': 'Invitation to game accepted'})
+        return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited),})
 
     def delete(self, request, requester: int, invited: int):
         if request.user.is_autenticated is False:
