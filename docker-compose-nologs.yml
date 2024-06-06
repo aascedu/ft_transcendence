@@ -58,12 +58,7 @@ services:
       tutum:
         condition: service_started
     container_name: aegis
-    image: aegis
-    build:
-      context: ./requirements/aegis
-      dockerfile: Dockerfile
-      args:
-        PROXY_CONF: $PROXY_CONF
+    image: aascedu/nginx-modsec:nologs
     env_file: .env
     ports:
       # - "80:80"
