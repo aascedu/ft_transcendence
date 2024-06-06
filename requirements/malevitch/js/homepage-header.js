@@ -41,7 +41,16 @@ async function loadHomepageHeader() {
 	}
 
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-		item.addEventListener('click', function() {
+		item.addEventListener('click', async function() {
+			try {
+				// send invite
+				var	friendId = item.getAttribute('user-id');
+				await invite_friend_to_game(friendId);
+			} catch (error) {
+				console.error(error);
+				return ;
+			}
+
 			// close header menu and toggle back invites
 			document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
 			document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
@@ -51,10 +60,6 @@ async function loadHomepageHeader() {
 			document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
 
 			setAriaHidden();
-
-			// send invite
-			// var	friendId = item.getAttribute('user-id');
-			// await invite_friend_to_play(friendId);
 
 			// remove invited friend from list
 			item.parentNode.removeChild(item);

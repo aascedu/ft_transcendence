@@ -18,7 +18,35 @@ let g_state = {
 	pageToDisplay: ".homepage-id"
 };
 
+async function determine_state() {
+    var state = {}
+
+    content = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+    return await fetch('/petrus/auth/JWT-refresh/', content).then(response => {
+        if (!response.ok) {
+            state.pageToDisplay = '.homepage-id';
+        }
+        else {
+            state.pageToDisplay = '.homepage-game';
+        }
+		return state;
+    })
+	.catch(error => {
+		console.error(error);
+	});
+}
+
 async function render() {
+    if (g_state.pageToDisplay == '.homepage-id') {
+        g_state = await determine_state();
+    }
+
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
@@ -183,6 +211,24 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 			}
 		}
 	}
+}
+
+// Reset language selector when disconnecting
+
+function resetHomepageIdLanguageSelector() {
+	var	languageSelector = document.querySelector('.homepage-id-language-selector');
+	
+	languageSelector.querySelector('button img').setAttribute('src', 'assets/lang/flag-en.png');
+	languageSelector.querySelector('button img').setAttribute('alt', 'en');
+
+	var	dropdownLanguages = languageSelector.querySelectorAll('ul li a img');
+
+	dropdownLanguages[0].setAttribute('src', 'assets/lang/flag-fr.png');
+	dropdownLanguages[0].setAttribute('alt', 'fr');
+	dropdownLanguages[1].setAttribute('src', 'assets/lang/flag-zh.png');
+	dropdownLanguages[1].setAttribute('alt', 'zh');
+
+	switchLanguageContent('en');
 }
 
 // Language selector : updates the page language / updates the selector images.
@@ -397,12 +443,12 @@ async function setHomepageContent() {
 		if (userInfo.Lang != locale) {
 			var	localeImg = document.querySelector('.homepage-header-language-selector button img');
 			var	localeImgSrc = localeImg.getAttribute('src');
-	
+
 			document.querySelectorAll('.homepage-header-language-selector img').forEach(function(item) {
 				if (item.getAttribute('alt') == userInfo.Lang) {
 					var	userLangBtn = item;
 					var	userLangImg = item.getAttribute('src');
-	
+
 					userLangBtn.setAttribute('alt', locale);
 					localeImg.setAttribute('alt', userInfo.Lang);
 					localeImg.setAttribute('src', userLangImg);
@@ -412,20 +458,20 @@ async function setHomepageContent() {
 			switchLanguageAttr(userInfo.Lang, 'placeholder');
 			switchLanguageContent(userInfo.Lang);
 		}
-	
+
 		// change font if needed
 		if (userInfo.Font != g_prevFontSize) {
 			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
 			g_prevFontSize = userInfo.Font;
 		}
 		document.querySelector('.accessibility-font-size').value = userInfo.Font;
-	
+
 		// change contrast mode if needed
 		if (userInfo["Contrast-mode"] == true) {
 			contrastMode();
 			document.querySelector('.accessibility .switch input').checked = true;
 		}
-	
+
 		// change pic if needed
 		if (userInfo.Pic != null) {
 			document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
@@ -457,14 +503,14 @@ async function setHomepageContent() {
 
 		for (i = 0; i < friendsList.length; i++) {
 			if (friendsOnline[friendsList[i].Id] == true) {
-	
+
 				friendId = friendsList[i].Id;
 				friendNick = friendsList[i].Nick;
 				friendPic = friendsList[i].Pic;
 				if (friendPic == null) {
 					friendPic = '/assets/general/pong.png';
 				}
-	
+
 				friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
 				<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
 				<div class="user-card-name unselectable">` + friendNick + `</div>
@@ -472,7 +518,7 @@ async function setHomepageContent() {
 				<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
 				</div>
 				</button>`);
-	
+
 				numOfFriendsOnline++;
 			}
 		}
@@ -516,24 +562,24 @@ async function setHomepageContent() {
 		var	totalTime = 0;
 		var	score;
 		var	opponent;
-	
+
 		document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
 			item.classList.add('visually-hidden');
 		});
-	
+
 		for (i = 0; i < history.length; i++) {
 			if (history[i].Winner == g_userId) {
 				score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
 				opponent = await get_user_info(history[i].Loser);
 				opponent = opponent.Nick;
-	
+
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
 					<div class="homepage-game-content-history-card-result">` + score + `</div>
 					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
 				</div>`);
-	
+
 				numWins++;
 				totalPoints += history[i]["Loser-score"];
 			}
@@ -541,19 +587,19 @@ async function setHomepageContent() {
 				score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
 				opponent = await get_user_info(history[i].Winner);
 				opponent = opponent.Nick;
-	
+
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
 					<div class="homepage-game-content-history-card-result">` + score + `</div>
 					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
 				</div>`);
-	
+
 				totalPoints += history[i]["Winner-score"];
 			}
 			totalTime += history[i].Time;
 		}
-	
+
 		if (history.length == 0) {
 			document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
 				item.classList.remove('visually-hidden');
@@ -680,4 +726,15 @@ function hideEveryPage() {
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
 	document.querySelector('.accessibility').classList.add('visually-hidden');
+}
+
+//
+
+function clearHomepageId() {
+	document.querySelector('.homepage-header').classList.add('visually-hidden');
+	document.querySelector('.homepage-game-picture').classList.add('visually-hidden');
+
+	document.querySelector('.homepage-id-input').value = '';
+	document.querySelector('.homepage-id-font-size').value = 0;
+	// resetHomepageIdLanguageSelector();
 }
