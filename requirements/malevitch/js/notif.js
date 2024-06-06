@@ -138,9 +138,12 @@ function acceptPlayInvite() {
 	// play
 }
 
-function dismissPlayInvite() {
+async function dismissPlayInvite() {
 	// notif already closed by forEach
+	
 	// tell to the sender that user dismissed invitation
+	var	requester = document.querySelector('.notif-play-invite').getAttribute('user-id');
+	await refuse_invitation_to_game(requester, g_userId);
 }
 
 // Searching match

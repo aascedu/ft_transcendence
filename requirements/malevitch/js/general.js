@@ -213,6 +213,24 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 	}
 }
 
+// Reset language selector when disconnecting
+
+function resetHomepageIdLanguageSelector() {
+	var	languageSelector = document.querySelector('.homepage-id-language-selector');
+	
+	languageSelector.querySelector('button img').setAttribute('src', 'assets/lang/flag-en.png');
+	languageSelector.querySelector('button img').setAttribute('alt', 'en');
+
+	var	dropdownLanguages = languageSelector.querySelectorAll('ul li a img');
+
+	dropdownLanguages[0].setAttribute('src', 'assets/lang/flag-fr.png');
+	dropdownLanguages[0].setAttribute('alt', 'fr');
+	dropdownLanguages[1].setAttribute('src', 'assets/lang/flag-zh.png');
+	dropdownLanguages[1].setAttribute('alt', 'zh');
+
+	switchLanguageContent('en');
+}
+
 // Language selector : updates the page language / updates the selector images.
 
 document.querySelectorAll('.language-selector-dropdown').forEach(function(item) {
@@ -708,4 +726,15 @@ function hideEveryPage() {
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
 	document.querySelector('.accessibility').classList.add('visually-hidden');
+}
+
+//
+
+function clearHomepageId() {
+	document.querySelector('.homepage-header').classList.add('visually-hidden');
+	document.querySelector('.homepage-game-picture').classList.add('visually-hidden');
+
+	document.querySelector('.homepage-id-input').value = '';
+	document.querySelector('.homepage-id-font-size').value = 0;
+	resetHomepageIdLanguageSelector();
 }

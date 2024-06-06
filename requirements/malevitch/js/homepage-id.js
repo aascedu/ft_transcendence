@@ -49,7 +49,6 @@ async function submitNickname(nickname) {
 	g_userNick = nickname;
 	document.querySelector('.homepage-id').classList.add('visually-hidden');
 
-
     await get_info_from_nick(nickname)
 		.then (data => {
 			g_userId = data.Id;
