@@ -43,7 +43,7 @@ class tournamentManagement(View):
             admin = data['Admin']
             invited = data['Invited']
         except (KeyError, TypeError, ValueError) as e:
-            return JsonBadRequest(request, {'Err': f'missing {e} to create tournament'})
+            return JsonBadRequest(request, f'missing {e} to create tournament')
 
         tournamentId = 0
         if len(tournaments) > 0:
@@ -125,7 +125,7 @@ class tournamentEntry(View):
             if playerId in tournaments[tournamentId].invited:
                 tournaments[tournamentId].invited.remove(playerId)
         except Exception as e:
-            return JsonBadRequest(request, {'Err': e.__str__()})
+            return JsonBadRequest(request, e.__str__())
 
         updateTournament(tournamentId)
         logging.info("Player " + str(playerId) + " has joined tournament " + str(tournamentId))
@@ -219,7 +219,7 @@ class gameResult(View):
 
         data = request.data
         if 'tournamentId' not in data or 'game' not in data:
-            return JsonBadRequest(request, {'Err': 'tournamentId or game not provided'})
+            return JsonBadRequest(request, 'tournamentId or game not provided')
         tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game'])
 
@@ -288,7 +288,7 @@ class startTournament(View):
 
         updateTournament(tournamentId)
         logging.info("Tournament " + str(tournamentId) + " is starting round 1")
-        return JsonResponse(request, "Tournament started")
+        return JsonResponse(request, {'Msg': "Tournament started"})
 
 ############## Debug ##############
 def printData(data):

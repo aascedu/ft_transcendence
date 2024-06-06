@@ -16,7 +16,7 @@ class RequestGame(View):
             p1 = request.user.id
             p2 = data['PlayerToInvite']
         except (KeyError, TypeError, ValueError) as e:
-            return JsonBadRequest(request, {'Err': f'missing {e} to create tournament'})
+            return JsonBadRequest(request, f'missing {e} to request game')
         
         try:
             response = requests.post(
@@ -32,7 +32,7 @@ class RequestGame(View):
             logging.error("Failed to send invitation to player " + str(p2))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
-        return JsonResponse(request, 'Invitation successfully sent')
+        return JsonResponse(request, {'Msg': 'Invitation successfully sent'})
 
 class RequestGameResponse(View):
     def post(self, request, requester: int, invited: int):
@@ -58,6 +58,8 @@ class RequestGameResponse(View):
         )
         # Mettre le mec unavailable pdt la recherche ?
 
+        return JsonResponse(request, {'Msg': 'Invitation to game accepted'})
+
     def delete(self, request, requester: int, invited: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
@@ -69,3 +71,5 @@ class RequestGameResponse(View):
             }
         )
         # Notif ?
+
+        return JsonResponse(request, {'Msg': 'Invitation to game refused'})
