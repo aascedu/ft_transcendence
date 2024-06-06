@@ -208,8 +208,9 @@ services:
     networks:
       - alfred_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d user_management -U alfred"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Elastisearch container
@@ -607,8 +608,9 @@ services:
     networks:
       - mnemosine_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d memory_management -U mnemosine"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Authentification container
@@ -652,8 +654,9 @@ services:
     networks:
       - petrus_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d auth_management -U petrus"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Vault container
