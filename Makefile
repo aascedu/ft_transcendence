@@ -37,10 +37,10 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | copyfile volumes modsec tutum
+debug: | copyfile volumes tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes modsec tutum
+all: | copyfile volumes tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
 up: | copyfile volumes tutum
@@ -50,7 +50,7 @@ ifeq ($(CI), ci)
 build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | copyfile volumes modsec
+build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
@@ -89,9 +89,6 @@ volumes:
 
 copyfile:
 	./tools/copyfile.sh $(DJANGO_CTT)
-
-modsec:
-	./tools/modsec.sh
 
 tutum:
 	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
