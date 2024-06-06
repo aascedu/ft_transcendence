@@ -1,4 +1,6 @@
-from user_management.models import Client, FriendshipRequest
+from django.http.response import HttpResponse
+from user_management.models import Client, FriendshipRequest, name_to_path
+
 from django.views import View
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
@@ -164,7 +166,7 @@ class avatarView(View):
     def get(self, request, id: int):
         try:
             client = Client.objects.get(id=id)
-            url = client.avatar.url if client.avatar else None
+            url = name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
         except ObjectDoesNotExist:
             return JsonNotFound(request, 'no client for this id')
         return JsonResponse(request, {"url": url})

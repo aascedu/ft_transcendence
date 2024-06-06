@@ -54,12 +54,12 @@ class JWTIdentificationMiddleware:
             return None
 
 
-        if 'Auth' not in request.headers:
+        if 'Auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
             print("Info : request with no jwt")
             return None
 
-        autorisationJWT = request.headers['Auth']
+        autorisationJWT = request.COOKIES['Auth']
 
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
@@ -77,7 +77,7 @@ class JWTIdentificationMiddleware:
             try:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
-                response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"}, status=404)
+                response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
                 return response
 
         print("Info: request_user=", str(request.user))
@@ -95,7 +95,7 @@ class RawJsonToDataGetMiddleware:
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except BaseException as e:
-            request.Error_Data = {"Err": e}
+            request.Error_Data = "Warn body couldn't be read : ignore if body is supposed to be empty"
         return None
 
 

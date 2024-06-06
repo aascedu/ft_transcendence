@@ -1,3 +1,4 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 import requests
 from shared.utils import JsonBadRequest
@@ -8,7 +9,11 @@ from shared.validators import NickNameValidator
 class Client(models.Model):
     font_size_choices = [(0, "0"), (1,"1"), (2, "2"),  (3, "3"), (4, "4"), (5,"5")]
     languages_choices = [(1, "fr"),  (2, "en"), (3, "zh")]
-    avatar = models.ImageField(upload_to='avatars/', blank=True)
+    avatar = models.ImageField(upload_to='avatars/', blank=True,
+                    validators=[
+                        FileExtensionValidator(['.png', '.jpg', '.jpeg'])
+                    ]
+    )
     id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=16, unique=True,
                     validators=[NickNameValidator])
@@ -39,14 +44,14 @@ class Client(models.Model):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
         }
 
     def friends_dict(self):
         return {
             "Id": self.id,
             "Nick": self.nick,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
         }
 
     def personal_dict(self):
@@ -56,7 +61,7 @@ class Client(models.Model):
             "Email": self.email,
             "Lang": self.lang_state(),
             "Font": self.font,
-            "Pic": self.avatar.url if self.avatar else None,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
             "Contrast-mode": self.contrast_mode,
             "Friends": self.list_friends(),
         }
@@ -97,6 +102,9 @@ class Client(models.Model):
     @staticmethod
     def get_by_nick(nick):
         return Client.objects.filter(nick=nick).first()
+
+def name_to_path(name):
+    return "/alfred/user/media/" + name + '/'
 
 
 class FriendshipRequest(models.Model):

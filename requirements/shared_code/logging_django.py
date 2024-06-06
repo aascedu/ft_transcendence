@@ -2,10 +2,13 @@ from logging import info, debug, warn, error, critical
 
 def logging_django(request, response, logging_function):
     log = {}
+
     if request is not None:
         log |= {'request': request_to_dict(request)}
     if response is not None:
         log |= {'response' : response_to_dict(response)}
+        if log['request']['path'] == '/metrics/metrics':
+            log['response']['response_body'] = 'Body ignored for this request'
     message = log['response'].get('Err', None)
     if message is not None:
         log |= {'message' : message}
@@ -37,11 +40,14 @@ def request_to_dict(request):
         'remote_addr': remote_addr,
         'ip_client': ip_client,
         'body': data,
-        'error': error
+        'error': str(error)
     }
 
 def response_to_dict(response):
-    response_body = response.content.decode('utf-8')
+    try:
+        response_body = response.content.decode('utf-8')
+    except UnicodeDecodeError:
+        response_body = {}
     status_code = response.status_code
     return {
         'status_code': status_code,

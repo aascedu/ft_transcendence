@@ -12,6 +12,12 @@ from shared.jwt_management import JWT
 from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
 from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
+def connection_response(request, jwt, refresh_token):
+    response = JsonResponse(request, {'client': 'Connected'})
+    response.set_cookie('Auth', jwt, samesite='Strict', httponly=True)
+    response.set_cookie('Ref', refresh_token, samesite='Strict', httponly=True, path='/petrus/auth/JWT-refresh/')
+    return response
+
 class signinView(View):
     """ se login """
     def post(self, request, string: str):
@@ -38,7 +44,8 @@ class signinView(View):
             return JsonForbidden(request, "invalid password")
         refresh_token = JWT.payloadToJwt(client.toDict(), JWT.privateKey)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Client": "connected", "Ref": refresh_token, "Auth": jwt})
+
+        response = connection_response(request, jwt, refresh_token)
         logging.info("Client connected")
         return response
 
@@ -100,15 +107,14 @@ class signupView(View):
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Client": client.id, "ref": refresh_token, 'Auth': jwt})
-        logging.info("Client created")
+        response = connection_response(request, jwt, refresh_token)
         return response
 
 class refreshView(View):
     def post(self, request):
         try:
-            token = request.data['Ref']
-            expired_token = request.headers['Auth']
+            token = request.COOKIES['Ref']
+            expired_token = request.COOKIES['Auth']
         except KeyError as e:
             return JsonBadRequest(request, f"Key : {str(e)} not provided.")
         try:
@@ -134,5 +140,6 @@ class refreshView(View):
             return JsonErrResponse(request, "Clients doesn't exist anymore", status=404)
 
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Token": "refreshed", 'Auth': jwt})
+        response = JsonResponse(request, {"Token": "refreshed"})
+        response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
         return response
