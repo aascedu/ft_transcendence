@@ -22,14 +22,23 @@ async function render() {
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
+	var	homepageHeader = document.querySelector('.homepage-header');
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+
+	if (g_state.pageToDisplay == '.homepage-id') {
+		document.querySelector('.homepage-id-input').focus();
+	}
+	if (g_state.pageToDisplay == '.homepage-id'
+		|| g_state.pageToDisplay == '.sign-in'
+		|| g_state.pageToDisplay == '.sign-up') {
+		homepageHeader.classList.add('visually-hidden');
+		homepagePicture.classList.add('visually-hidden');
+	}
 	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
+		await clearHomepageContent();
 		await setHomepageContent();
 
-		var	homepageHeader = document.querySelector('.homepage-header');
 		homepageHeader.classList.remove('visually-hidden');
-
-		var	homepagePicture = document.querySelector('.homepage-game-picture');
 		homepagePicture.classList.remove('visually-hidden');
 	}
 	if (g_state.pageToDisplay == '.homepage-id') {
@@ -44,14 +53,6 @@ async function render() {
 	}
 
 	setAriaHidden();
-
-	// A ENLEVER
-
-	// var	homepageHeader = document.querySelector('.homepage-header');
-	// homepageHeader.classList.remove('visually-hidden');
-
-	// var	homepagePicture = document.querySelector('.homepage-game-picture');
-	// homepagePicture.classList.remove('visually-hidden');
 }
 
 window.history.replaceState(g_state, null, "");
@@ -152,7 +153,13 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 		var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
 		var	locale = prevSelectorImg.getAttribute('alt');
 
-		var	nextSelector = document.querySelector(next + '-language-selector');
+		var	nextSelector;
+		if (next == '.homepage-game') {
+			nextSelector = document.querySelector('.homepage-header-language-selector');
+		}
+		else {
+			nextSelector = document.querySelector(next + '-language-selector');
+		}
 		var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
 
 		if (nextSelectorImg.getAttribute('alt') !== locale) {
@@ -341,11 +348,17 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 	var	prevFontSizeInput = document.querySelector(previous + '-font-size');
 
 	if (prevFontSizeInput !== null) {
-		var	nextFontSizeInput = document.querySelector(next + '-font-size');
+		var	nextFontSizeInput;
+		if (next == '.homepage-game') {
+			nextFontSizeInput = document.querySelector('.accessibility-font-size');
+		}
+		else {
+			nextFontSizeInput = document.querySelector(next + '-font-size');
+		}
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
 
-		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
+		updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
 
@@ -373,95 +386,113 @@ function clearHomepageContent() {
 }
 
 async function setHomepageContent() {
-	const userInfo = await get_user_info(g_userId);
 
-	// change lang if needed
-	var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
-	if (userInfo.Lang != locale) {
-		var	localeImg = document.querySelector('.homepage-header-language-selector button img');
-		var	localeImgSrc = localeImg.getAttribute('src');
+	var	userInfo;
 
-		document.querySelectorAll('.homepage-header-language-selector img').forEach(function(item) {
-			if (item.getAttribute('alt') == userInfo.Lang) {
-				var	userLangBtn = item;
-				var	userLangImg = item.getAttribute('src');
+	try {
+		userInfo = await get_user_info(g_userId);
 
-				userLangBtn.setAttribute('alt', locale);
-				localeImg.setAttribute('alt', userInfo.Lang);
-				localeImg.setAttribute('src', userLangImg);
-				userLangBtn.setAttribute('src', localeImgSrc);
-			}
-		});
-		switchLanguageAttr(userInfo.Lang, 'placeholder');
-		switchLanguageContent(userInfo.Lang);
-	}
+		// change lang if needed
+		var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
+		if (userInfo.Lang != locale) {
+			var	localeImg = document.querySelector('.homepage-header-language-selector button img');
+			var	localeImgSrc = localeImg.getAttribute('src');
+	
+			document.querySelectorAll('.homepage-header-language-selector img').forEach(function(item) {
+				if (item.getAttribute('alt') == userInfo.Lang) {
+					var	userLangBtn = item;
+					var	userLangImg = item.getAttribute('src');
+	
+					userLangBtn.setAttribute('alt', locale);
+					localeImg.setAttribute('alt', userInfo.Lang);
+					localeImg.setAttribute('src', userLangImg);
+					userLangBtn.setAttribute('src', localeImgSrc);
+				}
+			});
+			switchLanguageAttr(userInfo.Lang, 'placeholder');
+			switchLanguageContent(userInfo.Lang);
+		}
+	
+		// change font if needed
+		if (userInfo.Font != g_prevFontSize) {
+			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
+			g_prevFontSize = userInfo.Font;
+		}
+		document.querySelector('.accessibility-font-size').value = userInfo.Font;
+	
+		// change contrast mode if needed
+		if (userInfo["Contrast-mode"] == true) {
+			contrastMode();
+			document.querySelector('.accessibility .switch input').checked = true;
+		}
+	
+		// change pic if needed
+		if (userInfo.Pic != null) {
+			document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
+			g_userPic = userInfo.Pic;
+		}
 
-	// change font if needed
-	if (userInfo.Font != g_prevFontSize) {
-		updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
-		g_prevFontSize = userInfo.Font;
-	}
-	document.querySelector('.accessibility-font-size').value = userInfo.Font;
-
-	// change contrast mode if needed
-	if (userInfo["Contrast-mode"] == true) {
-		contrastMode();
-		document.querySelector('.accessibility .switch input').checked = true;
-	}
-
-	// change pic if needed
-	if (userInfo.Pic != null) {
-		document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
-		g_userPic = userInfo.Pic;
+	} catch (error) {
+		console.error(error);
 	}
 
 	// show friends
-	var	friendsList = await get_friend(g_userId);
-	friendsList = friendsList.Friends;
 
-	var	friendsOnline = await get_friend_list_online(g_userId);
-	friendsOnline = friendsOnline["online-status"];
+	var	friendsList;
+	var	friendsOnline;
 
-	var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
-	var	numOfFriendsOnline = 0;
-	var	friendId;
-	var	friendNick;
-	var	friendPic;
+	try {
 
-	for (i = 0; i < friendsList.length; i++) {
-		if (friendsOnline[friendsList[i].Id] == true) {
+		friendsList = await get_friend(g_userId);
+		friendsList = friendsList.Friends;
 
-			friendId = friendsList[i].Id;
-			friendNick = friendsList[i].Nick;
-			friendPic = friendsList[i].Pic;
-			if (friendPic == null) {
-				friendPic = '/assets/general/pong.png';
+		friendsOnline = await get_friend_list_online(g_userId);
+		friendsOnline = friendsOnline["online-status"];
+
+		var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
+		var	numOfFriendsOnline = 0;
+		var	friendId;
+		var	friendNick;
+		var	friendPic;
+
+		for (i = 0; i < friendsList.length; i++) {
+			if (friendsOnline[friendsList[i].Id] == true) {
+	
+				friendId = friendsList[i].Id;
+				friendNick = friendsList[i].Nick;
+				friendPic = friendsList[i].Pic;
+				if (friendPic == null) {
+					friendPic = '/assets/general/pong.png';
+				}
+	
+				friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
+				<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
+				<div class="user-card-name unselectable">` + friendNick + `</div>
+				<div class="user-card-picture">
+				<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+				</div>
+				</button>`);
+	
+				numOfFriendsOnline++;
 			}
-
-			friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
-			<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
-			<div class="user-card-name unselectable">` + friendNick + `</div>
-			<div class="user-card-picture">
-			<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
-			</div>
-			</button>`);
-
-			numOfFriendsOnline++;
 		}
-	}
 
-	if (friendsList.length == 0 || numOfFriendsOnline == 0) {
+		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
+			document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
+		}
+
+	} catch (error) {
 		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
 	}
 
     // Load friends profile
     document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
-        item.addEventListener('click', function () {
+        item.addEventListener('click', async function () {
             document.querySelector('.user-profile-remove-icon').focus();
 
             clearUserContent();
             console.log(item.getAttribute('user-id'));
-            loadUserContent(item.getAttribute('user-id'));
+            await loadUserContent(item.getAttribute('user-id'));
 
             hideEveryPage();
 
@@ -473,53 +504,68 @@ async function setHomepageContent() {
 
 	// History and stats
 
-	var	history = await get_game_history(g_userId);
-	history = history.History;
-	var	historyContainer = document.querySelector('.homepage-history-content-card-container');
-	var	numWins = 0;
-	var	totalPoints = 0;
-	var	totalTime = 0;
-	var	score;
-	var	opponent;
+	var	history;
 
-	document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
-		item.classList.add('visually-hidden');
-	});
+	try {
 
-	for (i = 0; i < history.length; i++) {
-		if (history[i].Winner == g_userId) {
-			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
-			opponent = await get_user_info(history[i].Loser);
-			opponent = opponent.Nick;
-
-			historyContainer.insertAdjacentHTML('beforeend', `\
-			<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
-				<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
-				<div class="homepage-game-content-history-card-result">` + score + `</div>
-				<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
-			</div>`);
-
-			numWins++;
-			totalPoints += history[i]["Loser-score"];
+		history = await get_game_history(g_userId);
+		history = history.History;
+		var	historyContainer = document.querySelector('.homepage-history-content-card-container');
+		var	numWins = 0;
+		var	totalPoints = 0;
+		var	totalTime = 0;
+		var	score;
+		var	opponent;
+	
+		document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
+			item.classList.add('visually-hidden');
+		});
+	
+		for (i = 0; i < history.length; i++) {
+			if (history[i].Winner == g_userId) {
+				score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
+				opponent = await get_user_info(history[i].Loser);
+				opponent = opponent.Nick;
+	
+				historyContainer.insertAdjacentHTML('beforeend', `\
+				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
+					<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
+					<div class="homepage-game-content-history-card-result">` + score + `</div>
+					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+				</div>`);
+	
+				numWins++;
+				totalPoints += history[i]["Loser-score"];
+			}
+			else {
+				score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
+				opponent = await get_user_info(history[i].Winner);
+				opponent = opponent.Nick;
+	
+				historyContainer.insertAdjacentHTML('beforeend', `\
+				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
+					<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
+					<div class="homepage-game-content-history-card-result">` + score + `</div>
+					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+				</div>`);
+	
+				totalPoints += history[i]["Winner-score"];
+			}
+			totalTime += history[i].Time;
 		}
-		else {
-			score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
-			opponent = await get_user_info(history[i].Winner);
-			opponent = opponent.Nick;
-
-			historyContainer.insertAdjacentHTML('beforeend', `\
-			<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
-				<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
-				<div class="homepage-game-content-history-card-result">` + score + `</div>
-				<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
-			</div>`);
-
-			totalPoints += history[i]["Winner-score"];
+	
+		if (history.length == 0) {
+			document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
+				item.classList.remove('visually-hidden');
+			});
+			return ;
 		}
-		totalTime += history[i].Time;
-	}
 
-	if (history.length == 0) {
+	} catch (error) {
+		console.error();
+		document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
+			item.parentElement.removeChild(item);
+		});
 		document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
 			item.classList.remove('visually-hidden');
 		});
@@ -561,7 +607,7 @@ async function setHomepageContent() {
 }
 
 async function goToHomepageGame(previous) {
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	// hide previous and display homepage content

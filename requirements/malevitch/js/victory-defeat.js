@@ -5,7 +5,7 @@ document.querySelector('.victory-defeat-home').addEventListener('click', async f
 
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
