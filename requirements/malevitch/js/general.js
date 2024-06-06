@@ -28,24 +28,27 @@ async function determine_state() {
             },
         };
 
-    fetch('/petrus/auth/JWT-refresh/', content).then(response => {
+    return await fetch('/petrus/auth/JWT-refresh/', content).then(response => {
         if (!response.ok) {
-            state.pageToDisplay = '.homepage-id'
+            state.pageToDisplay = '.homepage-id';
         }
         else {
-            state.pageToDisplay = '.homepage-game'
+            state.pageToDisplay = '.homepage-game';
         }
-    });
-    return state;
+		return state;
+    })
+	.catch(error => {
+		console.error(error);
+	});
 }
 
 async function render() {
-	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
-	pageToDisplay.classList.remove('visually-hidden');
-
     if (g_state.pageToDisplay == '.homepage-id') {
         g_state = await determine_state();
     }
+
+	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
+	pageToDisplay.classList.remove('visually-hidden');
 
 	var	homepageHeader = document.querySelector('.homepage-header');
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
