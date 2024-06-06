@@ -63,6 +63,7 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             await self.close()
 
+        # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
 
     async def disconnect(self, close_code):

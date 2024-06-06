@@ -6,6 +6,14 @@ from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, 
 import requests
 import logging
 
+def updateTournament(tournamentId):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        str(tournamentId), {
+            'type': 'TournamentState'
+        }
+    )
+
 class availableTournamentView(View):
     def get(self, request):
         if request.user.is_autenticated is False:
@@ -35,7 +43,7 @@ class tournamentManagement(View):
             admin = data['Admin']
             invited = data['Invited']
         except (KeyError, TypeError, ValueError) as e:
-            return JsonBadRequest(request, {'Err': f'missing {e} to create tournament'})
+            return JsonBadRequest(request, f'missing {e} to create tournament')
 
         tournamentId = 0
         if len(tournaments) > 0:
@@ -93,6 +101,7 @@ class tournamentEntry(View):
             }
         )
 
+        updateTournament(tournamentId)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
@@ -116,8 +125,9 @@ class tournamentEntry(View):
             if playerId in tournaments[tournamentId].invited:
                 tournaments[tournamentId].invited.remove(playerId)
         except Exception as e:
-            return JsonBadRequest(request, {'Err': e.__str__()})
+            return JsonBadRequest(request, e.__str__())
 
+        updateTournament(tournamentId)
         logging.info("Player " + str(playerId) + " has joined tournament " + str(tournamentId))
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
@@ -127,9 +137,9 @@ class inviteFriend(View):
             return JsonUnauthorized(request, 'Only authentified player can invite friends')
 
         global tournaments
+        data = request.data
 
         try:
-            data = request.data
             TournamentId = data['TournamentId']
             invited = data['Invited']
         except KeyError as e:
@@ -137,12 +147,12 @@ class inviteFriend(View):
         try:
             TournamentId = int(TournamentId)
             invited = int(invited)
+            TournamentId = int(data['TournamentId'])
+            if TournamentId not in tournaments:
+                return JsonNotFound(request, 'tournament does not exists')
         except (TypeError, ValueError) as e:
             return JsonBadRequest(request, f'bad content {e}')
 
-        TournamentId = int(data['TournamentId'])
-        if TournamentId not in tournaments:
-            return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[TournamentId].invited.append(invited)
 
@@ -163,6 +173,7 @@ class inviteFriend(View):
             logging.error("Failed to send invitation to player " + str(invited))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
+        updateTournament(TournamentId)
         logging.info("Player " + str(invited) + " has been invited to tournament " + str(TournamentId))
         return JsonResponse(request, {'Msg': "Friend has been invited"})
 
@@ -174,6 +185,8 @@ class inviteFriend(View):
         if request['PlayerId'] not in tournaments[request['TournamentId']].invited:
             return JsonNotFound(request, "Player is not in the invited list of the tournament")
         tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
+
+        updateTournament(request['TournamentId'])
         return JsonResponse(request, {
             'Msg': 'Invitation declined',
             'PlayerId': request['PlayerId'],
@@ -206,7 +219,7 @@ class gameResult(View):
 
         data = request.data
         if 'tournamentId' not in data or 'game' not in data:
-            return JsonBadRequest(request, {'Err': 'tournamentId or game not provided'})
+            return JsonBadRequest(request, 'tournamentId or game not provided')
         tournament = tournaments[data['tournamentId']]
         tournament.addGame(data['game'])
 
@@ -245,6 +258,7 @@ class gameResult(View):
             )
             logging.info("Tournament " + str(tournament.id) + " is starting round " + str(tournament.currentRound))
 
+        updateTournament(tournament.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
 class startTournament(View):
@@ -272,8 +286,9 @@ class startTournament(View):
             }
         )
 
+        updateTournament(tournamentId)
         logging.info("Tournament " + str(tournamentId) + " is starting round 1")
-        return JsonResponse(request, "Tournament started")
+        return JsonResponse(request, {'Msg': "Tournament started"})
 
 ############## Debug ##############
 def printData(data):
