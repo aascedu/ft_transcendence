@@ -29,22 +29,23 @@ async function determine_state() {
         };
 
     return await fetch('/petrus/auth/JWT-refresh/', content).then(response => {
-        if (!response.ok) {
-            state.pageToDisplay = '.homepage-id';
-        }
-        else {
-            state.pageToDisplay = '.homepage-game';
-        }
-		return state;
-    })
-	.catch(error => {
-		console.error(error);
-	});
+            if (!response.ok) {
+                console.log('fetch done');
+                g_state.pageToDisplay = '.homepage-id';
+                throw custom_error(response)
+            }
+            return response.json();
+        }).then(data => {
+            g_state.pageToDisplay = '.homepage-game';
+            g_userId = data.Client;
+        })
+        .catch(error => {
+        });
 }
 
 async function render() {
     if (g_state.pageToDisplay == '.homepage-id') {
-        g_state = await determine_state();
+        await determine_state();
     }
 
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);

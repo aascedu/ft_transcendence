@@ -141,6 +141,6 @@ class refreshView(View):
             return JsonErrResponse(request, "Clients doesn't exist anymore", status=404)
 
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Token": "refreshed"})
+        response = JsonResponse(request, {"Token": "refreshed", "Client": request.user.id})
         response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
         return response
