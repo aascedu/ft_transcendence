@@ -736,5 +736,5 @@ function clearHomepageId() {
 
 	document.querySelector('.homepage-id-input').value = '';
 	document.querySelector('.homepage-id-font-size').value = 0;
-	resetHomepageIdLanguageSelector();
+	// resetHomepageIdLanguageSelector();
 }
