@@ -105,6 +105,26 @@ def friendshipRequest(request, requester: int):
     return response, content, error
 
 @notification_by_notified_id
+def friendshipRefused(request, requester: int):
+    response = JsonResponse(request, {'Request': 'Suppressed'})
+    content = {
+            'type': 'notification.friendship.refused',
+            'requester': requester,
+        }
+    error = 'Only service can notify new friendship request'
+    return response, content, error
+
+@notification_by_notified_id
+def friendshipSuppressed(request, requester: int):
+    response = JsonResponse(request, {'Suppression': 'Notified'})
+    content = {
+            'type': 'notification.friendship.suppressed',
+            'requester': requester,
+        }
+    error = 'Only service can notify new friendship request'
+    return response, content, error
+
+@notification_by_notified_id
 def gameRequest(request, requester : int):
     notified = request.data['Notified']
     content = {

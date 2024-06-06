@@ -34,6 +34,15 @@ async function init_session_socket() {
             notificationFriendshipRequest(obj);
             return ;
         }
+		if (obj.type === "notification.friendship.refused") {
+            notificationFriendshipRefused(obj);
+            return ;
+        }
+        if (obj.type === "notification.friendship.suppressed") {
+            // TODO
+            // notitficationFriendshipSuppressed()
+            return ;
+        }
         if (obj.type === "notification.game.request") {
             notificationGameRequest(obj);
             return ;
@@ -48,10 +57,6 @@ async function init_session_socket() {
         }
 		if (obj.type === "notification.game.refused") {
             notificationGameRefused(obj);
-            return ;
-        }
-		if (obj.type === "notification.friendship.refused") {
-            notificationFriendshipRefused(obj);
             return ;
         }
 		if (obj.type === "notification.tournament.refused") {
