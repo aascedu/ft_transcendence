@@ -8,12 +8,12 @@ async function init_session_socket() {
     console.log(unique_use_token)
     url = "wss://localhost:8000/hermes/session/" + g_userNick + "?token=" + unique_use_token
     console.log(url)
-    const socket = new WebSocket(url)
-    socket.onopen = function(event) {
+    g_sessionSocket = new WebSocket(url)
+    g_sessionSocket.onopen = function(event) {
         console.log("connection has occured")
     }
 
-    socket.onmessage = function(event) {
+    g_sessionSocket.onmessage = function(event) {
         const data = event.data;
 
         obj = JSON.parse(data);
