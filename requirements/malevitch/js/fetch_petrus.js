@@ -34,3 +34,14 @@ async function refreshLoop() {
         post_jwt_refresh()
     }, milliseconds);
 }
+
+function delete_cookies() {
+    content = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+    fetch(add_petrus_in_url('/JWT-refresh/'), content);
+}
