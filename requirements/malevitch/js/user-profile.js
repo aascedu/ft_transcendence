@@ -54,7 +54,7 @@ async function loadUserContent(id) {
 			try {
 				var	availableFriends = await get_available_friends();
 				availableFriends = availableFriends.Ava;
-	
+
 				for (i = 0; i < availableFriends.length; i++) {
 					if (availableFriends[i].Id == id) {
 						isAvailable = true;
@@ -139,7 +139,7 @@ async function loadUserContent(id) {
 				historyToRemove.querySelectorAll('.content-card').forEach(function(item) {
 					item.parentElement.removeChild(item);
 				});
-				
+
 				document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
 				document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
 				return ;
@@ -472,7 +472,7 @@ async function userProfileFriendInvite() {
 		var	friendRequests = await get_friend(g_userId);
 		friendRequests = friendRequests.Requests;
 		var	hasInvitedMe = false;
-	
+
 		for (i = 0; i < friendRequests.length; i++) {
 			if (friendRequests[i].Id == invitedId) {
 				hasInvitedMe = true;
@@ -486,10 +486,10 @@ async function userProfileFriendInvite() {
 			inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 			document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
 		}
-	
+
 		var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
 		await post_friend(invitedId);
-		
+
 	} catch (error) {
 		console.error(error);
 		return ;
@@ -532,8 +532,8 @@ document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEve
 });
 
 async function userProfileFriendRemove() {
-	
-	try {	
+
+	try {
 		var removedId = document.querySelector('.user-profile-remove-icon').getAttribute('user-id');
 		await delete_friend(removedId);
 	} catch (error) {
@@ -565,18 +565,22 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 });
 
 // Disconnect
+//
 
-document.querySelector('.user-profile-disconnect-icon').addEventListener('click', function() {
+async function disconect() {
+
 	hideEveryPage();
 	clearHomepageId();
+    delete_cookies().then(response => {
+        document.querySelector('.homepage-id-input').focus();
+        g_state.pageToDisplay = '.homepage-id';
+        window.history.pushState(g_state, null, "");
+        render(g_state);
+    });
+}
 
-	// clear cookies
-
-	document.querySelector('.homepage-id-input').focus();
-
-	g_state.pageToDisplay = '.homepage-id';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
+document.querySelector('.user-profile-disconnect-icon').addEventListener('click', function() {
+    disconect()
 });
 
 // Keyboard navigation

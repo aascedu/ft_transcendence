@@ -3,6 +3,7 @@ from django.shortcuts import render
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from matchmaking.Players import gameRequesters
 import requests
 import logging
 
@@ -34,8 +35,29 @@ class RequestGame(View):
 
         return JsonResponse(request, {'Msg': 'Invitation successfully sent'})
 
+    def delete(self, request):
+        global gameRequesters
+
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only authentified player can cancel invitation')
+
+        # Check if the room exists ?
+        for i in gameRequesters:
+            if request.user.id in i:
+                gameRequesters.remove(i)
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    request.user.id, {
+                        'type': 'Leave',
+                    }
+                )
+
+        return JsonResponse(request, {'Msg': 'Invitation successfully canceled'})    
+
 class RequestGameResponse(View):
     def post(self, request, requester: int, invited: int):
+        global gameRequesters
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
         
@@ -47,29 +69,27 @@ class RequestGameResponse(View):
                 'player2': invited,
             }
         )
+        gameRequesters.remove([requester, invited])
 
-        # Sauf si on fait a la main dans le front ?
-        async_to_sync(channel_layer.group_send)(
-            str(invited), {
-                'type': 'SendToGame',
-                'player1': requester,
-                'player2': invited,
-            }
-        )
         # Mettre le mec unavailable pdt la recherche ?
 
-        return JsonResponse(request, {'Msg': 'Invitation to game accepted'})
+        return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited),})
 
     def delete(self, request, requester: int, invited: int):
-        if request.user.is_autenticated is False:
-            return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
+        global gameRequesters
 
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            str(requester), {
-                'type': 'Leave',
-            }
-        )
-        # Notif ?
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, 'Only authentified player can refuse an invitation')
+
+        for i in gameRequesters:
+            if request.user.id in i:
+                gameRequesters.remove(i)
+                channel_layer = get_channel_layer()
+                async_to_sync(channel_layer.group_send)(
+                    str(requester), {
+                        'type': 'Leave',
+                    }
+                )
+            # Notif ?
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})

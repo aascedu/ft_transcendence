@@ -8,6 +8,9 @@ document.querySelector('.victory-defeat-home').addEventListener('click', async f
 	await clearHomepageContent();
 	await setHomepageContent();
 
+	clearHomepageHeader();
+	await loadHomepageHeader();
+
 	g_state.pageToDisplay = '.homepage-game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
@@ -20,8 +23,7 @@ document.querySelector('.victory-defeat-tournament').addEventListener('click', a
 
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
 
-	clearTournamentInfo();
-	await loadTournamentInfo();
+	await loadOngoingTournament();
 
 	g_state.pageToDisplay = '.tournament-info';
 	window.history.pushState(g_state, null, "");

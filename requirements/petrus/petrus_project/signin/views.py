@@ -122,7 +122,7 @@ class refreshView(View):
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
         except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
-            return JsonForbidden(request, e.__str__())
+            return JsonBadRequest(request, e.__str__())
         except DecodeError as e:
             return JsonErrResponse(request, e.__str__(), status=500)
 
@@ -143,4 +143,10 @@ class refreshView(View):
         jwt = JWT.objectToAccessToken(client)
         response = JsonResponse(request, {"Token": "refreshed", "Client": request.user.id})
         response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
+        return response
+
+    def delete(self, request):
+        response = JsonResponse(request, {"Token": "suppressed"})
+        response.delete_cookie("Auth", path='/')
+        response.delete_cookie('Ref', path='/petrus/auth/JWT-refresh/')
         return response

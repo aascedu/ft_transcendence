@@ -8,10 +8,19 @@ async function invite_friend_to_game(PlayerToInvite) {
     fetch_post(add_cupidon_in_url("game-request/"), json);
 }
 
+async function cancel_invitation_to_game() {
+    fetch_delete(add_cupidon_in_url("game-request/"))
+}
+
 async function accept_invitation_to_game(requester, invited) {
-    fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json);
+    fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
 }
 
 async function refuse_invitation_to_game(requester, invited) {
-    fetch_delete(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json);
+    fetch_delete(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"));
+}
+
+async function clear_all_invitations() {
+    cancel_invitation_to_game();
+    refuse_invitation_to_game(0, g_userId);
 }
