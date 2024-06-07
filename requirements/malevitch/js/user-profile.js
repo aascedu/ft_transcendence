@@ -89,6 +89,7 @@ async function loadUserContent(id) {
 
 		addIcon.setAttribute('user-id', id);
 		removeIcon.setAttribute('user-id', id);
+		disconnectIcon.classList.add('visually-hidden');
 	}
 	else {
 		userNick = g_userNick;
@@ -570,7 +571,7 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 async function disconnect() {
 	hideEveryPage();
 	clearHomepageId();
-    delete_cookies().then(response => {
+    await delete_cookies().then(response => {
         document.querySelector('.homepage-id-input').focus();
         g_state.pageToDisplay = '.homepage-id';
         window.history.pushState(g_state, null, "");
