@@ -736,6 +736,9 @@ function clearHomepageId() {
 	document.querySelector('.homepage-game-picture').classList.add('visually-hidden');
 
 	document.querySelector('.homepage-id-input').value = '';
+	document.querySelector('.sign-in-input').value = '';
 	document.querySelector('.homepage-id-font-size').value = 0;
+	document.querySelector('.sign-in-font-size').value = 0;
+	document.querySelector('.sign-up-font-size').value = 0;
 	// resetHomepageIdLanguageSelector();
 }
