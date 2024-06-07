@@ -4,8 +4,8 @@
 async function loadOngoingTournament(id) {
 	var	tournamentInfo;
 
-	try {		
-		tournamentInfo = await get_tournament_infos(id);	
+	try {
+		tournamentInfo = await get_tournament_infos(id);
 	} catch (error) {
 		console.error(error);
 		return ;
@@ -19,8 +19,8 @@ async function loadOngoingTournament(id) {
 async function loadClosedTournament(id) {
 	var	tournamentInfo;
 
-	try {		
-		tournamentInfo = await get_tournament_by_id(id);		
+	try {
+		tournamentInfo = await get_tournament_by_id(id);
 	} catch (error) {
 		console.error(error);
 		return ;
@@ -30,13 +30,13 @@ async function loadClosedTournament(id) {
 	await loadTournamentInfo(tournamentInfo, false);
 }
 
-async function loadTournamentInfo(tournamentInfo, ongoing) {	
+async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// Save tournament id on the page
 	document.querySelector('.tournament-info-name').setAttribute('tournament-id', tournamentInfo.Id);
 
 	// Display tournament name
 	document.querySelector('.tournament-info-name').textContent = tournamentInfo.Name;
-	
+
 	var	playersContainer = document.querySelector('.tournament-info-players');
 	var	confirmedPlayers = [];
 	var pendingPlayers = [];
@@ -44,22 +44,22 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	var userId;
 	var	userInfo;
 	var	userPic;
-	
+
 	if (ongoing == true) {
 		// Display online friends that aren't already invited to tournament
 		try {
 			var	availableFriends = await get_available_friends();
 			availableFriends = availableFriends.Ava;
 			var	friendsContainer = document.querySelector('.tournament-info-invite');
-		
+
 			document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
-		
+
 			for (i = 0; i < availableFriends.length; i++) {
 				userPic = availableFriends[i].Pic;
 				if (userPic == null) {
 					userPic = 'assets/general/pong.png';
 				}
-		
+
 				friendsContainer.insertAdjacentHTML('beforeend', `\
 				<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
 					<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
@@ -148,7 +148,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			});
 		}
 		setAriaHidden();
-		
+
 		// Display icons only if tournament has not yet started
 		if (tournamentInfo.Started == false) {
 			document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
@@ -202,22 +202,22 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		numPlayers = tournamentInfo.Players.length;
 		confirmedPlayers = tournamentInfo.Players;
 	}
-	
+
 	// Display players
-	
+
 	// If no player at all
 	if ((confirmedPlayers.length + pendingPlayers.length) == 0) {
 		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
 		setAriaHidden();
 		return ;
 	}
-	
+
 	document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
 	setAriaHidden();
 
 	// Display number of players
 	document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + numPlayers;
-	
+
 	// Display players that are confirmed
 	for (i = 0; i < confirmedPlayers.length; i++) {
 		userId = confirmedPlayers[i].Id;
@@ -226,7 +226,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
 		}
-		
+
 		playersContainer.insertAdjacentHTML('beforeend', `\
 		<button class="content-card d-flex justify-content-between align-items-center purple-shadow" user-id="` + userId + `">
 		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
@@ -238,7 +238,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		</div>
 		</button>`);
 	}
-	
+
 	if (ongoing == true) {
 		// Display invited players that haven't joined (pending)
 		for (i = 0; i < pendingPlayers.length; i++) {
@@ -248,7 +248,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			if (userPic == null) {
 				userPic = 'assets/general/pong.png';
 			}
-	
+
 			playersContainer.insertAdjacentHTML('beforeend', `\
 			<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + userId + `">
 				<div class="d-flex flex-nowrap align-items-center">
@@ -281,12 +281,12 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 	if (!ongoing) {
 		// Display tournament bracket
-		
+
 		var	matchInRound = 0;
 		var	games = tournamentInfo.Games;
 		var	matchSelector;
 		var	res;
-	
+
 		if (numPlayers == 4) {
 			// Display 4 players bracket
 			if (document.querySelector('.bracket-round-two') != null) {
@@ -297,9 +297,9 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 				document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
 				setAriaHidden();
 			}
-	
+
 			// Load info
-	
+
 			for (i = 0; i < games.length; i++) {
 				if (games[i].Round == 1) {
 					matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
@@ -331,14 +331,14 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 				document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
 				setAriaHidden();
 			}
-	
+
 			// Load info
-	
+
 			var	matchInRound = 0;
 			var	games = tournamentInfo.Games;
 			var	matchSelector;
 			var	res;
-	
+
 			for (i = 0; i < games.length; i++) {
 				if (games[i].Round == 1) {
 					matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
@@ -371,7 +371,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 				}
 			}
 		}
-	
+
 		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 			item.addEventListener('click', async function(event) {
 				var userId = await event.target.getAttribute('user-id');
@@ -419,7 +419,7 @@ async function loadBracketMatchContent(tournamentPlayers, matchInfo, matchSelect
 	}
 	else {
 		await loadBracketPlayerContent(matchInfo.Loser, matchInfo["Loser-score"], bracketPlayers[0]);
-		await loadBracketPlayerContent(matchInfo.Winner, matchInfo["Winner-score"], bracketPlayers[1]);	
+		await loadBracketPlayerContent(matchInfo.Winner, matchInfo["Winner-score"], bracketPlayers[1]);
 	}
 	return 1;
 }
@@ -641,7 +641,7 @@ document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
 	item.addEventListener('keypress', function(event) {
 		if (event.key == 'Enter') {
 			event.stopPropagation();
-	
+
 			kickPlayer(item);
 		}
 	});
@@ -870,7 +870,7 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 
 	// Create player card
 	var playersList = document.querySelector('.tournament-info-players');
-	
+
 	playersList.insertAdjacentHTML('beforeend', `\
     <button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + id + `">
         <div class="d-flex flex-nowrap align-items-center">
@@ -935,7 +935,7 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 			if (tournamentInfo.Owner == g_userId) {
 				isOwner = true;
 			}
-	
+
 			confirmedPlayers = tournamentInfo.Confirmed;
 			pendingPlayers = tournamentInfo.Pending;
 			for (i = 0; i < confirmedPlayers.length; i++) {
@@ -1047,7 +1047,7 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 				e.preventDefault();
 				return ;
 			}
-		} 
+		}
 
 		if (isOwner) {
 			if (e.key == 'Tab' && !isFw && document.activeElement === document.querySelector('.tournament-info-edit-icon')) {
@@ -1142,7 +1142,7 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 		e.preventDefault();
 		return ;
 	}
-	if (e.key == 'Escape' && (document.activeElement.parentElement.classList.contains('alert-buttons-container') || 
+	if (e.key == 'Escape' && (document.activeElement.parentElement.classList.contains('alert-buttons-container') ||
 		document.activeElement.classList.contains('tournament-info-join-input'))) {
 
 		var	nearestAlert = document.activeElement.parentElement;
