@@ -137,8 +137,8 @@ async function acceptFriendInvite() {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 
-			clearTournamentFriends();
-			await loadTournamentFriends();
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that new friend appears in available friends
