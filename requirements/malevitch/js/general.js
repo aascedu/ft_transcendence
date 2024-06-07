@@ -6,6 +6,7 @@ let	g_prevFontSize = 0;
 let	g_jwt;
 let	g_translations = null;
 let	g_canvasHeight = 0;
+let g_refreshInterval;
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -218,7 +219,7 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 
 function resetHomepageIdLanguageSelector() {
 	var	languageSelector = document.querySelector('.homepage-id-language-selector');
-	
+
 	languageSelector.querySelector('button img').setAttribute('src', 'assets/lang/flag-en.png');
 	languageSelector.querySelector('button img').setAttribute('alt', 'en');
 
