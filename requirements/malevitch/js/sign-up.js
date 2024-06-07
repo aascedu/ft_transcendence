@@ -155,8 +155,7 @@ async function signUpEmail(input) {
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
 		// Make the following inputs appear only when the choosen email is valid.
 		try {
-			const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
-			if (!warnInvalidEmail(input.value, warning) || !emailAvailability) {
+			if (!warnInvalidEmail(input.value, warning)) {
 				switchLanguageContent(locale);
 				warning.classList.remove('visually-hidden');
 				document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
@@ -165,9 +164,20 @@ async function signUpEmail(input) {
 				document.querySelector('.sign-up-password-confirm-input-warning').classList.add('visually-hidden');
 			}
 			else {
-				warning.classList.add('visually-hidden');
-				document.querySelector('.sign-up-password-input-box').classList.remove('visually-hidden');
-				signUpPassword(document.querySelector('.sign-up-password-input'));
+				const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
+				if (!emailAvailability) {
+					switchLanguageContent(locale);
+					warning.classList.remove('visually-hidden');
+					document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
+					document.querySelector('.sign-up-password-input-warning').classList.add('visually-hidden');
+					document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
+					document.querySelector('.sign-up-password-confirm-input-warning').classList.add('visually-hidden');
+				}
+				else {
+					warning.classList.add('visually-hidden');
+					document.querySelector('.sign-up-password-input-box').classList.remove('visually-hidden');
+					signUpPassword(document.querySelector('.sign-up-password-input'));
+				}
 			}
 		}
 		catch(error) {
