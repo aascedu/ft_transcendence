@@ -68,10 +68,6 @@ class RequestGameResponse(View):
                 'player2': invited,
             }
         )
-        print('Requester: ' + str(requester))
-        print('Invited: ' + str(invited))
-        print(gameRequesters)
-
         gameRequesters.remove([requester, invited])
 
         # Mettre le mec unavailable pdt la recherche ?
