@@ -1,21 +1,25 @@
 import json
-from matchmaking.Player import Player, waitingList
+from matchmaking.Player import Player, waitingList, gameRequesters
 from shared.BasicConsumer import OurBasicConsumer
 
 
 class Consumer(OurBasicConsumer):
     async def connect(self):
         global waitingList
+        global gameRequesters
 
         # Join room group
         if self.security_check() is False:
             return self.close()
         self.id = self.scope['user'].id
+        self.requester = self.scope["url_route"]["kwargs"]["requester"]
+        self.invited = self.scope["url_route"]["kwargs"]["invited"]
 
-        if self.id == 0:
+        if self.requester == 0 and self.invited == 0:
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
+            gameRequesters.append([self.requester, self.invited])
 
         await self.accept()
 
@@ -57,7 +61,9 @@ class Consumer(OurBasicConsumer):
                 'RoomName': str(event['player1']) + '-' + str(event['player2']),
             }))
 
-            del waitingList[self.me.id] # Only if not from invite
+            if self.me.id in waitingList:
+                del waitingList[self.me.id] # Only if not from invite
+            self.close()
 
     async def Ping(self, event):
         global waitingList
