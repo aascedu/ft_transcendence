@@ -2,7 +2,14 @@
 
 // Ongoing tournament : load from Coubertin
 async function loadOngoingTournament(id) {
-	var tournamentInfo = await get_tournament_infos(id);
+	var	tournamentInfo;
+
+	try {		
+		tournamentInfo = await get_tournament_infos(id);	
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 
 	clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
@@ -10,8 +17,15 @@ async function loadOngoingTournament(id) {
 
 // Closed tournament : load from Mnemosine
 async function loadClosedTournament(id) {
-	var tournamentInfo = await get_tournament_by_id(id);
-	
+	var	tournamentInfo;
+
+	try {		
+		tournamentInfo = await get_tournament_by_id(id);		
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, false);
 }
@@ -33,28 +47,33 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	
 	if (ongoing == true) {
 		// Display online friends that aren't already invited to tournament
-		var	availableFriends = await get_available_friends();
-		availableFriends = availableFriends.Ava;
-		var	friendsContainer = document.querySelector('.tournament-info-invite');
-	
-		document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
-	
-		for (i = 0; i < availableFriends.length; i++) {
-			userPic = availableFriends[i].Pic;
-			if (userPic == null) {
-				userPic = 'assets/general/pong.png';
+		try {
+			var	availableFriends = await get_available_friends();
+			availableFriends = availableFriends.Ava;
+			var	friendsContainer = document.querySelector('.tournament-info-invite');
+		
+			document.querySelector('.tournament-info-no-friends').classList.add('visually-hidden');
+		
+			for (i = 0; i < availableFriends.length; i++) {
+				userPic = availableFriends[i].Pic;
+				if (userPic == null) {
+					userPic = 'assets/general/pong.png';
+				}
+		
+				friendsContainer.insertAdjacentHTML('beforeend', `\
+				<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
+					<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
+					<div class="user-card-picture">
+						<img src="` + userPic + `" alt="profile picture of ` + availableFriends[i].Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+					</div>
+				</button>`);
 			}
-	
-			friendsContainer.insertAdjacentHTML('beforeend', `\
-			<button class="content-card w-100 flex-shrink-0 d-flex justify-content-between align-items-center purple-shadow" user-id="` + availableFriends[i].Id + `">
-				<div class="user-card-name unselectable">` + availableFriends[i].Nick + `</div>
-				<div class="user-card-picture">
-					<img src="` + userPic + `" alt="profile picture of ` + availableFriends[i].Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-			</button>`);
-		}
-		// if no friend available
-		if (availableFriends.length == 0) {
+			// if no friend available
+			if (availableFriends.length == 0) {
+				document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
+			}
+		} catch (error) {
+			console.error(error);
 			document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
 		}
 
@@ -223,6 +242,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	if (ongoing == true) {
 		// Display invited players that haven't joined (pending)
 		for (i = 0; i < pendingPlayers.length; i++) {
+			userId = pendingPlayers[i];
 			userInfo = await get_user_info(pendingPlayers[i]);
 			userPic = userInfo.Pic;
 			if (userPic == null) {
@@ -245,97 +265,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		}
 	}
 
-	// Display tournament bracket
-	
-	var	matchInRound = 0;
-	var	games = tournamentInfo.Games;
-	var	matchSelector;
-	var	res;
-
-	if (numPlayers == 4) {
-		// Display 4 players bracket
-		if (document.querySelector('.bracket-round-two') != null) {
-			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
-			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
-			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
-			document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
-			setAriaHidden();
-		}
-
-		// Load info
-
-		for (i = 0; i < games.length; i++) {
-			if (games[i].Round == 1) {
-				matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 1) {
-					matchInRound = 0;
-				}
-			}
-			else if (games[i].Round == 2) {
-				matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-			}
-		}
-	}
-	else {
-		// Display 8 players bracket if needed
-		if (document.querySelector('.bracket-round-one-four') != null) {
-			document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
-			document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
-			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
-			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
-			document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
-			setAriaHidden();
-		}
-
-		// Load info
-
-		var	matchInRound = 0;
-		var	games = tournamentInfo.Games;
-		var	matchSelector;
-		var	res;
-
-		for (i = 0; i < games.length; i++) {
-			if (games[i].Round == 1) {
-				matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 3) {
-					matchInRound = 0;
-				}
-			}
-			else if (games[i].Round == 2) {
-				matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-				matchInRound++;
-				if (matchInRound > 1) {
-					matchInRound = 0;
-				}
-			}
-			else {
-				matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
-				res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-				if (!res) {
-					return ;
-				}
-			}
-		}
-	}
+	// Load user profile page when clicking on a player
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', async function(event) {
@@ -348,6 +278,112 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			await loadUserProfile(userId);
 		});
 	});
+
+	if (!ongoing) {
+		// Display tournament bracket
+		
+		var	matchInRound = 0;
+		var	games = tournamentInfo.Games;
+		var	matchSelector;
+		var	res;
+	
+		if (numPlayers == 4) {
+			// Display 4 players bracket
+			if (document.querySelector('.bracket-round-two') != null) {
+				document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+				document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+				document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+				document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+				document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+				setAriaHidden();
+			}
+	
+			// Load info
+	
+			for (i = 0; i < games.length; i++) {
+				if (games[i].Round == 1) {
+					matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 1) {
+						matchInRound = 0;
+					}
+				}
+				else if (games[i].Round == 2) {
+					matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+				}
+			}
+		}
+		else {
+			// Display 8 players bracket if needed
+			if (document.querySelector('.bracket-round-one-four') != null) {
+				document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
+				document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
+				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
+				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
+				document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+				setAriaHidden();
+			}
+	
+			// Load info
+	
+			var	matchInRound = 0;
+			var	games = tournamentInfo.Games;
+			var	matchSelector;
+			var	res;
+	
+			for (i = 0; i < games.length; i++) {
+				if (games[i].Round == 1) {
+					matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 3) {
+						matchInRound = 0;
+					}
+				}
+				else if (games[i].Round == 2) {
+					matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+					matchInRound++;
+					if (matchInRound > 1) {
+						matchInRound = 0;
+					}
+				}
+				else {
+					matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
+					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
+					if (!res) {
+						return ;
+					}
+				}
+			}
+		}
+	
+		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+			item.addEventListener('click', async function(event) {
+				var userId = await event.target.getAttribute('user-id');
+				if (userId == null) {
+					setTimeout(async () => {
+						userId = await event.target.getAttribute('user-id');
+					}, 500);
+				}
+				await loadUserProfile(userId);
+			});
+		});
+	}
 
 	// Keyboard navigation
 
@@ -389,7 +425,15 @@ async function loadBracketMatchContent(tournamentPlayers, matchInfo, matchSelect
 }
 
 async function loadBracketPlayerContent(playerId, playerScore, playerSelector) {
-	var	userInfo = await get_user_info(playerId);
+	var userInfo;
+
+	try {
+		userInfo = await get_user_info(playerId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	var	userPic = userInfo.Pic;
 
 	if (userPic == null) {
@@ -436,7 +480,7 @@ function clearTournamentInfo() {
 document.querySelector('.tournament-info-icon').addEventListener('click', async function() {
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
@@ -444,42 +488,9 @@ document.querySelector('.tournament-info-icon').addEventListener('click', async 
 	render(g_state);
 });
 
-// Load user profile page when clicking on a player
-
-document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-	item.addEventListener('click', async function(event) {
-		var userId = await event.target.getAttribute('user-id');
-		if (userId == null) {
-			setTimeout(async () => {
-				userId = await event.target.getAttribute('user-id');
-			}, 500);
-		}
-		await loadUserProfile(userId);
-	});
-});
-
 async function loadUserProfile(id) {
 	if (id == null) {
 		return ;
-	}
-	var	friendsList = await get_friend(g_userId);
-	var	isFriend = false;
-	friendsList = friendsList.Friends;
-	for (i = 0; i < friendsList.length; i++) {
-		if (friendsList[i] == id) {
-			isFriend = true;
-			break ;
-		}
-	}
-
-	if (id == g_userId) {
-		document.querySelector('.user-profile-picture-input').focus();
-	}
-	else if (isFriend) {
-		document.querySelector('.user-profile-remove-icon').focus();
-	}
-	else {
-		document.querySelector('.user-profile-add-icon').focus();
 	}
 
 	clearUserContent();
@@ -541,13 +552,18 @@ async function confirmJoinTournament() {
 		return ;
 	}
 
+	try {
+		await join_tournament(tournamentId);
+	} catch (error) {
+		console.error();
+		return ;
+	}
+
 	document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
 	document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
-
-	await join_tournament(tournamentId);
 
 	await loadOngoingTournament();
 
@@ -676,6 +692,13 @@ function kickPlayer(item) {
 }
 
 async function confirmKick(playerToHide) {
+	try {
+		await remove_player_from_tournament(tournamentId, playerId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
 
@@ -686,8 +709,6 @@ async function confirmKick(playerToHide) {
 	if (playerToHide && playerToHide.parentNode) {
 		playerToHide.parentNode.removeChild(playerToHide);
 	}
-
-	await remove_player_from_tournament(tournamentId, playerId);
 }
 
 // Leave edit mode
@@ -727,6 +748,25 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 // Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', async function () {
+	await changeTournamentName();
+	leaveTournamentEditMode();
+});
+
+document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
+	if (event.key === 'Enter') {
+		await changeTournamentName();
+		leaveTournamentEditMode();
+	}
+});
+
+async function changeTournamentName() {
+	try {
+		await change_tournament_name(tournamentNameInput.value, tournamentId);
+	} catch (error) {
+		console.error();
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
@@ -736,25 +776,7 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 
 	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	await change_tournament_name(tournamentNameInput.value, tournamentId);
-
-	leaveTournamentEditMode();
-});
-
-document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		// Hide alert
-		document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	
-		// Update tournament name
-		var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
-		document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
-	
-		leaveTournamentEditMode();
-	}
-});
+}
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
@@ -834,12 +856,17 @@ function cancelInviteFriendToTournament() {
 }
 
 async function addInvitedPlayerToTournament(id, nick, pic) {
+	try {
+		// Send invite through Coubertin
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		await invite_friend_to_tournament(tournamentId, id);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	// Hide alert
 	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
-
-	// Send invite through Coubertin
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-	await invite_friend_to_tournament(tournamentId, id);
 
 	// Create player card
 	var playersList = document.querySelector('.tournament-info-players');
@@ -921,7 +948,6 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 		else {
 			confirmedPlayers = tournamentInfo.Players;
 		}
-
 
 		// tournament icon -> next
 		if (e.key == 'Tab' && isFw && document.activeElement === document.querySelector('.tournament-info-icon')) {

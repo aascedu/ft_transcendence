@@ -27,29 +27,21 @@ volumes:
       device: ./requirements/shared_code
       o: bind
 
-  certificates:
-    driver: local
+  certificates: {}
 
-  elastic_data:
-    driver: local
+  elastic_data: {}
 
-  kibana_data:
-    driver: local
+  kibana_data: {}
 
-  logstash_data:
-    driver: local
+  logstash_data: {}
 
-  filebeat_data:
-    driver: local
+  filebeat_data: {}
 
-  alfred_data:
-    driver: local
+  alfred_data: {}
 
-  mnemosine_data:
-    driver: local
+  mnemosine_data: {}
 
-  petrus_data:
-    driver: local
+  petrus_data: {}
 
 services:
 # # Reverse proxy container
@@ -147,19 +139,19 @@ services:
     environment:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_PASSWORD: ${E_PASS}
       ELASTIC_HOSTS: https://apollo:9200
     networks:
       - atlas
       - sentinel
-    restart: on-failure
+    restart: always
     healthcheck:
       test:
         [
           "CMD-SHELL",
           "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && \
-          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
-          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
+          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' && \
+          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -221,7 +213,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     build: 
       context: ./requirements/apollo
       dockerfile: Dockerfile
@@ -241,7 +232,8 @@ services:
       indices.lifecycle.poll_interval: 10s
       cluster.name: ${CLUSTER_NAME}
       discovery.type: single-node
-      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
+      ELASTIC_USER: ${ELASTIC_USER}
+      ELASTIC_PASSWORD: ${E_PASS}
       bootstrap.memory_lock: true
       network.host: 0.0.0.0
       xpack.security.enabled: true
@@ -255,12 +247,13 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test:
         [
@@ -275,8 +268,13 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      iris:
+        condition: service_healthy
     container_name: policy
     image: docker:latest
+    environment:
+      - "ELASTIC_USER=${ELASTIC_USER}"
+      - "ELASTIC_PASSWORD=${E_PASS}"
     networks:
       - sentinel
       - internet_access
@@ -288,6 +286,7 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure
 
 # # Tournament container
   coubertin:
@@ -369,7 +368,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     environment:
       - ELASTIC_USER=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
+      - ELASTIC_PASSWORD=${E_PASS}
       - ELASTIC_HOSTS=https://apollo:9200
       - KIBANA_HOSTS=http://iris:5601
       - LOGSTASH_HOSTS=aether:5044
@@ -377,7 +376,7 @@ services:
       - sentinel
       - internet_access
       - atlas
-    restart: unless-stopped
+    restart: always
   #   # command:
   #   #   - --strict.perms=false
 
@@ -423,13 +422,12 @@ services:
       SERVERNAME: kibana
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
-      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTICSEARCH_PASSWORD: ${K_PASS}
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
       XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      # XPACK_SECURITY_SESSION_IDLETIMEOUT: 3d
-      # SERVER_PUBLICBASEURL: http://localhost:5601
+      SERVER_PUBLICBASEURL: http://localhost:5601
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -443,6 +441,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    restart: always
 
 # # Game container
   ludo:
@@ -701,8 +700,8 @@ services:
         condition: service_healthy
     container_name: setup
     environment:
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-      - "KIBANA_PASSWORD=${KIBANA_PASSWORD}"
+      - "ELASTIC_PASSWORD=${E_PASS}"
+      - "KIBANA_PASSWORD=${K_PASS}"
     build:
       context: ./requirements/setup
       dockerfile: Dockerfile
@@ -717,3 +716,4 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure

@@ -263,13 +263,12 @@ async function submitCreateAccount() {
 	var	nick = document.querySelector('.sign-up-nickname-input').value;
 	var	email = document.querySelector('.sign-up-email-input').value;
 	var	password = document.querySelector('.sign-up-password-input').value;
-	var	passwordConfirm = document.querySelector('.sign-up-password-confirm-input').value;
 	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
 	var	font = document.querySelector('.sign-up-font-size').value;
 
 	g_userNick = nick;
 
-		const response = fetch_post(
+		const response = await fetch_post(
             '/petrus/auth/signup/',
             {
                 Nick: nick,
@@ -278,7 +277,7 @@ async function submitCreateAccount() {
                 Lang: lang,
                 Font: font,
             })
-        response.then(result => {
+        .then(result => {
 			g_userId = result.Client;
             jwt_management(result.Auth, result.Ref);
 			patchUserContent();

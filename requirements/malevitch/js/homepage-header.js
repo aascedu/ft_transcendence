@@ -1,8 +1,17 @@
 // Load available friends to play
 
 async function loadHomepageHeader() {
-	var	availableFriends = await get_available_friends();
-	availableFriends = availableFriends.Ava;
+	var	availableFriends;
+
+	try {
+		availableFriends = await get_available_friends();
+		availableFriends = availableFriends.Ava;
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.homepage-header-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 
 	var	friendId;
 	var	friendNick;
@@ -25,8 +34,23 @@ async function loadHomepageHeader() {
 		</button>`);
 	}
 
+	if (availableFriends.length == 0) {
+		document.querySelector('.homepage-header-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
+
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
-		item.addEventListener('click', function() {
+		item.addEventListener('click', async function() {
+			try {
+				// send invite
+				var	friendId = item.getAttribute('user-id');
+				await invite_friend_to_game(friendId);
+			} catch (error) {
+				console.error(error);
+				return ;
+			}
+
 			// close header menu and toggle back invites
 			document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
 			document.querySelector('.homepage-header-play-friend').classList.toggle('homepage-header-category-clicked');
@@ -36,10 +60,6 @@ async function loadHomepageHeader() {
 			document.querySelector('.homepage-header-no-friends').classList.add('visually-hidden');
 
 			setAriaHidden();
-
-			// send invite
-			// var	friendId = item.getAttribute('user-id');
-			// await invite_friend_to_play(friendId);
 
 			// remove invited friend from list
 			item.parentNode.removeChild(item);
@@ -66,7 +86,7 @@ function clearHomepageHeader() {
 document.querySelector('.homepage-header-logo').addEventListener('click', async function() {
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	var	currentPage = g_state.pageToDisplay;
@@ -382,7 +402,7 @@ async function addFriend() {
 
 // Go to profile
 
-document.querySelector('.homepage-header-profile').addEventListener('click', function() {
+document.querySelector('.homepage-header-profile').addEventListener('click', async function() {
 	// Load user profile content
 	// pic and nick
 	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
@@ -397,7 +417,7 @@ document.querySelector('.homepage-header-profile').addEventListener('click', fun
 	document.querySelector('.user-profile-picture-input').focus();
 
 	clearUserContent();
-	loadUserContent(g_userId);
+	await loadUserContent(g_userId);
 
 	hideEveryPage();
 

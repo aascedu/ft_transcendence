@@ -4,9 +4,7 @@
 
 include .env
 ENV_FILE		=	.env
-VOLUMES_DIR		=	certification_data elasticsearch_data \
-					logstash_data kibana_data alfred_data \
-					mnemosine_data petrus_data filebeat_data
+VOLUMES_DIR		=	alfred_data mnemosine_data petrus_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes ludo \
@@ -102,12 +100,12 @@ test: copyfile
 # - Stops Docker Compose services
 # - Cleans specific directories and files (migrations, tokens, vault)
 clean: | down
-	- docker stop $$(docker ps -qa) || true
-	- docker rm $$(docker ps -qa) || true
-	- $(COMPOSE) stop || true
-	- rm -rf `find . | grep migrations | grep -v env` || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
+	docker stop $$(docker ps -qa) || true
+	docker rm $$(docker ps -qa) || true
+	$(COMPOSE) stop || true
+	sudo rm -rf `find . | grep migrations | grep -v env` || true
+	sudo rm -rf ./tokens || true
+	sudo rm -rf ./requirements/tutum/vault || true
 #	- rm -rf ./requirements/aegis/ModSecurity || true
 
 # - Completely removes Docker Compose services, including images, volumes, and orphans
@@ -116,17 +114,18 @@ clean: | down
 # - Removes all Docker networks
 # - Cleans the specified volume path
 fclean: | clean
-	- $(COMPOSE) down --rmi all --volumes --remove-orphans || true
-	- docker rmi $$(docker images -q) || true
-	- docker volume rm $$(docker volume ls -q) || true
-	- docker network rm $$(docker network ls -q) 2>/dev/null || true
-	- rm -rf $(VOLUMES_PATH)/*
+	$(COMPOSE) down --rmi all --volumes --remove-orphans || true
+	docker rmi $$(docker images -q) || true
+	docker volume rm $$(docker volume ls -q) || true
+	docker network rm $$(docker network ls -q) 2>/dev/null || true
+	sudo rm -rf $(VOLUMES_PATH)/*
+	sudo rm -rf requirements/tutum/vault
 
 # - Removes all unused Docker data, including images, containers, volumes, and networks
 prune: | fclean
-	- docker system prune -af || true
-	- docker volume prune -af || true
-#	- rm -rf ./requirements/aegis/ModSecurity/ || true
+	docker system prune -af || true
+	docker volume prune -af || true
+#	rm -rf ./requirements/aegis/ModSecurity/ || true
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
