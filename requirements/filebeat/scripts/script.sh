@@ -26,3 +26,12 @@ filebeat setup --dashboards \
   -E output.logstash.enabled=false \
   -E output.elasticsearch.hosts=["$ELASTICSEARCH_HOSTS"] \
   -E setup.kibana.host=$KIBANA_HOSTS
+
+./filebeat setup -e -d "*" \
+  -E output.logstash.enabled=false \
+  -E output.elasticsearch.hosts='["${ELASTIC_HOSTS}"]' \
+  -E output.elasticsearch.username=${ELASTIC_USER} \
+  -E output.elasticsearch.password=${ELASTIC_PASSWORD} \
+  -E output.elasticsearch.ssl.enabled=true \
+  -E output.elasticsearch.ssl.certificate_authorities="/usr/share/filebeat/config/certs/ca/ca.crt" \
+  -E setup.kibana.host=iris:5601
