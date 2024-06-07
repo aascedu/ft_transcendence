@@ -36,7 +36,6 @@ class Consumer(OurBasicConsumer):
 
         count = self.roomName.count('-')
         if count != 1 and count != 2:
-            print("Nooooo1")
             await self.close()
 
         p1 = int(self.roomName.split('-')[count - 1])
