@@ -571,12 +571,12 @@ async function disconect() {
 
 	hideEveryPage();
 	clearHomepageId();
-    await delete_cookies();
-	document.querySelector('.homepage-id-input').focus();
-
-	g_state.pageToDisplay = '.homepage-id';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
+    delete_cookies().then(response => {
+        document.querySelector('.homepage-id-input').focus();
+        g_state.pageToDisplay = '.homepage-id';
+        window.history.pushState(g_state, null, "");
+        render(g_state);
+    });
 }
 
 document.querySelector('.user-profile-disconnect-icon').addEventListener('click', function() {
