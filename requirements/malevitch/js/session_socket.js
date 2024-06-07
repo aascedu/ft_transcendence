@@ -71,6 +71,10 @@ async function notificationFriendshipRequest(data) {
     console.log('FriendshipRequest');
     console.log(data);
 
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	var	userInfo = await get_user_info(data.requester);
 	var	senderElement = document.querySelector('.notif-friend-invite .notif-sender');
 
@@ -84,6 +88,10 @@ async function notificationFriendshipRequest(data) {
 async function notificationNewFriendship(data) {
     console.log('NewFriendship');
     console.log(data);
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
 
 	// Send notif to tell invite has been accepted
 	var	userInfo = await get_user_info(data.requester);
@@ -148,6 +156,10 @@ async function notificationTournamentRequest(data) {
     console.log('TournamentRequest');
     console.log(data);
 
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	var	userInfo = await get_user_info(data.requester);
 	var	senderElement = document.querySelector('.notif-tournament-invite .notif-sender');
 	var	tournamentElement = document.querySelector('.notif-tournament-invite .notif-info');
@@ -165,6 +177,10 @@ async function notificationGameAccepted(data) {
     console.log("game accepted");
     console.log(data);
 
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	var	opponent = await get_user_info(data.requester);
 	var	opponentElement = document.querySelector('.notif-match-found .notif-sender');
 
@@ -176,6 +192,10 @@ async function notificationGameAccepted(data) {
 async function notificationGameRequest(data) {
     console.log("game request");
     console.log(data);
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
 
 	var	userInfo = await get_user_info(data.requester);
 	var	senderElement = document.querySelector('.notif-play-invite .notif-sender');
@@ -190,6 +210,10 @@ async function notificationGameRequest(data) {
 async function notificationNewClientConnected(data) {
     console.log("new friend connected");
     console.log(data);
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
 
 	// if we are on homepage-game, add friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
@@ -231,6 +255,11 @@ async function notificationNewClientConnected(data) {
 }
 
 async function notificationGameRefused(data) {
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	clearHomepageHeader();
 	await loadHomepageHeader();
 
@@ -264,6 +293,11 @@ async function notificationFriendshipRefused(data) {
 }
 
 async function notificationTournamentRefused(data) {
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	clearHomepageHeader();
 	await loadHomepageHeader();
 

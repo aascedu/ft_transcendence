@@ -20,8 +20,8 @@ async function init_tournament_socket(tournamentId) {
         const data = JSON.parse(event.data);
 
         if (data.Action === "startGame") {
-            // Ici cacher le reste du site et afficher la game
             init_socket(data.RoomName)
+            // Ici cacher le reste du site et afficher la game
         }
 
         if (data.Action === "tournamentState") {
