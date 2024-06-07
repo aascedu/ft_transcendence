@@ -1,5 +1,4 @@
 from django.views import View
-from django.shortcuts import render
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync

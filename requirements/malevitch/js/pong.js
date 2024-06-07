@@ -95,7 +95,7 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 /***************************************** Websockets *****************************************/
 
-async function init_socket(roomName) {
+async function init_game_socket(roomName) {
     console.log(roomName);
 
     unique_use_token = await get_socket_connection_token('/ludo/');
@@ -181,7 +181,7 @@ async function init_socket(roomName) {
 
         socket.send(JSON.stringify(gameData));
     }
-    /***************************************** Game logic *****************************************/
+/***************************************** Game logic *****************************************/
 
     function isPlayerCollision(ball, player, playerStyle) {
         if (ball.pos['y'] > player.pos - (parseInt(playerStyle.height, 10) / 2) &&
@@ -280,8 +280,22 @@ async function init_socket(roomName) {
             socket.addEventListener('open', (event) => {
                 const intervalID = setInterval(gameLoop, 10);
             });
-}
+    }
 
 // requestAnimationFrame()
+}
 
+function showGamePage(roomName) {
+    var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.add('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.add('visually-hidden');
+
+	hideEveryPage();
+
+	init_game_socket(roomName);
+	g_state.pageToDisplay = '.game';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 }

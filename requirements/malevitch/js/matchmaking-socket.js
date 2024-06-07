@@ -1,11 +1,10 @@
-async function init_matchmaking_socket() {
+async function init_matchmaking_socket(requester, invited) {
     token = await get_socket_connection_token("/cupidon/")
-    const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/?token=' + token);
+    const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token);
     const Id = g_userId;
 
     exampleSocket.onopen = function(event) {
-        console.log("Mathcmaking socket opened in the front");
-        sendPlayerData("playerData");
+        console.log("Matchmaking socket opened in the front");
     };
 
     exampleSocket.onclose = function() {
@@ -19,25 +18,11 @@ async function init_matchmaking_socket() {
 
     exampleSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        if (data.action === "redirect") {
-            init_socket("test")
-            // Launch la game...
+        if (data.type === "start.game") {
+            console.log("Starting game");
+            showGamePage(data.RoomName);
         }
     };
-
-    console.log(Id)
-
-    function sendPlayerData(type) {
-        // Construct a msg object containing the data the server needs to process the message from the chat client.
-        const data = {
-            type: type,
-            id: Id, // A recuperer depuis la db
-            elo: 500, // A recuperer depuis la db, le back va le recuperer
-        };
-
-        // Send the msg object as a JSON-formatted string.
-        exampleSocket.send(JSON.stringify(data));
-    }
 
     function sendData(type) {
         const data = {
@@ -48,7 +33,9 @@ async function init_matchmaking_socket() {
     }
 
     function ping() {
-        sendData('ping');
+        if (requester === 0 && invited === 0){
+            sendData('ping');
+        }
     }
 
     exampleSocket.addEventListener('open', (event) => {
