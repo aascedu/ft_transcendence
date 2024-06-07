@@ -29,7 +29,7 @@ async function connect(id, password, nickname) {
 }
 
 async function refreshLoop() {
-    milliseconds = 5000;
+    milliseconds = 200000;
     g_refreshInterval = setInterval(() => {
         post_jwt_refresh()
     }, milliseconds);
