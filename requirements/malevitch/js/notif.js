@@ -104,8 +104,8 @@ async function acceptFriendInvite() {
 
 	// if we are on homepage-game, add new friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
-		await clearHomepageContent();
-		await setHomepageContent();
+		await clearHomepageFriends();
+		await loadHomepageFriends();
 
 		g_state.pageToDisplay = '.homepage-game';
 		window.history.pushState(g_state, null, "");
@@ -137,8 +137,8 @@ async function acceptFriendInvite() {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 
-			clearTournamentInfo();
-			await loadOngoingTournament(tournamentId);
+			clearTournamentFriends();
+			await loadTournamentFriends();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that new friend appears in available friends
