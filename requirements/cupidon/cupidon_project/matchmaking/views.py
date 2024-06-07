@@ -1,5 +1,4 @@
 from django.views import View
-from django.shortcuts import render
 from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
@@ -69,6 +68,10 @@ class RequestGameResponse(View):
                 'player2': invited,
             }
         )
+        print('Requester: ' + str(requester))
+        print('Invited: ' + str(invited))
+        print(gameRequesters)
+
         gameRequesters.remove([requester, invited])
 
         # Mettre le mec unavailable pdt la recherche ?

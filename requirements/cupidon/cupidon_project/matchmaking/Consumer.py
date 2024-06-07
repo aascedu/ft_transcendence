@@ -12,8 +12,9 @@ class Consumer(OurBasicConsumer):
         if self.security_check() is False:
             return self.close()
         self.id = self.scope['user'].id
-        self.requester = self.scope["url_route"]["kwargs"]["requester"]
-        self.invited = self.scope["url_route"]["kwargs"]["invited"]
+        #Try catch
+        self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
+        self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
 
         if self.requester == 0 and self.invited == 0:
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
@@ -21,13 +22,16 @@ class Consumer(OurBasicConsumer):
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
 
+        elo = 500 # Requete a Brieuc
+        self.me = Player(self.id, elo)
+        waitingList[self.id] = self.me
+
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global waitingList
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
-        del waitingList[self.me.id]
         self.close()
 
     # Receive message from WebSocket
@@ -46,16 +50,8 @@ class Consumer(OurBasicConsumer):
             }
         )
 
-    async def PlayerData(self, event):
-        global waitingList
-
-        id = event['id']
-        elo = event['elo']
-        self.me = Player(id, elo)
-        waitingList[id] = self.me # Get player name with the token here
-
     async def SendToGame(self, event): # Need to manage when game invite
-        if event['player1'] == self.me.id or event['player2'] == self.me.id:
+        if int(event['player1']) == self.me.id or int(event['player2']) == self.me.id:
             await self.send(json.dumps({
                 'type': "start.game",
                 'RoomName': str(event['player1']) + '-' + str(event['player2']),

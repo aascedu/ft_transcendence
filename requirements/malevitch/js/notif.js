@@ -127,7 +127,7 @@ document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('ke
 
 async function acceptPlayInvite() {
 	try {
-		var	requester = document.querySelector('.notif-play-invite').getAttribute('user-id');
+		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
 		await accept_invitation_to_game(requester, g_userId);
 	} catch (error) {
 		console.error(error);

@@ -25,21 +25,26 @@ class Consumer(OurBasicConsumer):
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         await self.channel_layer.group_add(self.roomName, self.channel_name)
 
+
         if self.roomName not in matches:
             matches[self.roomName] = Match()
         self.myMatch = matches[self.roomName]
+
 
         if "err" in self.scope:
             await self.close()
 
         count = self.roomName.count('-')
-        if count != 2 and count != 3:
+        if count != 1 and count != 2:
+            print("Nooooo1")
             await self.close()
 
-        p1 = self.roomName.split('-')[count - 1]
-        p2 = self.roomName.split('-')[count]
+        p1 = int(self.roomName.split('-')[count - 1])
+        p2 = int(self.roomName.split('-')[count])
         self.user = self.scope['user']
         self.isPlayer = False
+        self.id = len(self.myMatch.players)
+
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
             self.myMatch.playersId[self.id] = self.user.id
@@ -47,12 +52,11 @@ class Consumer(OurBasicConsumer):
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             await self.close()
 
-        self.id = len(self.myMatch.players)
 
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
-        logging.info("Player " + str(self.user.id) + "has entered game room " + self.roomName)
+        logging.info("Player " + str(self.user.id) + " has entered game room " + self.roomName)
 
         try:
             request = requests.delete(

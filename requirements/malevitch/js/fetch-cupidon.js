@@ -6,6 +6,7 @@ async function invite_friend_to_game(PlayerToInvite) {
     json = {PlayerToInvite: PlayerToInvite};
 
     fetch_post(add_cupidon_in_url("game-request/"), json);
+    init_matchmaking_socket(g_userId, PlayerToInvite);
 }
 
 async function cancel_invitation_to_game() {
@@ -13,7 +14,9 @@ async function cancel_invitation_to_game() {
 }
 
 async function accept_invitation_to_game(requester, invited) {
+    const RoomName = requester + "-" + invited
     fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
+    showGamePage(RoomName);
 }
 
 async function refuse_invitation_to_game(requester, invited) {
