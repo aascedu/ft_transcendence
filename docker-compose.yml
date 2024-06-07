@@ -26,21 +26,13 @@ volumes:
       type: none
       device: ./requirements/shared_code
       o: bind
-
   certificates: {}
-
   elastic_data: {}
-
   kibana_data: {}
-
   logstash_data: {}
-
   filebeat_data: {}
-
   alfred_data: {}
-
   mnemosine_data: {}
-
   petrus_data: {}
 
 services:
@@ -139,7 +131,6 @@ services:
     volumes:
       - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
-      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
     environment:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
@@ -366,7 +357,6 @@ services:
     volumes:
       - certificates:/usr/share/filebeat/config/certs:ro
       - filebeat_data:/usr/share/filebeat/data
-      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
       - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     environment:
