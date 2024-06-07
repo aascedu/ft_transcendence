@@ -43,5 +43,5 @@ function delete_cookies() {
             },
         };
 
-    fetch(add_petrus_in_url('/JWT-refresh/'), content);
+    return fetch(add_petrus_in_url('/JWT-refresh/'), content);
 }
