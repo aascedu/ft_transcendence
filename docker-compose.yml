@@ -27,29 +27,21 @@ volumes:
       device: ./requirements/shared_code
       o: bind
 
-  certificates:
-    driver: local
+  certificates: {}
 
-  elastic_data:
-    driver: local
+  elastic_data: {}
 
-  kibana_data:
-    driver: local
+  kibana_data: {}
 
-  logstash_data:
-    driver: local
+  logstash_data: {}
 
-  filebeat_data:
-    driver: local
+  filebeat_data: {}
 
-  alfred_data:
-    driver: local
+  alfred_data: {}
 
-  mnemosine_data:
-    driver: local
+  mnemosine_data: {}
 
-  petrus_data:
-    driver: local
+  petrus_data: {}
 
 services:
 # # Reverse proxy container
@@ -156,7 +148,7 @@ services:
     networks:
       - atlas
       - sentinel
-    restart: on-failure
+    restart: always
     healthcheck:
       test:
         [
@@ -264,7 +256,7 @@ services:
       memlock:
         soft: -1
         hard: -1
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test:
         [
@@ -297,6 +289,7 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure
 
 # # Tournament container
   coubertin:
@@ -386,7 +379,7 @@ services:
       - sentinel
       - internet_access
       - atlas
-    restart: unless-stopped
+    restart: always
   #   # command:
   #   #   - --strict.perms=false
 
@@ -451,6 +444,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    restart: always
 
 # # Game container
   ludo:
@@ -723,3 +717,4 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure

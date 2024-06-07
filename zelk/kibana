@@ -1,0 +1,168 @@
+Kibana is currently running with legacy OpenSSL providers enabled! For details and instructions on how to disable see https://www.elastic.co/guide/en/kibana/8.12/production.html#openssl-legacy-provider
+{"log.level":"info","@timestamp":"2024-06-06T14:33:33.543Z","log.logger":"elastic-apm-node","ecs.version":"8.10.0","agentVersion":"4.2.0","env":{"pid":7,"proctitle":"/usr/share/kibana/bin/../node/bin/node","os":"linux 6.1.0-21-amd64","arch":"x64","host":"1657ed8d7268","timezone":"UTC+00","runtime":"Node.js v18.18.2"},"config":{"active":{"source":"start","value":true},"breakdownMetrics":{"source":"start","value":false},"captureBody":{"source":"start","value":"off","commonName":"capture_body"},"captureHeaders":{"source":"start","value":false},"centralConfig":{"source":"start","value":false},"contextPropagationOnly":{"source":"start","value":true},"environment":{"source":"start","value":"production"},"globalLabels":{"source":"start","value":[["kibana_uuid","65746598-2496-44ea-b3e2-c0c1c638685e"],["git_rev","f5bd489c5ff9c676c4f861c42da6ea99ae350832"]],"sourceValue":{"kibana_uuid":"65746598-2496-44ea-b3e2-c0c1c638685e","git_rev":"f5bd489c5ff9c676c4f861c42da6ea99ae350832"}},"logLevel":{"source":"default","value":"info","commonName":"log_level"},"metricsInterval":{"source":"start","value":120,"sourceValue":"120s"},"serverUrl":{"source":"start","value":"https://kibana-cloud-apm.apm.us-east-1.aws.found.io/","commonName":"server_url"},"transactionSampleRate":{"source":"start","value":0.1,"commonName":"transaction_sample_rate"},"captureSpanStackTraces":{"source":"start","sourceValue":false},"secretToken":{"source":"start","value":"[REDACTED]","commonName":"secret_token"},"serviceName":{"source":"start","value":"kibana","commonName":"service_name"},"serviceVersion":{"source":"start","value":"8.12.2","commonName":"service_version"}},"activationMethod":"require","message":"Elastic APM Node.js Agent v4.2.0"}
+[2024-06-06T14:33:34.746+00:00][INFO ][root] Kibana is starting
+[2024-06-06T14:33:34.788+00:00][INFO ][node] Kibana process configured with roles: [background_tasks, ui]
+[2024-06-06T14:33:40.700+00:00][INFO ][plugins-service] Plugin "cloudChat" is disabled.
+[2024-06-06T14:33:40.707+00:00][INFO ][plugins-service] Plugin "cloudExperiments" is disabled.
+[2024-06-06T14:33:40.708+00:00][INFO ][plugins-service] Plugin "cloudFullStory" is disabled.
+[2024-06-06T14:33:40.971+00:00][INFO ][plugins-service] Plugin "profilingDataAccess" is disabled.
+[2024-06-06T14:33:40.971+00:00][INFO ][plugins-service] Plugin "profiling" is disabled.
+[2024-06-06T14:33:41.059+00:00][INFO ][plugins-service] Plugin "securitySolutionServerless" is disabled.
+[2024-06-06T14:33:41.059+00:00][INFO ][plugins-service] Plugin "serverless" is disabled.
+[2024-06-06T14:33:41.059+00:00][INFO ][plugins-service] Plugin "serverlessObservability" is disabled.
+[2024-06-06T14:33:41.059+00:00][INFO ][plugins-service] Plugin "serverlessSearch" is disabled.
+[2024-06-06T14:33:41.326+00:00][INFO ][http.server.Preboot] http server running at http://0.0.0.0:5601
+[2024-06-06T14:33:41.397+00:00][INFO ][plugins-system.preboot] Setting up [1] plugins: [interactiveSetup]
+[2024-06-06T14:33:41.434+00:00][WARN ][config.deprecation] The default mechanism for Reporting privileges will work differently in future versions, which will affect the behavior of this cluster. Set "xpack.reporting.roles.enabled" to "false" to adopt the future behavior before upgrading.
+[2024-06-06T14:33:43.459+00:00][INFO ][plugins-system.standard] Setting up [149] plugins: [devTools,translations,share,screenshotMode,usageCollection,telemetryCollectionManager,telemetryCollectionXpack,taskManager,kibanaUsageCollection,cloud,newsfeed,savedObjectsFinder,noDataPage,monitoringCollection,licensing,mapsEms,globalSearch,globalSearchProviders,features,guidedOnboarding,banners,licenseApiGuard,customBranding,ftrApis,fieldFormats,expressions,screenshotting,esUiShared,customIntegrations,contentManagement,dataViews,home,searchprofiler,painlessLab,management,spaces,security,telemetry,licenseManagement,snapshotRestore,lists,files,encryptedSavedObjects,eventLog,actions,notifications,cloudDataMigration,advancedSettings,grokdebugger,console,bfetch,data,savedObjectsTagging,savedObjectsManagement,unifiedSearch,graph,alerting,embeddable,uiActionsEnhanced,savedSearch,presentationUtil,expressionShape,expressionRevealImage,expressionRepeatImage,expressionMetric,expressionImage,controls,fileUpload,ingestPipelines,ecsDataQualityDashboard,dataViewFieldEditor,dataViewManagement,charts,watcher,visualizations,visTypeXy,visTypeVislib,visTypeVega,visTypeTimeseries,visTypeTimelion,visTypeTagcloud,visTypeTable,visTypeMetric,visTypeMarkdown,visTypeHeatmap,inputControlVis,expressionTagcloud,expressionPartitionVis,visTypePie,expressionMetricVis,expressionLegacyMetricVis,expressionHeatmap,expressionGauge,visTypeGauge,eventAnnotation,expressionXY,dashboard,lens,triggersActionsUi,transform,stackConnectors,stackAlerts,ruleRegistry,cases,timelines,sessionView,kubernetesSecurity,threatIntelligence,metricsDataAccess,aiops,links,discover,reporting,canvas,fleet,osquery,logExplorer,indexManagement,rollup,remoteClusters,crossClusterReplication,indexLifecycleManagement,datasetQuality,cloudSecurityPosture,cloudDefend,discoverEnhanced,maps,dataVisualizer,ml,observabilityAIAssistant,logsShared,observabilityLogExplorer,enterpriseSearch,observability,uptime,synthetics,observabilityOnboarding,infra,upgradeAssistant,monitoring,logstash,elasticAssistant,securitySolution,securitySolutionEss,dashboardEnhanced,apmDataAccess,assetManager,apm,ux]
+[2024-06-06T14:33:43.679+00:00][INFO ][plugins.taskManager] TaskManager is identified by the Kibana UUID: 65746598-2496-44ea-b3e2-c0c1c638685e
+[2024-06-06T14:33:44.042+00:00][INFO ][custom-branding-service] CustomBrandingService registering plugin: customBranding
+[2024-06-06T14:33:44.593+00:00][WARN ][plugins.screenshotting.config] Chromium sandbox provides an additional layer of protection, but is not supported for Linux Ubuntu 20.04 OS. Automatically setting 'xpack.screenshotting.browser.chromium.disableSandbox: true'.
+[2024-06-06T14:33:44.854+00:00][WARN ][plugins.security.config] Session cookies will be transmitted over insecure connections. This is not recommended.
+[2024-06-06T14:33:44.868+00:00][WARN ][plugins.security.config] Session cookies will be transmitted over insecure connections. This is not recommended.
+[2024-06-06T14:33:45.016+00:00][INFO ][plugins.encryptedSavedObjects] Hashed 'xpack.encryptedSavedObjects.encryptionKey' for this instance: DRUzQLZXXpD6fLZYc3XMVdwqDIpQCEuTglyMnD+4Yk8=
+[2024-06-06T14:33:45.129+00:00][INFO ][plugins.notifications] Email Service Error: Email connector not specified.
+[2024-06-06T14:33:45.320+00:00][INFO ][plugins.alerting] using indexes and aliases for persisting alerts
+[2024-06-06T14:33:46.148+00:00][INFO ][plugins.alerting] Registering resources for context "stack".
+[2024-06-06T14:33:46.461+00:00][INFO ][plugins.reporting.config] Overriding server host address "0.0.0.0" in Reporting runtime config, using "xpack.reporting.kibanaServer.hostname: localhost".
+[2024-06-06T14:33:47.002+00:00][INFO ][plugins.cloudSecurityPosture] Registered task successfully [Task: cloud_security_posture-stats_task]
+[2024-06-06T14:33:47.322+00:00][INFO ][plugins.alerting] Registering resources for context "ml.anomaly-detection".
+[2024-06-06T14:33:47.828+00:00][INFO ][plugins.alerting] Registering resources for context "observability.slo".
+[2024-06-06T14:33:47.830+00:00][INFO ][plugins.alerting] Registering resources for context "observability.threshold".
+[2024-06-06T14:33:47.922+00:00][INFO ][plugins.alerting] Registering resources for context "observability.uptime".
+[2024-06-06T14:33:48.143+00:00][INFO ][plugins.infra] Skipping initialization of Profiling endpoints because 'profilingDataAccess' plugin is not available
+[2024-06-06T14:33:48.144+00:00][INFO ][plugins.alerting] Registering resources for context "observability.logs".
+[2024-06-06T14:33:48.145+00:00][INFO ][plugins.alerting] Registering resources for context "observability.metrics".
+[2024-06-06T14:33:49.915+00:00][INFO ][plugins.alerting] Registering resources for context "security".
+[2024-06-06T14:33:49.929+00:00][INFO ][plugins.securitySolution.endpoint:user-artifact-packager:1.0.0] Registering endpoint:user-artifact-packager task with timeout of [20m], interval of [60s] and policy update batch size of [25]
+[2024-06-06T14:33:49.948+00:00][INFO ][plugins.assetManager] Server is NOT enabled
+[2024-06-06T14:33:49.952+00:00][INFO ][plugins.alerting] Registering resources for context "observability.apm".
+[2024-06-06T14:33:50.209+00:00][INFO ][savedobjects-service] Waiting until all Elasticsearch nodes are compatible with Kibana before starting saved objects migrations...
+[2024-06-06T14:33:50.209+00:00][INFO ][savedobjects-service] Starting saved objects migrations
+[2024-06-06T14:33:50.259+00:00][INFO ][savedobjects-service] [.kibana_task_manager] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 23ms.
+[2024-06-06T14:33:50.261+00:00][INFO ][savedobjects-service] [.kibana] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 26ms.
+[2024-06-06T14:33:50.270+00:00][INFO ][savedobjects-service] [.kibana_task_manager] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 11ms.
+[2024-06-06T14:33:50.271+00:00][INFO ][savedobjects-service] [.kibana_task_manager] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 1ms.
+[2024-06-06T14:33:50.272+00:00][INFO ][savedobjects-service] [.kibana] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 11ms.
+[2024-06-06T14:33:50.272+00:00][INFO ][savedobjects-service] [.kibana] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 0ms.
+[2024-06-06T14:33:50.275+00:00][INFO ][savedobjects-service] [.kibana_security_solution] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 35ms.
+[2024-06-06T14:33:50.277+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 34ms.
+[2024-06-06T14:33:50.282+00:00][INFO ][savedobjects-service] [.kibana_ingest] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 37ms.
+[2024-06-06T14:33:50.284+00:00][INFO ][savedobjects-service] [.kibana_security_solution] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 9ms.
+[2024-06-06T14:33:50.285+00:00][INFO ][savedobjects-service] [.kibana_security_solution] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 1ms.
+[2024-06-06T14:33:50.287+00:00][INFO ][savedobjects-service] [.kibana_analytics] INIT -> WAIT_FOR_YELLOW_SOURCE. took: 50ms.
+[2024-06-06T14:33:50.291+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 14ms.
+[2024-06-06T14:33:50.292+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 1ms.
+[2024-06-06T14:33:50.295+00:00][INFO ][savedobjects-service] [.kibana_ingest] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 13ms.
+[2024-06-06T14:33:50.295+00:00][INFO ][savedobjects-service] [.kibana_ingest] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 0ms.
+[2024-06-06T14:33:50.299+00:00][INFO ][savedobjects-service] [.kibana_analytics] WAIT_FOR_YELLOW_SOURCE -> UPDATE_SOURCE_MAPPINGS_PROPERTIES. took: 12ms.
+[2024-06-06T14:33:50.299+00:00][INFO ][savedobjects-service] [.kibana_analytics] UPDATE_SOURCE_MAPPINGS_PROPERTIES -> OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT. took: 0ms.
+[2024-06-06T14:33:50.306+00:00][INFO ][savedobjects-service] [.kibana_security_solution] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 21ms.
+[2024-06-06T14:33:50.308+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 16ms.
+[2024-06-06T14:33:50.310+00:00][INFO ][savedobjects-service] [.kibana_task_manager] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 39ms.
+[2024-06-06T14:33:50.313+00:00][INFO ][savedobjects-service] [.kibana_analytics] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 14ms.
+[2024-06-06T14:33:50.316+00:00][INFO ][savedobjects-service] [.kibana_ingest] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 21ms.
+[2024-06-06T14:33:50.317+00:00][INFO ][savedobjects-service] [.kibana] OUTDATED_DOCUMENTS_SEARCH_OPEN_PIT -> OUTDATED_DOCUMENTS_SEARCH_READ. took: 45ms.
+[2024-06-06T14:33:50.425+00:00][INFO ][savedobjects-service] [.kibana_security_solution] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 119ms.
+[2024-06-06T14:33:50.427+00:00][INFO ][savedobjects-service] [.kibana_analytics] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 114ms.
+[2024-06-06T14:33:50.428+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 120ms.
+[2024-06-06T14:33:50.429+00:00][INFO ][savedobjects-service] [.kibana_ingest] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 113ms.
+[2024-06-06T14:33:50.433+00:00][INFO ][savedobjects-service] [.kibana_ingest] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 4ms.
+[2024-06-06T14:33:50.434+00:00][INFO ][savedobjects-service] [.kibana_ingest] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 1ms.
+[2024-06-06T14:33:50.434+00:00][INFO ][savedobjects-service] [.kibana_ingest] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.435+00:00][INFO ][savedobjects-service] [.kibana_ingest] Migration completed after 190ms
+[2024-06-06T14:33:50.435+00:00][INFO ][savedobjects-service] [.kibana_security_solution] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 10ms.
+[2024-06-06T14:33:50.436+00:00][INFO ][savedobjects-service] [.kibana_security_solution] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 1ms.
+[2024-06-06T14:33:50.436+00:00][INFO ][savedobjects-service] [.kibana_security_solution] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.436+00:00][INFO ][savedobjects-service] [.kibana_security_solution] Migration completed after 196ms
+[2024-06-06T14:33:50.437+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 9ms.
+[2024-06-06T14:33:50.437+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 0ms.
+[2024-06-06T14:33:50.437+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.437+00:00][INFO ][savedobjects-service] [.kibana_alerting_cases] Migration completed after 194ms
+[2024-06-06T14:33:50.438+00:00][INFO ][savedobjects-service] [.kibana_analytics] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 11ms.
+[2024-06-06T14:33:50.438+00:00][INFO ][savedobjects-service] [.kibana_analytics] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 0ms.
+[2024-06-06T14:33:50.438+00:00][INFO ][savedobjects-service] [.kibana_analytics] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.438+00:00][INFO ][savedobjects-service] [.kibana_analytics] Migration completed after 201ms
+[2024-06-06T14:33:50.439+00:00][INFO ][savedobjects-service] [.kibana_task_manager] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 129ms.
+[2024-06-06T14:33:50.447+00:00][INFO ][savedobjects-service] [.kibana] OUTDATED_DOCUMENTS_SEARCH_READ -> OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT. took: 130ms.
+[2024-06-06T14:33:50.449+00:00][INFO ][savedobjects-service] [.kibana_task_manager] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 10ms.
+[2024-06-06T14:33:50.450+00:00][INFO ][savedobjects-service] [.kibana_task_manager] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 1ms.
+[2024-06-06T14:33:50.450+00:00][INFO ][savedobjects-service] [.kibana_task_manager] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.450+00:00][INFO ][savedobjects-service] [.kibana_task_manager] Migration completed after 214ms
+[2024-06-06T14:33:50.453+00:00][INFO ][savedobjects-service] [.kibana] OUTDATED_DOCUMENTS_SEARCH_CLOSE_PIT -> CHECK_TARGET_MAPPINGS. took: 6ms.
+[2024-06-06T14:33:50.453+00:00][INFO ][savedobjects-service] [.kibana] CHECK_TARGET_MAPPINGS -> CHECK_VERSION_INDEX_READY_ACTIONS. took: 0ms.
+[2024-06-06T14:33:50.453+00:00][INFO ][savedobjects-service] [.kibana] CHECK_VERSION_INDEX_READY_ACTIONS -> DONE. took: 0ms.
+[2024-06-06T14:33:50.453+00:00][INFO ][savedobjects-service] [.kibana] Migration completed after 218ms
+[2024-06-06T14:33:50.457+00:00][INFO ][status.core.elasticsearch] elasticsearch service is now available: You're running Kibana 8.12.2 with some different versions of Elasticsearch. Update Kibana or Elasticsearch to the same version to prevent compatibility issues: v8.13.1 @ 192.168.128.7:9200 (192.168.128.7)
+[2024-06-06T14:33:50.457+00:00][INFO ][status.core.savedObjects] savedObjects service is now available: SavedObjects service has completed migrations and is available
+[2024-06-06T14:33:50.458+00:00][INFO ][plugins-system.preboot] Stopping all plugins.
+[2024-06-06T14:33:50.460+00:00][INFO ][plugins-system.preboot] All plugins stopped.
+[2024-06-06T14:33:50.460+00:00][INFO ][plugins-system.standard] Starting [149] plugins: [devTools,translations,share,screenshotMode,usageCollection,telemetryCollectionManager,telemetryCollectionXpack,taskManager,kibanaUsageCollection,cloud,newsfeed,savedObjectsFinder,noDataPage,monitoringCollection,licensing,mapsEms,globalSearch,globalSearchProviders,features,guidedOnboarding,banners,licenseApiGuard,customBranding,ftrApis,fieldFormats,expressions,screenshotting,esUiShared,customIntegrations,contentManagement,dataViews,home,searchprofiler,painlessLab,management,spaces,security,telemetry,licenseManagement,snapshotRestore,lists,files,encryptedSavedObjects,eventLog,actions,notifications,cloudDataMigration,advancedSettings,grokdebugger,console,bfetch,data,savedObjectsTagging,savedObjectsManagement,unifiedSearch,graph,alerting,embeddable,uiActionsEnhanced,savedSearch,presentationUtil,expressionShape,expressionRevealImage,expressionRepeatImage,expressionMetric,expressionImage,controls,fileUpload,ingestPipelines,ecsDataQualityDashboard,dataViewFieldEditor,dataViewManagement,charts,watcher,visualizations,visTypeXy,visTypeVislib,visTypeVega,visTypeTimeseries,visTypeTimelion,visTypeTagcloud,visTypeTable,visTypeMetric,visTypeMarkdown,visTypeHeatmap,inputControlVis,expressionTagcloud,expressionPartitionVis,visTypePie,expressionMetricVis,expressionLegacyMetricVis,expressionHeatmap,expressionGauge,visTypeGauge,eventAnnotation,expressionXY,dashboard,lens,triggersActionsUi,transform,stackConnectors,stackAlerts,ruleRegistry,cases,timelines,sessionView,kubernetesSecurity,threatIntelligence,metricsDataAccess,aiops,links,discover,reporting,canvas,fleet,osquery,logExplorer,indexManagement,rollup,remoteClusters,crossClusterReplication,indexLifecycleManagement,datasetQuality,cloudSecurityPosture,cloudDefend,discoverEnhanced,maps,dataVisualizer,ml,observabilityAIAssistant,logsShared,observabilityLogExplorer,enterpriseSearch,observability,uptime,synthetics,observabilityOnboarding,infra,upgradeAssistant,monitoring,logstash,elasticAssistant,securitySolution,securitySolutionEss,dashboardEnhanced,apmDataAccess,assetManager,apm,ux]
+[2024-06-06T14:33:50.753+00:00][INFO ][plugins.fleet] Task Fleet-Usage-Sender-1.1.4 scheduled with interval 1h
+[2024-06-06T14:33:50.753+00:00][INFO ][plugins.fleet.fleet:check-deleted-files-task:1.0.1] Started with interval of [1d] and timeout of [2m]
+[2024-06-06T14:33:50.754+00:00][INFO ][plugins.fleet] Task Fleet-Metrics-Task:1.0.0 scheduled with interval 1h
+[2024-06-06T14:33:50.761+00:00][INFO ][plugins.monitoring.monitoring] config sourced from: production cluster
+[2024-06-06T14:33:50.799+00:00][INFO ][plugins.observability] Installing SLO shared resources
+[2024-06-06T14:33:50.799+00:00][INFO ][plugins.observability] Installing SLO component template [.slo-observability.sli-mappings]
+[2024-06-06T14:33:50.800+00:00][INFO ][plugins.observability] Installing SLO component template [.slo-observability.sli-settings]
+[2024-06-06T14:33:50.801+00:00][INFO ][plugins.observability] Installing SLO component template [.slo-observability.summary-mappings]
+[2024-06-06T14:33:50.803+00:00][INFO ][plugins.observability] Installing SLO component template [.slo-observability.summary-settings]
+[2024-06-06T14:33:50.808+00:00][INFO ][plugins.alerting] Installing ILM policy .alerts-ilm-policy
+[2024-06-06T14:33:50.810+00:00][INFO ][plugins.alerting] Installing component template .alerts-framework-mappings
+[2024-06-06T14:33:50.812+00:00][INFO ][plugins.alerting] Installing component template .alerts-legacy-alert-mappings
+[2024-06-06T14:33:50.824+00:00][INFO ][plugins.alerting] Installing component template .alerts-ecs-mappings
+[2024-06-06T14:33:50.833+00:00][INFO ][plugins.ruleRegistry] Installing component template .alerts-technical-mappings
+[2024-06-06T14:33:51.895+00:00][INFO ][http.server.Kibana] http server running at http://0.0.0.0:5601
+[2024-06-06T14:33:51.908+00:00][INFO ][plugins.fleet] Task Fleet-Usage-Logger-Task scheduled with interval 15m
+[2024-06-06T14:33:51.990+00:00][INFO ][plugins.monitoring.monitoring.kibana-monitoring] Starting monitoring stats collection
+[2024-06-06T14:33:51.995+00:00][ERROR][plugins.observabilityAIAssistant] Failed to resolve ELSER model definition: Error: Platinum, Enterprise or trial license needed
+[2024-06-06T14:33:51.995+00:00][INFO ][plugins.fleet] Beginning fleet setup
+[2024-06-06T14:33:52.006+00:00][INFO ][plugins.ruleRegistry] Installing ILM policy .preview.alerts-security.alerts-policy
+[2024-06-06T14:33:52.018+00:00][INFO ][plugins.telemetry] Telemetry collection is enabled. For more information on telemetry settings, refer to https://www.elastic.co/guide/en/kibana/8.12/telemetry-settings-kbn.html.
+[2024-06-06T14:33:52.021+00:00][INFO ][plugins.observability] Installing SLO index template [.slo-observability.sli]
+[2024-06-06T14:33:52.036+00:00][INFO ][plugins.alerting] Installing component template .alerts-stack.alerts-mappings
+[2024-06-06T14:33:52.037+00:00][INFO ][plugins.alerting] Installing component template .alerts-ml.anomaly-detection.alerts-mappings
+[2024-06-06T14:33:52.038+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.slo.alerts-mappings
+[2024-06-06T14:33:52.039+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.threshold.alerts-mappings
+[2024-06-06T14:33:52.039+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.uptime.alerts-mappings
+[2024-06-06T14:33:52.040+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.logs.alerts-mappings
+[2024-06-06T14:33:52.040+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.metrics.alerts-mappings
+[2024-06-06T14:33:52.043+00:00][INFO ][plugins.alerting] Installing component template .alerts-security.alerts-mappings
+[2024-06-06T14:33:52.044+00:00][INFO ][plugins.alerting] Installing component template .alerts-observability.apm.alerts-mappings
+[2024-06-06T14:33:52.055+00:00][INFO ][plugins.ruleRegistry] Installing component template .preview.alerts-security.alerts-mappings
+[2024-06-06T14:33:52.067+00:00][INFO ][plugins.observability] Installing SLO index template [.slo-observability.summary]
+[2024-06-06T14:33:52.091+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.uptime.alerts-default-index-template
+[2024-06-06T14:33:52.101+00:00][INFO ][plugins.fleet] Agent policies updated by license change: []
+[2024-06-06T14:33:52.116+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.threshold.alerts-default-index-template
+[2024-06-06T14:33:52.118+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.logs.alerts-default-index-template
+[2024-06-06T14:33:52.119+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.apm.alerts-default-index-template
+[2024-06-06T14:33:52.120+00:00][INFO ][plugins.alerting] Installing index template .alerts-stack.alerts-default-index-template
+[2024-06-06T14:33:52.121+00:00][INFO ][plugins.alerting] Installing index template .alerts-ml.anomaly-detection.alerts-default-index-template
+[2024-06-06T14:33:52.122+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.slo.alerts-default-index-template
+[2024-06-06T14:33:52.123+00:00][INFO ][plugins.alerting] Installing index template .alerts-observability.metrics.alerts-default-index-template
+[2024-06-06T14:33:52.123+00:00][INFO ][plugins.alerting] Installing index template .alerts-security.alerts-default-index-template
+[2024-06-06T14:33:52.199+00:00][INFO ][plugins.securitySolution.endpoint:user-artifact-packager:1.0.0] Started. Checking for changes to endpoint artifacts
+[2024-06-06T14:33:52.200+00:00][INFO ][plugins.securitySolution.endpoint:user-artifact-packager:1.0.0] Complete. Task run took 1ms [ stated: 2024-06-06T14:33:52.199Z ]
+[2024-06-06T14:33:52.353+00:00][INFO ][plugins.observabilityAIAssistant.service] Creating concrete write index - .kibana-observability-ai-assistant-conversations-000001
+[2024-06-06T14:33:52.354+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.uptime.alerts-default-000001
+[2024-06-06T14:33:52.356+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.apm.alerts-default-000001
+[2024-06-06T14:33:52.356+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-stack.alerts-default-000001
+[2024-06-06T14:33:52.357+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-ml.anomaly-detection.alerts-default-000001
+[2024-06-06T14:33:52.358+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.slo.alerts-default-000001
+[2024-06-06T14:33:52.359+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.metrics.alerts-default-000001
+[2024-06-06T14:33:52.360+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-security.alerts-default-000001
+[2024-06-06T14:33:52.366+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.threshold.alerts-default-000001
+[2024-06-06T14:33:52.368+00:00][INFO ][plugins.alerting] Creating concrete write index - .internal.alerts-observability.logs.alerts-default-000001
+[2024-06-06T14:33:52.386+00:00][INFO ][plugins.observability] Installing SLO ingest pipeline [.slo-observability.sli.pipeline-v3]
+[2024-06-06T14:33:52.749+00:00][INFO ][plugins.fleet] Fleet setup completed
+[2024-06-06T14:33:52.750+00:00][INFO ][plugins.securitySolution] Dependent plugin setup complete - Starting ManifestTask
+[2024-06-06T14:33:52.751+00:00][INFO ][plugins.securitySolution.endpoint.policyProtections] App feature [endpoint_policy_protections] is enabled. Nothing to do!
+[2024-06-06T14:33:52.798+00:00][INFO ][plugins.synthetics] Installed synthetics index templates
+[2024-06-06T14:33:52.857+00:00][INFO ][plugins.observabilityAIAssistant.service] Creating concrete write index - .kibana-observability-ai-assistant-kb-000001
+[2024-06-06T14:33:53.083+00:00][INFO ][plugins.observabilityAIAssistant.service] Successfully set up index assets
+[2024-06-06T14:33:53.255+00:00][INFO ][plugins.screenshotting.chromium] Browser executable: /usr/share/kibana/node_modules/@kbn/screenshotting-plugin/chromium/headless_shell-linux_x64/headless_shell
+[2024-06-06T14:33:56.542+00:00][INFO ][status.plugins.alerting] alerting plugin is now available: Alerting is (probably) ready
+[2024-06-06T14:33:56.542+00:00][INFO ][status.plugins.fleet] fleet plugin is now available: Fleet is available
+[2024-06-06T14:33:56.542+00:00][INFO ][status.plugins.licensing] licensing plugin is now available: License fetched
+[2024-06-06T14:33:56.542+00:00][INFO ][status.plugins.taskManager] taskManager plugin is now available: Task Manager is healthy
+[2024-06-06T14:33:56.624+00:00][INFO ][status] Kibana is now available
