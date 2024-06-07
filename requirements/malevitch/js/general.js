@@ -412,11 +412,7 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 // update homepage content
 
 function clearHomepageContent() {
-	// clear friend list
-	document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
-		item.parentElement.removeChild(item);
-	});
-	document.querySelector('.homepage-game-content-no-friends').classList.add('visually-hidden');
+	clearHomepageFriends();
 
 	// clear history
 	document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
@@ -485,69 +481,7 @@ async function setHomepageContent() {
 
 	// show friends
 
-	var	friendsList;
-	var	friendsOnline;
-
-	try {
-
-		friendsList = await get_friend(g_userId);
-		friendsList = friendsList.Friends;
-
-		friendsOnline = await get_friend_list_online(g_userId);
-		friendsOnline = friendsOnline["online-status"];
-
-		var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
-		var	numOfFriendsOnline = 0;
-		var	friendId;
-		var	friendNick;
-		var	friendPic;
-
-		for (i = 0; i < friendsList.length; i++) {
-			if (friendsOnline[friendsList[i].Id] == true) {
-
-				friendId = friendsList[i].Id;
-				friendNick = friendsList[i].Nick;
-				friendPic = friendsList[i].Pic;
-				if (friendPic == null) {
-					friendPic = '/assets/general/pong.png';
-				}
-
-				friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
-				<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
-				<div class="user-card-name unselectable">` + friendNick + `</div>
-				<div class="user-card-picture">
-				<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-				</button>`);
-
-				numOfFriendsOnline++;
-			}
-		}
-
-		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
-			document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
-		}
-
-	} catch (error) {
-		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
-	}
-
-    // Load friends profile
-    document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
-        item.addEventListener('click', async function () {
-            document.querySelector('.user-profile-remove-icon').focus();
-
-            clearUserContent();
-            console.log(item.getAttribute('user-id'));
-            await loadUserContent(item.getAttribute('user-id'));
-
-            hideEveryPage();
-
-            g_state.pageToDisplay = '.user-profile';
-            window.history.pushState(g_state, null, "");
-            render(g_state);
-        });
-    });
+	await loadHomepageFriends();
 
 	// History and stats
 
@@ -651,6 +585,79 @@ async function setHomepageContent() {
 		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
 	</div>`);
+}
+
+async function loadHomepageFriends() {
+	var	friendsList;
+	var	friendsOnline;
+
+	try {
+
+		friendsList = await get_friend(g_userId);
+		friendsList = friendsList.Friends;
+
+		friendsOnline = await get_friend_list_online(g_userId);
+		friendsOnline = friendsOnline["online-status"];
+
+		var	friendsOnlineContainer = document.querySelector('.homepage-friend-content-card-container');
+		var	numOfFriendsOnline = 0;
+		var	friendId;
+		var	friendNick;
+		var	friendPic;
+
+		for (i = 0; i < friendsList.length; i++) {
+			if (friendsOnline[friendsList[i].Id] == true) {
+
+				friendId = friendsList[i].Id;
+				friendNick = friendsList[i].Nick;
+				friendPic = friendsList[i].Pic;
+				if (friendPic == null) {
+					friendPic = '/assets/general/pong.png';
+				}
+
+				friendsOnlineContainer.insertAdjacentHTML('beforeend', `\
+				<button class="content-card w-100 d-flex justify-content-between align-items-center purple-shadow" user-id="` + friendId + `">
+				<div class="user-card-name unselectable">` + friendNick + `</div>
+				<div class="user-card-picture">
+				<img src="` + friendPic + `" alt="profile picture of ` + friendNick + `" draggable="false" (dragstart)="false;" class="unselectable">
+				</div>
+				</button>`);
+
+				numOfFriendsOnline++;
+			}
+		}
+
+		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
+			document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
+		}
+
+	} catch (error) {
+		document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
+	}
+
+    // Load friends profile
+    document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
+        item.addEventListener('click', async function () {
+            document.querySelector('.user-profile-remove-icon').focus();
+
+            clearUserContent();
+            console.log(item.getAttribute('user-id'));
+            await loadUserContent(item.getAttribute('user-id'));
+
+            hideEveryPage();
+
+            g_state.pageToDisplay = '.user-profile';
+            window.history.pushState(g_state, null, "");
+            render(g_state);
+        });
+    });
+}
+
+function clearHomepageFriends() {
+	document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
+		item.parentElement.removeChild(item);
+	});
+	document.querySelector('.homepage-game-content-no-friends').classList.add('visually-hidden');
 }
 
 async function goToHomepageGame(previous) {

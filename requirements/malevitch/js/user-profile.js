@@ -89,6 +89,7 @@ async function loadUserContent(id) {
 
 		addIcon.setAttribute('user-id', id);
 		removeIcon.setAttribute('user-id', id);
+		disconnectIcon.classList.add('visually-hidden');
 	}
 	else {
 		userNick = g_userNick;
