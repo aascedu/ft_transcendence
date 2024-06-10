@@ -138,6 +138,7 @@ class Consumer(OurBasicConsumer):
         global matches
 
         logging.info("Game starting")
+        self.myMatch.startTime = time.time_ns()
 
         self.myMatch.ball = Ball(self.gameSettings)
 
@@ -152,7 +153,7 @@ class Consumer(OurBasicConsumer):
 
     async def gameEnd(self, event):
         global matches
-        print("This is gameEnd function with id: " + str(self.id))
+        self.myMatch.endTime = time.time_ns()
 
         if self.id == 0:
             if self.roomName.count('-') == 2:

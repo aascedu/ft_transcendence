@@ -233,12 +233,6 @@ class gameResult(View):
             }
         )
 
-        async_to_sync(channel_layer.group_send)(
-            tournament.id, {
-                'type': 'tournamentState',
-            }
-        )
-
         if tournament.ongoingGames == 0:
             tournament.currentRound += 1
 
