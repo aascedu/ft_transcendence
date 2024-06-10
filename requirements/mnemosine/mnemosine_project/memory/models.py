@@ -23,9 +23,19 @@ class Player(baseModel):
             'Lose-Count': self.lose_count,
         }
 
+
+class TournamentParticipation(baseModel):
+    player = models.ForeignKey(Player, related_name="tournaments", on_delete=models.CASCADE)
+    alias = models.SlugField()
+
+    def to_dict(self):
+        return self.player.to_dict() | {
+            'Alias': self.alias
+        }
+
 class Tournament(baseModel):
     name = models.SlugField()
-    players = models.ManyToManyField(Player, related_name="tournaments")
+    players = models.ManyToManyField(TournamentParticipation, related_name="tournament")
 
     def to_dict(self):
         return {
@@ -41,8 +51,8 @@ class Tournament(baseModel):
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament
-        for player in Player.objects.filter(id__in=json['Players']):
-            tournament.players.add(player)
+        for player in json['Players']:
+            TournamentParticipation.objects.create(player=Player.objects.get(id=player['Id']), alias=player['Name'])
         return tournament
 
 
@@ -124,3 +134,4 @@ class TournamentGame(baseModel):
                 "Game": self.game.to_dict(),
                 "Round": self.round
         }
+
