@@ -106,9 +106,6 @@ clean: | down
 	- docker rm $$(docker ps -qa) || true
 	- $(COMPOSE) stop || true
 	- rm -rf `find . | grep migrations | grep -v env` || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
 
 # - Completely removes Docker Compose services, including images, volumes, and orphans
 # - Removes all Docker images
@@ -126,7 +123,6 @@ fclean: | clean
 prune: | fclean
 	- docker system prune -af || true
 	- docker volume prune -af || true
-#	- rm -rf ./requirements/aegis/ModSecurity/ || true
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`
