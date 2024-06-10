@@ -45,6 +45,7 @@ class Consumer(OurBasicConsumer):
         self.user = self.scope['user']
         self.isPlayer = False
         self.id = len(self.myMatch.players)
+        print(self.myMatch.players)
         print("My id is: " + str(self.id))
 
         if self.user.id == p1 or self.user.id == p2:
@@ -87,6 +88,9 @@ class Consumer(OurBasicConsumer):
                 )
 
         # Ne faire ca que si ce n'est pas une game de tournoi !!
+        if self.roomName in matches:
+            del matches[self.roomName]
+
         try:
             request = requests.post(
                 'http://hermes:8004/notif/available-states/',
@@ -167,7 +171,6 @@ class Consumer(OurBasicConsumer):
                 requests.post(
                     'http://mnemosine:8008/memory/pong/games/',
                     json=self.myMatch.to_mnemosine())
-            del matches[self.roomName]
 
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({

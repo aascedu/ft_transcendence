@@ -77,14 +77,14 @@ class Consumer(OurBasicConsumer):
         )
 
     async def SendToGame(self, event): # Need to manage when game invite
-        if int(event['player1']) == self.me.id or int(event['player2']) == self.me.id:
+        if int(event['player1']) == self.id or int(event['player2']) == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
                 'RoomName': str(event['player1']) + '-' + str(event['player2']),
             }))
 
-            if self.me.id in waitingList:
-                del waitingList[self.me.id] # Only if not from invite
+            if self.id in waitingList:
+                del waitingList[self.id] # Only if not from invite
             self.close()
 
     async def Ping(self, event):

@@ -67,7 +67,7 @@ class Game(baseModel):
         on_delete=models.CASCADE,
         related_name='loses')
     loser_score = models.IntegerField()
-    duration = models.DurationField()
+    duration = models.IntegerField()
 
     def to_dict(self):
         return {
@@ -76,7 +76,7 @@ class Game(baseModel):
             'Winner-score': self.winner_score,
             'Loser': self.loser.id,
             'Loser-score': self.loser_score,
-            'duration': self.duration,
+            'Duration': self.duration,
         }
 
     @staticmethod
