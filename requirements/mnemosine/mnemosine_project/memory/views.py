@@ -31,8 +31,8 @@ class tournamentView(View):
         return JsonResponse(request, tournament.to_dict())
 
     def post(self, request, id:int  = 0):
-        # if request.user.is_service is False:
-        #     return JsonForbidden(request, 'Only Coubertin can create tournaments')
+        if request.user.is_service is False:
+            return JsonForbidden(request, 'Only Coubertin can create tournaments')
         data = request.data
         try:
             Tournament.from_json_saved(data)
@@ -88,7 +88,7 @@ class playerView(View):
         return save_response(request, player)
 
     def delete(self, request, id: int = 0):
-        if request.user.is_service is False or request.user.is_autenticated is False:
+        if request.user.is_service is False and request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only service can delete a player')
         try:
             player = Player.objects.get(id=id)
@@ -117,3 +117,15 @@ class playerView(View):
             return JsonNotFound(request, 'no player for the id')
         player.elo = elo
         return save_response(request, player)
+
+class eloView(View):
+    def get(self, request, id: int):
+        if request.user.is_service is False:
+            return JsonUnauthorized(request, 'Only service can get a player elo')
+
+        try:
+            player = Player.objects.get(id=id)
+        except ObjectDoesNotExist:
+            return JsonNotFound(request, 'no player for the id')
+
+        return JsonResponse(request, {'elo': player.elo})

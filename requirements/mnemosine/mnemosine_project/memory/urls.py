@@ -5,6 +5,7 @@ from memory.views import (
         tournamentView,
         gameView,
         playerView,
+        eloView
 )
 
 from memory.models import Player
@@ -22,4 +23,5 @@ urlpatterns = [
     path("pong/games/", gameView.as_view()),
     path("players/<int:id>/", playerView.as_view()),
     path("db/", view_db),
+    path("pong/elo/<int:id>/", eloView.as_view()),
 ]

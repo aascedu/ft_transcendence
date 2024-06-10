@@ -12,14 +12,16 @@ class Tournament:
         self.contenders = []
         self.invited = invited
         self.gameHistory = [] # Liste des dictionnaires de games
+        self.aliases = [] # {'id': id, 'alias': alias}
         print("Tournament created")
 
-    def addPlayer(self, player):
+    def addPlayer(self, player, alias):
         if len(self.players) >= int(self.nbPlayers):
             raise Exception("Too many players already")
         if self.userParticipating(player):
             raise Exception("Player is already participating in tournament")
         self.players.append(player)
+        self.aliases.append({'Id': player, 'Alias': alias})
         print("Player added") # Debug
 
     def removePlayer(self, playerId):
@@ -77,7 +79,7 @@ class Tournament:
             'Started': self.started,
             'Owner': self.admin,
             'Pending': self.invited,
-            'Confirmed': self.players,
+            'Confirmed': self.aliases,
             'Games': games,
         }
         return response
@@ -89,6 +91,7 @@ class Tournament:
             'Games': self.gameHistory,
             'NbPlayers': self.nbPlayers,
             'Admin': self.admin,
+            'Alias': self.aliases,
         }
         return tournamentDict
 

@@ -43,6 +43,7 @@ class Consumer(OurBasicConsumer):
         self.user = self.scope['user']
         self.isPlayer = False
         self.id = len(self.myMatch.players)
+        print("My id is: " + str(self.id))
 
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
@@ -51,9 +52,11 @@ class Consumer(OurBasicConsumer):
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             await self.close()
 
-
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
+
+        if self.isPlayer:
+            self.myMatch.players.append(Player(self.id, self.gameSettings))
 
         logging.info("Player " + str(self.user.id) + " has entered game room " + self.roomName)
 
@@ -136,9 +139,6 @@ class Consumer(OurBasicConsumer):
 
         logging.info("Game starting")
 
-        if self.isPlayer:
-            self.myMatch.players.append(Player(self.id, self.gameSettings))
-
         self.myMatch.ball = Ball(self.gameSettings)
 
         await self.send (text_data=json.dumps({
@@ -162,7 +162,7 @@ class Consumer(OurBasicConsumer):
                         'game': self.myMatch.toDict()})
             else:
                 requests.post(
-                    'http://mnemosine:8008/memory/pong/match/0/',
+                    'http://mnemosine:8008/memory/pong/games/',
                     json=self.myMatch.to_mnemosine())
             del matches[self.roomName]
 
