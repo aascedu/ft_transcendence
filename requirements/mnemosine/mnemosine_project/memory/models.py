@@ -67,24 +67,26 @@ class Game(baseModel):
         on_delete=models.CASCADE,
         related_name='loses')
     loser_score = models.IntegerField()
+    duration = models.DurationField()
 
     def to_dict(self):
         return {
-            "Id": self.id,
-            "Winner": self.winner.id,
-            "Winner-score": self.winner_score,
-            "Loser": self.loser.id,
-            "Loser-score": self.loser_score,
+            'Id': self.id,
+            'Winner': self.winner.id,
+            'Winner-score': self.winner_score,
+            'Loser': self.loser.id,
+            'Loser-score': self.loser_score,
+            'duration': self.duration,
         }
 
     @staticmethod
     def from_json_saved(json):
         created_game = Game()
-        print(f"getting winner {json['Winner']}")
         created_game.winner = Player.objects.get(id=int(json['Winner']))
         created_game.loser = Player.objects.get(id=int(json['Loser']))
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+        created_game.duration = json['Duration']
 
         created_game.full_clean()
         created_game.save()
@@ -114,6 +116,7 @@ class TournamentGame(baseModel):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
     round = models.SmallIntegerField()
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='games')
+
 
     @staticmethod
     def from_json_saved(json, tournament):
