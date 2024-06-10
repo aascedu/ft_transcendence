@@ -88,14 +88,67 @@ document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('
 });
 
 async function acceptFriendInvite() {
+	try {
+		// add user to friends list
+		var userId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+	
+		await post_friend(userId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	// close the notif
 	document.querySelector('.notif-friend-invite').classList.add('visually-hidden');
 	setAriaHidden();
 
-	// add user to friends list
-	var userId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+	// if we are on homepage-game, add new friend to friends online
+	if (g_state.pageToDisplay == '.homepage-game') {
+		await clearHomepageFriends();
+		await loadHomepageFriends();
 
-	await post_friend(userId);
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on friends list, add new friend to friends list
+	if (g_state.pageToDisplay == '.friends-list') {
+		clearFriendsList();
+		await loadFriendsList();
+
+		document.querySelector('.friends-list-icon').focus();
+
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.friends-list';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on the new friend profile, change button to 'remove' instead of pending + add play icon
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// if we are on a tournament page, load it back so that new friend can appear in available friends
+	if (g_state.pageToDisplay == '.tournament-info') {
+		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
+			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
+		}
+	}
+	// if we are creating a tournament, load back available friends so that new friend appears in available friends
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// load back header to add friend to available friends to play with
+	clearHomepageHeader();
+	await loadHomepageHeader();
 }
 
 function dismissFriendInvite() {
@@ -127,7 +180,7 @@ document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('ke
 
 async function acceptPlayInvite() {
 	try {
-		var	requester = document.querySelector('.notif-play-invite').getAttribute('user-id');
+		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
 		await accept_invitation_to_game(requester, g_userId);
 	} catch (error) {
 		console.error(error);
