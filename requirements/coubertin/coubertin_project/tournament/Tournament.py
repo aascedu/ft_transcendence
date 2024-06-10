@@ -79,7 +79,7 @@ class Tournament:
             'Started': self.started,
             'Owner': self.admin,
             'Pending': self.invited,
-            'Confirmed': self.players,
+            'Confirmed': self.aliases,
             'Games': games,
         }
         return response
