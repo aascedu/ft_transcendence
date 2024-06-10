@@ -24,8 +24,17 @@ async function loadCreateTournament() {
 }
 
 async function createTournamentLoadAvailableFriends() {
-	var	availableFriends = await get_available_friends();
-	availableFriends = availableFriends.Ava;
+	var	availableFriends;
+
+	try {
+		availableFriends = await get_available_friends();
+		availableFriends = availableFriends.Ava;
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.create-tournament-no-friends').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 
 	if (availableFriends.length == 0) {
 		document.querySelector('.create-tournament-no-friends').classList.remove('visually-hidden');
@@ -38,7 +47,15 @@ async function createTournamentLoadAvailableFriends() {
 	var	userPic;
 
 	for (i = 0; i < availableFriends.length; i++) {
-		userInfo = await get_user_info(availableFriends[i].Id);
+		try {
+			userInfo = await get_user_info(availableFriends[i].Id);
+		} catch (error) {
+			console.error(error);
+			clearCreateTournamentAvailableFriends();
+			document.querySelector('.create-tournament-no-friends').classList.remove('visually-hidden');
+			setAriaHidden();
+			return ;
+		}
 		userPic = userInfo.Pic;
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
@@ -75,7 +92,7 @@ document.querySelector('.create-tournament-icon').addEventListener('click', asyn
 
 	hideEveryPage();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';
@@ -224,9 +241,12 @@ async function createTournament() {
 		invitedFriends.push(item.getAttribute('user-id'));
 	});
 
-	await create_tournament(tournamentName, numPlayers, invitedFriends, g_userId);
-
-	// Send invites to selected friends
+	try {
+		await create_tournament(tournamentName, numPlayers, invitedFriends, g_userId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 
 	// Go to my tournaments
 	clearMyTournaments();

@@ -1,12 +1,23 @@
 // Load available tournaments from db
 
 async function loadAvailableTournaments() {
-	var	availableTournaments = await get_tournaments_available();
+	var	availableTournaments;
+
+	try {
+		availableTournaments = await get_tournaments_available();
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.available-tournaments-card-container').classList.add('visually-hidden');
+		document.querySelector('.available-tournaments-empty').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 	
 	// If no tournament at all
 	if (Object.entries(availableTournaments).length == 0) {
 		document.querySelector('.available-tournaments-card-container').classList.add('visually-hidden');
 		document.querySelector('.available-tournaments-empty').classList.remove('visually-hidden');
+		setAriaHidden();
 		return ;
 	}
 
@@ -58,7 +69,7 @@ document.querySelector('.available-tournaments-icon').addEventListener('click', 
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.homepage-header-logo').focus();
 
-	clearHomepageContent();
+	await clearHomepageContent();
 	await setHomepageContent();
 
 	g_state.pageToDisplay = '.homepage-game';

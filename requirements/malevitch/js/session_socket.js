@@ -8,12 +8,12 @@ async function init_session_socket() {
     console.log(unique_use_token)
     url = "wss://localhost:8000/hermes/session/" + g_userNick + "?token=" + unique_use_token
     console.log(url)
-    const socket = new WebSocket(url)
-    socket.onopen = function(event) {
+    g_sessionSocket = new WebSocket(url)
+    g_sessionSocket.onopen = function(event) {
         console.log("connection has occured")
     }
 
-    socket.onmessage = function(event) {
+    g_sessionSocket.onmessage = function(event) {
         const data = event.data;
 
         obj = JSON.parse(data);
@@ -34,6 +34,14 @@ async function init_session_socket() {
             notificationFriendshipRequest(obj);
             return ;
         }
+		if (obj.type === "notification.friendship.refused") {
+            notificationFriendshipRefused(obj);
+            return ;
+        }
+        if (obj.type === "notification.friendship.suppressed") {
+            notificationFriendshipSuppressed(obj);
+            return ;
+        }
         if (obj.type === "notification.game.request") {
             notificationGameRequest(obj);
             return ;
@@ -46,15 +54,33 @@ async function init_session_socket() {
             notificationGameAccepted(obj);
             return ;
         }
+		if (obj.type === "notification.game.refused") {
+            notificationGameRefused(obj);
+            return ;
+        }
+		if (obj.type === "notification.tournament.refused") {
+            notificationTournamentRefused(obj);
+            return ;
+        }
     }
 }
-
 
 async function notificationFriendshipRequest(data) {
     console.log('FriendshipRequest');
     console.log(data);
 
-	var	userInfo = await get_user_info(data.requester);
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// Display notif
+	var	userInfo;
+	try {
+		userInfo = await get_user_info(data.requester);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 	var	senderElement = document.querySelector('.notif-friend-invite .notif-sender');
 
 	senderElement.textContent = userInfo.Nick;
@@ -68,18 +94,26 @@ async function notificationNewFriendship(data) {
     console.log('NewFriendship');
     console.log(data);
 
-	// Send notif to tell invite has been accepted
-	var	userInfo = await get_user_info(data.requester);
-	document.querySelector('.notif-new-friendship .notif-info').textContent = userInfo.Nick;
-	document.querySelector('.notif-new-friendship').classList.remove('visually-hidden');
-	setAriaHidden();
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
 
-	newFriendshipCountdown(2);
+	// Send notif to tell invite has been accepted
+	try {
+		var	userInfo = await get_user_info(data.requester);
+		document.querySelector('.notif-new-friendship .notif-info').textContent = userInfo.Nick;
+		document.querySelector('.notif-new-friendship').classList.remove('visually-hidden');
+		setAriaHidden();
+	
+		newFriendshipCountdown(2);
+	} catch (error) {
+		console.error(error);
+	}
 
 	// if we are on homepage-game, add new friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
-		await setHomepageContent();
+		await clearHomepageFriends();
+		await loadHomepageFriends();
 
 		g_state.pageToDisplay = '.homepage-game';
 		window.history.pushState(g_state, null, "");
@@ -98,14 +132,12 @@ async function notificationNewFriendship(data) {
 		window.history.pushState(g_state, null, "");
 		render(g_state);
 	}
-	// if we are on the new friend profile, change button to 'remove' instead of pending
+	// if we are on the new friend profile, change button to 'remove' instead of pending + add play icon
 	if (g_state.pageToDisplay == '.user-profile') {
 		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
-
-		if (userId == data.requester) {
-			document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
-			document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
-			setAriaHidden();
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
 		}
 	}
 	// if we are on a tournament page, load it back so that new friend can appear in available friends
@@ -113,8 +145,8 @@ async function notificationNewFriendship(data) {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 
-			clearTournamentInfo();
-			await loadOngoingTournament(tournamentId);
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that new friend appears in available friends
@@ -131,11 +163,25 @@ async function notificationTournamentRequest(data) {
     console.log('TournamentRequest');
     console.log(data);
 
-	var	userInfo = await get_user_info(data.requester);
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// Display notif
+
+	var	userInfo;
+	try {
+		userInfo = await get_user_info(data.requester);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	var	senderElement = document.querySelector('.notif-tournament-invite .notif-sender');
 	var	tournamentElement = document.querySelector('.notif-tournament-invite .notif-info');
 
 	senderElement.textContent = userInfo.Nick;
+	senderElement.setAttribute('user-id', data.requester);
 	tournamentElement.textContent = data["tournament-name"];
 	tournamentElement.setAttribute('tournament-id', data["tournament-id"]);
 
@@ -147,7 +193,20 @@ async function notificationGameAccepted(data) {
     console.log("game accepted");
     console.log(data);
 
-	var	opponent = await get_user_info(data.requester);
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// Display notif
+
+	var	opponent;
+	try {
+		opponent = await get_user_info(data.requester);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	var	opponentElement = document.querySelector('.notif-match-found .notif-sender');
 
 	opponentElement.textContent = opponent;
@@ -159,10 +218,24 @@ async function notificationGameRequest(data) {
     console.log("game request");
     console.log(data);
 
-	var	userInfo = await get_user_info(data.requester);
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// Display notif
+
+	var	userInfo;
+	try {
+		userInfo = await get_user_info(data.requester);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	var	senderElement = document.querySelector('.notif-play-invite .notif-sender');
 
 	senderElement.textContent = userInfo.Nick;
+	senderElement.setAttribute('user-id', data.requester);
 
 	document.querySelector('.notif-play-invite').classList.remove('visually-hidden');
 	setAriaHidden();
@@ -172,10 +245,14 @@ async function notificationNewClientConnected(data) {
     console.log("new friend connected");
     console.log(data);
 
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
 	// if we are on homepage-game, add friend to friends online
 	if (g_state.pageToDisplay == '.homepage-game') {
-		clearHomepageContent();
-		await setHomepageContent();
+		await clearHomepageFriends();
+		await loadHomepageFriends();
 
 		g_state.pageToDisplay = '.homepage-game';
 		window.history.pushState(g_state, null, "");
@@ -211,7 +288,133 @@ async function notificationNewClientConnected(data) {
 	await loadHomepageHeader();
 }
 
+async function notificationGameRefused(data) {
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// If we are on the invited friend profile, display back play icon if friend is available again
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// If we are creating a tournament, display friend if they are available again
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// If we are looking to invite the friend to a tournament, display friend if they are available again
+	if (g_state.pageToDisplay == '.tournament-info') {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		
+		await loadOngoingTournament(tournamentId);
+	}
+	// Load back header to display friend as available back to play with them
+	clearHomepageHeader();
+	await loadHomepageHeader();
+}
+
+async function notificationFriendshipRefused(data) {
+	// If we are on the user that refused profile, change button back to add instead of pending
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			document.querySelector('.user-profile-pending-icon').classList.add('visually-hidden');
+			document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
+			setAriaHidden();
+		}
+	}
+}
+
+async function notificationFriendshipSuppressed(data) {
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// if we are on homepage-game, remove exfriend from friends online
+	if (g_state.pageToDisplay == '.homepage-game') {
+		await clearHomepageFriends();
+		await loadHomepageFriends();
+
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on friends list, remove ex friend from friends list
+	if (g_state.pageToDisplay == '.friends-list') {
+		clearFriendsList();
+		await loadFriendsList();
+
+		document.querySelector('.friends-list-icon').focus();
+
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.friends-list';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on our ex friend profile, remove play icon and change friend invite button to
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// if we are on a tournament page, load it back so that ex friend is removed from available friends
+	if (g_state.pageToDisplay == '.tournament-info') {
+		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
+			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
+		}
+	}
+	// if we are creating a tournament, load back available friends so that ex friend is removed from available friends
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// load back header to remove ex friend from available friends to play with
+	clearHomepageHeader();
+	await loadHomepageHeader();
+}
+
+async function notificationTournamentRefused(data) {
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// If we are on the invited friend profile, display back play icon if friend is available again
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// If we are creating a tournament, display friend if they are available again
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// If we are looking to invite the friend to a tournament, display friend if they are available again
+	if (g_state.pageToDisplay == '.tournament-info') {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		
+		await loadOngoingTournament(tournamentId);
+	}
+	// Load back header to display friend as available back to play with them
+	clearHomepageHeader();
+	await loadHomepageHeader();
+}
+
 async function notificationMessage(data) {
-    console.log("new message");
+	console.log("new message");
     console.log(data);
 }

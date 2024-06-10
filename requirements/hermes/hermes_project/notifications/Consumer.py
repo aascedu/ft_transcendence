@@ -70,6 +70,12 @@ class Consumer(OurBasicConsumer):
     async def notification_new_friendship(self, event):
         await self.send(text_data=json.dumps(event))
 
+    async def notification_friendship_refused(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    async def notification_friendship_suppressed(self, event):
+        await self.send(text_data=json.dumps(event))
+
     async def notification_friendship_request(self, event):
         await self.send (text_data=json.dumps(event))
 

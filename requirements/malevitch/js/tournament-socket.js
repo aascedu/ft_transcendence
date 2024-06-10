@@ -20,13 +20,15 @@ async function init_tournament_socket(tournamentId) {
         const data = JSON.parse(event.data);
 
         if (data.Action === "startGame") {
+            init_socket(data.RoomName);
             // Ici cacher le reste du site et afficher la game
-            init_socket(data.RoomName)
+			return ;
         }
 
         if (data.Action === "tournamentState") {
             let tournament = data.Tournament;
             // Mise a jour de l'affichage
+			return ;
         }
     };
 }

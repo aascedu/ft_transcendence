@@ -159,18 +159,33 @@ class FriendshipRequest(models.Model):
     @staticmethod
     def deleteFriendship(request, emiter, target):
         if target in emiter.friends.all():
+            try:
+                requests.post(f'http://hermes:8004/notif/delete-friend/{emiter.id}/',
+                              json={"Notified": target.id})
+            except BaseException:
+                pass
             emiter.friends.remove(target)
             return JsonResponse(request, {"Friendship": "deleted"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=emiter, receiver=target).first()
         if oldRequest is not None:
+            try:
+                requests.post(f'http://hermes:8004/notif/delete-friend-request/{emiter.id}/',
+                              json={"Notified": target.id})
+            except BaseException:
+                pass
             oldRequest.delete()
             return JsonResponse(request, {"Friendship": "aborted 1"})
 
         oldRequest = FriendshipRequest.objects.filter(
             sender=target, receiver=emiter).first()
         if oldRequest is not None:
+            try:
+                requests.post(f'http://hermes:8004/notif/delete-friend-request/{emiter.id}/',
+                          json={"Notified": target.id})
+            except BaseException:
+                pass
             oldRequest.delete()
             return JsonResponse(request, {"Friendship": "aborted 2"})
 

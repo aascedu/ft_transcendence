@@ -12,8 +12,8 @@ from shared.jwt_management import JWT
 from shared.utils import JsonNotFound, JsonResponseLogging as JsonResponse
 from shared.utils import save_response, JsonErrResponse, JsonBadRequest, JsonForbidden, JsonConflict
 
-def connection_response(request, jwt, refresh_token):
-    response = JsonResponse(request, {'client': 'Connected'})
+def connection_response(request, jwt, refresh_token, content={}):
+    response = JsonResponse(request, {'client': 'Connected'} | content)
     response.set_cookie('Auth', jwt, samesite='Strict', httponly=True)
     response.set_cookie('Ref', refresh_token, samesite='Strict', httponly=True, path='/petrus/auth/JWT-refresh/')
     return response
@@ -107,7 +107,8 @@ class signupView(View):
 
         refresh_token = JWT.objectToRefreshToken(client)
         jwt = JWT.objectToAccessToken(client)
-        response = connection_response(request, jwt, refresh_token)
+        content = {"Client": client.id}
+        response = connection_response(request, jwt, refresh_token, content=content)
         return response
 
 class refreshView(View):
@@ -121,7 +122,7 @@ class refreshView(View):
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
         except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
-            return JsonForbidden(request, e.__str__())
+            return JsonBadRequest(request, e.__str__())
         except DecodeError as e:
             return JsonErrResponse(request, e.__str__(), status=500)
 
@@ -140,6 +141,12 @@ class refreshView(View):
             return JsonErrResponse(request, "Clients doesn't exist anymore", status=404)
 
         jwt = JWT.objectToAccessToken(client)
-        response = JsonResponse(request, {"Token": "refreshed"})
+        response = JsonResponse(request, {"Token": "refreshed", "Client": request.user.id})
         response.set_cookie("Auth", jwt, samesite='Strict', httponly=True)
+        return response
+
+    def delete(self, request):
+        response = JsonResponse(request, {"Token": "suppressed"})
+        response.delete_cookie("Auth", path='/')
+        response.delete_cookie('Ref', path='/petrus/auth/JWT-refresh/')
         return response

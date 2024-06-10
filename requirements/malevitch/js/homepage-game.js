@@ -26,7 +26,7 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 
 	hideEveryPage();
 
-	init_socket("1-2");
+	init_game_socket("1-2");
 	g_state.pageToDisplay = '.game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
@@ -59,11 +59,11 @@ document.querySelector('.homepage-game-content-new-tournament').addEventListener
 // Load user profile page when clicking on a friend
 
 document.querySelectorAll('.homepage-game-content-friends .content-card').forEach(function(item) {
-	item.addEventListener('click', function () {
+	item.addEventListener('click', async function () {
 		document.querySelector('.user-profile-remove-icon').focus();
 
 		clearUserContent();
-		loadUserContent(item.getAttribute('user-id'));
+		await loadUserContent(item.getAttribute('user-id'));
 
 		hideEveryPage();
 

@@ -5,60 +5,74 @@ async function loadUserContent(id) {
 	var	addIcon = document.querySelector('.user-profile-add-icon');
 	var	pendingIcon = document.querySelector('.user-profile-pending-icon');
 	var	removeIcon = document.querySelector('.user-profile-remove-icon');
+	var	disconnectIcon = document.querySelector('.user-profile-disconnect-icon');
 
 	var userInfo;
-	var userNick;
-	var userPic;
+	var userNick = 'User';
+	var userPic = 'assets/general/pong.png';
 
 	document.querySelector('.user-profile-name').setAttribute('user-id', id);
 
 	if (id != g_userId) {
-		userInfo = await get_user_info(id);
-		userNick = userInfo.Nick;
-		userPic = userInfo.Pic;
-		if (userPic == null) {
-			userPic = 'assets/general/pong.png';
+		try {
+			userInfo = await get_user_info(id);
+			userNick = userInfo.Nick;
+			userPic = userInfo.Pic;
+			if (userPic == null) {
+				userPic = 'assets/general/pong.png';
+			}
+		} catch (error) {
+			console.error();
 		}
 
-		var	friendsInfo = await get_friend(g_userId);
-		var	friendsList = friendsInfo.Friends;
-		var	friendsInvited = friendsInfo.Sent;
+		var	friendsInfo;
 		var isFriend = false;
 		var	isAvailable = false;
 		var	isInvited = false;
 
-		for (i = 0; i < friendsList.length; i++) {
-			if (friendsList[i].Id == id) {
-				isFriend = true;
-				break ;
-			}
-		}
-		for (i = 0; i < friendsInvited.length; i++) {
-			if (friendsInvited[i].Id == id) {
-				isInvited = true;
-				break ;
-			}
-		}
-
-		if (isFriend) {
-			var availableFriends = await get_available_friends();
-			availableFriends = availableFriends.Ava;
-
-			for (i = 0; i < availableFriends.length; i++) {
-				if (availableFriends[i].Id == id) {
-					isAvailable = true;
+		try {
+			friendsInfo = await get_friend(g_userId);
+			var	friendsList = friendsInfo.Friends;
+			var	friendsInvited = friendsInfo.Sent;
+			for (i = 0; i < friendsList.length; i++) {
+				if (friendsList[i].Id == id) {
+					isFriend = true;
 					break ;
 				}
 			}
-			if (isAvailable) {
-				playIcon.classList.remove('visually-hidden');
+			for (i = 0; i < friendsInvited.length; i++) {
+				if (friendsInvited[i].Id == id) {
+					isInvited = true;
+					break ;
+				}
 			}
-			else {
-				playIcon.classList.add('visually-hidden');
+		} catch (error) {
+			console.error(error);
+		}
+
+		if (isFriend) {
+			try {
+				var	availableFriends = await get_available_friends();
+				availableFriends = availableFriends.Ava;
+
+				for (i = 0; i < availableFriends.length; i++) {
+					if (availableFriends[i].Id == id) {
+						isAvailable = true;
+						break ;
+					}
+				}
+				if (isAvailable) {
+					playIcon.classList.remove('visually-hidden');
+				}
+				else {
+					playIcon.classList.add('visually-hidden');
+				}
+				addIcon.classList.add('visually-hidden');
+				pendingIcon.classList.add('visually-hidden');
+				removeIcon.classList.remove('visually-hidden');
+			} catch (error) {
+				console.error();
 			}
-			addIcon.classList.add('visually-hidden');
-			pendingIcon.classList.add('visually-hidden');
-			removeIcon.classList.remove('visually-hidden');
 		}
 		else if (isInvited) {
 			playIcon.classList.add('visually-hidden');
@@ -75,6 +89,7 @@ async function loadUserContent(id) {
 
 		addIcon.setAttribute('user-id', id);
 		removeIcon.setAttribute('user-id', id);
+		disconnectIcon.classList.add('visually-hidden');
 	}
 	else {
 		userNick = g_userNick;
@@ -85,6 +100,7 @@ async function loadUserContent(id) {
 		pendingIcon.classList.add('visually-hidden');
 		removeIcon.classList.add('visually-hidden');
 		removeIcon.removeAttribute('user-id');
+		disconnectIcon.classList.remove('visually-hidden');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
@@ -92,8 +108,18 @@ async function loadUserContent(id) {
 
 	// Display history
 
-	var	history = await get_game_history(id);
-	history = history.History;
+	var	history;
+
+	try {
+		history = await get_game_history(id);
+		history = history.History;
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+		return ;
+	}
+
 	var	historyContainer = document.querySelector('.user-profile-history');
 	var	numWins = 0;
 	var	totalPoints = 0;
@@ -104,8 +130,21 @@ async function loadUserContent(id) {
 	for (i = history.length - 1; i >= 0; i--) {
 		if (history[i].Winner == id) {
 			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
-			opponent = await get_user_info(history[i].Loser);
-			opponent = opponent.Nick;
+			try {
+				opponent = await get_user_info(history[i].Loser);
+				opponent = opponent.Nick;
+			} catch (error) {
+				console.error(error);
+
+				var	historyToRemove = document.querySelector('.user-profile-history');
+				historyToRemove.querySelectorAll('.content-card').forEach(function(item) {
+					item.parentElement.removeChild(item);
+				});
+
+				document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+				document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+				return ;
+			}
 
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
@@ -119,8 +158,21 @@ async function loadUserContent(id) {
 		}
 		else {
 			score = history[i]["Loser-score"] + '-' + history[i]["Winner-score"];
-			opponent = await get_user_info(history[i].Winner);
-			opponent = opponent.Nick;
+			try {
+				opponent = await get_user_info(history[i].Winner);
+				opponent = opponent.Nick;
+			} catch (error) {
+				console.error(error);
+
+				var	historyToRemove = document.querySelector('.user-profile-history');
+				historyToRemove.querySelectorAll('.content-card').forEach(function(item) {
+					item.parentElement.removeChild(item);
+				});
+
+				document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+				document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+				return ;
+			}
 
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
@@ -417,31 +469,35 @@ document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEve
 });
 
 async function userProfileFriendInvite() {
-	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
+	try {
+		var	friendRequests = await get_friend(g_userId);
+		friendRequests = friendRequests.Requests;
+		var	hasInvitedMe = false;
 
-	var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
-
-	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-
-	var	friendRequests = await get_friend(g_userId);
-	friendRequests = friendRequests.Requests;
-	var	hasInvitedMe = false;
-
-	for (i = 0; i < friendRequests.length; i++) {
-		if (friendRequests[i].Id == invitedId) {
-			hasInvitedMe = true;
-			break ;
+		for (i = 0; i < friendRequests.length; i++) {
+			if (friendRequests[i].Id == invitedId) {
+				hasInvitedMe = true;
+				break ;
+			}
 		}
-	}
-	if (hasInvitedMe) {
-		document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
-	}
-	else {
-		inviteSentNotif(document.querySelector('.user-profile-name').textContent);
-		document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
+		if (hasInvitedMe) {
+			document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+		}
+		else {
+			inviteSentNotif(document.querySelector('.user-profile-name').textContent);
+			document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
+		}
+
+		var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
+		await post_friend(invitedId);
+
+	} catch (error) {
+		console.error(error);
+		return ;
 	}
 
-	await post_friend(invitedId);
+	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
+	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
 
 	setAriaHidden();
 }
@@ -477,11 +533,16 @@ document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEve
 });
 
 async function userProfileFriendRemove() {
+
+	try {
+		var removedId = document.querySelector('.user-profile-remove-icon').getAttribute('user-id');
+		await delete_friend(removedId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
 	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-
-	var removedId = document.querySelector('.user-profile-remove-icon').getAttribute('user-id');
-
-	await delete_friend(removedId);
 
 	document.querySelector('.user-profile-remove-icon').classList.add('visually-hidden');
 	document.querySelector('.user-profile-add-icon').classList.remove('visually-hidden');
@@ -491,10 +552,36 @@ async function userProfileFriendRemove() {
 
 // Invite friend to play
 
-document.querySelector('.user-profile-play-icon').addEventListener('click', function() {
-	// send invite to friend
+document.querySelector('.user-profile-play-icon').addEventListener('click', async function() {
+	try {
+		// send invite to friend
+		var	friendId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		await invite_friend_to_game(friendId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 
 	this.classList.add('visually-hidden');
+});
+
+// Disconnect
+//
+
+async function disconnect() {
+	hideEveryPage();
+	clearHomepageId();
+    await delete_cookies().then(response => {
+        document.querySelector('.homepage-id-input').focus();
+        g_state.pageToDisplay = '.homepage-id';
+        window.history.pushState(g_state, null, "");
+        clearInterval(g_refreshInterval);
+        render(g_state);
+    });
+}
+
+document.querySelector('.user-profile-disconnect-icon').addEventListener('click', async function() {
+    await disconnect()
 });
 
 // Keyboard navigation

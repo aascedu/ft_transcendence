@@ -45,12 +45,11 @@ document.querySelector('.homepage-id-submit').addEventListener('click', function
 
 // Submit nickname and redirect to signin or signup.
 
-function submitNickname(nickname) {
+async function submitNickname(nickname) {
 	g_userNick = nickname;
 	document.querySelector('.homepage-id').classList.add('visually-hidden');
 
-
-    get_info_from_nick(nickname)
+    await get_info_from_nick(nickname)
 		.then (data => {
 			g_userId = data.Id;
 			if (data.Ava) {

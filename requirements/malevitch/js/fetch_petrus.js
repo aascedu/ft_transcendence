@@ -29,8 +29,19 @@ async function connect(id, password, nickname) {
 }
 
 async function refreshLoop() {
-    milliseconds = 15000;
-    const interval_refresh = setInterval(() => {
+    milliseconds = 200000;
+    g_refreshInterval = setInterval(() => {
         post_jwt_refresh()
     }, milliseconds);
+}
+
+function delete_cookies() {
+    content = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+    return fetch(add_petrus_in_url('/JWT-refresh/'), content);
 }
