@@ -11,6 +11,7 @@ class Match:
         self.gameStarted = False
         self.startTime = 0
         self.endTime = 0
+        self.isTournamentGame = False
 
     def toDict(self):
         return ({

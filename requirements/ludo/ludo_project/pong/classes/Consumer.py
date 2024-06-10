@@ -37,6 +37,8 @@ class Consumer(OurBasicConsumer):
         count = self.roomName.count('-')
         if count != 1 and count != 2:
             await self.close()
+        if count == 2:
+            self.myMatch.isTournamentGame = True
 
         p1 = int(self.roomName.split('-')[count - 1])
         p2 = int(self.roomName.split('-')[count])
@@ -178,6 +180,7 @@ class Consumer(OurBasicConsumer):
                 "type": "youLose",
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+                "isTournament": self.myMatch.isTournamentGame,
             }))
 
         logging.info("Game in room " + self.roomName + " has ended")
@@ -189,6 +192,7 @@ class Consumer(OurBasicConsumer):
             "type": "updateScore",
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+            "isTournament": self.myMatch.isTournamentGame,
         }))
 
     async def gameLogic(self, frames, id):
