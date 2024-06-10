@@ -91,6 +91,7 @@ class Tournament:
             'Games': self.gameHistory,
             'NbPlayers': self.nbPlayers,
             'Admin': self.admin,
+            'Alias': self.aliases,
         }
         return tournamentDict
 
