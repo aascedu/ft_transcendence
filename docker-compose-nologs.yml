@@ -35,6 +35,26 @@ volumes:
   petrus_data:
     driver: local
 
+  vault_data: {}
+
+  token_alfred_data: {}
+
+  token_alfred_db_data: {}
+
+  token_shared_data: {}
+
+  token_mnemosine_data: {}
+
+  token_mnemosine_db_data: {}
+
+  token_petrus_data: {}
+
+  token_petrus_db_data: {}
+
+  token_root_data: {}
+
+  token_env_data: {}
+
 services:
 # # Reverse proxy container
   aegis:
@@ -102,7 +122,7 @@ services:
       NOLOGS: true
     volumes:
       - ./requirements/alfred/alfred_project:/app
-      - ./tokens/alfred:/app/tokens
+      - token_alfred_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -129,7 +149,7 @@ services:
       ALFRED_PASSWORD: alfred_pass
       ALFRED_DB: user_management
     volumes:
-      - ./tokens/alfred-db:/tokens
+      - token_alfred_db_data:/tokens
       - alfred_data:/var/lib/postgresql/data
     networks:
       - alfred_network
@@ -150,7 +170,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -172,7 +192,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -194,7 +214,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -217,7 +237,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -256,7 +276,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/mnemosine:/app/tokens
+      - token_mnemosine_data:/app/tokens
       - shared_code:/app/shared
     environment:
       NOLOGS: true
@@ -288,7 +308,7 @@ services:
       MNEMOSINE_PASSWORD: 'mnemosine_pass'
       MNEMOSINE_DB: memory_management
     volumes:
-      - ./tokens/mnemosine-db:/tokens
+      - token_mnemosine_db_data:/tokens
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
@@ -318,7 +338,7 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
-      - ./tokens/petrus:/app/tokens
+      - token_petrus_data:/app/tokens
     ports:
       - "8009:8009"
     networks:
@@ -344,7 +364,7 @@ services:
       PETRUS_PASSWORD: 'petrus_pass'
       PETRUS_DB: auth_management
     volumes:
-      - ./tokens/petrus-db:/tokens
+      - token_petrus_db_data:/tokens
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
@@ -366,9 +386,16 @@ services:
         KIBANA_PASSWORD: $KIBANA_PASSWORD
     env_file: .env
     volumes:
-      - ./requirements/tutum/vault:/opt/vault
-      - ./tokens:/tokens
-      #- shared_code:/tokens/shared
+      - vault_data:/opt/vault
+      - token_alfred_data:/tokens/alfred
+      - token_alfred_db_data:/tokens/alfred-db
+      - token_shared_data:/tokens/shared-django
+      - token_mnemosine_data:/tokens/mnemosine
+      - token_mnemosine_db_data:/tokens/mnemosine-db
+      - token_petrus_data:/tokens/petrus
+      - token_petrus_db_data:/tokens/petrus-db
+      - token_root_data:/tokens/root
+      - token_env_data:/tokens/env
     ports:
       - "8200:8200"
     networks:
