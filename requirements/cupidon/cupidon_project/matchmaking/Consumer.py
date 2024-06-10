@@ -1,7 +1,10 @@
 import json
 from matchmaking.Player import Player, waitingList, gameRequesters
 from shared.BasicConsumer import OurBasicConsumer
+import logging
+import requests
 
+# Faire en sorte qu'une seule personne a la fois ne cherche. (mutex ou whatever)
 
 class Consumer(OurBasicConsumer):
     async def connect(self):
@@ -10,8 +13,12 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
         if self.security_check() is False:
-            return self.close()
-        self.id = self.scope['user'].id
+            await self.close()
+
+        self.id = int(self.scope['user'].id)
+        if self.id in waitingList:
+            await self.close()
+
         #Try catch
         self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
         self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
@@ -22,15 +29,33 @@ class Consumer(OurBasicConsumer):
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
 
-        elo = 500 # Requete a Brieuc
-        self.me = Player(self.id, elo)
-        waitingList[self.id] = self.me
+        try:
+            response = requests.get(
+                f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
+            )
+            elo = response.json()['elo']
+            self.me = Player(self.id, elo)
+            waitingList[self.id] = self.me
+
+        except Exception as e:
+            logging.error(e)
+            self.close()
+
+        for i in waitingList:
+            print(i)
 
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global waitingList
+        global gameRequesters
+
+        if self.id in waitingList:
+            del waitingList[self.id]
+        if self.id in gameRequesters:
+            gameRequesters.remove(self.id)
+    
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
         self.close()
 
@@ -39,14 +64,15 @@ class Consumer(OurBasicConsumer):
         global waitingList
 
         text_data_json = json.loads(text_data)
-        type = text_data_json['type']
+        action = text_data_json['type']
 
         # Send message to room group
+
         await self.channel_layer.group_send(
             "matchmakingRoom", {
-                'type': type,
-                'id': text_data_json['id'],
-                'elo': text_data_json['elo'],
+                'type': action,
+                'id': waitingList[self.id].id,
+                'elo': waitingList[self.id].elo,
             }
         )
 
@@ -67,14 +93,14 @@ class Consumer(OurBasicConsumer):
         self.me.margin += 10
 
         for id in waitingList:
-            if (id != self.me.id and
+            if (id != self.id and
                 waitingList[id].elo > self.me.elo - self.me.margin and
                 waitingList[id].elo < self.me.elo + self.me.margin):
                     await self.channel_layer.group_send(
                         "matchmakingRoom", {
                             'type': "SendToGame",
-                            'player1': waitingList[self.me.id],
-                            'player2': waitingList[id],
+                            'player1': self.id,
+                            'player2': id,
                         }
                     )
 
