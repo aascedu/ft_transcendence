@@ -47,8 +47,8 @@ class gameView(View):
     def post(self, request):
         if request.user.is_service is False:
             return JsonForbidden(request, "Only services can post games")
-        new_game = Game.from_json_saved(request.data)
         try:
+            new_game = Game.from_json_saved(request.data)
             new_game.game_db_update()
         except IntegrityError as e:
             return JsonErrResponse(request, e.__str__(), status=409)
