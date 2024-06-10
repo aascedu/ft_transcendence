@@ -300,6 +300,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      iris:
+        condition: service_healthy
     container_name: policy
     image: docker:latest
     networks:
