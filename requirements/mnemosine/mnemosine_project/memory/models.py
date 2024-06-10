@@ -71,11 +71,12 @@ class Game(baseModel):
 
     def to_dict(self):
         return {
-            "Id": self.id,
-            "Winner": self.winner.id,
-            "Winner-score": self.winner_score,
-            "Loser": self.loser.id,
-            "Loser-score": self.loser_score,
+            'Id': self.id,
+            'Winner': self.winner.id,
+            'Winner-score': self.winner_score,
+            'Loser': self.loser.id,
+            'Loser-score': self.loser_score,
+            'duration': self.duration,
         }
 
     @staticmethod
