@@ -64,6 +64,11 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 	}
 });
 
+// Log out
+document.querySelector('.reconnection-alert .alert-cancel-button').addEventListener('click', async function() {
+	await disconnect();
+});
+
 // Submit password to database.
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {

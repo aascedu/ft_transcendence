@@ -183,8 +183,9 @@
 		<div class="reconnection-alert alert d-flex justify-content-center align-items-center visually-hidden">
 			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
 				<div class="alert-message w-100 text-center unselectable" data-language="session-expired">
-					Your session has expired.
+					Session has expired for user :
 				</div>
+				<div class="alert-message reconnection-alert-nickname w-100 text-center unselectable">Nick</div>
 				<div class="reconnection-input-container w-100 d-flex flex-column justify-content-center align-items-center">
 					<div class="alert-input-message w-100 text-center unselectable" data-language="retype-password">
 						Please type your password again :
@@ -199,7 +200,10 @@
 					<div class="reconnection-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-password">Invalid password.</div>
 				</div>
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
-					<button class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="sign-in">
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="log-out">
+						Log out
+					</button>
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="sign-in">
 						Sign in
 					</button>
 				</div>
@@ -928,18 +932,18 @@
 					</div>
 				</div>
 				<div class="victory-defeat-buttons-container w-100 d-flex justify-content-center align-items-center">
-					<div class="victory-defeat-home victory-defeat-button d-flex justify-content-center align-items-center purple-shadow">
+					<button class="victory-defeat-home victory-defeat-button d-flex justify-content-center align-items-center purple-shadow">
 						<img src="assets/general/batch-purple-small.svg" alt="batch home logo" draggable="false" (dragstart)="false;" class="unselectable">
 						<p data-language="home">Home</p>
-					</div>
-					<div class="victory-defeat-again victory-defeat-button d-flex justify-content-center align-items-center purple-shadow visually-hidden">
+					</button>
+					<button class="victory-defeat-again victory-defeat-button d-flex justify-content-center align-items-center purple-shadow visually-hidden">
 						<img src="assets/general/play.svg" alt="play logo" draggable="false" (dragstart)="false;" class="unselectable">
 						<p data-language="play-again">Play again</p>
-					</div>
-					<div class="victory-defeat-tournament victory-defeat-button d-flex justify-content-center align-items-center purple-shadow">
+					</button>
+					<button class="victory-defeat-tournament victory-defeat-button d-flex justify-content-center align-items-center purple-shadow">
 						<img src="assets/general/trophy.svg" alt="trophy logo" draggable="false" (dragstart)="false;" class="unselectable">
 						<p data-language="see-tournament">See tournament</p>
-					</div>
+					</button>
 				</div>
 			</div>
 		</div>
