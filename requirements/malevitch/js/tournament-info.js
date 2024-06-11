@@ -517,7 +517,7 @@ document.querySelector('.tournament-info-join-icon').addEventListener('click', f
 	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
 	setAriaHidden();
 
-	document.querySelector('.tournament-info-join-input').value = 'cha'; // replace with user nick
+	document.querySelector('.tournament-info-join-input').value = g_userNick;
 	document.querySelector('.tournament-info-join-input').focus();
 });
 
@@ -561,7 +561,7 @@ async function confirmJoinTournament() {
 	}
 
 	try {
-		await join_tournament(tournamentId);
+		await join_tournament(tournamentId, tournamentNick);
 	} catch (error) {
 		console.error();
 		return ;
@@ -573,7 +573,10 @@ async function confirmJoinTournament() {
 	document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 	document.querySelector('.tournament-info-leave-icon').focus();
 
-	await loadOngoingTournament();
+	// Set tournamentId for future victory-defeat screen
+	document.querySelector('.victory-defeat-tournament').setAttribute('tournament-id', tournamentId);
+
+	await loadOngoingTournament(tournamentId);
 
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';

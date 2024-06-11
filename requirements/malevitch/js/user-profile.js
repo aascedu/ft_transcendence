@@ -183,7 +183,7 @@ async function loadUserContent(id) {
 
 			totalPoints += history[i]["Winner-score"];
 		}
-		totalTime += history[i].Time;
+		totalTime += history[i].Duration;
 	}
 
 	if (history.length == 0) {
@@ -581,7 +581,7 @@ async function disconnect() {
 }
 
 document.querySelector('.user-profile-disconnect-icon').addEventListener('click', async function() {
-    await disconnect()
+    await disconnect();
 });
 
 // Keyboard navigation

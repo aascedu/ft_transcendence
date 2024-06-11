@@ -93,7 +93,10 @@ function sleep(ms) {
 }
 
 async function reconnection_alert() {
-    var alert = document.querySelector('.reconnection-alert')
+    var alert = document.querySelector('.reconnection-alert');
+
+	alert.querySelector('.reconnection-alert-nickname').textContent = g_userNick;
+
     alert.classList.remove('visually-hidden');
 
 	document.querySelector('.reconnection-input').focus();
