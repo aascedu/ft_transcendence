@@ -134,6 +134,8 @@ class tournamentEntry(View):
 
         # Check if we need to start tournament
         if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
+            tournaments[tournamentId].started = True
+            self.myTournament.contenders = self.myTournament.players
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 tournamentId, {
@@ -254,8 +256,6 @@ class gameResult(View):
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
-
-            tournament.ongoingGames = pow(2, tournament.nbPlayers) / pow(2, tournament.currentRound)
 
             async_to_sync(channel_layer.group_send)(
                 tournament.id, {
