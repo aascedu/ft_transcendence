@@ -39,8 +39,8 @@ class tournamentManagement(View):
         data = request.data
         try:
             tournamentName = data['Name']
-            nbPlayers = data['NumPlayers']
-            admin = data['Admin']
+            nbPlayers = int(data['NumPlayers'])
+            admin = int(data['Admin'])
             invited = data['Invited']
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to create tournament')
@@ -135,13 +135,14 @@ class tournamentEntry(View):
         # Check if we need to start tournament
         if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
             tournaments[tournamentId].started = True
-            self.myTournament.contenders = self.myTournament.players
+            tournaments[tournamentId].contenders = tournaments[tournamentId].players
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                tournamentId, {
+                str(tournamentId), {
                     'type': 'StartGame',
                 }
             )
+            logging.info("Starting tournament")
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 

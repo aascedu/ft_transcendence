@@ -15,14 +15,15 @@ class Consumer(OurBasicConsumer):
         self.id = self.scope['user'].id
 
         # Join room group
-        self.tournamentId = self.scope["url_route"]["kwargs"]["tournamentId"]
+        self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
+        self.tournamentId = int(self.roomName)
         self.myTournament = tournaments[self.tournamentId]
 
         # self.admin = False
         # if (self.myTournament.admin == self.id):
         #     self.admin = True # Do we let the admin chose if he plays or not ?
 
-        print ("Tournament room name is " + self.tournamentId)
+        print ("Tournament room name is " + self.roomName)
 
         try:
             request = requests.delete(
@@ -33,7 +34,7 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             self.close()
 
-        await self.channel_layer.group_add(self.tournamentId, self.channel_name)
+        await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -55,11 +56,13 @@ class Consumer(OurBasicConsumer):
     async def receive(self, text_data):
         global tournaments
 
+        logging.debug("Receiving something for the tournament\n\n\n\n")
+
         text_data_json = json.loads(text_data)
         type = text_data_json['Type']
 
         await self.channel_layer.group_send(
-            self.tournamentId, {
+            self.roomName, {
                 'Type': type
             }
         )
@@ -100,6 +103,8 @@ class Consumer(OurBasicConsumer):
         # )
 
     async def StartGame(self, event):
+        logging.debug("Starting tournament game from back")
+
         myIndex = self.myTournament.contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = self.myTournament.contenders[opponentIndex]
