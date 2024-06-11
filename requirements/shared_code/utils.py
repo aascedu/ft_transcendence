@@ -15,7 +15,7 @@ def save_response(request, object_to_save):
         object_to_save.save()
     except IntegrityError as e:
         return JsonResponseLogging(request, {"Err": e.__str__()}, status=409)
-    return JsonResponseLogging(request, {"Ressource": "updated"})
+    return JsonResponseLogging(request, object_to_save.to_dict())
 
 def delete_response(request, object_to_delete):
     try:
