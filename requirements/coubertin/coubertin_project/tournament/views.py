@@ -131,6 +131,18 @@ class tournamentEntry(View):
 
         updateTournament(tournamentId)
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
+
+        # Check if we need to start tournament
+        if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
+            tournaments[tournamentId].started = True
+            self.myTournament.contenders = self.myTournament.players
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                tournamentId, {
+                    'type': 'StartGame',
+                }
+            )
+
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
@@ -244,8 +256,6 @@ class gameResult(View):
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
-
-            tournament.ongoingGames = pow(2, tournament.nbPlayers) / pow(2, tournament.currentRound)
 
             async_to_sync(channel_layer.group_send)(
                 tournament.id, {
