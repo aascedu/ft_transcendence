@@ -6,6 +6,7 @@ async function loadUserContent(id) {
 	var	pendingIcon = document.querySelector('.user-profile-pending-icon');
 	var	removeIcon = document.querySelector('.user-profile-remove-icon');
 	var	disconnectIcon = document.querySelector('.user-profile-disconnect-icon');
+	var	editIcon = document.querySelector('.user-profile-edit-icon');
 
 	var userInfo;
 	var userNick = 'User';
@@ -90,6 +91,7 @@ async function loadUserContent(id) {
 		addIcon.setAttribute('user-id', id);
 		removeIcon.setAttribute('user-id', id);
 		disconnectIcon.classList.add('visually-hidden');
+		editIcon.classList.add('visually-hidden');
 	}
 	else {
 		userNick = g_userNick;
@@ -101,6 +103,7 @@ async function loadUserContent(id) {
 		removeIcon.classList.add('visually-hidden');
 		removeIcon.removeAttribute('user-id');
 		disconnectIcon.classList.remove('visually-hidden');
+		editIcon.classList.remove('visually-hidden');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);
@@ -399,7 +402,7 @@ function uploadImageToDB(file, url) {
         console.log('Success:', data);
 		document.querySelector('.user-profile-picture > img').setAttribute('src', url);
 		document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
-		// g_userPic = url;
+		g_userPic = data.Pic;
     })
    .catch((error) => {
         console.error('Error:', error);
@@ -436,6 +439,119 @@ document.querySelector('.user-profile-picture').addEventListener('mouseleave', f
 document.querySelector('.user-profile-picture').addEventListener('focusout', function() {
 	document.querySelector('.user-profile-picture label').classList.remove('visually-hidden');
 	setAriaHidden();
+});
+
+// Edit nickname
+document.querySelector('.user-profile-edit-icon').addEventListener('click', function () {
+	// Switch button appearance
+	document.querySelector('.user-profile-edit-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-check-icon').classList.remove('visually-hidden');
+
+	// Hide old nickname
+	document.querySelector('.user-profile-name').classList.add('visually-hidden');
+
+	// Reveal edit nickname with nickname as default value
+	var	nickname = document.querySelector('.user-profile-name').textContent;
+	var nicknameInput = document.querySelector('.user-profile-name-input');
+
+	nicknameInput.value = nickname;
+	document.querySelector('.user-profile-name-input-container').classList.remove('visually-hidden');
+	nicknameInput.focus();
+	setAriaHidden();
+});
+
+// Leave edit mode
+
+function checkToLeaveNicknameEditMode() {
+	// Check if new nickname is correct
+	var	nicknameInput = document.querySelector('.user-profile-name-input');
+	var	nicknameInputWarning = document.querySelector('.user-profile-name-input-warning');
+
+	if (!warnInvalidNickname(nicknameInput.value, nicknameInputWarning)) {
+		// Show warning
+		var locale = document.querySelector('.homepage-header-language-selector button img').alt;
+		switchLanguageContent(locale);
+		nicknameInputWarning.classList.remove('visually-hidden');
+	}
+	else {
+		// Show alert
+		document.querySelector('.user-profile-edit-alert').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-edit-alert .alert-confirm-button').focus();
+	}
+	setAriaHidden();
+}
+
+// Leave edit mode using button
+document.querySelector('.user-profile-check-icon').addEventListener('click', function () {
+	checkToLeaveNicknameEditMode();
+});
+
+// Leave edit mode using enter key
+
+document.querySelector('.user-profile-name-input').addEventListener('keypress', function(event) {
+	if (event.key === 'Enter') {
+		checkToLeaveNicknameEditMode();
+	}
+});
+
+// Confirm / cancel the leaving
+
+document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEventListener('click', async function () {
+	await changeNickname();
+	leaveNicknameEditMode();
+});
+
+document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
+	if (event.key === 'Enter') {
+		await changeNickname();
+		leaveNicknameEditMode();
+	}
+});
+
+async function changeNickname() {
+	var	nicknameInput = document.querySelector('.user-profile-name-input');
+	
+	try {
+		await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+	
+	// Hide alert
+	document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
+	setAriaHidden();
+	
+	// Update tournament name
+	document.querySelector('.user-profile-name').textContent = nicknameInput.value;
+}
+
+function leaveNicknameEditMode() {
+	// Switch button appearance
+	document.querySelector('.user-profile-check-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-edit-icon').classList.remove('visually-hidden');
+
+	// Hide edit nickname
+	document.querySelector('.user-profile-name-input-container').classList.add('visually-hidden');
+
+	// Show nickname
+	document.querySelector('.user-profile-name').classList.remove('visually-hidden');
+
+	setAriaHidden();
+}
+
+document.querySelector('.user-profile-edit-alert .alert-cancel-button').addEventListener('click', function () {
+	// Hide alert
+	document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
+	setAriaHidden();
+});
+
+document.querySelector('.user-profile-edit-alert .alert-cancel-button').addEventListener('keypress', function (event) {
+	if (event.key === 'Enter') {
+		// Hide alert
+		document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
+		setAriaHidden();
+	}
 });
 
 // Ask for confirmation when inviting friend

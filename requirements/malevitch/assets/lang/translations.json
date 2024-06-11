@@ -2,6 +2,7 @@
 	"en": {
 		"font-size": "Font size",
 		"nickname": "Enter your nickname...",
+		"new-nickname": "Enter your new nickname...",
 		"nickname-invalid-char": "Your nickname cannot contain symbols other than '_'.",
 		"nickname-too-short": "Your nickname must contain at least 3 characters.",
 		"nickname-too-long": "Your nickname must contain less than 16 characters.",
@@ -112,6 +113,7 @@
 	"fr": {
 		"font-size": "Taille de la police",
 		"nickname": "Entrez votre pseudonyme...",
+		"new-nickname": "Entrez votre nouveau pseudonyme",
 		"nickname-invalid-char": "Votre pseudonyme ne peut pas contenir de symboles autres que '_'.",
 		"nickname-too-short": "Votre pseudonyme doit contenir au moins 3 caractères.",
 		"nickname-too-long": "Votre pseudonyme doit contenir moins de 16 caractères.",
@@ -222,6 +224,7 @@
 	"zh": {
 		"font-size": "字体大小",
 		"nickname": "输入你的名称。。。",
+		"new-nickname": "输入你的新昵称。。。",
 		"nickname-invalid-char": "您的昵称不能包含“_”以外的符号。",
 		"nickname-too-short": "您的昵称必须包含至少 3 个字符。",
 		"nickname-too-long": "您的昵称必须少于 16 个字符。",

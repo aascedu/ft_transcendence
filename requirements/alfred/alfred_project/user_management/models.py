@@ -37,6 +37,7 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
             "Friends": self.list_friends(),
         }
 
