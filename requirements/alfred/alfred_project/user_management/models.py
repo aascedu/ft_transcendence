@@ -11,7 +11,7 @@ class Client(models.Model):
     languages_choices = [(1, "fr"),  (2, "en"), (3, "zh")]
     avatar = models.ImageField(upload_to='avatars/', blank=True,
                     validators=[
-                        FileExtensionValidator(['.png', '.jpg', '.jpeg'])
+                        FileExtensionValidator(['png', 'jpg', 'jpeg'])
                     ]
     )
     id = models.BigAutoField(primary_key=True)

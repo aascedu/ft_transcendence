@@ -105,12 +105,12 @@ class tournamentEntry(View):
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
-    def post(self, request, tournamentId: int):
+    def post(self, request, tournamentId: int, playerId: int):
         global tournaments
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to join")
-        playerId = request.user.id
+        userId = request.user.id
 
         try:
             tournamentId = int(tournamentId)
@@ -123,14 +123,26 @@ class tournamentEntry(View):
             return JsonNotFound(request, 'Tournament not found')
 
         try:
-            tournaments[tournamentId].addPlayer(playerId, playerAlias)
-            if playerId in tournaments[tournamentId].invited:
-                tournaments[tournamentId].invited.remove(playerId)
+            tournaments[tournamentId].addPlayer(userId, playerAlias)
+            if userId in tournaments[tournamentId].invited:
+                tournaments[tournamentId].invited.remove(userId)
         except Exception as e:
             return JsonBadRequest(request, e.__str__())
 
         updateTournament(tournamentId)
-        logging.info("Player " + str(playerId) + " has joined tournament " + str(tournamentId))
+        logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
+
+        # Check if we need to start tournament
+        if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
+            tournaments[tournamentId].started = True
+            self.myTournament.contenders = self.myTournament.players
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                tournamentId, {
+                    'type': 'StartGame',
+                }
+            )
+
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
@@ -244,8 +256,6 @@ class gameResult(View):
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
-
-            tournament.ongoingGames = pow(2, tournament.nbPlayers) / pow(2, tournament.currentRound)
 
             async_to_sync(channel_layer.group_send)(
                 tournament.id, {

@@ -79,7 +79,7 @@ async function post_avatar(formData) {
     return fetch_with_jwt(avatar_url(0),
         {
             method: 'POST',
-            headers: formData
+            body: formData
         });
 }
 
