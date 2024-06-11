@@ -7,6 +7,16 @@ filebeat.inputs:
     id: filebeat
     paths:
       - '/var/lib/docker/containers/*/*.log'
+    fields_under_root: true
+    ignore_inactive: since_last_start
+    ignore_older: 24h
+    parsers:
+      - multiline:
+          match: after
+          negate: true
+          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}
+          type: pattern
+    take_over: true
 
 processors:
   - add_docker_metadata:
@@ -26,8 +36,14 @@ json.message_key: message
 
 setup.ilm.enabled: true
 setup.ilm.rollover_alias: "filebeat"
-setup.ilm.pattern: "{now/d}-000001" 
+setup.ilm.pattern: "{now/d}-000001"
 setup.ilm.overwrite: true
+
+# logging:
+#   level: debug
+
+output.logstash:
+  hosts: ${LOGSTASH_HOSTS}
 
 # output.elasticsearch:
 #   hosts: ${ELASTIC_HOSTS}
@@ -36,5 +52,5 @@ setup.ilm.overwrite: true
 #   ssl.enabled: true
 #   ssl.certificate_authorities: "config/certs/ca/ca.crt"
 
-output.logstash:
-  hosts: ${LOGSTASH_HOSTS}
+# output.console:
+#   enabled: true
