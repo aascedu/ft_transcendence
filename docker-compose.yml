@@ -109,7 +109,11 @@ services:
         condition: service_started
       tutum:
         condition: service_healthy
-    image: aascedu/nginx-modsec:latest
+    build:
+      context: ./requirements/aegis
+      dockerfile: Dockerfile
+      args:
+        PROXY_CONF: $PROXY_CONF
     env_file: .env
     ports:
       # - "80:80"
