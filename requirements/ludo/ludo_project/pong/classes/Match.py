@@ -10,6 +10,8 @@ class Match:
         self.ball = Ball(gameSettings=gameSettings())
         self.gameStarted = False
         self.startTime = 0
+        self.endTime = 0
+        self.isTournamentGame = False
 
     def toDict(self):
         return ({
@@ -17,6 +19,7 @@ class Match:
             'Player2': self.playersId[1],
             'Score1': self.score[0],
             'Score2': self.score[1],
+            'Duration': (self.endTime - self.startTime) / 1000000000
         })
 
     def to_mnemosine(self):
@@ -26,6 +29,7 @@ class Match:
                 'Winner-score': self.score[1],
                 'Loser': self.playersId[0],
                 'Loser-score': self.score[0],
+                'Duration': (self.endTime - self.startTime) / 1000000000
             })
         else:
             return ({
@@ -33,6 +37,7 @@ class Match:
                 'Loser-score': self.score[1],
                 'Winner': self.playersId[0],
                 'Winner-score': self.score[0],
+                'Duration': (self.endTime - self.startTime) / 1000000000
             })
 
 matches = {}

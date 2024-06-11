@@ -114,6 +114,8 @@ class tournamentEntry(View):
 
         try:
             tournamentId = int(tournamentId)
+            data = request.data
+            playerAlias = data['Alias']
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
@@ -121,7 +123,7 @@ class tournamentEntry(View):
             return JsonNotFound(request, 'Tournament not found')
 
         try:
-            tournaments[tournamentId].addPlayer(playerId)
+            tournaments[tournamentId].addPlayer(playerId, playerAlias)
             if playerId in tournaments[tournamentId].invited:
                 tournaments[tournamentId].invited.remove(playerId)
         except Exception as e:
@@ -228,12 +230,6 @@ class gameResult(View):
             tournament.id, {
                 'type': 'LeaveTournament',
                 'player': data['game']['Loser'],
-            }
-        )
-
-        async_to_sync(channel_layer.group_send)(
-            tournament.id, {
-                'type': 'tournamentState',
             }
         )
 

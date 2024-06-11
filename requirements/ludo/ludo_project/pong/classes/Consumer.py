@@ -37,12 +37,16 @@ class Consumer(OurBasicConsumer):
         count = self.roomName.count('-')
         if count != 1 and count != 2:
             await self.close()
+        if count == 2:
+            self.myMatch.isTournamentGame = True
 
         p1 = int(self.roomName.split('-')[count - 1])
         p2 = int(self.roomName.split('-')[count])
         self.user = self.scope['user']
         self.isPlayer = False
         self.id = len(self.myMatch.players)
+        print(self.myMatch.players)
+        print("My id is: " + str(self.id))
 
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
@@ -51,9 +55,11 @@ class Consumer(OurBasicConsumer):
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             await self.close()
 
-
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
+
+        if self.isPlayer:
+            self.myMatch.players.append(Player(self.id, self.gameSettings))
 
         logging.info("Player " + str(self.user.id) + " has entered game room " + self.roomName)
 
@@ -82,6 +88,9 @@ class Consumer(OurBasicConsumer):
                 )
 
         # Ne faire ca que si ce n'est pas une game de tournoi !!
+        if self.roomName in matches:
+            del matches[self.roomName]
+
         try:
             request = requests.post(
                 'http://hermes:8004/notif/available-states/',
@@ -135,9 +144,7 @@ class Consumer(OurBasicConsumer):
         global matches
 
         logging.info("Game starting")
-
-        if self.isPlayer:
-            self.myMatch.players.append(Player(self.id, self.gameSettings))
+        self.myMatch.startTime = time.time_ns()
 
         self.myMatch.ball = Ball(self.gameSettings)
 
@@ -152,7 +159,7 @@ class Consumer(OurBasicConsumer):
 
     async def gameEnd(self, event):
         global matches
-        print("This is gameEnd function with id: " + str(self.id))
+        self.myMatch.endTime = time.time_ns()
 
         if self.id == 0:
             if self.roomName.count('-') == 2:
@@ -162,9 +169,8 @@ class Consumer(OurBasicConsumer):
                         'game': self.myMatch.toDict()})
             else:
                 requests.post(
-                    'http://mnemosine:8008/memory/pong/match/0/',
+                    'http://mnemosine:8008/memory/pong/games/',
                     json=self.myMatch.to_mnemosine())
-            del matches[self.roomName]
 
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({
@@ -177,6 +183,7 @@ class Consumer(OurBasicConsumer):
                 "type": "youLose",
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+                "isTournament": self.myMatch.isTournamentGame,
             }))
 
         logging.info("Game in room " + self.roomName + " has ended")
@@ -188,6 +195,7 @@ class Consumer(OurBasicConsumer):
             "type": "updateScore",
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+            "isTournament": self.myMatch.isTournamentGame,
         }))
 
     async def gameLogic(self, frames, id):
