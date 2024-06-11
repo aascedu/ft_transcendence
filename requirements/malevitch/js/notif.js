@@ -54,10 +54,6 @@ async function acceptTournamentInvite() {
 
 	document.querySelector('.tournament-info-join-input').value = g_userId;
 	document.querySelector('.tournament-info-join-input').focus();
-
-	// add user to tournament
-	var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
-	await join_tournament(tournamentId);
 }
 
 function dismissTournamentInvite() {

@@ -535,7 +535,7 @@ async function setHomepageContent() {
 
 				totalPoints += history[i]["Winner-score"];
 			}
-			totalTime += history[i].Time;
+			totalTime += history[i].Duration;
 		}
 
 		if (history.length == 0) {
@@ -747,6 +747,10 @@ function clearHomepageId() {
 
 	document.querySelector('.homepage-id-input').value = '';
 	document.querySelector('.sign-in-input').value = '';
+	document.querySelector('.sign-up-nickname-input').value = '';
+	document.querySelector('.sign-up-email-input').value = '';
+	document.querySelector('.sign-up-password-input').value = '';
+	document.querySelector('.sign-up-password-confirm-input').value = '';
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;

@@ -120,7 +120,7 @@ async function init_game_socket(roomName) {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
-            console.log(data.type); // Sleep pour faire pop une fenetre ?
+            victoryDefeatScreen(data);
         }
 
         else if (data.type == "gameParameters") {
