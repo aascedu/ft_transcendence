@@ -108,13 +108,13 @@ class Consumer(OurBasicConsumer):
         await self.send(json.dumps({
             'Action': "startGame",
             'RoomName': roomName,
-            }))
+        }))
 
     async def TournamentState(self, event):
         await self.send(json.dumps({
             'Action': "tournamentState",
             'Tournament': self.myTournament.toFront(),
-            }))
+        }))
 
     async def LeaveTournament(self, event):
         if event['player'] == self.id:

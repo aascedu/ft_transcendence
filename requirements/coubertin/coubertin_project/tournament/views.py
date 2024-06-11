@@ -131,6 +131,16 @@ class tournamentEntry(View):
 
         updateTournament(tournamentId)
         logging.info("Player " + str(playerId) + " has joined tournament " + str(tournamentId))
+
+        # Check if we need to start tournament
+        if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                tournamentId, {
+                    'type': 'StartGame',
+                }
+            )
+
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
