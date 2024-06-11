@@ -514,7 +514,7 @@ async function changeNickname() {
 	try {
 		await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
 	} catch (error) {
-		console.error();
+		console.error(error);
 		return ;
 	}
 	
