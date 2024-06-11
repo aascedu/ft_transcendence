@@ -30,6 +30,11 @@ class Client(models.Model):
                 "Id": self.id
         }
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+        }
+
     def toDict(self):
         return {
             "id": self.id,
