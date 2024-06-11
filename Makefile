@@ -37,10 +37,10 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | copyfile volumes modsec tutum
+debug: | copyfile volumes tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes modsec tutum
+all: | copyfile volumes tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
 up: | copyfile volumes tutum
@@ -50,7 +50,7 @@ ifeq ($(CI), ci)
 build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | copyfile volumes modsec
+build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
@@ -90,9 +90,6 @@ volumes:
 copyfile:
 	./tools/copyfile.sh $(DJANGO_CTT)
 
-modsec:
-	./tools/modsec.sh
-
 tutum:
 	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
 
@@ -109,9 +106,6 @@ clean: | down
 	- docker rm $$(docker ps -qa) || true
 	- $(COMPOSE) stop || true
 	- rm -rf `find . | grep migrations | grep -v env` || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
 
 # - Completely removes Docker Compose services, including images, volumes, and orphans
 # - Removes all Docker images
@@ -129,7 +123,6 @@ fclean: | clean
 prune: | fclean
 	- docker system prune -af || true
 	- docker volume prune -af || true
-#	- rm -rf ./requirements/aegis/ModSecurity/ || true
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`

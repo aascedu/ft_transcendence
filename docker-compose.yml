@@ -51,6 +51,31 @@ volumes:
   petrus_data:
     driver: local
 
+  vault_data: {}
+
+  token_alfred_data: {}
+
+  token_alfred_db_data: {}
+
+  token_shared_data: {}
+
+  token_davinci_data: {}
+
+  token_db_exporter_data: {}
+
+  token_mnemosine_data: {}
+
+  token_mnemosine_db_data: {}
+
+  token_petrus_data: {}
+
+  token_petrus_db_data: {}
+
+  token_root_data: {}
+
+  token_env_data: {}
+
+
 services:
 # # Reverse proxy container
   aegis:
@@ -182,7 +207,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/alfred/alfred_project:/app
-      - ./tokens/alfred:/app/tokens
+      - token_alfred_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8001:8001"
@@ -208,12 +233,13 @@ services:
       POSTGRES_PASSWORD: $POSTGRES_ALFRED_PASSWORD
     volumes:
       - alfred_data:/var/lib/postgresql/data
-      - ./tokens/alfred-db:/tokens
+      - token_alfred_db_data:/tokens
     networks:
       - alfred_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d alfred_db -U alfred_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d user_management -U alfred"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Elastisearch container
@@ -278,6 +304,8 @@ services:
     depends_on:
       apollo:
         condition: service_healthy
+      iris:
+        condition: service_healthy
     container_name: policy
     image: docker:latest
     networks:
@@ -305,7 +333,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/coubertin/coubertin_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8002:8002"
@@ -326,7 +354,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/cupidon/cupidon_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8003:8003"
@@ -341,7 +369,7 @@ services:
       context: ./requirements/davinci
       dockerfile: Dockerfile
     volumes:
-      - ./tokens/davinci:/tokens
+      - token_davinci_data:/tokens
     ports:
       - "8010:8010"
     networks:
@@ -392,7 +420,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/hermes/hermes_project:/app
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8004:8004"
@@ -419,7 +447,7 @@ services:
     volumes:
       - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
-      - ./tokens:/vault
+      #- ./tokens:/vault
     ports:
       - 5601:5601
     environment:
@@ -456,7 +484,7 @@ services:
     volumes:
       - ./requirements/ludo/ludo_project:/app
       - shared_code:/app/shared
-      - ./tokens/shared-django:/app/tokens
+      - token_shared_data:/app/tokens
     ports:
       - "8006:8006"
     networks:
@@ -506,7 +534,7 @@ services:
       - sentinel
       - alfred_network
     volumes:
-      - ./tokens/db_exporter:/tokens
+      - token_db_exporter_data:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -525,7 +553,7 @@ services:
       - sentinel
       - mnemosine_network
     volumes:
-      - ./tokens/db_exporter:/tokens
+      - token_db_exporter_data:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -544,7 +572,7 @@ services:
       - sentinel
       - petrus_network
     volumes:
-      - ./tokens/db_exporter:/tokens
+      - token_db_exporter_data:/tokens
     depends_on:
       mensura:
         condition: service_started
@@ -578,7 +606,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./requirements/mnemosine/mnemosine_project:/app
-      - ./tokens/mnemosine:/app/tokens
+      - token_mnemosine_data:/app/tokens
       - shared_code:/app/shared
     ports:
       - "8008:8008"
@@ -606,13 +634,14 @@ services:
       POSTGRES_USER: $POSTGRES_MNEMOSINE_USER
       POSTGRES_PASSWORD: $POSTGRES_MNEMOSINE_PASSWORD
     volumes:
-      - ./tokens/mnemosine-db:/tokens
+      - token_mnemosine_db_data:/tokens
       - mnemosine_data:/var/lib/postgresql/data
     networks:
       - mnemosine_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d mnemosine_db -U mnemosine_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d memory_management -U mnemosine"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Authentification container
@@ -624,7 +653,7 @@ services:
     volumes:
       - ./requirements/petrus/petrus_project:/app
       - shared_code:/app/shared
-      - ./tokens/petrus:/app/tokens
+      - token_petrus_data:/app/tokens
     ports:
       - "8009:8009"
     depends_on:
@@ -651,13 +680,14 @@ services:
       POSTGRES_USER: $POSTGRES_PETRUS_USER
       POSTGRES_PASSWORD: $POSTGRES_PETRUS_PASSWORD
     volumes:
-      - ./tokens/petrus-db:/tokens
+      - token_petrus_db_data:/tokens
       - petrus_data:/var/lib/postgresql/data
     networks:
       - petrus_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d petrus_db -U petrus_user"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -d auth_management -U petrus"]
+      interval: 5s
+      timeout: 5s
       retries: 5
 
 # # Vault container
@@ -668,8 +698,18 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - ./requirements/tutum/vault:/opt/vault
-      - ./tokens:/tokens
+      - vault_data:/opt/vault
+      - token_alfred_data:/tokens/alfred
+      - token_alfred_db_data:/tokens/alfred-db
+      - token_shared_data:/tokens/shared-django
+      - token_davinci_data:/tokens/davinci
+      - token_db_exporter_data:/tokens/db_exporter
+      - token_mnemosine_data:/tokens/mnemosine
+      - token_mnemosine_db_data:/tokens/mnemosine-db
+      - token_petrus_data:/tokens/petrus
+      - token_petrus_db_data:/tokens/petrus-db
+      - token_root_data:/tokens/root
+      - token_env_data:/tokens/env
     ports:
       - "8200:8200"
     networks:

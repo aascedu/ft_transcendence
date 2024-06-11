@@ -1,3 +1,19 @@
+# J'ai rajoute ca au cas ou je pensais que le probleme venait du healthcheck mais non. Apres je trouvais bete de le delete car c'etait un peu plus propre que juste check si c'est online
+# -Arthur
+
+    ## Make a request to Elasticsearch to get its current health status
+    #health_response=$(curl -u "elastic:elastic123" --cacert "$CA_CERT" "$ELASTICSEARCH_URL/_cluster/health?pretty" 2>/dev/null)
+    #echo $health_response
+    ## Extract the value of the "status" field using grep and sed
+    #health_status=$(echo "$health_response" | grep -o '"status"\s*:\s*"[^"]*"' | sed 's/"status"\s*:\s*"\([^"]*\)"/\1/')
+    #echo $health_status
+    ## Check if the health status is GREEN
+    #if [[ "$health_status" == "green" ]]; then
+    #    return 0  # Elasticsearch is available and healthy
+    #else
+    #    return 1  # Elasticsearch is not yet available or not healthy
+    #fi
+
 #!/bin/bash
 COLOR_GREEN='\e[1;32m'
 COLOR_RESET='\e[0m'
@@ -16,7 +32,7 @@ check_elasticsearch() {
 # Wait for Elasticsearch to become available
 until check_elasticsearch; do
     echo -e "${COLOR_GREEN}Elasticsearch is not yet available. Waiting...${COLOR_RESET}"
-    sleep 10
+    sleep 1
 done
 
 # Once Elasticsearch is available, create the ILM policy
