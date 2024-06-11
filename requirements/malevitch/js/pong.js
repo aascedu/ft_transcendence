@@ -75,9 +75,9 @@ window.addEventListener("keydown", function(e) { // Booleans with on press and o
 	if (e.repeat || me.isPlayer === false) {
         return;
     }
-    if (`${e.key}` === 'w') {
+    if (`${e.key}` === 'w' || `${e.key}` === 'ArrowUp') {
         me.up = true;
-    } else if (`${e.key}` === 's') {
+    } else if (`${e.key}` === 's' || `${e.key}` === 'ArrowDown') {
         me.down = true;
     }
 });
@@ -86,9 +86,9 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
     if (me.isPlayer === false) {
         return;
     }
-    if (`${e.key}` === 'w') {
+    if (`${e.key}` === 'w' || `${e.key}` === 'ArrowUp') {
         me.up = false;
-    } else if (`${e.key}` === 's') {
+    } else if (`${e.key}` === 's' || `${e.key}` === 'ArrowDown') {
         me.down = false;
     }
 });
@@ -120,7 +120,7 @@ async function init_game_socket(roomName) {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
-            console.log(data.type); // Sleep pour faire pop une fenetre ?
+            victoryDefeatScreen(data);
         }
 
         else if (data.type == "gameParameters") {

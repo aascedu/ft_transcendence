@@ -177,7 +177,7 @@ class avatarView(View):
         except KeyError as e:
             return JsonBadRequest(request, f"missing file : {e.__str__()}")
         client = request.model
-        avatar.name = f'{client.nick}-{timezone.now().strftime("%Y%m%d%H%M%S")}'
+        avatar.name = f'{timezone.now().strftime("%Y%m%d%H%M%S")}{avatar.name}'
         client.avatar = avatar
         return save_response(request, client)
 
