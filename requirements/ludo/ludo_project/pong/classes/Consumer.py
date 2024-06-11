@@ -177,8 +177,8 @@ class Consumer(OurBasicConsumer):
                 "type": "youWin",
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-				"isTournament": self.myMatch.isTournamentGame,
-				"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+		"isTournament": self.myMatch.isTournamentGame,
+		"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
             }))
         else:
             await self.send (text_data=json.dumps({
@@ -186,7 +186,7 @@ class Consumer(OurBasicConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 "isTournament": self.myMatch.isTournamentGame,
-				"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+		"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
             }))
 
         logging.info("Game in room " + self.roomName + " has ended")
@@ -199,7 +199,7 @@ class Consumer(OurBasicConsumer):
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             "isTournament": self.myMatch.isTournamentGame,
-			"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+	    "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
         }))
 
     async def gameLogic(self, frames, id):
