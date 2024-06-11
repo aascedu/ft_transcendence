@@ -1,10 +1,10 @@
 #!/bin/bash
+echo -n "start" > /state.txt
 
 while vault status &> /dev/null && [ $? -eq 1 ]; do
     sleep 1
 done
 
-echo -n "start" > /state.txt
 
 export VAULT_ADDR=http://127.0.0.1:8200
 
@@ -13,9 +13,9 @@ status=$?
 
 if [ $status -eq 2 ]; then
     vault operator init -n 1 -t 1 | grep 'Token\|Unseal' | awk '{print $4}' > tutum.txt
-    mv tutum.txt /tokens/tutum.txt
-    export VAULT_TOKEN=`cat /tokens/tutum.txt | tail -n 1`
-    KEY=`cat /tokens/tutum.txt | head -n 1`
+    mv tutum.txt /tokens/root/tutum.txt
+    export VAULT_TOKEN=`cat /tokens/root/tutum.txt | tail -n 1`
+    KEY=`cat /tokens/root/tutum.txt | head -n 1`
 
     vault operator unseal $KEY
     vault secrets enable -path=secret kv-v2
@@ -120,7 +120,7 @@ if [ $status -eq 2 ]; then
     vault token create -policy=db_exporter | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/db_exporter/db_exporter-token.txt
     vault kv put -mount=secret env/pg_monitor pg_monitor="$PROM_PASS"
 else
-    KEY=`cat /tokens/tutum.txt | head -n 1`
+    KEY=`cat /tokens/root/tutum.txt | head -n 1`
     vault operator unseal $KEY
 fi
 
