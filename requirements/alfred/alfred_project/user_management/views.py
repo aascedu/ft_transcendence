@@ -1,4 +1,5 @@
 from django.http.response import HttpResponse
+import requests
 from user_management.models import Client, FriendshipRequest, name_to_path
 
 from django.views import View
@@ -77,7 +78,13 @@ class userInfoView(View):
         client.nick = data.get("Nick", client.nick)
         client.email = data.get("Email", client.email)
         client.contrast_mode = data.get("Contrast-mode", client.contrast_mode)
-        return save_response(request, client)
+        response = save_response(request, client)
+        if data.get("Nick", None) is not None:
+            try:
+                requests.post(f'http://hermes:8004/notif/update-profile/{request.user.id}/', json={})
+            except BaseException:
+                pass
+        return response
 
 
     def post(self, request, id: int):
@@ -179,7 +186,12 @@ class avatarView(View):
         client = request.model
         avatar.name = f'{timezone.now().strftime("%Y%m%d%H%M%S")}{avatar.name}'
         client.avatar = avatar
-        return save_response(request, client)
+        response = save_response(request, client)
+        try:
+            requests.post(f'http://hermes:8004/notif/friend-request/{request.user.id}/', json={})
+        except BaseException:
+            pass
+        return response
 
 def serve_avatar(request, filename):
     if request.method != 'GET':

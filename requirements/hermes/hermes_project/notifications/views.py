@@ -2,10 +2,10 @@ from django.views import View
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.views.generic.base import logging
-from shared.utils import JsonBadRequest, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
 from shared.utils import JsonResponseLogging as JsonResponse
 from notifications.cache import get_cache, set_cache
-from notifications.decorators import notification_by_notified_id, notification_global
+from notifications.decorators import notification_by_notified_id, notification_global, notification_to_friends
 import requests
 
 # Create your views here.
@@ -126,7 +126,6 @@ def friendshipSuppressed(request, requester: int):
 
 @notification_by_notified_id
 def gameRequest(request, requester : int):
-    notified = request.data['Notified']
     content = {
             'type': 'notification.game.request',
             'requester': requester,
@@ -137,13 +136,12 @@ def gameRequest(request, requester : int):
 @notification_by_notified_id
 def tournamentRequest(request, requester: int):
         try:
-            notified = int(request.data['Notified'])
             tournament_name = request.data['Tournament-Name']
             tournament_id = int(request.data['Tournament-Id'])
         except KeyError as e:
-            return JsonBadRequest(request, str(e))
+            return JsonBadRequest(request, str(e)), None, None
         except (ValueError, TypeError):
-            return JsonBadRequest(request, 'Notified must be an id')
+            return JsonBadRequest(request, 'Notified must be an id'), None, None
 
         content = {
                 'type': 'notification.tournament.request',
@@ -153,4 +151,14 @@ def tournamentRequest(request, requester: int):
             }
         response = JsonResponse(request, {'status': 'Tournament requested'})
         return response, content, None
+
+@notification_to_friends
+def updateProfile(request, requester:int):
+    response = JsonResponse(request, {'Login': 'Notified'})
+    content = {
+            'type': 'notification.profile.change',
+            'requester': requester,
+        }
+    error = 'Only service can notify login change'
+    return response, content, error
 
