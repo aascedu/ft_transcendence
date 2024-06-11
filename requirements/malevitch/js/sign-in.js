@@ -66,6 +66,8 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 
 // Log out
 document.querySelector('.reconnection-alert .alert-cancel-button').addEventListener('click', async function() {
+	document.querySelector('.reconnection-alert').classList.add('visually-hidden');
+	setAriaHidden();
 	await disconnect();
 });
 
