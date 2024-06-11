@@ -1,13 +1,18 @@
 #---- ModSec base image -----------------------------------------------#
 FROM aascedu/nginx-modsec:files AS modsec
 
+#---- variables -------------------------------------------------------#
+
+ARG     PROXY_CONF
+RUN     export PROXY_CONF=PROXY_CONF
+
 #---- config ----------------------------------------------------------#
 
 COPY    conf/crs-setup.conf /etc/nginx/modsec/coreruleset-4.0.0/crs-setup.conf
 
 COPY    conf/ /etc/nginx/modsec
 
-COPY    conf/proxy.conf /etc/nginx/nginx.conf
+COPY    conf/${PROXY_CONF} /etc/nginx/nginx.conf
 COPY    errorPages /usr/share/nginx/html
 
 #---- config ----------------------------------------------------------#
