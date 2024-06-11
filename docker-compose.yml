@@ -81,7 +81,6 @@ services:
       - "8000:443"
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
-      - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
     networks:
       - aegis guard
       - atlas
@@ -370,8 +369,6 @@ services:
       - internet_access
       - atlas
     restart: always
-  #   # command:
-  #   #   - --strict.perms=false
 
 # # Notification container
   hermes:
