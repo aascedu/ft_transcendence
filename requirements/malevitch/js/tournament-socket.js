@@ -1,7 +1,7 @@
 async function init_tournament_socket(tournamentId) {
     const roomName = str(tournamentId);
     const token = await get_socket_connection_token('/coubertin/');
-    const url = 'wss://localhost:8000/coubertin/tournament/ws/' + roomName + '/?token=' + token;
+    const url = '/coubertin/tournament/ws/' + roomName + '/?token=' + token;
     const tournamentSocket = new WebSocket(url);
 
     tournamentSocket.onopen = function(event) {
@@ -20,8 +20,7 @@ async function init_tournament_socket(tournamentId) {
         const data = JSON.parse(event.data);
 
         if (data.Action === "startGame") {
-            init_socket(data.RoomName);
-            // Ici cacher le reste du site et afficher la game
+            showGamePage(data.RoomName);
 			return ;
         }
 

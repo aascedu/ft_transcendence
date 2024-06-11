@@ -22,7 +22,9 @@ async function remove_player_from_tournament(TournamentId, PlayerId) {
     return fetch_delete(add_coubertin_in_url('entry/' + TournamentId + '/' + PlayerId + '/'));
 }
 
-async function join_tournament(TournamentId) {
+async function join_tournament(TournamentId, PlayerAlias) {
+    json = {'Alias': PlayerAlias}
+
     return fetch_post(add_coubertin_in_url('entry/' + TournamentId + '/0/'), json);
 }
 

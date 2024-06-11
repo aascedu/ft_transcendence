@@ -23,9 +23,19 @@ class Player(baseModel):
             'Lose-Count': self.lose_count,
         }
 
+
+class TournamentParticipation(baseModel):
+    player = models.ForeignKey(Player, related_name="tournaments", on_delete=models.CASCADE)
+    alias = models.SlugField()
+
+    def to_dict(self):
+        return self.player.to_dict() | {
+            'Alias': self.alias
+        }
+
 class Tournament(baseModel):
     name = models.SlugField()
-    players = models.ManyToManyField(Player, related_name="tournaments")
+    players = models.ManyToManyField(TournamentParticipation, related_name="tournament")
 
     def to_dict(self):
         return {
@@ -41,8 +51,8 @@ class Tournament(baseModel):
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament
-        for player in Player.objects.filter(id__in=json['Players']):
-            tournament.players.add(player)
+        for player in json['Players']:
+            TournamentParticipation.objects.create(player=Player.objects.get(id=player['Id']), alias=player['Name'])
         return tournament
 
 
@@ -57,24 +67,26 @@ class Game(baseModel):
         on_delete=models.CASCADE,
         related_name='loses')
     loser_score = models.IntegerField()
+    duration = models.IntegerField()
 
     def to_dict(self):
         return {
-            "Id": self.id,
-            "Winner": self.winner.id,
-            "Winner-score": self.winner_score,
-            "Loser": self.loser.id,
-            "Loser-score": self.loser_score,
+            'Id': self.id,
+            'Winner': self.winner.id,
+            'Winner-score': self.winner_score,
+            'Loser': self.loser.id,
+            'Loser-score': self.loser_score,
+            'Duration': self.duration,
         }
 
     @staticmethod
     def from_json_saved(json):
         created_game = Game()
-        print(f"getting winner {json['Winner']}")
         created_game.winner = Player.objects.get(id=int(json['Winner']))
         created_game.loser = Player.objects.get(id=int(json['Loser']))
         created_game.winner_score = json['Winner-score']
         created_game.loser_score = json['Loser-score']
+        created_game.duration = json['Duration']
 
         created_game.full_clean()
         created_game.save()
@@ -105,6 +117,7 @@ class TournamentGame(baseModel):
     round = models.SmallIntegerField()
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='games')
 
+
     @staticmethod
     def from_json_saved(json, tournament):
         game = TournamentGame()
@@ -124,3 +137,4 @@ class TournamentGame(baseModel):
                 "Game": self.game.to_dict(),
                 "Round": self.round
         }
+

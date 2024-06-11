@@ -1,22 +1,22 @@
 async function init_matchmaking_socket(requester, invited) {
     token = await get_socket_connection_token("/cupidon/")
-    const exampleSocket = new WebSocket('wss://localhost:8000/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token);
+    const matchmakingSocket = new WebSocket('/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token);
     const Id = g_userId;
 
-    exampleSocket.onopen = function(event) {
+    matchmakingSocket.onopen = function(event) {
         console.log("Matchmaking socket opened in the front");
     };
 
-    exampleSocket.onclose = function() {
+    matchmakingSocket.onclose = function() {
         console.log("Matchmaking socket closed in the front");
-        sendData("Leaving");
+        sendData("Leaving"); // ?
     }
 
-    exampleSocket.onerror = function(event) {
+    matchmakingSocket.onerror = function(event) {
         console.log("Socket error");
     }
 
-    exampleSocket.onmessage = (event) => {
+    matchmakingSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === "start.game") {
             console.log("Starting game");
@@ -29,17 +29,19 @@ async function init_matchmaking_socket(requester, invited) {
             type: type,
         };
 
-        exampleSocket.send(JSON.stringify(data));
+        matchmakingSocket.send(JSON.stringify(data));
     }
 
     function ping() {
+        console.log("This is ping");
         if (requester === 0 && invited === 0){
-            sendData('ping');
+            console.log("I'm sending the ping");
+            sendData('Ping');
         }
     }
 
-    exampleSocket.addEventListener('open', (event) => {
-        const intervalID = setInterval(ping, 10000); // Juste envoyer sendData('ping') ?
+    matchmakingSocket.addEventListener('open', (event) => {
+        setInterval(ping, 10000); // Juste envoyer sendData('ping') ?
     });
 }
 

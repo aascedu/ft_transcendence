@@ -19,4 +19,3 @@ def delete_cache(key):
         cache.delete(key)
     except (ConnectionError, TimeoutError, ResponseError) as e:
         print(f'Error: undefined behavior concerning cache : {e} : deleting {key}')
-
