@@ -12,7 +12,10 @@ class Consumer(OurBasicConsumer):
 
         if self.security_check() is False:
             return self.close()
-        self.id = self.scope['user'].id
+        test = self.scope['user'].id
+        self.id = int(self.scope['user'].id)
+        logging.debug("\n\n\n\n\n\n\nMy id when connecting: ")
+        logging.debug(test)
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
@@ -22,8 +25,6 @@ class Consumer(OurBasicConsumer):
         # self.admin = False
         # if (self.myTournament.admin == self.id):
         #     self.admin = True # Do we let the admin chose if he plays or not ?
-
-        print ("Tournament room name is " + self.roomName)
 
         try:
             request = requests.delete(
@@ -109,6 +110,8 @@ class Consumer(OurBasicConsumer):
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = self.myTournament.contenders[opponentIndex]
         self.myTournament.ongoingGames += 1
+
+        logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
         roomName = str(self.myTournament.id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
         await self.send(json.dumps({

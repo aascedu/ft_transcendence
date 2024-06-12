@@ -6,7 +6,8 @@ async function get_socket_connection_token(path) {
 async function init_session_socket() {
     unique_use_token = await get_socket_connection_token("/hermes/")
     console.log(unique_use_token)
-    url = "/hermes/session/" + g_userNick + "?token=" + unique_use_token
+	const domain = window.location.host;
+    url =  'wss://' + domain + "/hermes/session/" + g_userNick + "?token=" + unique_use_token
     console.log(url)
     g_sessionSocket = new WebSocket(url)
     g_sessionSocket.onopen = function(event) {

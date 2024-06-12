@@ -100,7 +100,8 @@ async function init_game_socket(roomName) {
 
     unique_use_token = await get_socket_connection_token('/ludo/');
     console.log(unique_use_token);
-    url = '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
+    const domain = window.location.host;
+    const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
     console.log(url);
     socket.onopen = function(event) {
