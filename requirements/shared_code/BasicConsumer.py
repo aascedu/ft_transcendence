@@ -9,7 +9,7 @@ class OurBasicConsumer(AsyncWebsocketConsumer):
             return False
         logging.debug("no error security check run")
         self.user = self.scope["user"]
-        logging.debug("all goot user is " ,self.scope["user"])
+        logging.debug(f"all goot user is {str(self.scope["user"])}")
         return True
 
     def get_friends(self):
