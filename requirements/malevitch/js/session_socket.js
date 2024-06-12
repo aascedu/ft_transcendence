@@ -425,5 +425,5 @@ async function notificationMessage(data) {
 
 async function notificationProfileChanged(obj) {
 	console.log("profile changed");
-    console.log(data);
+    console.log(obj);
 }

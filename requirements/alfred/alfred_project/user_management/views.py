@@ -1,3 +1,4 @@
+import logging
 from django.http.response import HttpResponse
 import requests
 from user_management.models import Client, FriendshipRequest, name_to_path
@@ -188,7 +189,8 @@ class avatarView(View):
         client.avatar = avatar
         response = save_response(request, client)
         try:
-            requests.post(f'http://hermes:8004/notif/friend-request/{request.user.id}/', json={})
+            logging.debug("trying notification")
+            requests.post(f'http://hermes:8004/notif/update-profile/{request.user.id}/', json={})
         except BaseException:
             pass
         return response

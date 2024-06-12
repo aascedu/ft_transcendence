@@ -38,13 +38,13 @@ def notification_to_friends(function):
         if response.status_code != 200:
             return response
         try:
-            request = requests.get(f'http://alfred:8001/user/friends/{id}/')
+            request = requests.get(f'http://alfred:8001/user/friends/{requester}/')
             notified = request.json().get("Friends")
         except BaseException:
             logging.warn("Friends couldn't be fetch from alfred")
             return JsonErrResponse(request, "Couldn't fetch from alfred", status=500)
         channel_layer = get_channel_layer()
-        for notified_one in notified:
+        for notified_one in [each['Id'] for each in notified]:
             notified_group = f'user_{notified_one}_group'
             async_to_sync(channel_layer.group_send)(
                     notified_group,
