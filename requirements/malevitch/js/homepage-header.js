@@ -34,12 +34,6 @@ async function loadHomepageHeader() {
 		</button>`);
 	}
 
-	if (availableFriends.length == 0) {
-		document.querySelector('.homepage-header-no-friends').classList.remove('visually-hidden');
-		setAriaHidden();
-		return ;
-	}
-
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
 		item.addEventListener('click', async function() {
 			try {
