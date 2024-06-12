@@ -43,7 +43,7 @@ async function init_matchmaking_socket(requester, invited) {
     }
 
     matchmakingSocket.addEventListener('open', (event) => {
-        setInterval(ping, 10000); // Juste envoyer sendData('ping') ?
+        setInterval(ping, 10000); // Il faut stop un jour !!!
     });
 }
 

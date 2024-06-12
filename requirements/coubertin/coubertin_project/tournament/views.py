@@ -242,7 +242,7 @@ class gameResult(View):
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            tournament.id, {
+            str(tournament.id), {
                 'type': 'LeaveTournament',
                 'player': data['game']['Loser'],
             }
@@ -254,14 +254,14 @@ class gameResult(View):
             # Check tournament end
             if tournament.NumPlayers == pow(2, tournament.currentRound): # NumPlayers == 2 puissance currentRound
                 async_to_sync(channel_layer.group_send)(
-                    tournament.id, {
+                    str(tournament.id), {
                         'Type': "TournamentEnd",
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
 
             async_to_sync(channel_layer.group_send)(
-                tournament.id, {
+                str(tournament.id), {
                     'type': 'StartGame',
                 }
             )
