@@ -14,14 +14,12 @@ class Consumer(OurBasicConsumer):
             return self.close()
         test = self.scope['user'].id
         self.id = int(self.scope['user'].id)
-        logging.debug("\n\n\n\n\n\n\nMy id when connecting: ")
         logging.debug(test)
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         self.tournamentId = int(self.roomName)
         if self.id in tournaments[self.tournamentId].onPage:
-            logging.debug("Ok we're saved\n\n\n\n\n\n\n\n")
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
@@ -54,7 +52,7 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             self.close()
 
-        await self.channel_layer.group_discard(self.tournamentId, self.channel_name)
+        await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -71,49 +69,16 @@ class Consumer(OurBasicConsumer):
             }
         )
 
-    # async def Start(self, event): # Only for admin, to start tournament
-    #     global tournaments
-
-    #     tournaments[self.tournamentId].started = True
-    #     tournaments[self.tournamentId].contenders = tournaments[self.tournamentId].players
-
-    #     await self.channel_layer.group_send(
-    #             self.tournamentId, {
-    #                 'Type': "StartRound",
-    #             }
-    #         )
-
-    # async def StartRound(self, event): # To start a round (Will redirect every player etc...)
-    #     global tournaments
-
-        # if self.admin and tournaments[self.tournamentId].ongoingGames == 0:
-        #     tournaments[self.tournamentId].currentRound += 1
-
-        #     # Check tournament end
-        #     if tournaments[self.tournamentId].NumPlayers == pow(2, tournaments[self.tournamentId].currentRound): # NumPlayers == 2 puissance currentRound
-        #         await self.channel_layer.group_send(
-        #             self.tournamentId, {
-        #                 'Type': "TournamentEnd",
-        #             }
-        #         )
-        #         return
-
-        #     tournaments[self.tournamentId].ongoingGames = pow(2, tournaments[self.tournamentId].nbPlayers) / pow(2, tournaments[self.tournamentId].currentRound)
-
-        # await self.channel_layer.group_send(
-        #     self.tournamentId, {
-        #         'Type': "StartGame",
-        #     }
-        # )
-
     async def StartGame(self, event):
         global tournaments
-        logging.debug("Starting tournament game from back")
+        logging.debug("Starting tournament game from back, this is round " + str(tournaments[self.tournamentId].currentRound))
 
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
-        tournaments[self.tournamentId].ongoingGames += 1
+        
+        if self.id > opponentId:
+            tournaments[self.tournamentId].ongoingGames += 1
 
         logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
@@ -133,9 +98,10 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if event['player'] == self.id:
-            tournaments[self.tournamentId].removePlayer(self.id)
+            logging.debug("I'm player " + str(self.id))
+            logging.debug("Here is the tournament contenders:")
+            logging.debug(tournaments[self.tournamentId].contenders)
             logging.info("Player " + str(self.id) + " has left tournament " + str(tournaments[self.tournamentId].id))
-            self.close()
 
     async def TournamentEnd(self, event):
         global tournaments
@@ -166,7 +132,6 @@ class Consumer(OurBasicConsumer):
 
         del tournaments[self.id]
         logging.info("Tournament " + str(tournaments[self.tournamentId].id) + " ended")
-        self.close()
 
 
 # To do

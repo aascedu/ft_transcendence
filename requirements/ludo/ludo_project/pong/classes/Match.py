@@ -9,9 +9,10 @@ class Match:
         self.score = [0, 0]
         self.ball = Ball(gameSettings=gameSettings())
         self.gameStarted = False
+        self.gameEnded = [False, False]
+        self.isTournamentGame = False
         self.startTime = 0
         self.endTime = 0
-        self.isTournamentGame = False
 
     def toDict(self):
         return ({

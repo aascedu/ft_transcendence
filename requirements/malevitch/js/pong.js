@@ -289,13 +289,6 @@ async function init_game_socket(roomName) {
         i++;
     }
 
-    // Execute gameLoop every x ms
-    if (me.isPlayer) {
-            socket.addEventListener('open', (event) => {
-                
-            });
-    }
-
 // requestAnimationFrame()
 }
 

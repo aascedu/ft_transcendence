@@ -151,14 +151,21 @@ class Consumer(OurBasicConsumer):
 
     async def gameEnd(self, event):
         global matches
+
+        if self.myMatch.gameEnded[0] and self.myMatch.gameEnded[1]:
+            return
+        self.myMatch.gameEnded[self.id] = True
+
         self.myMatch.endTime = time.time_ns()
 
         if self.id == 0:
             if self.roomName.count('-') == 2:
+                tab = self.roomName.split('-')
+                tournamentId = int(tab[0])
                 requests.post(
                     'http://coubertin:8002/tournament/gameResult/',
-                    json={'tournamentId': 'test',
-                        'game': self.myMatch.toDict()})
+                    json={'tournamentId': tournamentId,
+                        'game': self.myMatch.to_mnemosine()})
             else:
                 requests.post(
                     'http://mnemosine:8008/memory/pong/games/',

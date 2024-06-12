@@ -12,7 +12,7 @@ async function loadOngoingTournament(id) {
 	}
 
 	init_tournament_socket(id)
-	clearTournamentInfo();
+	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
 }
 
@@ -27,7 +27,7 @@ async function loadClosedTournament(id) {
 		return ;
 	}
 
-	clearTournamentInfo();
+	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, false);
 }
 
