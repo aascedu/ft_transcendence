@@ -100,8 +100,6 @@ services:
         PROXY_CONF: $PROXY_CONF
     env_file: .env
     ports:
-      # - "80:80"
-      # - "443:443"
       - "7999:80"
       - "8000:443"
     volumes:
@@ -299,7 +297,7 @@ services:
       - internet_access
     volumes:
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    entrypoint: /bin/sh -c "while ! docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'; do sleep 5; done"
+    entrypoint: /bin/sh -c "docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'"
     healthcheck:
       test: ["CMD-SHELL", "docker logs policy | grep -q 'ILM policy configuration completed.'"]
       interval: 1s
