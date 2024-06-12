@@ -294,6 +294,7 @@ async function notificationNewClientConnected(data) {
 		await createTournamentLoadAvailableFriends();
 	}
 	// load back header to add friend to available friends to play with
+	clearHomepageHeader();
 	await loadHomepageHeader();
 }
 
@@ -431,6 +432,58 @@ async function notificationMessage(data) {
 async function notificationProfileChanged(obj) {
 	console.log("profile changed");
     console.log(obj);
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// if we are on homepage-game, update friend info in friends online
+	if (g_state.pageToDisplay == '.homepage-game') {
+		await clearHomepageFriends();
+		await loadHomepageFriends();
+
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on friends list, update friend info in friends online
+	if (g_state.pageToDisplay == '.friends-list') {
+		clearFriendsList();
+		await loadFriendsList();
+
+		document.querySelector('.friends-list-icon').focus();
+
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.friends-list';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on our friend profile, update friend info
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// if we are on a tournament page, load it back so that friend info is updated in available friends
+	if (g_state.pageToDisplay == '.tournament-info') {
+		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
+			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
+		}
+	}
+	// if we are creating a tournament, load back available friends so that friend info is updated in available friends
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// load back header to remove ex friend from available friends to play with
+	clearHomepageHeader();
+	await loadHomepageHeader();
 }
 async function notificationFriendDisconnected(obj) {
 	console.log("Friend disconnected");

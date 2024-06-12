@@ -282,7 +282,7 @@ async function submitCreateAccount() {
             '/petrus/auth/signup/',
             {
                 Nick: nick,
-                Email:email,
+                Email: email,
                 Pass: password,
                 Lang: lang,
                 Font: font,

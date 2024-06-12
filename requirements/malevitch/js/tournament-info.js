@@ -149,9 +149,9 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 		playersContainer.insertAdjacentHTML('beforeend', `\
 		<button class="content-card d-flex justify-content-between align-items-center purple-shadow" user-id="` + userId + `">
-		<div class="user-card-name unselectable">` + userInfo.Nick + `</div>
+		<div class="user-card-name unselectable">` + confirmedPlayers[i].Alias + `</div>
 		<div class="user-card-picture">
-		<img src="` + userPic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+		<img src="` + userPic + `" alt="profile picture of ` + confirmedPlayers[i].Alias + `" draggable="false" (dragstart)="false;" class="unselectable">
 		</div>
 		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
 		<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
@@ -199,111 +199,109 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		});
 	});
 
-	if (!ongoing) {
-		// Display tournament bracket
+	// Display tournament bracket
+
+	var	matchInRound = 0;
+	var	games = tournamentInfo.Games;
+	var	matchSelector;
+	var	res;
+
+	if (numPlayers == 4) {
+		// Display 4 players bracket
+		if (document.querySelector('.bracket-round-two') != null) {
+			document.querySelector('.bracket-round-one').classList.add('visually-hidden');
+			document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
+			document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
+			document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
+			document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
+			setAriaHidden();
+		}
+
+		// Load info
+
+		for (i = 0; i < games.length; i++) {
+			if (games[i].Round == 1) {
+				matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
+				res = await loadBracketMatchContent(confirmedPlayers, games[i], matchSelector[matchInRound]);
+				if (!res) {
+					return ;
+				}
+				matchInRound++;
+				if (matchInRound > 1) {
+					matchInRound = 0;
+				}
+			}
+			else if (games[i].Round == 2) {
+				matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
+				res = await loadBracketMatchContent(confirmedPlayers, games[i], matchSelector[matchInRound]);
+				if (!res) {
+					return ;
+				}
+			}
+		}
+	}
+	else {
+		// Display 8 players bracket if needed
+		if (document.querySelector('.bracket-round-one-four') != null) {
+			document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
+			document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
+			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
+			document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
+			document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
+			setAriaHidden();
+		}
+
+		// Load info
 
 		var	matchInRound = 0;
 		var	games = tournamentInfo.Games;
 		var	matchSelector;
 		var	res;
 
-		if (numPlayers == 4) {
-			// Display 4 players bracket
-			if (document.querySelector('.bracket-round-two') != null) {
-				document.querySelector('.bracket-round-one').classList.add('visually-hidden');
-				document.querySelector('.bracket-round-two').classList.add('bracket-round-one');
-				document.querySelector('.bracket-round-two').classList.add('bracket-round-one-four');
-				document.querySelector('.bracket-round-two').classList.remove('bracket-round-two');
-				document.querySelector('.bracket-round-three').classList.add('bracket-round-three-four');
-				setAriaHidden();
-			}
-
-			// Load info
-
-			for (i = 0; i < games.length; i++) {
-				if (games[i].Round == 1) {
-					matchSelector = document.querySelectorAll('.bracket-round-one-four .bracket-match');
-					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-					if (!res) {
-						return ;
-					}
-					matchInRound++;
-					if (matchInRound > 1) {
-						matchInRound = 0;
-					}
+		for (i = 0; i < games.length; i++) {
+			if (games[i].Round == 1) {
+				matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
+				res = await loadBracketMatchContent(confirmedPlayers, games[i], matchSelector[matchInRound]);
+				if (!res) {
+					return ;
 				}
-				else if (games[i].Round == 2) {
-					matchSelector = document.querySelectorAll('.bracket-round-three-four .bracket-match');
-					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-					if (!res) {
-						return ;
-					}
+				matchInRound++;
+				if (matchInRound > 3) {
+					matchInRound = 0;
+				}
+			}
+			else if (games[i].Round == 2) {
+				matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
+				res = await loadBracketMatchContent(confirmedPlayers, games[i], matchSelector[matchInRound]);
+				if (!res) {
+					return ;
+				}
+				matchInRound++;
+				if (matchInRound > 1) {
+					matchInRound = 0;
+				}
+			}
+			else {
+				matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
+				res = await loadBracketMatchContent(confirmedPlayers, games[i], matchSelector[matchInRound]);
+				if (!res) {
+					return ;
 				}
 			}
 		}
-		else {
-			// Display 8 players bracket if needed
-			if (document.querySelector('.bracket-round-one-four') != null) {
-				document.querySelector('.bracket-round-one').classList.remove('visually-hidden');
-				document.querySelector('.bracket-round-one-four').classList.add('bracket-round-two');
-				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one');
-				document.querySelector('.bracket-round-one-four').classList.remove('bracket-round-one-four');
-				document.querySelector('.bracket-round-three-four').classList.remove('bracket-round-three-four');
-				setAriaHidden();
-			}
-
-			// Load info
-
-			var	matchInRound = 0;
-			var	games = tournamentInfo.Games;
-			var	matchSelector;
-			var	res;
-
-			for (i = 0; i < games.length; i++) {
-				if (games[i].Round == 1) {
-					matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
-					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-					if (!res) {
-						return ;
-					}
-					matchInRound++;
-					if (matchInRound > 3) {
-						matchInRound = 0;
-					}
-				}
-				else if (games[i].Round == 2) {
-					matchSelector = document.querySelectorAll('.bracket-round-two .bracket-match');
-					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-					if (!res) {
-						return ;
-					}
-					matchInRound++;
-					if (matchInRound > 1) {
-						matchInRound = 0;
-					}
-				}
-				else {
-					matchSelector = document.querySelectorAll('.bracket-round-three .bracket-match');
-					res = await loadBracketMatchContent(tournamentInfo.Players, games[i].Game, matchSelector[matchInRound]);
-					if (!res) {
-						return ;
-					}
-				}
-			}
-		}
-
-		document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-			item.addEventListener('click', async function(event) {
-				var userId = await event.target.getAttribute('user-id');
-				if (userId == null) {
-					setTimeout(async () => {
-						userId = await event.target.getAttribute('user-id');
-					}, 500);
-				}
-				await loadUserProfile(userId);
-			});
-		});
 	}
+
+	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		item.addEventListener('click', async function(event) {
+			var userId = await event.target.getAttribute('user-id');
+			if (userId == null) {
+				setTimeout(async () => {
+					userId = await event.target.getAttribute('user-id');
+				}, 500);
+			}
+			await loadUserProfile(userId);
+		});
+	});
 
 	// Keyboard navigation
 
@@ -312,39 +310,45 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	});
 }
 
-async function loadBracketMatchContent(tournamentPlayers, matchInfo, matchSelector) {
+async function loadBracketMatchContent(tournamentPlayers, match, matchSelector) {
 	// If this match wasn't played yet
-	if (matchInfo.Played == false) {
+	if (match.Played == false) {
 		return 0;
 	}
+
+	var	matchInfo = match.Game;
 
 	// define order
 	var	playerId;
 	var	winnerOrder;
 	var	loserOrder;
+	var	winnerAlias;
+	var	loserAlias;
 	for (j = 0; j < tournamentPlayers.length; j++)
 	{
 		playerId = tournamentPlayers[j].Id;
 		if (playerId == matchInfo.Winner) {
 			winnerOrder = j;
+			winnerAlias = tournamentPlayers[j].Alias;
 		}
 		if (playerId == matchInfo.Loser) {
 			loserOrder = j;
+			loserAlias = tournamentPlayers[j].Alias;
 		}
 	}
 	var bracketPlayers = matchSelector.querySelectorAll('.bracket-player');
 	if (winnerOrder < loserOrder) {
-		await loadBracketPlayerContent(matchInfo.Winner, matchInfo["Winner-score"], bracketPlayers[0]);
-		await loadBracketPlayerContent(matchInfo.Loser, matchInfo["Loser-score"], bracketPlayers[1]);
+		await loadBracketPlayerContent(matchInfo.Winner, winnerAlias, matchInfo["Winner-score"], bracketPlayers[0]);
+		await loadBracketPlayerContent(matchInfo.Loser, loserAlias, matchInfo["Loser-score"], bracketPlayers[1]);
 	}
 	else {
-		await loadBracketPlayerContent(matchInfo.Loser, matchInfo["Loser-score"], bracketPlayers[0]);
-		await loadBracketPlayerContent(matchInfo.Winner, matchInfo["Winner-score"], bracketPlayers[1]);
+		await loadBracketPlayerContent(matchInfo.Loser, loserAlias, matchInfo["Loser-score"], bracketPlayers[0]);
+		await loadBracketPlayerContent(matchInfo.Winner, winnerAlias, matchInfo["Winner-score"], bracketPlayers[1]);
 	}
 	return 1;
 }
 
-async function loadBracketPlayerContent(playerId, playerScore, playerSelector) {
+async function loadBracketPlayerContent(playerId, playerAlias, playerScore, playerSelector) {
 	var userInfo;
 
 	try {
@@ -372,9 +376,9 @@ async function loadBracketPlayerContent(playerId, playerScore, playerSelector) {
 	}
 	playerSelector.insertAdjacentHTML('beforeend', `\
 	<div class="bracket-player-picture">
-		<img src="` + userPic + `" alt="profile picture of ` + userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
+		<img src="` + userPic + `" alt="profile picture of ` + playerAlias + `" draggable="false" (dragstart)="false;" class="unselectable">
 	</div>
-	<div class="bracket-player-name unselectable">` + userInfo.Nick + `</div>
+	<div class="bracket-player-name unselectable">` + playerAlias + `</div>
 	<div class="bracket-player-score unselectable">` + playerScore + `</div>`);
 }
 

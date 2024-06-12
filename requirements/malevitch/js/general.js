@@ -92,7 +92,7 @@ async function render() {
 	if (g_state.pageToDisplay != '.homepage-id'
 		&& g_state.pageToDisplay != '.sign-in'
 		&& g_state.pageToDisplay != '.sign-up'
-		&& g_state.pageToDisplay == '.game') {
+		&& g_state.pageToDisplay != '.game') {
 		clearHomepageHeader();
 		await loadHomepageHeader();
 	}
@@ -114,13 +114,6 @@ window.addEventListener('popstate', function (event) {
 	}
 	render(g_state);
 });
-
-function hideEveryPage() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
-	document.querySelector('.friends-list').classList.add('visually-hidden');
-	document.querySelector('.my-tournaments').classList.add('visually-hidden');
-	document.querySelector('.available-tournaments').classList.add('visually-hidden');
-}
 
 function applyAriaHidden(element) {
 	element.setAttribute('aria-hidden', 'true');
@@ -751,6 +744,7 @@ function hideEveryPage() {
 	}
 	document.querySelector('.user-profile').classList.add('visually-hidden');
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
+	document.querySelector('.create-tournament').classList.add('visually-hidden');
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
 	document.querySelector('.accessibility').classList.add('visually-hidden');

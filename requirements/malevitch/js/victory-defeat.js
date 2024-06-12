@@ -69,3 +69,54 @@ function victoryDefeatScreen(data) {
 
 	setAriaHidden();
 }
+
+// Click on "See tournament" button
+
+document.querySelector('.victory-defeat-tournament').addEventListener('click', async function() {
+	// Go to my tournaments
+	clearMyTournaments();
+	await loadMyTournaments();
+
+	document.querySelector('.my-tournaments-icon').focus();
+	
+	hideEveryPage();
+
+	// Load back header and video
+	var	homepageHeader = document.querySelector('.homepage-header');
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepageHeader.classList.remove('visually-hidden');
+	homepagePicture.classList.remove('visually-hidden');
+
+	g_state.pageToDisplay = '.my-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+// Click on "Play again" button
+
+document.querySelector('.victory-defeat-again').addEventListener('click', async function() {
+	try {
+		var	userId = this.getAttribute('user-id');
+		await invite_friend_to_game(userId);
+
+		var	userNick = await get_user_info(userId);
+		userNick = userNick.Nick;
+
+		// Display homepage game
+		document.querySelector('.homepage-header-logo').focus();
+
+		hideEveryPage();
+	
+		await clearHomepageContent();
+		await setHomepageContent();
+	
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+
+		// show notif 3 seconds to confirm invite
+		inviteSentNotif(userNick);
+	} catch (error) {
+		console.error(error);
+	}
+});
