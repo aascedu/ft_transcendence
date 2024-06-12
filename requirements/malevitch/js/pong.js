@@ -96,7 +96,7 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 /***************************************** Websockets *****************************************/
 
 async function init_game_socket(roomName) {
-    console.log(roomName);
+    console.log("Heyo i'm opening a game websocket");
 
     unique_use_token = await get_socket_connection_token('/ludo/');
     console.log(unique_use_token);
@@ -167,7 +167,6 @@ async function init_game_socket(roomName) {
         // Construct a msg object containing the data the server needs to process the message from the chat client.
         const gameData = {
           type: type,
-          id: g_userId,
         };
 
         // Send the msg object as a JSON-formatted string.
