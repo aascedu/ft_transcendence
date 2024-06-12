@@ -84,6 +84,8 @@ class tournamentManagement(View):
         except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'missing key {e}')
 
+        updateTournament(tournamentId)
+
         logging.info("Tournament " + str(tournamentId) + " has been renamed " + data['NewName'])
         return JsonResponse(request, {'Msg': "Tournament name changed"})
 
