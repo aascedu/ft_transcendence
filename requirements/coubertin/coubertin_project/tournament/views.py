@@ -6,11 +6,13 @@ from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, 
 import requests
 import logging
 
-def updateTournament(tournamentId):
+def updateTournament(tournamentId, isJoining, id):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
         str(tournamentId), {
-            'type': 'TournamentState'
+            'type': 'TournamentState',
+            'opt': isJoining,
+            'id': id
         }
     )
 
@@ -84,7 +86,7 @@ class tournamentManagement(View):
         except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'missing key {e}')
 
-        updateTournament(tournamentId)
+        updateTournament(tournamentId, False, request.user.id)
 
         logging.info("Tournament " + str(tournamentId) + " has been renamed " + data['NewName'])
         return JsonResponse(request, {'Msg': "Tournament name changed"})
@@ -103,7 +105,7 @@ class tournamentEntry(View):
             }
         )
 
-        updateTournament(tournamentId)
+        updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
@@ -131,7 +133,7 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonBadRequest(request, e.__str__())
 
-        updateTournament(tournamentId)
+        updateTournament(tournamentId, True, request.user.id)
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
 
         # Check if we need to start tournament
@@ -190,7 +192,7 @@ class inviteFriend(View):
             logging.error("Failed to send invitation to player " + str(invited))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
-        updateTournament(TournamentId)
+        updateTournament(TournamentId, False, request.user.id)
         logging.info("Player " + str(invited) + " has been invited to tournament " + str(TournamentId))
         return JsonResponse(request, {'Msg': "Friend has been invited"})
 
@@ -203,7 +205,7 @@ class inviteFriend(View):
             return JsonNotFound(request, "Player is not in the invited list of the tournament")
         tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
 
-        updateTournament(request['TournamentId'])
+        updateTournament(request['Tournament, request.user.idId'], False)
         return JsonResponse(request, {
             'Msg': 'Invitation declined',
             'PlayerId': request['PlayerId'],
@@ -256,7 +258,7 @@ class gameResult(View):
             if tournaments[tournamentId].nbPlayers == pow(2, tournaments[tournamentId].currentRound): # NumPlayers == 2 puissance currentRound
                 async_to_sync(channel_layer.group_send)(
                     str(tournamentId), {
-                        'Type': "TournamentEnd",
+                        'type': "TournamentEnd",
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
@@ -268,7 +270,7 @@ class gameResult(View):
             )
             logging.info("Tournament " + str(tournaments[tournamentId].id) + " is starting round " + str(tournaments[tournamentId].currentRound))
 
-        updateTournament(tournamentId)
+        updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
 class startTournament(View):
@@ -296,7 +298,7 @@ class startTournament(View):
             }
         )
 
-        updateTournament(tournamentId)
+        updateTournament(tournamentId, False, request.user.id)
         logging.info("Tournament " + str(tournamentId) + " is starting round 1")
         return JsonResponse(request, {'Msg': "Tournament started"})
 
