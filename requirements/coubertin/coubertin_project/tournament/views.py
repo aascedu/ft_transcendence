@@ -237,37 +237,38 @@ class gameResult(View):
         data = request.data
         if 'tournamentId' not in data or 'game' not in data:
             return JsonBadRequest(request, 'tournamentId or game not provided')
-        tournament = tournaments[data['tournamentId']]
-        tournament.addGame(data['game'])
+        tournamentId = data['tournamentId']
+        tournaments[tournamentId].addGame(data['game'])
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            str(tournament.id), {
+            str(tournamentId), {
                 'type': 'LeaveTournament',
                 'player': data['game']['Loser'],
             }
         )
 
-        if tournament.ongoingGames == 0:
-            tournament.currentRound += 1
+        logging.debug("Ongoing game is: " + str(tournaments[tournamentId].ongoingGames))
+        if tournaments[tournamentId].ongoingGames == 0:
+            tournaments[tournamentId].currentRound += 1
 
             # Check tournament end
-            if tournament.NumPlayers == pow(2, tournament.currentRound): # NumPlayers == 2 puissance currentRound
+            if tournaments[tournamentId].nbPlayers == pow(2, tournaments[tournamentId].currentRound): # NumPlayers == 2 puissance currentRound
                 async_to_sync(channel_layer.group_send)(
-                    str(tournament.id), {
+                    str(tournamentId), {
                         'Type': "TournamentEnd",
                     }
                 )
                 return JsonResponse(request, {'Msg': "Tournament ended"})
 
             async_to_sync(channel_layer.group_send)(
-                str(tournament.id), {
+                str(tournamentId), {
                     'type': 'StartGame',
                 }
             )
-            logging.info("Tournament " + str(tournament.id) + " is starting round " + str(tournament.currentRound))
+            logging.info("Tournament " + str(tournaments[tournamentId].id) + " is starting round " + str(tournaments[tournamentId].currentRound))
 
-        updateTournament(tournament.id)
+        updateTournament(tournamentId)
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
 class startTournament(View):

@@ -52,7 +52,7 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             self.close()
 
-        await self.channel_layer.group_discard(self.tournamentId, self.channel_name)
+        await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -76,7 +76,9 @@ class Consumer(OurBasicConsumer):
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
-        tournaments[self.tournamentId].ongoingGames += 1
+        
+        if self.id > opponentId:
+            tournaments[self.tournamentId].ongoingGames += 1
 
         logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
