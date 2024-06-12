@@ -510,18 +510,18 @@ document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEven
 
 async function changeNickname() {
 	var	nicknameInput = document.querySelector('.user-profile-name-input');
-	
+
 	try {
 		await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
 	} catch (error) {
 		console.error(error);
 		return ;
 	}
-	
+
 	// Hide alert
 	document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
-	
+
 	// Update tournament name
 	document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 }
@@ -691,6 +691,7 @@ async function disconnect() {
         document.querySelector('.homepage-id-input').focus();
         g_state.pageToDisplay = '.homepage-id';
         window.history.pushState(g_state, null, "");
+        g_sessionSocket.close();
         clearInterval(g_refreshInterval);
         render(g_state);
     });

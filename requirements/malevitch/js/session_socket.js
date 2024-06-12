@@ -26,6 +26,10 @@ async function init_session_socket() {
             notificationNewClientConnected(obj);
             return ;
         }
+        if (obj.type === "notification.friend.disconnected") {
+            notificationFriendDisconnected(obj);
+            return ;
+        }
         if (obj.type === "notification.message") {
             notificationMessage(obj);
             return ;
@@ -425,5 +429,9 @@ async function notificationMessage(data) {
 
 async function notificationProfileChanged(obj) {
 	console.log("profile changed");
+    console.log(obj);
+}
+async function notificationFriendDisconnected(obj) {
+	console.log("Friend disconnected");
     console.log(obj);
 }
