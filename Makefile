@@ -4,9 +4,7 @@
 
 include .env
 ENV_FILE		=	.env
-VOLUMES_DIR		=	certification_data elasticsearch_data \
-					logstash_data kibana_data alfred_data \
-					mnemosine_data petrus_data filebeat_data
+VOLUMES_DIR		=	alfred_data mnemosine_data petrus_data
 VOLUMES_PATH	=	$(HOME)/data/transcendence_data
 VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes ludo \
@@ -37,10 +35,10 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | copyfile volumes modsec tutum
+debug: | copyfile volumes tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes modsec tutum
+all: | copyfile volumes tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
 up: | copyfile volumes tutum
@@ -50,7 +48,7 @@ ifeq ($(CI), ci)
 build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | copyfile volumes modsec
+build: | copyfile volumes
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
@@ -90,9 +88,6 @@ volumes:
 copyfile:
 	./tools/copyfile.sh $(DJANGO_CTT)
 
-modsec:
-	./tools/modsec.sh
-
 tutum:
 	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
 
@@ -105,13 +100,10 @@ test: copyfile
 # - Stops Docker Compose services
 # - Cleans specific directories and files (migrations, tokens, vault)
 clean: | down
-	- docker stop $$(docker ps -qa) || true
-	- docker rm $$(docker ps -qa) || true
-	- $(COMPOSE) stop || true
-	- rm -rf `find . | grep migrations | grep -v env` || true
-	- rm -rf ./tokens || true
-	- rm -rf ./requirements/tutum/vault || true
-#	- rm -rf ./requirements/aegis/ModSecurity || true
+	docker stop $$(docker ps -qa) || true
+	docker rm $$(docker ps -qa) || true
+	$(COMPOSE) stop || true
+	rm -rf `find . | grep migrations | grep -v env` || true
 
 # - Completely removes Docker Compose services, including images, volumes, and orphans
 # - Removes all Docker images
@@ -119,17 +111,16 @@ clean: | down
 # - Removes all Docker networks
 # - Cleans the specified volume path
 fclean: | clean
-	- $(COMPOSE) down --rmi all --volumes --remove-orphans || true
-	- docker rmi $$(docker images -q) || true
-	- docker volume rm $$(docker volume ls -q) || true
-	- docker network rm $$(docker network ls -q) 2>/dev/null || true
-	- rm -rf $(VOLUMES_PATH)/*
+	$(COMPOSE) down --rmi all --volumes --remove-orphans || true
+	docker rmi $$(docker images -q) || true
+	docker volume rm $$(docker volume ls -q) || true
+	docker network rm $$(docker network ls -q) 2>/dev/null || true
+	rm -rf $(VOLUMES_PATH)/*
 
 # - Removes all unused Docker data, including images, containers, volumes, and networks
 prune: | fclean
-	- docker system prune -af || true
-	- docker volume prune -af || true
-#	- rm -rf ./requirements/aegis/ModSecurity/ || true
+	docker system prune -af || true
+	docker volume prune -af || true
 
 db_suppr:
 	rm -rf `find . | grep db.sqlite3`

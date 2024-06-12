@@ -772,22 +772,22 @@ document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addE
 });
 
 async function changeTournamentName() {
+	var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
+	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+	
 	try {
 		await change_tournament_name(tournamentNameInput.value, tournamentId);
 	} catch (error) {
 		console.error();
 		return ;
 	}
-
+	
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
-
+	
 	// Update tournament name
-	var	tournamentNameInput = document.querySelector('.tournament-info-name-input');
 	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
-
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 }
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {

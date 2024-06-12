@@ -13,15 +13,20 @@ document.querySelector('.accessibility-icon').addEventListener('click', async fu
 
 // Contrast mode
 
-document.querySelector('.accessibility .switch input').addEventListener('change', function() {
+document.querySelector('.accessibility .switch input').addEventListener('change', async function() {
+	try {
+		if (this.checked) {
+			await patch_user_info(g_userId, null, null, null, null, true);
+		}
+		else {
+			await patch_user_info(g_userId, null, null, null, null, false);
+		}
+	} catch (error) {
+		this.checked = !this.checked;
+		console.error(error);
+		return ;
+	}
 	contrastMode();
-
-	if (this.checked) {
-		patch_user_info(g_userId, null, null, null, null, true);
-	}
-	else {
-		patch_user_info(g_userId, null, null, null, null, false);
-	}
 });
 
 function contrastMode() {
