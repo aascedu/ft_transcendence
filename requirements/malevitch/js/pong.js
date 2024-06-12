@@ -104,9 +104,15 @@ async function init_game_socket(roomName) {
     const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
     console.log(url);
+    var intervalId;
+    var shouldContinue = true;
+
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
+        if (me.isPlayer) {
+            intervalId = setInterval(gameLoop, 10, shouldContinue);
+        }
     };
 
     socket.onclose = function() {
@@ -121,6 +127,10 @@ async function init_game_socket(roomName) {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
+            shouldContinue = false
+            clearInterval(intervalId);
+            console.log("allo");
+            socket.close();
             victoryDefeatScreen(data);
         }
 
@@ -152,7 +162,7 @@ async function init_game_socket(roomName) {
             setTimeout(gameLoop, 1000);
         }
 
-        if (data.type == "myState" || data.type == "opponentState") {
+        else if (data.type == "myState" || data.type == "opponentState") {
             if (data.type == "myState") {
                 me.pos = data.mePos / 100 * screenHeight;
             } else {
@@ -226,7 +236,11 @@ async function init_game_socket(roomName) {
     htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
     htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-    function gameLoop() {
+    function gameLoop(shouldContinue) {
+        if (!shouldContinue) {
+            return;
+        }
+
         // End of point
         if (ball.pos['x'] > screenWidth) {
             me.points++;
@@ -278,7 +292,7 @@ async function init_game_socket(roomName) {
     // Execute gameLoop every x ms
     if (me.isPlayer) {
             socket.addEventListener('open', (event) => {
-                const intervalID = setInterval(gameLoop, 10);
+                
             });
     }
 

@@ -183,8 +183,6 @@ class Consumer(OurBasicConsumer):
 
         logging.info("Game in room " + self.roomName + " has ended")
 
-        await self.close()
-
     async def updateScore(self, event):
         await self.send (text_data=json.dumps({
             "type": "updateScore",
