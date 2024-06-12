@@ -62,6 +62,10 @@ async function init_session_socket() {
             notificationTournamentRefused(obj);
             return ;
         }
+        if (obj.type === "notification.profile.change") {
+            notificationProfileChanged(obj);
+            return ;
+        }
     }
 }
 
@@ -104,7 +108,7 @@ async function notificationNewFriendship(data) {
 		document.querySelector('.notif-new-friendship .notif-info').textContent = userInfo.Nick;
 		document.querySelector('.notif-new-friendship').classList.remove('visually-hidden');
 		setAriaHidden();
-	
+
 		newFriendshipCountdown(2);
 	} catch (error) {
 		console.error(error);
@@ -310,7 +314,7 @@ async function notificationGameRefused(data) {
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-		
+
 		await loadOngoingTournament(tournamentId);
 	}
 	// Load back header to display friend as available back to play with them
@@ -406,7 +410,7 @@ async function notificationTournamentRefused(data) {
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-		
+
 		await loadOngoingTournament(tournamentId);
 	}
 	// Load back header to display friend as available back to play with them
@@ -417,4 +421,9 @@ async function notificationTournamentRefused(data) {
 async function notificationMessage(data) {
 	console.log("new message");
     console.log(data);
+}
+
+async function notificationProfileChanged(obj) {
+	console.log("profile changed");
+    console.log(obj);
 }

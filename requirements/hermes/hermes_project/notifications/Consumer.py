@@ -88,4 +88,5 @@ class Consumer(OurBasicConsumer):
     async def notification_game_accepted(self, event): # Il faut lancer les websockets de game apres reception de ce msg (type = game start)
         await self.send (text_data=json.dumps(event))
 
-
+    async def notification_profile_change(self, event):
+        await self.send (text_data=json.dumps(event))
