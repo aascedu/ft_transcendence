@@ -1,6 +1,8 @@
 async function init_matchmaking_socket(requester, invited) {
     token = await get_socket_connection_token("/cupidon/")
-    const matchmakingSocket = new WebSocket('/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token);
+    const domain = window.location.host;
+    const url = 'wss://' + domain + '/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token
+    const matchmakingSocket = new WebSocket(url);
     const Id = g_userId;
 
     matchmakingSocket.onopen = function(event) {
