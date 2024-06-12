@@ -115,8 +115,7 @@ fclean: | clean
 	docker rmi $$(docker images -q) || true
 	docker volume rm $$(docker volume ls -q) || true
 	docker network rm $$(docker network ls -q) 2>/dev/null || true
-	sudo rm -rf $(VOLUMES_PATH)/*
-	sudo rm -rf requirements/tutum/vault
+	rm -rf $(VOLUMES_PATH)/*
 
 # - Removes all unused Docker data, including images, containers, volumes, and networks
 prune: | fclean

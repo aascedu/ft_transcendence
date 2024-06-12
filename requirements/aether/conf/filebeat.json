@@ -5,7 +5,7 @@
     "settings": {
       "number_of_shards": 1,
       "number_of_replicas": 0,
-      "index.lifecycle.name": "my_policy",
+      "index.lifecycle.name": "filebeat_policy",
       "index.lifecycle.rollover_alias": "filebeat-index"
     },
     "mappings": {
