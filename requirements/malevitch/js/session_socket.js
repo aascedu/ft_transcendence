@@ -26,6 +26,10 @@ async function init_session_socket() {
             notificationNewClientConnected(obj);
             return ;
         }
+        if (obj.type === "notification.friend.disconnected") {
+            notificationFriendDisconnected(obj);
+            return ;
+        }
         if (obj.type === "notification.message") {
             notificationMessage(obj);
             return ;
@@ -479,4 +483,8 @@ async function notificationProfileChanged(obj) {
 	// load back header to remove ex friend from available friends to play with
 	clearHomepageHeader();
 	await loadHomepageHeader();
+}
+async function notificationFriendDisconnected(obj) {
+	console.log("Friend disconnected");
+    console.log(obj);
 }
