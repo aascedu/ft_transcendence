@@ -8,6 +8,7 @@ let	g_translations = null;
 let	g_canvasHeight = 0;
 let g_refreshInterval;
 let g_sessionSocket;
+let g_state = {pageToDisplay: '.homepage-id'};
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -16,9 +17,10 @@ const REF_TOKEN_NAME = 'Ref'
 
 // History routing.
 
-let g_state = {
-	pageToDisplay: ".homepage-id"
-};
+window.history.replaceState(g_state, null, "");
+determine_state().then(() => {
+    render(g_state);
+});
 
 async function determine_state() {
     var state = {}
@@ -60,10 +62,6 @@ async function determine_state() {
 }
 
 async function render() {
-    if (g_state.pageToDisplay == '.homepage-id') {
-        await determine_state();
-    }
-
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
@@ -99,9 +97,6 @@ async function render() {
 
 	setAriaHidden();
 }
-
-window.history.replaceState(g_state, null, "");
-render(g_state);
 
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
