@@ -271,7 +271,19 @@ async function loadUserContent(id) {
 }
 
 function clearUserContent() {
-	// clear history
+	// Switch button appearance
+	document.querySelector('.user-profile-check-icon').classList.add('visually-hidden');
+	document.querySelector('.user-profile-edit-icon').classList.remove('visually-hidden');
+
+	// Hide edit nickname
+	document.querySelector('.user-profile-name-input-container').classList.add('visually-hidden');
+
+	// Show nickname
+	document.querySelector('.user-profile-name').classList.remove('visually-hidden');
+
+	setAriaHidden();
+
+    // clear history
 	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
 	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
 
