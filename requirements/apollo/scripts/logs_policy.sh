@@ -1,5 +1,6 @@
 #!/bin/bash
 COLOR_GREEN='\e[1;32m'
+COLOR_RED='\e[1;31m'
 COLOR_RESET='\e[0m'
 
 # Define the URL for Elasticsearch
@@ -11,10 +12,10 @@ CA_CERT="/usr/share/elasticsearch/config/certs/ca/ca.crt"
 set -e
 
 if [ x${ELASTIC_USER} == x ]; then
-  echo "${COLOR_GREEN}Set the ELASTIC_USER environment variable in the .env file${COLOR_RESET}";
+  echo "${COLOR_RED}Set the ELASTIC_USER environment variable in the .env file${COLOR_RESET}";
   exit 1;
 elif [ x${ELASTIC_PASSWORD} == x ]; then
-  echo "${COLOR_GREEN}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
+  echo "${COLOR_RED}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
   exit 1;
 fi;
 
@@ -81,11 +82,17 @@ curl -X PUT -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
       }
     }
   }'
-curl -X GET -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
-  "$ELASTICSEARCH_URL/_ilm/policy/nginx_policy?pretty" \
-  -H 'Content-Type: application/json' \
-  --cacert "$CA_CERT"
-echo -e "${COLOR_GREEN}Nginx policy done.${COLOR_RESET}"
+response=$(curl -s -X GET -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+          "${ELASTICSEARCH_URL}/_ilm/policy/nginx_policy?pretty" \
+          -H 'Content-Type: application/json' \
+          --cacert "${CA_CERT}")
+
+if [[ "$response" == *"nginx_policy"* ]]; then
+  echo -e "${COLOR_GREEN}Nginx policy done.${COLOR_RESET}"
+else
+  echo -e "${COLOR_RED}Issue with Nginx policy configuration.${COLOR_RESET}"
+  exit 1;
+fi
 
 curl -X PUT -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   "$ELASTICSEARCH_URL/_ilm/policy/logstash_policy?pretty" \
@@ -147,11 +154,17 @@ curl -X PUT -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
       }
     }
   }'
-curl -X GET -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
-  "$ELASTICSEARCH_URL/_ilm/policy/logstash_policy?pretty" \
-  -H 'Content-Type: application/json' \
-  --cacert "$CA_CERT"
-echo -e "${COLOR_GREEN}Logstash policy done.${COLOR_RESET}"
+response=$(curl -s -X GET -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+          "${ELASTICSEARCH_URL}/_ilm/policy/logstash_policy?pretty" \
+          -H 'Content-Type: application/json' \
+          --cacert "${CA_CERT}")
+
+if [[ "$response" == *"logstash_policy"* ]]; then
+  echo -e "${COLOR_GREEN}Logstash policy done.${COLOR_RESET}"
+else
+  echo -e "${COLOR_RED}Issue with Logstash policy configuration.${COLOR_RESET}"
+  exit 1;
+fi
 
 curl -X PUT -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   "$ELASTICSEARCH_URL/_ilm/policy/filebeat_policy?pretty" \
@@ -213,11 +226,18 @@ curl -X PUT -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
       }
     }
   }'
-curl -X GET -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
-  "$ELASTICSEARCH_URL/_ilm/policy/filebeat_policy?pretty" \
-  -H 'Content-Type: application/json' \
-  --cacert "$CA_CERT"
-echo -e "${COLOR_GREEN}Filebeat policy done.${COLOR_RESET}"
+
+response=$(curl -s -X GET -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+          "${ELASTICSEARCH_URL}/_ilm/policy/filebeat_policy?pretty" \
+          -H 'Content-Type: application/json' \
+          --cacert "${CA_CERT}")
+
+if [[ "$response" == *"filebeat_policy"* ]]; then
+  echo -e "${COLOR_GREEN}Filebeat policy done.${COLOR_RESET}"
+else
+  echo -e "${COLOR_RED}Issue with Filebeat policy configuration.${COLOR_RESET}"
+  exit 1;
+fi
 
 echo -e "${COLOR_GREEN}All ILM policy configuration completed.${COLOR_RESET}"
 sleep 10
