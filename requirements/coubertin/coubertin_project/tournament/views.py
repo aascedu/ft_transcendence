@@ -105,6 +105,15 @@ class tournamentEntry(View):
             }
         )
 
+        try:
+            r = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': request.user.id})
+            if r.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
+
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
@@ -133,7 +142,7 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonBadRequest(request, e.__str__())
 
-        updateTournament(tournamentId, True, request.user.id)
+        updateTournament(tournamentId, True, userId)
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
 
         # Check if we need to start tournament
@@ -147,6 +156,15 @@ class tournamentEntry(View):
                 }
             )
             logging.info("Starting tournament")
+
+        try:
+            r = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': userId})
+            if r.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
@@ -243,19 +261,17 @@ class gameResult(View):
         tournaments[tournamentId].addGame(data['game'])
 
         channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            str(tournamentId), {
-                'type': 'LeaveTournament',
-                'player': data['game']['Loser'],
-            }
-        )
 
         logging.debug("Ongoing game is: " + str(tournaments[tournamentId].ongoingGames))
         if tournaments[tournamentId].ongoingGames == 0:
             tournaments[tournamentId].currentRound += 1
 
             # Check tournament end
-            if tournaments[tournamentId].nbPlayers == pow(2, tournaments[tournamentId].currentRound): # NumPlayers == 2 puissance currentRound
+            logging.debug("nb players: " + str(tournaments[tournamentId].nbPlayers))
+            logging.debug("my calc: " + str(pow(2, tournaments[tournamentId].currentRound - 1)))
+
+            if tournaments[tournamentId].nbPlayers == int(pow(2, tournaments[tournamentId].currentRound - 1)): # NumPlayers == 2 puissance currentRound
+                logging.info("Tournament " + str(tournaments[tournamentId].id) + " is ending")
                 async_to_sync(channel_layer.group_send)(
                     str(tournamentId), {
                         'type': "TournamentEnd",

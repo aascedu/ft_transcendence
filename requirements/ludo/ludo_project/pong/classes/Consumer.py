@@ -82,18 +82,18 @@ class Consumer(OurBasicConsumer):
                     }
                 )
 
-        # Ne faire ca que si ce n'est pas une game de tournoi !!
         if self.roomName in matches:
             del matches[self.roomName]
 
-        try:
-            request = requests.post(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.user.id})
-            if request.status_code != 200:
-                logging.error("Player " + str(self.user.id) + " state update request has failed")
-        except Exception as e:
-            logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
+        if self.roomName.count('-') == 1:
+            try:
+                request = requests.post(
+                    'http://hermes:8004/notif/available-states/',
+                    json={'Id': self.user.id})
+                if request.status_code != 200:
+                    logging.error("Player " + str(self.user.id) + " state update request has failed")
+            except Exception as e:
+                logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
 
         logging.info("Player " + str(self.user.id) + " has left game room " + self.roomName)
 
