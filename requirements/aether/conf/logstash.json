@@ -2,54 +2,65 @@
   "index_patterns": ["logstash-index-*"],
   "version": 1,
   "template": {
-    "settings": {
+      "settings": {
       "number_of_shards": 1,
       "number_of_replicas": 0,
       "index.lifecycle.name": "logstash_policy",
       "index.lifecycle.rollover_alias": "logstash-index"
-    },
-    "mappings": {
+      },
+      "mappings": {
       "dynamic": false,
       "properties": {
-        "@timestamp": {
+          "@timestamp": {
           "type": "date"
-        },
-        "@version": {
+          },
+          "@version": {
           "type": "text",
           "fields": {
-            "keyword": {
+              "keyword": {
               "type": "keyword",
               "ignore_above": 256
-            }
-          }
-        },
-        "date": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "host": {
-          "type": "object",
-          "properties": {
-            "ip": {
-              "type": "text",
-              "fields": {
-                "keyword": {
-                  "type": "keyword",
-                  "ignore_above": 256
-                }
               }
-            }
           }
-        },
-        "sourceip": {
+          },
+          "syslog_pri": {
+          "type": "integer"
+          },
+          "syslog_version": {
+          "type": "integer"
+          },
+          "syslog_timestamp": {
+          "type": "date",
+          "format": "strict_date_optional_time||epoch_millis"
+          },
+          "syslog_hostname": {
           "type": "text",
           "fields": {
-            "keyword": {
+              "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+              }
+          }
+          },
+          "syslog_program": {
+          "type": "text",
+          "fields": {
+              "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+              }
+          }
+          },
+          "syslog_pid": {
+          "type": "integer"
+          },
+          "syslog_message": {
+          "type": "text"
+          },
+          "program": {
+          "type": "text",
+          "fields": {
+              "keyword": {
               "type": "keyword",
               "ignore_above": 256
             }

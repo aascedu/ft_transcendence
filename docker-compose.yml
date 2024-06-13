@@ -100,8 +100,6 @@ services:
         PROXY_CONF: $PROXY_CONF
     env_file: .env
     ports:
-      # - "80:80"
-      # - "443:443"
       - "7999:80"
       - "8000:443"
     volumes:
@@ -283,30 +281,6 @@ services:
       timeout: 10s
       retries: 120
 
-  policy:
-    depends_on:
-      apollo:
-        condition: service_healthy
-      iris:
-        condition: service_healthy
-    container_name: policy
-    image: docker:latest
-    environment:
-      - "ELASTIC_USER=${ELASTIC_USER}"
-      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
-    networks:
-      - sentinel
-      - internet_access
-    volumes:
-        - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    entrypoint: /bin/sh -c "while ! docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'; do sleep 5; done"
-    healthcheck:
-      test: ["CMD-SHELL", "docker logs policy | grep -q 'ILM policy configuration completed.'"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
-    restart: on-failure
-
 # # Tournament container
   coubertin:
     depends_on:
@@ -347,6 +321,29 @@ services:
       - "8003:8003"
     networks:
       - atlas
+    restart: on-failure
+
+  data_views:
+    depends_on:
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_healthy
+      aether:
+        condition: service_healthy
+    container_name: data_views
+    image: docker:latest
+    networks:
+      - sentinel
+      - internet_access
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    entrypoint: /bin/sh -c "docker exec iris sh -c '/usr/share/kibana/scripts/data_views.sh'"
+    healthcheck:
+      test: ["CMD-SHELL", "docker logs data views | grep -q 'All Data Views creation completed.'"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
     restart: on-failure
 
 # # Matchmaking container
@@ -425,13 +422,15 @@ services:
       tutum:
         condition: service_healthy
     container_name: iris
-    image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    # image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
+    build:
+      context: ./requirements/iris
+      dockerfile: Dockerfile
     labels:
       co.elastic.logs/module: kibana
     volumes:
       - certificates:/usr/share/kibana/config/certs:ro
       - kibana_data:/usr/share/kibana/data
-      #- ./tokens:/vault
     ports:
       - 5601:5601
     environment:
@@ -439,6 +438,8 @@ services:
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
+      ELASTIC_USER: ${ELASTIC_USER}
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES: config/certs/ca/ca.crt
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
@@ -673,6 +674,27 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+  policy:
+    depends_on:
+      apollo:
+        condition: service_healthy
+      iris:
+        condition: service_healthy
+    container_name: policy
+    image: docker:latest
+    networks:
+      - sentinel
+      - internet_access
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    entrypoint: /bin/sh -c "docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'"
+    healthcheck:
+      test: ["CMD-SHELL", "docker logs policy | grep -q 'All ILM policy configuration completed.'"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    restart: on-failure
 
 # # Vault container
   tutum:

@@ -21,7 +21,7 @@ class Consumer(OurBasicConsumer):
 
         if self.roomName not in matches:
             matches[self.roomName] = Match()
-        self.myMatch = matches[self.roomName]
+        self.myMatch = matches[self.roomName] # A check !!!
 
 
         if "err" in self.scope:
@@ -73,6 +73,8 @@ class Consumer(OurBasicConsumer):
 
         if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5 and self.myMatch.gameStarted:
             logging.warning("Player " + str(self.user.id) + "has unexpectedly left game room " + self.roomName)
+            self.myMatch.gameEnded[self.id] = True
+            self.myMatch.score[(self.id + 1) % 2] = 5
             await self.channel_layer.group_send(
                     self.roomName, {
                         "type": "gameEnd",
@@ -152,13 +154,13 @@ class Consumer(OurBasicConsumer):
     async def gameEnd(self, event):
         global matches
 
-        if self.myMatch.gameEnded[0] and self.myMatch.gameEnded[1]:
+        if self.myMatch.gameEnded[self.id]:
             return
         self.myMatch.gameEnded[self.id] = True
 
         self.myMatch.endTime = time.time_ns()
 
-        if self.id == 0:
+        if self.myMatch.gameEnded[(self.id + 1) % 2]:
             if self.roomName.count('-') == 2:
                 tab = self.roomName.split('-')
                 tournamentId = int(tab[0])
