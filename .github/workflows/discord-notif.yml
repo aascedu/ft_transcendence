@@ -15,4 +15,4 @@ jobs:
       with:
         webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
         username: GitHub Action
-        message: A new pull request has been merged to the dev branch!
+        message: A new pull request has been merged to the dev  branch!
