@@ -75,7 +75,7 @@ document.querySelector('.reconnection-alert .alert-cancel-button').addEventListe
 
 async function submitPassword(input, warning, locale, nickname, isAlert) {
     connect(g_userId, input.value, nickname).then(result => {
-        jwt_management(result.Auth, result.Ref);
+        jwt_management();
         return result;
     })
     .then(result => {

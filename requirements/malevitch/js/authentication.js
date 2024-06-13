@@ -1,4 +1,4 @@
-async function jwt_management(jwt, refresh_token) {
+async function jwt_management() {
   await init_session_socket();
   refreshLoop()
 }
