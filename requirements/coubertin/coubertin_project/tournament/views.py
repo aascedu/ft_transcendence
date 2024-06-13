@@ -137,8 +137,6 @@ class tournamentEntry(View):
 
         try:
             tournaments[tournamentId].addPlayer(userId, playerAlias)
-            if userId in tournaments[tournamentId].invited:
-                tournaments[tournamentId].invited.remove(userId)
         except Exception as e:
             return JsonBadRequest(request, e.__str__())
 

@@ -16,6 +16,7 @@ async function init_matchmaking_socket(requester, invited) {
 
     g_matchmakingSocket.onclose = function() {
         console.log("Matchmaking socket closed in the front");
+        clearInterval(intervalId);
         g_matchmakingSocket = null;
     }
 
@@ -37,7 +38,6 @@ async function init_matchmaking_socket(requester, invited) {
 			}
 			await matchFound(opponent);
 
-            clearInterval(intervalId);
             showGamePage(data.RoomName);
             g_matchmakingSocket.close()
         }

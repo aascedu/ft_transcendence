@@ -114,6 +114,7 @@ async function init_game_socket(roomName) {
     };
 
     socket.onclose = function() {
+        clearInterval(intervalId);
         console.log("Socket closed in the front");
     }
 
@@ -126,7 +127,6 @@ async function init_game_socket(roomName) {
 
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false
-            clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
