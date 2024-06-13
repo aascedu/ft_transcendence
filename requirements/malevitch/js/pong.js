@@ -129,7 +129,7 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false
             clearInterval(intervalId);
-            console.log("Game end");
+            console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
         }
