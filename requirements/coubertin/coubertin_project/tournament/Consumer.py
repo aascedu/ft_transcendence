@@ -27,30 +27,12 @@ class Consumer(OurBasicConsumer):
         # if (tournaments[self.tournamentId].admin == self.id):
         #     self.admin = True # Do we let the admin chose if he plays or not ?
 
-        try:
-            request = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if request.status_code != 200:
-                self.close()
-        except Exception as e:
-            self.close()
-
         await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
         # Leave room group
         global tournaments
-
-        try:
-            request = requests.post(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if request.status_code != 200:
-                self.close()
-        except Exception as e:
-            self.close()
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -97,19 +79,10 @@ class Consumer(OurBasicConsumer):
             'Tournament': tournaments[self.tournamentId].toFront(),
         }))
 
-    async def LeaveTournament(self, event):
-        global tournaments
-
-        if event['player'] == self.id:
-            logging.debug("I'm player " + str(self.id))
-            logging.debug("Here is the tournament contenders:")
-            logging.debug(tournaments[self.tournamentId].contenders)
-            logging.info("Player " + str(self.id) + " has left tournament " + str(tournaments[self.tournamentId].id))
-
     async def TournamentEnd(self, event):
         global tournaments
 
-        if tournaments[self.tournamentId].ended is False:
+        if tournaments[self.tournamentId].ended is False or self.id not in tournaments[self.tournamentId].contenders:
             return
 
         tournaments[self.tournamentId].ended = False
@@ -124,18 +97,17 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             logging.error("Tournament could not be registered in database")
 
-        for player in tournaments[self.tournamentId].contenders:
-            if player != self.id:
-                await self.channel_layer.group_send(
-                    self.tournamentId, {
-                        'type': 'LeaveTournament',
-                        'player': player,
-                    }
-                )
-
         del tournaments[self.id]
         logging.info("Tournament " + str(tournaments[self.tournamentId].id) + " ended")
 
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
 
 # To do
 # Remove someone from tournament if admin

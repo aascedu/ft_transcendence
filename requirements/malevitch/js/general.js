@@ -1,26 +1,62 @@
 // Global variables.
-let g_userId;
-let	g_userNick;
+let g_userId = null;
+let	g_userNick = null;
 let	g_userPic = '/assets/general/pong.png';
 let	g_prevFontSize = 0;
-let	g_jwt;
 let	g_translations = null;
 let	g_canvasHeight = 0;
 let g_refreshInterval;
 let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
+let g_state = {pageToDisplay: '.homepage-id'};
 
 // Constant
 const JWT_NAME = 'Auth'
 const REFRESH_TOKEN_EXPIRED_ERROR = 'error: refresh token expired'
 const REF_TOKEN_NAME = 'Ref'
 
+// Constant function
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 // History routing.
 
-let g_state = {
-	pageToDisplay: ".homepage-id"
-};
+window.history.replaceState(g_state, null, "");
+
+async function assign_global() {
+    return get_personal_info().then(data => {
+                g_userId = data.Id;
+                g_userNick = data.Nick;
+                if (!!data.Pic) {
+                    g_userPic = data.Pic;
+                }
+                g_prevFontSize = data.Font;
+                g_state.pageToDisplay = '.homepage-game';
+                refreshLoop()
+                init_session_socket();
+            }).catch (error => {
+                console.log(error);
+                g_state.pageToDisplay = '.homepage-id';
+                throw custom_error(response)
+			});
+}
+
+async function reset_global() {
+    g_userId = null;
+    g_userNick = null;
+    g_userPic = '/assets/general/pong.png';
+    g_prevFontSize = 0;
+    g_canvasHeight = 0;
+    g_state = {pageToDisplay: '.homepage-id'};
+    if (!!g_sessionSocket) {
+        g_sessionSocket.close();
+        g_sessionSocket = null;
+    }
+    if (!!g_refreshInterval) {
+        clearInterval(g_refreshInterval);
+        g_refreshInterval = null;
+    }
+}
 
 async function determine_state() {
     var state = {}
@@ -32,40 +68,22 @@ async function determine_state() {
             },
         };
 
-    return await fetch('/petrus/auth/JWT-refresh/', content).then(response => {
+    return await fetch('/petrus/auth/JWT-refresh/', content)
+        .then(response => {
             if (!response.ok) {
-                console.log('fetch done');
                 g_state.pageToDisplay = '.homepage-id';
                 throw custom_error(response)
             }
-            return response.json();
-        }).then(data => {
-            g_state.pageToDisplay = '.homepage-game';
-            init_session_socket();
-            g_userId = data.Client;
-
-			return data;
-        }).then(async data => {
-			var	userInfo;
-
-			try {
-				userInfo = await get_user_info(g_userId);
-			} catch (error) {
-				console.log('fetch done');
-                g_state.pageToDisplay = '.homepage-id';
-                throw custom_error(response)
-			}
-			g_userNick = userInfo.Nick;
-		})
+        }).then(() => {
+            assign_global();
+        })
         .catch(error => {
+            console.log("No JWT in request : try to connect")
+            disconnect();
         });
 }
 
 async function render() {
-    if (g_state.pageToDisplay == '.homepage-id') {
-        await determine_state();
-    }
-
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
@@ -101,9 +119,6 @@ async function render() {
 
 	setAriaHidden();
 }
-
-window.history.replaceState(g_state, null, "");
-render(g_state);
 
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
@@ -159,7 +174,7 @@ function switchLanguageAttr(locale, newAttr) {
 		document.querySelectorAll('[data-language]').forEach(element => {
 			const key = element.getAttribute('data-language');
 			if (element.hasAttribute(newAttr)) {
-			element.setAttribute(newAttr, translations[locale][key]);
+                element.setAttribute(newAttr, translations[locale][key]);
 			}
 		});
 	});
@@ -187,12 +202,15 @@ function switchLanguageContent(locale) {
 // Make every language selectors be the same no matter the page.
 
 function switchNextLanguageFromPreviousSelector(previous, next) {
-	var	prevSelector = document.querySelector(previous + '-language-selector');
+	var	prevSelector;
+	if (next == '.homepage-game') {
+		prevSelector = document.querySelector('.homepage-header-language-selector');
+	}
+	else {
+		prevSelector = document.querySelector(previous + '-language-selector');
+	}
 
 	if (prevSelector !== null) {
-		var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
-		var	locale = prevSelectorImg.getAttribute('alt');
-
 		var	nextSelector;
 		if (next == '.homepage-game') {
 			nextSelector = document.querySelector('.homepage-header-language-selector');
@@ -200,47 +218,54 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 		else {
 			nextSelector = document.querySelector(next + '-language-selector');
 		}
-		var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
 
-		if (nextSelectorImg.getAttribute('alt') !== locale) {
-			var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
-			var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
-			var	nextSelectorButtons = document.querySelectorAll(next + '-language-selector ul li a img');
+		setLanguageSelector(prevSelector, nextSelector);
+	}
+}
 
-			nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
-			nextSelectorImg.setAttribute('alt', locale);
-			if (nextSelectorButtons[0].getAttribute('alt') === locale) {
-				nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
-			}
-			else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
-				nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
-			}
-			else {
-				nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
-			}
+// Set all language selectors to be like the header one.
+
+function setLanguageSelector(prevSelector, nextSelector) {
+	var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
+	var	locale = prevSelectorImg.getAttribute('alt');
+
+	var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
+
+	if (nextSelectorImg.getAttribute('alt') !== locale) {
+		var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
+		var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
+		var	nextSelectorButtons = nextSelector.querySelectorAll('ul li a img');
+
+		nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
+		nextSelectorImg.setAttribute('alt', locale);
+		if (nextSelectorButtons[0].getAttribute('alt') === locale) {
+			nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
+		}
+		else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
+			nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
+		}
+		else {
+			nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
 		}
 	}
 }
 
-// Reset language selector when disconnecting
+function setAllLanguageSelectors() {
+	var	languageSelector = document.querySelector('.homepage-header-language-selector');
+	var	lang = languageSelector.querySelector('button img').alt;
+	console.log(lang);
 
-function resetHomepageIdLanguageSelector() {
-	var	languageSelector = document.querySelector('.homepage-id-language-selector');
+	document.querySelectorAll('.language-selector').forEach(function(item) {
+		if (item != languageSelector) {
+			setLanguageSelector(languageSelector, item);
+		}
+	});
 
-	languageSelector.querySelector('button img').setAttribute('src', 'assets/lang/flag-en.png');
-	languageSelector.querySelector('button img').setAttribute('alt', 'en');
-
-	var	dropdownLanguages = languageSelector.querySelectorAll('ul li a img');
-
-	dropdownLanguages[0].setAttribute('src', 'assets/lang/flag-fr.png');
-	dropdownLanguages[0].setAttribute('alt', 'fr');
-	dropdownLanguages[1].setAttribute('src', 'assets/lang/flag-zh.png');
-	dropdownLanguages[1].setAttribute('alt', 'zh');
-
-	switchLanguageContent('en');
+	switchLanguageAttr(lang, 'placeholder');
+	switchLanguageContent(lang);
 }
 
 // Language selector : updates the page language / updates the selector images.
@@ -453,7 +478,7 @@ async function setHomepageContent() {
 	var	userInfo;
 
 	try {
-		userInfo = await get_user_info(g_userId);
+		userInfo = await get_personal_info();
 
 		// change lang if needed
 		var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
@@ -531,8 +556,8 @@ async function setHomepageContent() {
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
-					<div class="homepage-game-content-history-card-result">` + score + `</div>
-					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+					<div class="homepage-game-content-history-card-result unselectable">` + score + `</div>
+					<div class="homepage-game-content-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 				</div>`);
 
 				numWins++;
@@ -546,8 +571,8 @@ async function setHomepageContent() {
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
-					<div class="homepage-game-content-history-card-result">` + score + `</div>
-					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+					<div class="homepage-game-content-history-card-result unselectable">` + score + `</div>
+					<div class="homepage-game-content-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 				</div>`);
 
 				totalPoints += history[i]["Winner-score"];
@@ -598,6 +623,9 @@ async function setHomepageContent() {
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
+	if (averageSeconds < 10) {
+		averageSeconds = averageSeconds.toString().padStart(2, '0');
+	}
 
 	// Average match duration
 	statsContainer.insertAdjacentHTML('beforeend', `\
@@ -767,5 +795,5 @@ function clearHomepageId() {
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;
-	// resetHomepageIdLanguageSelector();
+	setAllLanguageSelectors();
 }

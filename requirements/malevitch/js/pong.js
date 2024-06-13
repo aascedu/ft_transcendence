@@ -96,8 +96,6 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 /***************************************** Websockets *****************************************/
 
 async function init_game_socket(roomName) {
-    console.log("Heyo i'm opening a game websocket");
-
     unique_use_token = await get_socket_connection_token('/ludo/');
     console.log(unique_use_token);
     const domain = window.location.host;
@@ -129,7 +127,7 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false
             clearInterval(intervalId);
-            console.log("Game end");
+            console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
         }

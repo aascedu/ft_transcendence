@@ -152,8 +152,8 @@ async function loadUserContent(id) {
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
 				<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
-				<div class="user-profile-history-card-result">` + score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+				<div class="user-profile-history-card-result unselectable">` + score + `</div>
+				<div class="user-profile-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 			</div>`);
 
 			numWins++;
@@ -180,8 +180,8 @@ async function loadUserContent(id) {
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
 				<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
-				<div class="user-profile-history-card-result">` + score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+				<div class="user-profile-history-card-result unselectable">` + score + `</div>
+				<div class="user-profile-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 			</div>`);
 
 			totalPoints += history[i]["Winner-score"];
@@ -207,6 +207,9 @@ async function loadUserContent(id) {
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
+	if (averageSeconds < 10) {
+		averageSeconds = averageSeconds.toString().padStart(2, '0');
+	}
 
 	document.querySelector('.user-profile-match-duration').textContent = averageMinutes + ':' + averageSeconds;
 
@@ -704,8 +707,7 @@ async function disconnect() {
         document.querySelector('.homepage-id-input').focus();
         g_state.pageToDisplay = '.homepage-id';
         window.history.pushState(g_state, null, "");
-        g_sessionSocket.close();
-        clearInterval(g_refreshInterval);
+        reset_global();
         render(g_state);
     });
 }

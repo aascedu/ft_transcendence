@@ -26,6 +26,17 @@ async function init_tournament_socket(tournamentId) {
         const data = JSON.parse(event.data);
 
         if (data.Action === "startGame") {
+			// "Match found" notif
+			var	opponent = data.RoomName;
+			opponent = opponent.split('-');
+			if (opponent[1] == g_userId) {
+				opponent = opponent[2];
+			}
+			else {
+				opponent = opponent[1];
+			}
+			await matchFound(opponent);
+
             console.log("Debug: Game starting")
             showGamePage(data.RoomName);
 			return ;

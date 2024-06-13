@@ -7,11 +7,15 @@ on:
 jobs:
   notify-discord:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+    if: ${{ github.event.pull_request.merged }} == 'true'
     steps:
       - name: Send notification to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           pr_title="${{ github.event.pull_request.title }}"
+          branch_name="${{ github.event.pull_request.base.ref }}"
+          echo "Sending notification for PR titled '${pr_title}' merged into '${branch_name}' branch."
           curl -X POST -H "Content-Type: application/json" \
-          -d "{\"content\": \"@everyone '${pr_title}' has been merged into the dev branch!\", \"username\": \"GitHub PR Bot\"}" \
-          ${{ secrets.DISCORD_WEBHOOK_URL }}
+          -d "{\"content\": \"@everyone The pull request titled '${pr_title}' has been merged into the dev branch!\", \"username\": \"GitHub PR Bot\"}" \
+          $DISCORD_WEBHOOK_URL
