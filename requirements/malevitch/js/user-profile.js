@@ -152,8 +152,8 @@ async function loadUserContent(id) {
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
 				<div class="user-profile-history-card-color user-profile-win position-absolute"></div>
-				<div class="user-profile-history-card-result">` + score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+				<div class="user-profile-history-card-result unselectable">` + score + `</div>
+				<div class="user-profile-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 			</div>`);
 
 			numWins++;
@@ -180,8 +180,8 @@ async function loadUserContent(id) {
 			historyContainer.insertAdjacentHTML('beforeend', `\
 			<div class="content-card d-flex justify-content-center align-items-end purple-shadow">
 				<div class="user-profile-history-card-color user-profile-lose position-absolute"></div>
-				<div class="user-profile-history-card-result">` + score + `</div>
-				<div class="user-profile-history-card-event">vs<b> ` + opponent + `</b></div>
+				<div class="user-profile-history-card-result unselectable">` + score + `</div>
+				<div class="user-profile-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 			</div>`);
 
 			totalPoints += history[i]["Winner-score"];

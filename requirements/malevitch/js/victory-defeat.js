@@ -33,6 +33,12 @@ document.querySelector('.victory-defeat-tournament').addEventListener('click', a
 // Load screen
 
 function victoryDefeatScreen(data) {
+	// Hide game and reset scores
+	document.querySelector('.game').classList.add('visually-hidden');
+	document.querySelectorAll('.game .score').forEach(function(item) {
+		item.textContent = '0';
+	});
+
 	// Display scores
 	var	userScore = document.querySelector('.victory-defeat-user-score');
 	var	opponentScore = document.querySelector('.victory-defeat-opponent-score');

@@ -556,8 +556,8 @@ async function setHomepageContent() {
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-win position-absolute"></div>
-					<div class="homepage-game-content-history-card-result">` + score + `</div>
-					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+					<div class="homepage-game-content-history-card-result unselectable">` + score + `</div>
+					<div class="homepage-game-content-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 				</div>`);
 
 				numWins++;
@@ -571,8 +571,8 @@ async function setHomepageContent() {
 				historyContainer.insertAdjacentHTML('beforeend', `\
 				<div class="content-card w-100 d-flex justify-content-center align-items-end purple-shadow">
 					<div class="homepage-game-content-history-card-color homepage-history-lose position-absolute"></div>
-					<div class="homepage-game-content-history-card-result">` + score + `</div>
-					<div class="homepage-game-content-history-card-event">vs<b> ` + opponent + `</b></div>
+					<div class="homepage-game-content-history-card-result unselectable">` + score + `</div>
+					<div class="homepage-game-content-history-card-event unselectable">vs<b> ` + opponent + `</b></div>
 				</div>`);
 
 				totalPoints += history[i]["Winner-score"];
