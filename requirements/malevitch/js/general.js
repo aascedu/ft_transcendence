@@ -611,6 +611,9 @@ async function setHomepageContent() {
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
+	if (averageSeconds < 10) {
+		averageSeconds = averageSeconds.toString().padStart(2, '0');
+	}
 
 	// Average match duration
 	statsContainer.insertAdjacentHTML('beforeend', `\
