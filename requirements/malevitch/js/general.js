@@ -1,16 +1,15 @@
 // Global variables.
-let g_userId;
-let	g_userNick;
+let g_userId = null;
+let	g_userNick = null;
 let	g_userPic = '/assets/general/pong.png';
 let	g_prevFontSize = 0;
-let	g_jwt;
 let	g_translations = null;
 let	g_canvasHeight = 0;
 let g_refreshInterval;
 let g_sessionSocket;
-let g_state = {pageToDisplay: '.homepage-id'};
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
+let g_state = {pageToDisplay: '.homepage-id'};
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -20,9 +19,40 @@ const REF_TOKEN_NAME = 'Ref'
 // History routing.
 
 window.history.replaceState(g_state, null, "");
-determine_state().then(() => {
-    render(g_state);
-});
+
+async function assign_global() {
+    return get_personal_info().then(data => {
+                g_userId = data.Id;
+                g_userNick = data.Nick;
+                if (!!data.Pic) {
+                    g_userPic = data.Pic;
+                }
+                g_prevFontSize = data.Font;
+                refreshLoop()
+                init_session_socket();
+            }).catch (error => {
+                console.log(error);
+                g_state.pageToDisplay = '.homepage-id';
+                throw custom_error(response)
+			});
+}
+
+async function reset_global() {
+    g_userId = null;
+    g_userNick = null;
+    g_userPic = '/assets/general/pong.png';
+    g_prevFontSize = 0;
+    g_canvasHeight = 0;
+    g_state = {pageToDisplay: '.homepage-id'};
+    if (!!g_sessionSocket) {
+        g_sessionSocket.close();
+        g_sessionSocket = null;
+    }
+    if (!!g_refreshInterval) {
+        clearInterval(g_refreshInterval);
+        g_refreshInterval = null;
+    }
+}
 
 async function determine_state() {
     var state = {}
@@ -34,36 +64,27 @@ async function determine_state() {
             },
         };
 
-    return await fetch('/petrus/auth/JWT-refresh/', content).then(response => {
+    return await fetch('/petrus/auth/JWT-refresh/', content)
+        .then(response => {
             if (!response.ok) {
                 console.log('fetch done');
                 g_state.pageToDisplay = '.homepage-id';
+                console.log(response);
                 throw custom_error(response)
             }
             return response.json();
         }).then(data => {
+            console.log("all good")
             g_state.pageToDisplay = '.homepage-game';
-            init_session_socket();
-            g_userId = data.Client;
-
-			return data;
-        }).then(async data => {
-			var	userInfo;
-
-			try {
-				userInfo = await get_user_info(g_userId);
-			} catch (error) {
-				console.log('fetch done');
-                g_state.pageToDisplay = '.homepage-id';
-                throw custom_error(response)
-			}
-			g_userNick = userInfo.Nick;
-		})
+            assign_global();
+        })
         .catch(error => {
+            reset_global();
         });
 }
 
 async function render() {
+    debuging_state()
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
@@ -154,7 +175,7 @@ function switchLanguageAttr(locale, newAttr) {
 		document.querySelectorAll('[data-language]').forEach(element => {
 			const key = element.getAttribute('data-language');
 			if (element.hasAttribute(newAttr)) {
-			element.setAttribute(newAttr, translations[locale][key]);
+                element.setAttribute(newAttr, translations[locale][key]);
 			}
 		});
 	});
@@ -448,7 +469,7 @@ async function setHomepageContent() {
 	var	userInfo;
 
 	try {
-		userInfo = await get_user_info(g_userId);
+		userInfo = await get_personal_info();
 
 		// change lang if needed
 		var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
