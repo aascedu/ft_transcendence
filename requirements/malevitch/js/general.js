@@ -41,7 +41,20 @@ async function determine_state() {
             g_state.pageToDisplay = '.homepage-game';
             init_session_socket();
             g_userId = data.Client;
-        })
+
+			return data;
+        }).then(async data => {
+			var	userInfo;
+
+			try {
+				userInfo = await get_user_info(g_userId);
+			} catch (error) {
+				console.log('fetch done');
+                g_state.pageToDisplay = '.homepage-id';
+                throw custom_error(response)
+			}
+			g_userNick = userInfo.Nick;
+		})
         .catch(error => {
         });
 }
@@ -79,7 +92,7 @@ async function render() {
 	if (g_state.pageToDisplay != '.homepage-id'
 		&& g_state.pageToDisplay != '.sign-in'
 		&& g_state.pageToDisplay != '.sign-up'
-		&& g_state.pageToDisplay == '.game') {
+		&& g_state.pageToDisplay != '.game') {
 		clearHomepageHeader();
 		await loadHomepageHeader();
 	}
@@ -101,13 +114,6 @@ window.addEventListener('popstate', function (event) {
 	}
 	render(g_state);
 });
-
-function hideEveryPage() {
-	document.querySelector('.homepage-game').classList.add('visually-hidden');
-	document.querySelector('.friends-list').classList.add('visually-hidden');
-	document.querySelector('.my-tournaments').classList.add('visually-hidden');
-	document.querySelector('.available-tournaments').classList.add('visually-hidden');
-}
 
 function applyAriaHidden(element) {
 	element.setAttribute('aria-hidden', 'true');
@@ -238,7 +244,7 @@ function resetHomepageIdLanguageSelector() {
 // Language selector : updates the page language / updates the selector images.
 
 document.querySelectorAll('.language-selector-dropdown').forEach(function(item) {
-	item.addEventListener('click', function(event) {
+	item.addEventListener('click', async function(event) {
 		event.preventDefault();
 
 		var	activeImg = this.parentNode;
@@ -249,6 +255,15 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		var	activeLang = activeImg.alt;
 		var	selectedImg = this.firstElementChild;
 		var	selectedLang = selectedImg.getAttribute('alt');
+		try {
+			// change lang of user in db
+			if (item.closest('.language-selector').classList.contains('homepage-header-language-selector')) {
+				await patch_user_info(g_userId, selectedLang, null, null, null, null);
+			}
+		} catch (error) {
+			console.error(error);
+			return ;
+		}
 
 		switchLanguageAttr(selectedLang, 'placeholder');
 		switchLanguageContent(selectedLang);
@@ -256,11 +271,6 @@ document.querySelectorAll('.language-selector-dropdown').forEach(function(item) 
 		activeImg.setAttribute('alt', selectedLang);
 		selectedImg.setAttribute('src', activeImgSrc);
 		selectedImg.setAttribute('alt', activeLang);
-
-		// change lang of user in db
-		if (item.closest('.language-selector').classList.contains('homepage-header-language-selector')) {
-			patch_user_info(g_userId, selectedLang, null, null, null, null);
-		}
 
 		// switch back focus to main button
 		var	itemButton = item.closest('.language-selector').querySelector('.dropdown');
@@ -361,15 +371,20 @@ function togglePasswordView(container) {
 // Font size functions
 
 document.querySelectorAll('.font-size-input').forEach(function(item) {
-	item.addEventListener('input', function () {
+	item.addEventListener('input', async function () {
 		var	newSize = this.value;
+
+		try {
+			if (item.classList.contains('accessibility-font-size')) {
+				await patch_user_info(g_userId, null, newSize, null, null, null);
+			}
+		} catch (error) {
+			console.error(error);
+			return ;
+		}
 
 		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
 		g_prevFontSize = newSize;
-
-		if (item.classList.contains('accessibility-font-size')) {
-			patch_user_info(g_userId, null, newSize, null, null, null);
-		}
 	});
 });
 
@@ -691,11 +706,6 @@ function leaveTournamentEditMode() {
 	document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
 	document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
 
-	// Hide kick buttons
-	document.querySelectorAll('.tournament-kick-player').forEach(item => {
-		item.classList.add('visually-hidden');
-	});
-
 	// Hide edit tournament name
 	document.querySelector('.tournament-info-name-input-container').classList.add('visually-hidden');
 
@@ -734,6 +744,7 @@ function hideEveryPage() {
 	}
 	document.querySelector('.user-profile').classList.add('visually-hidden');
 	document.querySelector('.victory-defeat').classList.add('visually-hidden');
+	document.querySelector('.create-tournament').classList.add('visually-hidden');
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
 	document.querySelector('.accessibility').classList.add('visually-hidden');

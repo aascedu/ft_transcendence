@@ -1,21 +1,24 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import requests
+import logging
 
 class OurBasicConsumer(AsyncWebsocketConsumer):
     def security_check(self):
         if "error" in self.scope:
-            print("error opening socket")
-            print(self.scope['error'])
+            logging.error(self.scope['error'])
             return False
-        print("no error security check run")
+        logging.debug("no error security check run")
         self.user = self.scope["user"]
-        print("all goot" "user is " ,self.scope["user"])
+        logging.debug(f"all goot user is {str(self.scope["user"])}")
         return True
 
     def get_friends(self):
         id = self.scope['user'].id
-        response = requests.get(f'http://alfred:8001/user/friends/{id}/')
-        self.scope['friends'] = response.json().get("Friends")
-        print('friends were loaded')
-        print(self.scope['friends'])
+        try:
+            response = requests.get(f'http://alfred:8001/user/friends/{id}/')
+            self.scope['friends'] = response.json().get("Friends")
+        except BaseException:
+            logging.warn("Friends couldn't be fetch from alfred")
+            self.scope['friends'] = []
+
 

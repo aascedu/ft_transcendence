@@ -8,13 +8,6 @@ import json
 import requests
 import logging
 
-# match[self.id] = moi
-# match[(self.id + 1) % 2] = adversaire
-
-# Sleep at the end of a point ?
-# Protect ws in case of wrong data
-# Fetch id of someone and open the good ws
-
 from shared.BasicConsumer import OurBasicConsumer
 
 class Consumer(OurBasicConsumer):
@@ -46,7 +39,7 @@ class Consumer(OurBasicConsumer):
         self.isPlayer = False
         self.id = len(self.myMatch.players)
         print(self.myMatch.players)
-        print("My id is: " + str(self.id))
+        print("My id is: " + str(self.id) + "\nMy room is " + self.roomName)
 
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
@@ -123,7 +116,6 @@ class Consumer(OurBasicConsumer):
                 await self.channel_layer.group_send(
                     self.roomName, {
                         "type": self.type,
-                        "id": gameDataJson["id"]
                     }
                 )
 
@@ -159,14 +151,21 @@ class Consumer(OurBasicConsumer):
 
     async def gameEnd(self, event):
         global matches
+
+        if self.myMatch.gameEnded[0] and self.myMatch.gameEnded[1]:
+            return
+        self.myMatch.gameEnded[self.id] = True
+
         self.myMatch.endTime = time.time_ns()
 
         if self.id == 0:
             if self.roomName.count('-') == 2:
+                tab = self.roomName.split('-')
+                tournamentId = int(tab[0])
                 requests.post(
                     'http://coubertin:8002/tournament/gameResult/',
-                    json={'tournamentId': 'test',
-                        'game': self.myMatch.toDict()})
+                    json={'tournamentId': tournamentId,
+                        'game': self.myMatch.to_mnemosine()})
             else:
                 requests.post(
                     'http://mnemosine:8008/memory/pong/games/',
@@ -177,8 +176,8 @@ class Consumer(OurBasicConsumer):
                 "type": "youWin",
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-		"isTournament": self.myMatch.isTournamentGame,
-		"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+                "isTournament": self.myMatch.isTournamentGame,
+                "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
             }))
         else:
             await self.send (text_data=json.dumps({
@@ -186,12 +185,10 @@ class Consumer(OurBasicConsumer):
                 "myScore": self.myMatch.score[self.id],
                 "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 "isTournament": self.myMatch.isTournamentGame,
-		"opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+		        "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
             }))
 
         logging.info("Game in room " + self.roomName + " has ended")
-
-        await self.close()
 
     async def updateScore(self, event):
         await self.send (text_data=json.dumps({
@@ -199,7 +196,7 @@ class Consumer(OurBasicConsumer):
             "myScore": self.myMatch.score[self.id],
             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
             "isTournament": self.myMatch.isTournamentGame,
-	    "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
+	        "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
         }))
 
     async def gameLogic(self, frames, id):

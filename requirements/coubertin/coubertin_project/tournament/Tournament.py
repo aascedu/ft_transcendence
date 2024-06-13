@@ -10,10 +10,10 @@ class Tournament:
         self.currentRound = 0
         self.players = [] # Id du player
         self.contenders = []
-        self.invited = invited
         self.gameHistory = [] # Liste des dictionnaires de games
         self.aliases = [] # {'id': id, 'alias': alias}
-        print("Tournament created")
+        self.invited = invited
+        self.onPage = []
 
     def addPlayer(self, player, alias):
         if len(self.players) >= int(self.nbPlayers):
@@ -22,7 +22,6 @@ class Tournament:
             raise Exception("Player is already participating in tournament")
         self.players.append(player)
         self.aliases.append({'Id': player, 'Alias': alias})
-        print("Player added") # Debug
 
     def removePlayer(self, playerId):
         if (playerId not in self.players):
