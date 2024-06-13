@@ -70,7 +70,7 @@ class JWT:
 
     @staticmethod
     def peremptionDict() -> dict:
-        peremption = datetime.utcnow() + timedelta(minutes=15)
+        peremption = datetime.utcnow() + JWT.expiration_acccess_token
         return {'exp': peremption}
 
     @staticmethod
