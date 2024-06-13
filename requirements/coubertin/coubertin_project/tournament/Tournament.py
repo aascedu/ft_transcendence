@@ -1,3 +1,5 @@
+import requests
+
 class Tournament:
     def __init__(self, name, nbPlayers, id, admin, invited):
         self.id = id
@@ -7,7 +9,7 @@ class Tournament:
         self.started = False
         self.ended = False
         self.ongoingGames = 0
-        self.currentRound = 0
+        self.currentRound = 1
         self.players = [] # Id du player
         self.contenders = []
         self.gameHistory = [] # Liste des dictionnaires de games
@@ -36,6 +38,15 @@ class Tournament:
         self.gameHistory.append(game)
         self.ongoingGames -= 1
         self.contenders.remove(game['Loser'])
+
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': game['Loser']})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
 
     def userParticipating(self, userId):
         for i in self.players:
