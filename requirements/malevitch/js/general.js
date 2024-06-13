@@ -9,6 +9,8 @@ let	g_canvasHeight = 0;
 let g_refreshInterval;
 let g_sessionSocket;
 let g_state = {pageToDisplay: '.homepage-id'};
+let g_tournamentSocket = null;
+let g_matchmakingSocket = null;
 
 // Constant
 const JWT_NAME = 'Auth'

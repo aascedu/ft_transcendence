@@ -34,15 +34,11 @@ class Consumer(OurBasicConsumer):
                 f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
             )
             elo = response.json()['elo']
-            self.me = Player(self.id, elo)
-            waitingList[self.id] = self.me
+            waitingList[self.id] = Player(self.id, elo)
 
         except Exception as e:
             logging.error(e)
             self.close()
-
-        for i in waitingList:
-            print(i)
 
         await self.accept()
 
@@ -85,17 +81,19 @@ class Consumer(OurBasicConsumer):
 
             if self.id in waitingList:
                 del waitingList[self.id] # Only if not from invite
-            self.close()
 
     async def Ping(self, event):
         global waitingList
 
-        self.me.margin += 10
+        if self.id != int(event['id']):
+            return
+        waitingList[self.id].margin += 10
 
-        for id in waitingList:
+        for id, player in waitingList.items():
             if (id != self.id and
-                waitingList[id].elo > self.me.elo - self.me.margin and
-                waitingList[id].elo < self.me.elo + self.me.margin):
+                waitingList[id].elo > waitingList[self.id].elo - waitingList[self.id].margin and
+                waitingList[id].elo < waitingList[self.id].elo + waitingList[self.id].margin):
+                    logging.info("Sending to game from id: " + str(self.id) + " against: " + str(id))
                     await self.channel_layer.group_send(
                         "matchmakingRoom", {
                             'type': "SendToGame",
@@ -103,6 +101,8 @@ class Consumer(OurBasicConsumer):
                             'player2': id,
                         }
                     )
-
+                    return
+            
     async def Leave(self, event):
-        return self.close()
+        print("Player closing: " + str(self.id))
+        self.close()
