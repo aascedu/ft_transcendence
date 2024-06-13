@@ -71,6 +71,20 @@
 	color: #7300E6;
 }
 
+.user-profile-edit-icon,
+.user-profile-check-icon {
+	margin-bottom: 16px;
+}
+
+.user-profile-edit-icon img {
+	height: 18px;
+}
+
+.user-profile-check-icon img {
+	margin-right: 1px;
+	height: 16px;
+}
+
 .user-profile-add-icon,
 .user-profile-pending-icon,
 .user-profile-remove-icon,

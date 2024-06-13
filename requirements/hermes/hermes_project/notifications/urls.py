@@ -12,4 +12,5 @@ urlpatterns = [
     path("delete-friend/<int:requester>/", views.friendshipSuppressed),
     path("game-request/<int:requester>/", views.gameRequest),
     path("tournament-request/<int:requester>/", views.tournamentRequest),
+    path("update-profile/<int:requester>/", views.updateProfile),
 ]

@@ -26,30 +26,14 @@ volumes:
       type: none
       device: ./requirements/shared_code
       o: bind
-
-  certificates:
-    driver: local
-
-  elastic_data:
-    driver: local
-
-  kibana_data:
-    driver: local
-
-  logstash_data:
-    driver: local
-
-  filebeat_data:
-    driver: local
-
-  alfred_data:
-    driver: local
-
-  mnemosine_data:
-    driver: local
-
-  petrus_data:
-    driver: local
+  certificates: {}
+  elastic_data: {}
+  kibana_data: {}
+  logstash_data: {}
+  filebeat_data: {}
+  alfred_data: {}
+  mnemosine_data: {}
+  petrus_data: {}
 
   vault_data: {}
 
@@ -122,7 +106,6 @@ services:
       - "8000:443"
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
-      - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
     networks:
       - aegis guard
       - atlas
@@ -172,7 +155,6 @@ services:
     volumes:
       - certificates:/usr/share/logstash/config/certs:ro
       - logstash_data:/usr/share/logstash/data
-      - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
     environment:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
@@ -181,14 +163,14 @@ services:
     networks:
       - atlas
       - sentinel
-    restart: on-failure
+    restart: always
     healthcheck:
       test:
         [
           "CMD-SHELL",
           "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5140' && \
-          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' || exit 1",
-          # "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
+          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5141' && \
+          timeout 1 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/5044' || exit 1",
         ]
       interval: 10s
       timeout: 10s
@@ -250,7 +232,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    # image: docker.elastic.co/elasticsearch/elasticsearch:${STACK_VERSION}
     build: 
       context: ./requirements/apollo
       dockerfile: Dockerfile
@@ -270,6 +251,7 @@ services:
       indices.lifecycle.poll_interval: 10s
       cluster.name: ${CLUSTER_NAME}
       discovery.type: single-node
+      ELASTIC_USER: ${ELASTIC_USER}
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
       bootstrap.memory_lock: true
       network.host: 0.0.0.0
@@ -284,12 +266,13 @@ services:
       xpack.security.transport.ssl.certificate_authorities: certs/ca/ca.crt
       xpack.security.transport.ssl.verification_mode: certificate
       xpack.license.self_generated.type: ${LICENSE}
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
     mem_limit: ${ES_MEM_LIMIT}
     ulimits:
       memlock:
         soft: -1
         hard: -1
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test:
         [
@@ -308,6 +291,9 @@ services:
         condition: service_healthy
     container_name: policy
     image: docker:latest
+    environment:
+      - "ELASTIC_USER=${ELASTIC_USER}"
+      - "ELASTIC_PASSWORD=${ELASTIC_PASSWORD}"
     networks:
       - sentinel
       - internet_access
@@ -319,6 +305,7 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure
 
 # # Tournament container
   coubertin:
@@ -395,12 +382,11 @@ services:
     volumes:
       - certificates:/usr/share/filebeat/config/certs:ro
       - filebeat_data:/usr/share/filebeat/data
-      - "./filebeat_ingest_data/:/usr/share/filebeat/ingest_data/"
       - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     environment:
       - ELASTIC_USER=elastic
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD1}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://apollo:9200
       - KIBANA_HOSTS=http://iris:5601
       - LOGSTASH_HOSTS=aether:5044
@@ -408,9 +394,7 @@ services:
       - sentinel
       - internet_access
       - atlas
-    restart: unless-stopped
-  #   # command:
-  #   #   - --strict.perms=false
+    restart: always
 
 # # Notification container
   hermes:
@@ -459,8 +443,7 @@ services:
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
       XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      # XPACK_SECURITY_SESSION_IDLETIMEOUT: 3d
-      # SERVER_PUBLICBASEURL: http://localhost:5601
+      SERVER_PUBLICBASEURL: http://localhost:5601
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -474,6 +457,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+    restart: always
 
 # # Game container
   ludo:
@@ -758,3 +742,4 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
+    restart: on-failure

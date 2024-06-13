@@ -1,4 +1,5 @@
 import json
+import logging
 
 from notifications.cache import get_cache, set_cache, delete_cache
 
@@ -21,7 +22,6 @@ class Consumer(OurBasicConsumer):
         set_cache(f'user_{user.id}', apparel_count)
         if get_cache(f'ava_{user.id}') is None:
             set_cache(f'ava_{user.id}', True)
-        self.get_friends()
 
         await self.channel_layer.group_add(
                 f"user_{user.id}_group",
@@ -30,6 +30,7 @@ class Consumer(OurBasicConsumer):
         await self.accept()
 
 
+        self.get_friends()
         for friend in self.scope['friends']:
             friend_group = f'user_{friend['Id']}_group'
 
@@ -52,6 +53,19 @@ class Consumer(OurBasicConsumer):
             else:
                 set_cache(f'user_{user.id}', apparel_count)
 
+        logging.debug(f"disconnection of {self.scope['user']}")
+
+        self.get_friends()
+        for friend in self.scope['friends']:
+            friend_group = f'user_{friend['Id']}_group'
+
+            await self.channel_layer.group_send(
+                friend_group,
+                {
+                    "type": "notification.friend.disconnected",
+                    "message": f'{self.scope['user'].id}',
+                })
+
         await self.channel_layer.group_discard(
                 f"user_{user.id}_group",
                 self.channel_name)
@@ -62,6 +76,9 @@ class Consumer(OurBasicConsumer):
         pass
 
     async def notification_new_friend_connected(self, event):
+        await self.send(text_data=json.dumps(event))
+
+    async def notification_friend_disconnected(self, event):
         await self.send(text_data=json.dumps(event))
 
     async def notification_message(self, event):
@@ -88,4 +105,5 @@ class Consumer(OurBasicConsumer):
     async def notification_game_accepted(self, event): # Il faut lancer les websockets de game apres reception de ce msg (type = game start)
         await self.send (text_data=json.dumps(event))
 
-
+    async def notification_profile_change(self, event):
+        await self.send (text_data=json.dumps(event))

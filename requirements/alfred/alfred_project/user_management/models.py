@@ -37,6 +37,7 @@ class Client(models.Model):
             "Id": self.id,
             "Nick": self.nick,
             "Email": self.email,
+            "Pic": name_to_path(self.avatar.url.split('/')[-1]) if self.avatar else None,
             "Friends": self.list_friends(),
         }
 
@@ -143,8 +144,11 @@ class FriendshipRequest(models.Model):
         pastRequest = FriendshipRequest.objects.filter(
             sender=receiver, receiver=sender).first()
         if pastRequest is None:
-            requests.post(f'http://hermes:8004/notif/friend-request/{sender.id}/',
+            try:
+                requests.post(f'http://hermes:8004/notif/friend-request/{sender.id}/',
                           json={"Notified": receiver.id})
+            except BaseException:
+                pass
             newRequest = FriendshipRequest.objects.create(
                 sender=sender, receiver=receiver)
             newRequest.save()
@@ -152,8 +156,11 @@ class FriendshipRequest(models.Model):
 
         pastRequest.delete()
         sender.friends.add(receiver)
-        requests.post(f'http://hermes:8004/notif/friendship/{sender.id}/',
+        try:
+            requests.post(f'http://hermes:8004/notif/friendship/{sender.id}/',
                       json={"Notified": receiver.id})
+        except BaseException:
+            pass
         return JsonResponse(request, {"Friendship": "established"})
 
     @staticmethod

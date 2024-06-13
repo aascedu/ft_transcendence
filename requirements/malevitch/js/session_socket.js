@@ -6,7 +6,8 @@ async function get_socket_connection_token(path) {
 async function init_session_socket() {
     unique_use_token = await get_socket_connection_token("/hermes/")
     console.log(unique_use_token)
-    url = "/hermes/session/" + g_userNick + "?token=" + unique_use_token
+	const domain = window.location.host;
+    url =  'wss://' + domain + "/hermes/session/" + g_userNick + "?token=" + unique_use_token
     console.log(url)
     g_sessionSocket = new WebSocket(url)
     g_sessionSocket.onopen = function(event) {
@@ -24,6 +25,10 @@ async function init_session_socket() {
         }
         if (obj.type === "notification.new.friend.connected") {
             notificationNewClientConnected(obj);
+            return ;
+        }
+        if (obj.type === "notification.friend.disconnected") {
+            notificationFriendDisconnected(obj);
             return ;
         }
         if (obj.type === "notification.message") {
@@ -60,6 +65,10 @@ async function init_session_socket() {
         }
 		if (obj.type === "notification.tournament.refused") {
             notificationTournamentRefused(obj);
+            return ;
+        }
+        if (obj.type === "notification.profile.change") {
+            notificationProfileChanged(obj);
             return ;
         }
     }
@@ -104,7 +113,7 @@ async function notificationNewFriendship(data) {
 		document.querySelector('.notif-new-friendship .notif-info').textContent = userInfo.Nick;
 		document.querySelector('.notif-new-friendship').classList.remove('visually-hidden');
 		setAriaHidden();
-	
+
 		newFriendshipCountdown(2);
 	} catch (error) {
 		console.error(error);
@@ -285,6 +294,7 @@ async function notificationNewClientConnected(data) {
 		await createTournamentLoadAvailableFriends();
 	}
 	// load back header to add friend to available friends to play with
+	clearHomepageHeader();
 	await loadHomepageHeader();
 }
 
@@ -310,7 +320,7 @@ async function notificationGameRefused(data) {
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-		
+
 		await loadOngoingTournament(tournamentId);
 	}
 	// Load back header to display friend as available back to play with them
@@ -406,7 +416,7 @@ async function notificationTournamentRefused(data) {
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-		
+
 		await loadOngoingTournament(tournamentId);
 	}
 	// Load back header to display friend as available back to play with them
@@ -417,4 +427,65 @@ async function notificationTournamentRefused(data) {
 async function notificationMessage(data) {
 	console.log("new message");
     console.log(data);
+}
+
+async function notificationProfileChanged(obj) {
+	console.log("profile changed");
+    console.log(obj);
+
+	if (g_state.pageToDisplay == '.game') {
+		return ;
+	}
+
+	// if we are on homepage-game, update friend info in friends online
+	if (g_state.pageToDisplay == '.homepage-game') {
+		await clearHomepageFriends();
+		await loadHomepageFriends();
+
+		g_state.pageToDisplay = '.homepage-game';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on friends list, update friend info in friends online
+	if (g_state.pageToDisplay == '.friends-list') {
+		clearFriendsList();
+		await loadFriendsList();
+
+		document.querySelector('.friends-list-icon').focus();
+
+		hideEveryPage();
+
+		g_state.pageToDisplay = '.friends-list';
+		window.history.pushState(g_state, null, "");
+		render(g_state);
+	}
+	// if we are on our friend profile, update friend info
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
+	// if we are on a tournament page, load it back so that friend info is updated in available friends
+	if (g_state.pageToDisplay == '.tournament-info') {
+		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
+			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
+		}
+	}
+	// if we are creating a tournament, load back available friends so that friend info is updated in available friends
+	if (g_state.pageToDisplay == '.create-tournament') {
+		clearCreateTournamentAvailableFriends();
+		await createTournamentLoadAvailableFriends();
+	}
+	// load back header to remove ex friend from available friends to play with
+	clearHomepageHeader();
+	await loadHomepageHeader();
+}
+async function notificationFriendDisconnected(obj) {
+	console.log("Friend disconnected");
+    console.log(obj);
 }

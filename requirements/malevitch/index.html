@@ -807,7 +807,7 @@
 		<!-- USER PROFILE -->
 		<div class="user-profile w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
 			<div class="user-profile-container category w-100 d-flex flex-column align-items-center purple-shadow overflow-x-hidden overflow-y-auto">
-				<div class="user-profile-general-info w-100 d-flex justify-content-center align-items-center">
+				<div class="user-profile-general-info w-100 d-flex justify-content-between align-items-center">
 					<div class="user-profile-picture d-flex justify-content-center align-items-center purple-shadow" >
 						<img src="assets/general/pong.png" alt="profile picture of user" draggable="false" (dragstart)="false;" class="unselectable">
 						<input type="file" id="user-profile-picture-input" accept="image/jpeg,image/jpg,image/png" class="user-profile-picture-input visually-hidden">
@@ -817,6 +817,19 @@
 						</label>
 					</div>
 					<div class="user-profile-name text-center unselectable">user</div>
+					<div class="user-profile-name-input-container w-50 d-flex flex-column justify-content-center align-items-center visually-hidden">
+						<div class="user-profile-name-input-box input-box w-100 bg-white purple-shadow">
+							<label for="user-profile-nickname-input" data-language="new-nickname" class="visually-hidden">Enter your new nickname...</label>
+							<input id="user-profile-nickname-input" type="text" name="user-profile-nickname" label="user-profile-nickname" data-language="new-nickname" placeholder="Enter your new nickname..." autocomplete="off" class="user-profile-name-input input w-100 border-0 text-center">
+						</div>
+						<div class="user-profile-name-input-warning input-warning w-100 visually-hidden text-center" data-language="invalid-tournament-name">Invalid nickname.</div>
+					</div>
+					<button class="user-profile-edit-icon category-icon d-flex justify-content-center align-items-center purple-shadow">
+						<img src="assets/general/edit.svg" alt="edit tournament" draggable="false" (dragstart)="false;" class="unselectable">
+					</button>
+					<button class="user-profile-check-icon category-icon d-flex justify-content-center align-items-center purple-shadow visually-hidden">
+						<img src="assets/general/check.svg" alt="validate edit" draggable="false" (dragstart)="false;" class="unselectable">
+					</button>
 					<button class="user-profile-play-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow visually-hidden">
 						<img src="assets/general/play.svg" alt="invite friend to play" draggable="false" (dragstart)="false;" class="unselectable">
 					</button>
@@ -910,6 +923,22 @@
 				<div class="alert-buttons-container w-100 d-flex justify-content-between">
 					<button class="alert-confirm-button w-100 d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="ok" >
 						OK
+					</button>
+				</div>
+			</div>
+		</div>
+		<!-- LEAVE EDIT MODE -->
+		<div class="user-profile-edit-alert alert d-flex justify-content-center align-items-center visually-hidden">
+			<div class="alert-window w-25 d-flex flex-column justify-content-center align-items-center purple-shadow">
+				<div class="alert-message w-100 text-center unselectable" data-language="confirm-edit">
+					End editing ?
+				</div>
+				<div class="alert-buttons-container w-100 d-flex justify-content-between">
+					<button class="alert-confirm-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="confirm" >
+						Confirm
+					</button>
+					<button class="alert-cancel-button d-flex justify-content-center align-items-center text-center purple-shadow unselectable" data-language="cancel" >
+						Cancel
 					</button>
 				</div>
 			</div>
