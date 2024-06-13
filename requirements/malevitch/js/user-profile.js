@@ -467,8 +467,9 @@ async function checkToLeaveNicknameEditMode() {
 	var	nicknameInput = document.querySelector('.user-profile-name-input');
 	var	nicknameInputWarning = document.querySelector('.user-profile-name-input-warning');
 
+    console.log(g_userNick);
     const nickAvailability = await warnUnavailableUserInfo(nicknameInput.value, 'nickname', nicknameInputWarning);
-	if (!warnInvalidNickname(nicknameInput.value, nicknameInputWarning) || !nickAvailability) {
+	if (!warnInvalidNickname(nicknameInput.value, nicknameInputWarning) || (!nickAvailability && nicknameInput.value != g_userNick)) {
 		// Show warning
 		var locale = document.querySelector('.homepage-header-language-selector button img').alt;
 		switchLanguageContent(locale);
