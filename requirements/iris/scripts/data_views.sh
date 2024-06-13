@@ -19,7 +19,7 @@ elif [ x${ELASTIC_PASSWORD} == x ]; then
   exit 1;
 fi;
 
-
+# Creating Data Views
 response=$(curl -X GET "$KIBANA_URL/api/data_views" \
             -u ${ELASTIC_USER}:${ELASTIC_PASSWORD}  \
             --cacert "$CA_CERT"                     \
@@ -84,12 +84,13 @@ else
         "timestamp": {
           "customLabel": "Timestamp"
         },
-        "client_ip": {
-          "customLabel": "Client IP"
+        "program": {
+          "customLabel": "Program"
         },
-        "method": {
-          "customLabel": "Method"
+        "syslog_message": {
+          "customLabel": "Message"
         }
+      }
     }
   }
   '
@@ -104,13 +105,24 @@ else
     "data_view": {
       "title": "filebeat-index-*",
       "name": "My Filebeat Data View",
-      "id": "filebeat-data"
+      "id": "filebeat-data",
+      "fieldAttrs": {
+        "timestamp": {
+          "customLabel": "Timestamp"
+        },
+        "program": {
+          "customLabel": "Program"
+        },
+        "syslog_message": {
+          "customLabel": "Message"
+        }
+      }
     }
   }
   '
 fi
 
-# Creating Data Views
+# Checking creation
 response=$(curl -X GET "$KIBANA_URL/api/data_views" \
             -u ${ELASTIC_USER}:${ELASTIC_PASSWORD}  \
             --cacert "$CA_CERT"                     \
