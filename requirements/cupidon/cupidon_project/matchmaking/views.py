@@ -84,11 +84,13 @@ class RequestGameResponse(View):
             if request.user.id in i:
                 gameRequesters.remove(i)
                 channel_layer = get_channel_layer()
-                async_to_sync(channel_layer.group_send)(
-                    str(requester), {
-                        'type': 'Leave',
-                    }
-                )
+                # Envoyer au front et fermer la ws depuis le front
+                
+                # async_to_sync(channel_layer.group_send)(
+                #     str(requester), {
+                #         'type': 'Leave',
+                #     }
+                # )
             # Notif ?
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})

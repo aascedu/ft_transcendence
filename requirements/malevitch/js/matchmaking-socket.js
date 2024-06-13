@@ -1,28 +1,35 @@
 async function init_matchmaking_socket(requester, invited) {
+    if (g_matchmakingSocket) {
+        return ;
+    }
+
     token = await get_socket_connection_token("/cupidon/")
     const domain = window.location.host;
     const url = 'wss://' + domain + '/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token
-    const matchmakingSocket = new WebSocket(url);
-    const Id = g_userId;
+    g_matchmakingSocket = new WebSocket(url);
+    var intervalId;
 
-    matchmakingSocket.onopen = function(event) {
+    g_matchmakingSocket.onopen = function(event) {
         console.log("Matchmaking socket opened in the front");
+        intervalId = setInterval(ping, 10000); // Il faut stop un jour !!!
     };
 
-    matchmakingSocket.onclose = function() {
+    g_matchmakingSocket.onclose = function() {
         console.log("Matchmaking socket closed in the front");
-        sendData("Leaving"); // ?
+        g_matchmakingSocket = null;
     }
 
-    matchmakingSocket.onerror = function(event) {
+    g_matchmakingSocket.onerror = function(event) {
         console.log("Socket error");
     }
 
-    matchmakingSocket.onmessage = (event) => {
+    g_matchmakingSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === "start.game") {
             console.log("Starting game");
+            clearInterval(intervalId);
             showGamePage(data.RoomName);
+            g_matchmakingSocket.close()
         }
     };
 
@@ -31,7 +38,7 @@ async function init_matchmaking_socket(requester, invited) {
             type: type,
         };
 
-        matchmakingSocket.send(JSON.stringify(data));
+        g_matchmakingSocket.send(JSON.stringify(data));
     }
 
     function ping() {
@@ -41,9 +48,5 @@ async function init_matchmaking_socket(requester, invited) {
             sendData('Ping');
         }
     }
-
-    matchmakingSocket.addEventListener('open', (event) => {
-        setInterval(ping, 10000); // Il faut stop un jour !!!
-    });
 }
 
