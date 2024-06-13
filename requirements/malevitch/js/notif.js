@@ -274,6 +274,9 @@ function cancelSearchMatch() {
 // Match found
 
 function matchFound() {
+	// hide search match notif
+	document.querySelector('.notif-search-match').classList.add('visually-hidden');
+
 	// show match found notif
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
 	setAriaHidden();
