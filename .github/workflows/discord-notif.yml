@@ -11,8 +11,7 @@ jobs:
     steps:
       - name: Send notification to Discord
         run: |
+          pr_title="${{ github.event.pull_request.title }}"
           curl -X POST -H "Content-Type: application/json" \
-          -d "{\"content\": \"Pull request merged: ${GITHUB_EVENT_PULL_REQUEST_HTML_URL}\", \"username\": \"GitHub PR Bot\"}" \
+          -d "{\"content\": \"@everyone '${pr_title}' has been merged into the dev branch!\", \"username\": \"GitHub PR Bot\"}" \
           ${{ secrets.DISCORD_WEBHOOK_URL }}
-        env:
-          GITHUB_EVENT_PULL_REQUEST_HTML_URL: ${{ github.event.pull_request.html_url }}
