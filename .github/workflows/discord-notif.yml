@@ -7,7 +7,7 @@ on:
 jobs:
   notify-discord:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'dev'
+    if: github.event.pull_request.merged == true
     steps:
       - name: Send notification to Discord
         run: |
