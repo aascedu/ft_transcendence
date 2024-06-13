@@ -16,6 +16,9 @@ const JWT_NAME = 'Auth'
 const REFRESH_TOKEN_EXPIRED_ERROR = 'error: refresh token expired'
 const REF_TOKEN_NAME = 'Ref'
 
+// Constant function
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 // History routing.
 
 let g_state = {

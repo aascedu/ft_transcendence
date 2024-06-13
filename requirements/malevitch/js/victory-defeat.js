@@ -66,8 +66,16 @@ function victoryDefeatScreen(data) {
 		playAgain.classList.remove('visually-hidden');
 		playAgain.setAttribute('user-id', data.opponentId);
 	}
-
 	setAriaHidden();
+
+	// Show screen
+	document.querySelector('.victory-defeat-home').focus();
+
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.homepage-game';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 }
 
 // Click on "See tournament" button
