@@ -24,6 +24,10 @@ class Tournament:
             raise Exception("Player is already participating in tournament")
         self.players.append(player)
         self.aliases.append({'Id': player, 'Alias': alias})
+        print("player: " + str(player))
+        strPlayer = str(player)
+        if strPlayer in self.invited:
+            self.invited.remove(strPlayer)
 
     def removePlayer(self, playerId):
         if (playerId not in self.players):

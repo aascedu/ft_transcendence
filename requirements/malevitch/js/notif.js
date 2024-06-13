@@ -53,7 +53,7 @@ async function acceptTournamentInvite() {
 	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
 	setAriaHidden();
 
-	document.querySelector('.tournament-info-join-input').value = g_userId;
+	document.querySelector('.tournament-info-join-input').value = g_userNick;
 	document.querySelector('.tournament-info-join-input').focus();
 }
 
