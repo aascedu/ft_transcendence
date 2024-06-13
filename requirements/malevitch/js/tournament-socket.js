@@ -1,23 +1,28 @@
 async function init_tournament_socket(tournamentId) {
+	if (g_tournamentSocket) {
+		return ;
+	}
+
     const roomName = tournamentId;
     const domain = window.location.host;
     const token = await get_socket_connection_token('/coubertin/');
     const url = 'wss://' + domain + '/coubertin/tournament/ws/' + roomName + '/?token=' + token;
-    const tournamentSocket = new WebSocket(url);
+    g_tournamentSocket = new WebSocket(url);
 
-    tournamentSocket.onopen = function(event) {
+    g_tournamentSocket.onopen = function(event) {
         console.log("Tournament socket opened in the front");
     };
 
-    tournamentSocket.onclose = function() {
+    g_tournamentSocket.onclose = function() {
         console.log("Tournament socket closed in the front");
+		g_tournamentSocket = null;
     }
 
-    tournamentSocket.onerror = function(event) {
+    g_tournamentSocket.onerror = function(event) {
         console.log("Socket error");
     }
 
-    tournamentSocket.onmessage = async (event) => {
+    g_tournamentSocket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
 
         if (data.Action === "startGame") {
