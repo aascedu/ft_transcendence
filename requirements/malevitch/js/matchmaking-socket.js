@@ -11,7 +11,7 @@ async function init_matchmaking_socket(requester, invited) {
 
     g_matchmakingSocket.onopen = function(event) {
         console.log("Matchmaking socket opened in the front");
-        intervalId = setInterval(ping, 10000); // Il faut stop un jour !!!
+        intervalId = setInterval(ping, 10000);
     };
 
     g_matchmakingSocket.onclose = function() {
@@ -26,7 +26,6 @@ async function init_matchmaking_socket(requester, invited) {
     g_matchmakingSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === "start.game") {
-            console.log("Starting game");
             clearInterval(intervalId);
             showGamePage(data.RoomName);
             g_matchmakingSocket.close()
@@ -42,9 +41,7 @@ async function init_matchmaking_socket(requester, invited) {
     }
 
     function ping() {
-        console.log("This is ping");
         if (requester === 0 && invited === 0){
-            console.log("I'm sending the ping");
             sendData('Ping');
         }
     }

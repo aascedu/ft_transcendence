@@ -73,7 +73,6 @@ class Consumer(OurBasicConsumer):
         )
 
     async def SendToGame(self, event): # Need to manage when game invite
-        print("Player " + str(self.id) + " is being sent to game by cupidon.")
         if int(event['player1']) == self.id or int(event['player2']) == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
@@ -94,9 +93,7 @@ class Consumer(OurBasicConsumer):
             if (id != self.id and
                 waitingList[id].elo > waitingList[self.id].elo - waitingList[self.id].margin and
                 waitingList[id].elo < waitingList[self.id].elo + waitingList[self.id].margin):
-                    print("WaitingList: ")
-                    print(waitingList)
-                    print("Sending to game from id: " + str(self.id) + " against: " + str(id))
+                    logging.info("Sending to game from id: " + str(self.id) + " against: " + str(id))
                     await self.channel_layer.group_send(
                         "matchmakingRoom", {
                             'type': "SendToGame",
