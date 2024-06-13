@@ -704,9 +704,7 @@ async function disconnect() {
         document.querySelector('.homepage-id-input').focus();
         g_state.pageToDisplay = '.homepage-id';
         window.history.pushState(g_state, null, "");
-        g_sessionSocket.close();
         reset_global();
-        clearInterval(g_refreshInterval);
         render(g_state);
     });
 }

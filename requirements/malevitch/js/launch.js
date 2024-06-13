@@ -15,8 +15,6 @@ function debuging_state() {
 }
 
 determine_state().then(() => {
-    console.log('rendering');
-    debuging_global();
     render(g_state);
 });
 

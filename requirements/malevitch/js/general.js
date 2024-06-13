@@ -28,6 +28,7 @@ async function assign_global() {
                     g_userPic = data.Pic;
                 }
                 g_prevFontSize = data.Font;
+                g_state.pageToDisplay = '.homepage-game';
                 refreshLoop()
                 init_session_socket();
             }).catch (error => {
@@ -67,24 +68,19 @@ async function determine_state() {
     return await fetch('/petrus/auth/JWT-refresh/', content)
         .then(response => {
             if (!response.ok) {
-                console.log('fetch done');
                 g_state.pageToDisplay = '.homepage-id';
-                console.log(response);
                 throw custom_error(response)
             }
-            return response.json();
-        }).then(data => {
-            console.log("all good")
-            g_state.pageToDisplay = '.homepage-game';
+        }).then(() => {
             assign_global();
         })
         .catch(error => {
-            reset_global();
+            console.log("No JWT in request : try to connect")
+            disconnect();
         });
 }
 
 async function render() {
-    debuging_state()
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
