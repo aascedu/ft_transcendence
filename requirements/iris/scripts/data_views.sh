@@ -40,7 +40,31 @@ else
   {
     "data_view": {
       "title": "nginx-index-*",
-      "name": "My Nginx Data View"
+      "name": "My Nginx Data View",
+      "id": "nginx-data",
+      "fieldAttrs": {
+        "timestamp": {
+          "customLabel": "Timestamp"
+        },
+        "client_ip": {
+          "customLabel": "Client IP"
+        },
+        "method": {
+          "customLabel": "Method"
+        },
+        "request": {
+          "customLabel": "Request"
+        },
+        "status_code": {
+          "customLabel": "Status Code"
+        },
+        "user_agent": {
+          "customLabel": "User Agent"
+        },
+        "response_size": {
+          "customLabel": "Response Size"
+        }
+      }
     }
   }
   '
@@ -54,7 +78,18 @@ else
   {
     "data_view": {
       "title": "logstash-index-*",
-      "name": "My Logstash Data View"
+      "name": "My Logstash Data View",
+      "id": "logstash-data",
+      "fieldAttrs": {
+        "timestamp": {
+          "customLabel": "Timestamp"
+        },
+        "client_ip": {
+          "customLabel": "Client IP"
+        },
+        "method": {
+          "customLabel": "Method"
+        }
     }
   }
   '
@@ -68,7 +103,8 @@ else
   {
     "data_view": {
       "title": "filebeat-index-*",
-      "name": "My Filebeat Data View"
+      "name": "My Filebeat Data View",
+      "id": "filebeat-data"
     }
   }
   '
@@ -83,9 +119,9 @@ response=$(curl -X GET "$KIBANA_URL/api/data_views" \
 if [[ "$response" == *"filebeat-index-*"* ]] && \
   [[ "$response" == *"logstash-index-*"* ]] && \
   [[ "$response" == *"nginx-index-*"* ]]; then
-  echo -e "${COLOR_GREEN}All Data Views creation completed.${COLOR_RESET}"
+  echo -e "${COLOR_GREEN}\nAll Data Views creation completed.${COLOR_RESET}"
 else
-  echo -e "${COLOR_RED}Issue with Data Views creation.${COLOR_RESET}"
+  echo -e "${COLOR_RED}\nIssue with Data Views creation.${COLOR_RESET}"
   exit 1;
 fi
 
