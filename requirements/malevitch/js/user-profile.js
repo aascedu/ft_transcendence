@@ -462,12 +462,13 @@ document.querySelector('.user-profile-edit-icon').addEventListener('click', func
 
 // Leave edit mode
 
-function checkToLeaveNicknameEditMode() {
+async function checkToLeaveNicknameEditMode() {
 	// Check if new nickname is correct
 	var	nicknameInput = document.querySelector('.user-profile-name-input');
 	var	nicknameInputWarning = document.querySelector('.user-profile-name-input-warning');
 
-	if (!warnInvalidNickname(nicknameInput.value, nicknameInputWarning)) {
+    const nickAvailability = await warnUnavailableUserInfo(nicknameInput.value, 'nickname', nicknameInputWarning);
+	if (!warnInvalidNickname(nicknameInput.value, nicknameInputWarning) || !nickAvailability) {
 		// Show warning
 		var locale = document.querySelector('.homepage-header-language-selector button img').alt;
 		switchLanguageContent(locale);
