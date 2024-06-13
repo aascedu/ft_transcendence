@@ -73,7 +73,7 @@ function victoryDefeatScreen(data) {
 
 	hideEveryPage();
 
-	g_state.pageToDisplay = '.homepage-game';
+	g_state.pageToDisplay = '.victory-defeat';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
