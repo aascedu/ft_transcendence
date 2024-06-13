@@ -16,6 +16,9 @@ const JWT_NAME = 'Auth'
 const REFRESH_TOKEN_EXPIRED_ERROR = 'error: refresh token expired'
 const REF_TOKEN_NAME = 'Ref'
 
+// Constant function
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
 // History routing.
 
 window.history.replaceState(g_state, null, "");
@@ -199,12 +202,15 @@ function switchLanguageContent(locale) {
 // Make every language selectors be the same no matter the page.
 
 function switchNextLanguageFromPreviousSelector(previous, next) {
-	var	prevSelector = document.querySelector(previous + '-language-selector');
+	var	prevSelector;
+	if (next == '.homepage-game') {
+		prevSelector = document.querySelector('.homepage-header-language-selector');
+	}
+	else {
+		prevSelector = document.querySelector(previous + '-language-selector');
+	}
 
 	if (prevSelector !== null) {
-		var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
-		var	locale = prevSelectorImg.getAttribute('alt');
-
 		var	nextSelector;
 		if (next == '.homepage-game') {
 			nextSelector = document.querySelector('.homepage-header-language-selector');
@@ -212,47 +218,54 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 		else {
 			nextSelector = document.querySelector(next + '-language-selector');
 		}
-		var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
 
-		if (nextSelectorImg.getAttribute('alt') !== locale) {
-			var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
-			var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
-			var	nextSelectorButtons = document.querySelectorAll(next + '-language-selector ul li a img');
+		setLanguageSelector(prevSelector, nextSelector);
+	}
+}
 
-			nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
-			nextSelectorImg.setAttribute('alt', locale);
-			if (nextSelectorButtons[0].getAttribute('alt') === locale) {
-				nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
-			}
-			else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
-				nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
-			}
-			else {
-				nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
-				nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
-			}
+// Set all language selectors to be like the header one.
+
+function setLanguageSelector(prevSelector, nextSelector) {
+	var	prevSelectorImg = prevSelector.firstElementChild.firstElementChild;
+	var	locale = prevSelectorImg.getAttribute('alt');
+
+	var	nextSelectorImg = nextSelector.firstElementChild.firstElementChild;
+
+	if (nextSelectorImg.getAttribute('alt') !== locale) {
+		var	nextSelectorImgSrc = nextSelectorImg.getAttribute('src');
+		var	nextSelectorImgAlt = nextSelectorImg.getAttribute('alt');
+		var	nextSelectorButtons = nextSelector.querySelectorAll('ul li a img');
+
+		nextSelectorImg.setAttribute('src', prevSelectorImg.getAttribute('src'));
+		nextSelectorImg.setAttribute('alt', locale);
+		if (nextSelectorButtons[0].getAttribute('alt') === locale) {
+			nextSelectorButtons[0].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[0].setAttribute('alt', nextSelectorImgAlt);
+		}
+		else if (nextSelectorButtons[1].getAttribute('alt') === locale) {
+			nextSelectorButtons[1].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[1].setAttribute('alt', nextSelectorImgAlt);
+		}
+		else {
+			nextSelectorButtons[2].setAttribute('src', nextSelectorImgSrc);
+			nextSelectorButtons[2].setAttribute('alt', nextSelectorImgAlt);
 		}
 	}
 }
 
-// Reset language selector when disconnecting
+function setAllLanguageSelectors() {
+	var	languageSelector = document.querySelector('.homepage-header-language-selector');
+	var	lang = languageSelector.querySelector('button img').alt;
+	console.log(lang);
 
-function resetHomepageIdLanguageSelector() {
-	var	languageSelector = document.querySelector('.homepage-id-language-selector');
+	document.querySelectorAll('.language-selector').forEach(function(item) {
+		if (item != languageSelector) {
+			setLanguageSelector(languageSelector, item);
+		}
+	});
 
-	languageSelector.querySelector('button img').setAttribute('src', 'assets/lang/flag-en.png');
-	languageSelector.querySelector('button img').setAttribute('alt', 'en');
-
-	var	dropdownLanguages = languageSelector.querySelectorAll('ul li a img');
-
-	dropdownLanguages[0].setAttribute('src', 'assets/lang/flag-fr.png');
-	dropdownLanguages[0].setAttribute('alt', 'fr');
-	dropdownLanguages[1].setAttribute('src', 'assets/lang/flag-zh.png');
-	dropdownLanguages[1].setAttribute('alt', 'zh');
-
-	switchLanguageContent('en');
+	switchLanguageAttr(lang, 'placeholder');
+	switchLanguageContent(lang);
 }
 
 // Language selector : updates the page language / updates the selector images.
@@ -610,6 +623,9 @@ async function setHomepageContent() {
 	averageTime = Math.round(totalTime / history.length);
 	averageMinutes = Math.floor(averageTime / 60);
 	averageSeconds = averageTime % 60;
+	if (averageSeconds < 10) {
+		averageSeconds = averageSeconds.toString().padStart(2, '0');
+	}
 
 	// Average match duration
 	statsContainer.insertAdjacentHTML('beforeend', `\
@@ -779,5 +795,5 @@ function clearHomepageId() {
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;
-	// resetHomepageIdLanguageSelector();
+	setAllLanguageSelectors();
 }

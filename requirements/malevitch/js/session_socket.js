@@ -218,9 +218,9 @@ async function notificationGameAccepted(data) {
 
 	var	opponentElement = document.querySelector('.notif-match-found .notif-sender');
 
-	opponentElement.textContent = opponent;
+	opponentElement.textContent = opponent.Nick;
 
-	matchFound();
+	await matchFound(null);
 }
 
 async function notificationGameRequest(data) {
