@@ -102,3 +102,7 @@ class Consumer(OurBasicConsumer):
                         }
                     )
                     return
+            
+    async def Leave(self, event):
+        print("Player closing: " + str(self.id))
+        self.close()
