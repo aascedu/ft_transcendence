@@ -9,12 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged }} == 'true'
     steps:
-      - name: Print debug information
-        run: |
-          echo "PR Title: ${{ github.event.pull_request.title }}"
-          echo "Branch Name: ${{ github.event.pull_request.base.ref }}"
-          echo "Merged: ${{ github.event.pull_request.merged }}"
-      
       - name: Send notification to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
