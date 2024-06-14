@@ -17,9 +17,6 @@ async function get_personal_info() {
     return fetch_get(user_url(0));
 }
 
-async function get_personal_info() {
-    return fetch_get(user_url(0))
-}
 async function get_user_info(id) {
     return fetch_get(user_url(id));
 }

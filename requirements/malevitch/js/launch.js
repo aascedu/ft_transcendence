@@ -1,5 +1,5 @@
 function debuging_global() {
-    console.log("debuging")
+    console.log("debuging");
     console.log("g_userId", g_userId);
     console.log("g_userNick", g_userNick);
     console.log("g_userPic", g_userPic);
@@ -11,11 +11,10 @@ function debuging_global() {
     console.log("g_state", g_state);
 }
 function debuging_state() {
-    debuging_global()
+    debuging_global();
 }
 
-determine_state().then(() => {
-    render(g_state);
-});
+
+determine_state();
 
 
