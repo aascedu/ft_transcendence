@@ -703,7 +703,7 @@ async function disconnect() {
     await delete_cookies();
     document.querySelector('.homepage-id-input').focus();
     window.history.pushState(g_state, null, "");
-    await reset_global()
+    await reset_global();
     render(g_state);
 }
 

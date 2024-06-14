@@ -29,16 +29,13 @@ async function assign_global() {
                 }
                 g_prevFontSize = data.Font;
                 g_state = {pageToDisplay : '.homepage-game'};
-                debuging_state();
-                refreshLoop()
+                refreshLoop();
                 init_session_socket();
-                return g_state
             }).catch (error => {
                 console.error(error);
                 reset_global();
                 g_state.pageToDisplay = '.homepage-id';
                 throw custom_error(response)
-                return g_state
 			});
 }
 
@@ -72,9 +69,9 @@ async function determine_state() {
     try {
         response = await fetch('/petrus/auth/JWT-refresh/', content);
         if (!response.ok) {
-            throw custom_error(response)
+            throw custom_error(response);
         }
-        await assign_global()
+        await assign_global();
         render();
     } catch {
             console.log("No JWT in request : try to connect")
