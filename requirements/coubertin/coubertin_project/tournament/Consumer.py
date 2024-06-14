@@ -88,6 +88,7 @@ class Consumer(OurBasicConsumer):
 
         if event['opt'] == True and event['id'] == self.id:
             return
+
         await self.send(json.dumps({
             'Action': "tournamentState",
             'Tournament': tournaments[self.tournamentId].toFront(),
