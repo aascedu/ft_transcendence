@@ -73,6 +73,7 @@ class Consumer(OurBasicConsumer):
 
     # This socket is read only
     async def receive(self, text_data):
+        logging.error("This websocket is not supposed to receive anything.")
         pass
 
     async def notification_new_friend_connected(self, event):

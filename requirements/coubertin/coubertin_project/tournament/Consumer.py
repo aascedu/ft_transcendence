@@ -1,4 +1,5 @@
 import json
+from json.decoder import JSONDecodeError
 from tournament.Tournament import tournaments
 from shared.BasicConsumer import OurBasicConsumer
 import requests
@@ -44,12 +45,19 @@ class Consumer(OurBasicConsumer):
 
         logging.debug("Receiving something for the tournament\n\n\n\n")
 
-        text_data_json = json.loads(text_data)
-        type = text_data_json['Type']
+        try:
+            text_data_json = json.loads(text_data)
+            type_value = text_data_json['Type']
+        except JSONDecodeError:
+            logging.error("A non json object was received")
+            return
+        except KeyError:
+            logging.error("No type key in received message")
+            return
 
         await self.channel_layer.group_send(
             self.roomName, {
-                'Type': type
+                'Type': type_value
             }
         )
 
@@ -60,7 +68,6 @@ class Consumer(OurBasicConsumer):
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
-        
         if opponentId not in tournaments[self.tournamentId].onPage:
             logging.info("Player " + str(self.id) + " won his game because opponent failed to connect to the game.")
             game = {
