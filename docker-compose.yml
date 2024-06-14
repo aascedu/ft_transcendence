@@ -323,11 +323,10 @@ services:
       - atlas
     restart: on-failure
 
+# # Kibana's Data View container
   data_views:
     depends_on:
-      apollo:
-        condition: service_healthy
-      iris:
+      policy:
         condition: service_healthy
       aether:
         condition: service_healthy
@@ -340,13 +339,35 @@ services:
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
     entrypoint: /bin/sh -c "docker exec iris sh -c '/usr/share/kibana/scripts/data_views.sh'"
     healthcheck:
-      test: ["CMD-SHELL", "docker logs data views | grep -q 'All Data Views creation completed.'"]
+      test: ["CMD-SHELL", "docker logs data_views | grep -q 'All Data Views creation completed.'"]
       interval: 1s
       timeout: 5s
       retries: 120
     restart: on-failure
 
-# # Matchmaking container
+# # Kibana's Dashboards container
+  dashboards:
+    depends_on:
+      data_views:
+        condition: service_healthy
+      aegis:
+        condition: service_started
+    container_name: dashboards
+    image: docker:latest
+    networks:
+      - sentinel
+      - internet_access
+    volumes:
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    entrypoint: /bin/sh -c "docker exec iris sh -c '/usr/share/kibana/scripts/dashboards.sh'"
+    healthcheck:
+      test: ["CMD-SHELL", "docker logs dashboards | grep -q 'All Dashboards creation completed.'"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    restart: on-failure
+
+# # Grafana container
   davinci:
     container_name: davinci
     build:
@@ -363,6 +384,7 @@ services:
         condition: service_healthy
     restart: on-failure
 
+# # Filebeat container
   filebeat:
     container_name: filebeat
     depends_on:
@@ -422,7 +444,6 @@ services:
       tutum:
         condition: service_healthy
     container_name: iris
-    # image: docker.elastic.co/kibana/kibana:${STACK_VERSION}
     build:
       context: ./requirements/iris
       dockerfile: Dockerfile
@@ -675,6 +696,7 @@ services:
       timeout: 5s
       retries: 5
 
+# # Elasticsearch's ILM container
   policy:
     depends_on:
       apollo:

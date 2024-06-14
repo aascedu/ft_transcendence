@@ -1,3 +1,4 @@
+from json.decoder import JSONDecodeError
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import Error
 from django.http import HttpRequest, JsonResponse
@@ -19,7 +20,11 @@ class socketJWTIdentificationMiddleware:
     async def __call__(self, scope, receive, send):
         global identificators
 
-        query_params = parse_qs(scope["query_string"].decode())
+        try:
+            query_params = parse_qs(scope["query_string"].decode())
+        except ValueError:
+            scope['error'] = "Query_string is badly formated"
+            return await self.application(scope, receive, send)
 
         if "token" not in query_params:
             scope["error"] = "No key in params"
@@ -48,39 +53,26 @@ class JWTIdentificationMiddleware:
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if 'X-External-Request' not in request.headers:
-            print("Info : Internal request")
             request.user = User.header_to_user(request.headers)
-            print("Info: Service :", str(request.user))
             return None
-
-
         if 'Auth' not in request.COOKIES:
             request.user = User(error="No JWT provided")
-            print("Info : request with no jwt")
             return None
-
         autorisationJWT = request.COOKIES['Auth']
-
         try:
             decodedJWT = JWT.jwtToPayload(autorisationJWT, self.publicKey)
         except BaseException as e:
             request.user = User(error=e.__str__())
-            print("Warning: ", e.__str__())
             return None
-
         request.user = User(nick=decodedJWT.get('nick'),
                             id=decodedJWT.get('id'),
                             is_autenticated=True)
-
         if "MAIN_MODEL" in information.__dict__:
-            print("Service has a model")
             try:
                 request.model = information.MAIN_MODEL.objects.get(id=request.user.id)
             except ObjectDoesNotExist as e:
                 response = JsonNotFound(request, {"Err": f"Ressource doesn't exist anymore : {e.__str__()}"})
                 return response
-
-        print("Info: request_user=", str(request.user))
         return None
 
 class RawJsonToDataGetMiddleware:
@@ -94,7 +86,7 @@ class RawJsonToDataGetMiddleware:
     def process_view(self, request, view_func, view_args, view_kwargs):
         try:
             request.data = json.loads(request.body.decode('utf-8'))
-        except BaseException as e:
+        except JSONDecodeError:
             request.Error_Data = "Warn body couldn't be read : ignore if body is supposed to be empty"
         return None
 

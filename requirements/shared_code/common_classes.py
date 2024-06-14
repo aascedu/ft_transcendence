@@ -25,6 +25,13 @@ class User:
             'id': self.id,
         }
 
+    def to_dict(self):
+        return {
+            'nick': self.nick,
+            'error': self.error,
+            'id': self.id,
+        }
+
     @staticmethod
     def header_to_user(header):
         try:
