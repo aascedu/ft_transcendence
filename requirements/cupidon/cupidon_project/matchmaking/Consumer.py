@@ -70,7 +70,6 @@ class Consumer(OurBasicConsumer):
             return
 
         # Send message to room group
-
         await self.channel_layer.group_send(
             "matchmakingRoom", {
                 'type': action,
