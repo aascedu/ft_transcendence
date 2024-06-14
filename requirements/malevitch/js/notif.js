@@ -40,7 +40,8 @@ async function acceptTournamentInvite() {
 	document.querySelector('.notif-tournament-invite').classList.add('visually-hidden');
 
 	// display tournament page
-	await loadOngoingTournament(item.getAttribute('tournament-id'));
+	var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
+	await loadOngoingTournament(tournamentId);
 
 	hideEveryPage();
 
@@ -52,7 +53,7 @@ async function acceptTournamentInvite() {
 	document.querySelector('.tournament-info-join-alert').classList.remove('visually-hidden');
 	setAriaHidden();
 
-	document.querySelector('.tournament-info-join-input').value = g_userId;
+	document.querySelector('.tournament-info-join-input').value = g_userNick;
 	document.querySelector('.tournament-info-join-input').focus();
 }
 
@@ -190,7 +191,7 @@ async function acceptPlayInvite() {
 	// show "match found" notif to inform we play against Sender
 	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
 	document.querySelector('.notif-match-found .notif-sender').textContent = opponent;
-	matchFound();
+	await matchFound(null);
 }
 
 async function dismissPlayInvite() {
@@ -262,6 +263,9 @@ function cancelSearchMatch() {
 	// notif already closed by forEach
 
 	// cancel match searching
+	if (g_matchmakingSocket) {
+		g_matchmakingSocket.close();
+	}
 
 	// reset timer
 	seconds = 0;
@@ -273,13 +277,33 @@ function cancelSearchMatch() {
 
 // Match found
 
-function matchFound() {
+async function matchFound(opponent) {
+	// show opponent
+	// if opponent is null, that means we have already done this before
+	if (opponent != null) {
+		var	opponentNick;
+		try {
+			opponentNick = await get_user_info(opponent);
+			opponentNick = opponentNick.Nick;
+		} catch (error) {
+			console.error(error);
+			return ;
+		}
+	
+		var	opponentElement = document.querySelector('.notif-match-found .notif-sender');
+		opponentElement.textContent = opponentNick;
+	}
+
+	// hide search match notif
+	document.querySelector('.notif-search-match').classList.add('visually-hidden');
+
 	// show match found notif
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
 	setAriaHidden();
 
 	// wait 5 seconds then close notif
 	matchCountdown(5);
+	await delay(5000);
 }
 
 function matchCountdown(seconds) {

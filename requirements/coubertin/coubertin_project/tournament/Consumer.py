@@ -28,15 +28,6 @@ class Consumer(OurBasicConsumer):
         # if (tournaments[self.tournamentId].admin == self.id):
         #     self.admin = True # Do we let the admin chose if he plays or not ?
 
-        try:
-            request = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if request.status_code != 200:
-                self.close()
-        except Exception as e:
-            self.close()
-
         await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
 
@@ -44,15 +35,8 @@ class Consumer(OurBasicConsumer):
         # Leave room group
         global tournaments
 
-        try:
-            request = requests.post(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if request.status_code != 200:
-                self.close()
-        except Exception as e:
-            self.close()
-
+        if self.id in tournaments[self.tournamentId].onPage:
+            tournaments[self.tournamentId].onPage.remove(self.id)
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
@@ -63,18 +47,17 @@ class Consumer(OurBasicConsumer):
 
         try:
             text_data_json = json.loads(text_data)
+            type_value = text_data_json['Type']
         except JSONDecodeError:
             logging.error("A non json object was received")
             return
-        try:
-            type = text_data_json['Type']
         except KeyError:
             logging.error("No type key in received message")
             return
 
         await self.channel_layer.group_send(
             self.roomName, {
-                'Type': type
+                'Type': type_value
             }
         )
 
@@ -85,6 +68,17 @@ class Consumer(OurBasicConsumer):
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
+        if opponentId not in tournaments[self.tournamentId].onPage:
+            logging.info("Player " + str(self.id) + " won his game because opponent failed to connect to the game.")
+            game = {
+                'Winner': self.id,
+                'Winner-score': 5,
+                'Loser': opponentId,
+                'Loser-score': 0,
+                'Duration': 0
+            }
+            tournaments[self.tournamentId].addGame(game)
+            return
 
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
@@ -106,19 +100,10 @@ class Consumer(OurBasicConsumer):
             'Tournament': tournaments[self.tournamentId].toFront(),
         }))
 
-    async def LeaveTournament(self, event):
-        global tournaments
-
-        if event['player'] == self.id:
-            logging.debug("I'm player " + str(self.id))
-            logging.debug("Here is the tournament contenders:")
-            logging.debug(tournaments[self.tournamentId].contenders)
-            logging.info("Player " + str(self.id) + " has left tournament " + str(tournaments[self.tournamentId].id))
-
     async def TournamentEnd(self, event):
         global tournaments
 
-        if tournaments[self.tournamentId].ended is False:
+        if tournaments[self.tournamentId].ended is False or self.id not in tournaments[self.tournamentId].contenders:
             return
 
         tournaments[self.tournamentId].ended = False
@@ -133,18 +118,17 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             logging.error("Tournament could not be registered in database")
 
-        for player in tournaments[self.tournamentId].contenders:
-            if player != self.id:
-                await self.channel_layer.group_send(
-                    self.tournamentId, {
-                        'type': 'LeaveTournament',
-                        'player': player,
-                    }
-                )
-
         del tournaments[self.id]
         logging.info("Tournament " + str(tournaments[self.tournamentId].id) + " ended")
 
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                self.close()
+        except Exception as e:
+            self.close()
 
 # To do
 # Remove someone from tournament if admin

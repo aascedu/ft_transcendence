@@ -16,6 +16,7 @@ async function init_matchmaking_socket(requester, invited) {
 
     g_matchmakingSocket.onclose = function() {
         console.log("Matchmaking socket closed in the front");
+        clearInterval(intervalId);
         g_matchmakingSocket = null;
     }
 
@@ -23,10 +24,20 @@ async function init_matchmaking_socket(requester, invited) {
         console.log("Socket error");
     }
 
-    g_matchmakingSocket.onmessage = (event) => {
+    g_matchmakingSocket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
         if (data.type === "start.game") {
-            clearInterval(intervalId);
+			// "Match found" notif
+			var	opponent = data.RoomName;
+			opponent = opponent.split('-');
+			if (opponent[0] == g_userId) {
+				opponent = opponent[1];
+			}
+			else {
+				opponent = opponent[0];
+			}
+			await matchFound(opponent);
+
             showGamePage(data.RoomName);
             g_matchmakingSocket.close()
         }

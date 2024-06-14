@@ -15,45 +15,44 @@
           "type": "date"
         },
         "@version": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "date": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "keyword"
         },
         "host": {
           "type": "object",
           "properties": {
-            "ip": {
-              "type": "text",
-              "fields": {
-                "keyword": {
-                  "type": "keyword",
-                  "ignore_above": 256
+            "name": {
+              "type": "keyword"
+            }
+          }
+        },
+        "container": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "image": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "keyword"
                 }
               }
             }
           }
         },
-        "sourceip": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+        "program": {
+          "type": "keyword"
+        },
+        "message": {
+          "type": "text"
+        },
+        "parsed_message": {
+          "type": "object",
+          "enabled": false
         }
       }
     }

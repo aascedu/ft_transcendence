@@ -33,6 +33,12 @@ document.querySelector('.victory-defeat-tournament').addEventListener('click', a
 // Load screen
 
 function victoryDefeatScreen(data) {
+	// Hide game and reset scores
+	document.querySelector('.game').classList.add('visually-hidden');
+	document.querySelectorAll('.game .score').forEach(function(item) {
+		item.textContent = '0';
+	});
+
 	// Display scores
 	var	userScore = document.querySelector('.victory-defeat-user-score');
 	var	opponentScore = document.querySelector('.victory-defeat-opponent-score');
@@ -66,8 +72,16 @@ function victoryDefeatScreen(data) {
 		playAgain.classList.remove('visually-hidden');
 		playAgain.setAttribute('user-id', data.opponentId);
 	}
-
 	setAriaHidden();
+
+	// Show screen
+	document.querySelector('.victory-defeat-home').focus();
+
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.victory-defeat';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 }
 
 // Click on "See tournament" button
@@ -107,9 +121,6 @@ document.querySelector('.victory-defeat-again').addEventListener('click', async 
 
 		hideEveryPage();
 	
-		await clearHomepageContent();
-		await setHomepageContent();
-	
 		g_state.pageToDisplay = '.homepage-game';
 		window.history.pushState(g_state, null, "");
 		render(g_state);
@@ -119,4 +130,17 @@ document.querySelector('.victory-defeat-again').addEventListener('click', async 
 	} catch (error) {
 		console.error(error);
 	}
+});
+
+// Click on home button : go home
+
+document.querySelector('.victory-defeat-home').addEventListener('click', function() {
+	// Display homepage game
+	document.querySelector('.homepage-header-logo').focus();
+
+	hideEveryPage();
+
+	g_state.pageToDisplay = '.homepage-game';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
 });
