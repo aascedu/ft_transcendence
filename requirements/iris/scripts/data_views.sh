@@ -17,7 +17,7 @@ if [ x${ELASTIC_USER} == x ]; then
 elif [ x${ELASTIC_PASSWORD} == x ]; then
   echo "${COLOR_RED}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
   exit 1;
-fi;
+fi
 
 # Creating Data Views
 response=$(curl -X GET "$KIBANA_URL/api/data_views" \
@@ -28,6 +28,8 @@ if [[ "$response" == *"filebeat-index-*"* ]] && \
   [[ "$response" == *"logstash-index-*"* ]] && \
   [[ "$response" == *"nginx-index-*"* ]]; then
   echo -e "${COLOR_GREEN}All Data Views creation completed.${COLOR_RESET}"
+  sleep 10
+  exit 0
 else
   echo -e "${COLOR_GREEN}Creating Data Views...${COLOR_RESET}"
 
