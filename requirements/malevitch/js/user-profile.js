@@ -703,13 +703,11 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 async function disconnect() {
 	hideEveryPage();
 	clearHomepageId();
-    await delete_cookies().then(response => {
-        document.querySelector('.homepage-id-input').focus();
-        g_state.pageToDisplay = '.homepage-id';
-        window.history.pushState(g_state, null, "");
-        reset_global();
-        render(g_state);
-    });
+    await delete_cookies();
+    document.querySelector('.homepage-id-input').focus();
+    window.history.pushState(g_state, null, "");
+    await reset_global();
+    render(g_state);
 }
 
 document.querySelector('.user-profile-disconnect-icon').addEventListener('click', async function() {

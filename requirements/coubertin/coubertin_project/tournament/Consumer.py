@@ -34,6 +34,8 @@ class Consumer(OurBasicConsumer):
         # Leave room group
         global tournaments
 
+        if self.id in tournaments[self.tournamentId].onPage:
+            tournaments[self.tournamentId].onPage.remove(self.id)
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
@@ -59,6 +61,18 @@ class Consumer(OurBasicConsumer):
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         
+        if opponentId not in tournaments[self.tournamentId].onPage:
+            logging.info("Player " + str(self.id) + " won his game because opponent failed to connect to the game.")
+            game = {
+                'Winner': self.id,
+                'Winner-score': 5,
+                'Loser': opponentId,
+                'Loser-score': 0,
+                'Duration': 0
+            }
+            tournaments[self.tournamentId].addGame(game)
+            return
+
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
 
