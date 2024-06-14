@@ -108,8 +108,15 @@ class Consumer(OurBasicConsumer):
                 return
             self.lastRequestTime = currentTime
 
-            gameDataJson = json.loads(text_data)
-            self.type = gameDataJson["type"]
+            try:
+                gameDataJson = json.loads(text_data)
+                self.type = gameDataJson["type"]
+            except json.JSONDecodeError:
+                logging.error("A non json object was received")
+                return
+            except KeyError:
+                logging.error("No type key in received message")
+                return
 
             # Send to room group
             if self.type == "gameStart":
