@@ -14,8 +14,7 @@ function debuging_state() {
     debuging_global()
 }
 
-determine_state().then(() => {
-    render(g_state);
-});
+
+determine_state();
 
 

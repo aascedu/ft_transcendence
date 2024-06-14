@@ -9,7 +9,7 @@ let g_refreshInterval;
 let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
-let g_state = {pageToDisplay: '.homepage-id'};
+let g_state;
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -28,13 +28,17 @@ async function assign_global() {
                     g_userPic = data.Pic;
                 }
                 g_prevFontSize = data.Font;
-                g_state.pageToDisplay = '.homepage-game';
+                g_state = {pageToDisplay : '.homepage-game'};
+                debuging_state();
                 refreshLoop()
                 init_session_socket();
+                return g_state
             }).catch (error => {
-                console.log(error);
+                console.error(error);
+                reset_global();
                 g_state.pageToDisplay = '.homepage-id';
                 throw custom_error(response)
+                return g_state
 			});
 }
 
@@ -65,19 +69,17 @@ async function determine_state() {
             },
         };
 
-    return await fetch('/petrus/auth/JWT-refresh/', content)
-        .then(response => {
-            if (!response.ok) {
-                g_state.pageToDisplay = '.homepage-id';
-                throw custom_error(response)
-            }
-        }).then(() => {
-            assign_global();
-        })
-        .catch(error => {
+    try {
+        response = await fetch('/petrus/auth/JWT-refresh/', content);
+        if (!response.ok) {
+            throw custom_error(response)
+        }
+        await assign_global()
+        render();
+    } catch {
             console.log("No JWT in request : try to connect")
             disconnect();
-        });
+    }
 }
 
 async function render() {
