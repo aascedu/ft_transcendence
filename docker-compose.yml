@@ -161,6 +161,7 @@ services:
     networks:
       - atlas
       - sentinel
+      - internet_access
     restart: always
     healthcheck:
       test:
@@ -194,6 +195,7 @@ services:
     networks:
       - atlas
       - alfred_network
+      - internet_access
     restart: on-failure
 
 # # Profil database container

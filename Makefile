@@ -80,6 +80,12 @@ kill:
 reset: | fclean
 	make debug
 
+#---- debug rules ----#
+
+logs:
+	mkdir -p zelk
+	docker logs $(container) > zelk/$(container)
+
 #---- setups ----#
 
 volumes:

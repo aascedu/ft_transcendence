@@ -19,6 +19,37 @@ elif [ x${ELASTIC_PASSWORD} == x ]; then
   exit 1;
 fi;
 
+
+# Create the GeoIP ingest pipeline
+echo -e "${COLOR_GREEN}Creating GeoIP ingest pipeline...${COLOR_RESET}"
+
+curl -X PUT "$ELASTICSEARCH_URL/_ingest/pipeline/geoip" \
+--cacert "$CA_CERT" \
+-u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+-H 'Content-Type: application/json' \
+-d '{
+  "description" : "Add GeoIP Info",
+  "processors" : [
+    {
+      "geoip" : {
+        "field" : "client_ip"
+      }
+    }
+  ]
+}'
+
+response=$(curl -s -X GET -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+          "$ELASTICSEARCH_URL/_ingest/pipeline/geoip" \
+          -H 'Content-Type: application/json' \
+          --cacert "$CA_CERT")
+
+if [[ "$response" == *"geoip"* ]]; then
+  echo -e "${COLOR_GREEN}GeoIP pipeline created successfully.${COLOR_RESET}"
+else
+  echo -e "${COLOR_RED}Issue with GeoIP pipeline creation.${COLOR_RESET}"
+  exit 1
+fi
+
 # Creating the ILM policy
 echo -e "${COLOR_GREEN}Configuring ILM policy...${COLOR_RESET}"
 
