@@ -94,7 +94,6 @@ class Consumer(OurBasicConsumer):
                 logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
 
         logging.info("Player " + str(self.user.id) + " has left game room " + self.roomName)
-        time.sleep(1)
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from front

@@ -11,6 +11,6 @@ class Player:
         # acceleration = 0
     def move(self, gameSettings):
         mvt = self.down - self.up
-        newPos = self.pos + mvt * gameSettings.screenHeight / 300
+        newPos = self.pos + mvt * gameSettings.screenHeight / 100
         if (newPos + gameSettings.playerHeight / 2 < gameSettings.screenHeight and newPos > gameSettings.playerHeight / 2):
             self.pos = newPos

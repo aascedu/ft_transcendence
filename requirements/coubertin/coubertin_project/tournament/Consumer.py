@@ -119,7 +119,7 @@ class Consumer(OurBasicConsumer):
         logging.debug("Sending to db tournament result")
         try:
             request = requests.post(
-                f'http://mnemosine:8008/memory/pong/tournaments/0/',
+                f'http://mnemosine:8008/memory/tournaments/0/',
                 json=tournaments[self.tournamentId].toDict()
             )
             if request.status_code != 200:

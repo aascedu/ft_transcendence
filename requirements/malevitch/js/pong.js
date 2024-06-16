@@ -109,7 +109,7 @@ async function init_game_socket(roomName) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
         if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 10, shouldContinue);
+            intervalId = setInterval(gameLoop, 30, shouldContinue);
         }
     };
 
@@ -123,7 +123,7 @@ async function init_game_socket(roomName) {
         console.log("Socket error");
     }
 
-    socket.onmessage = (event) => {
+    socket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
