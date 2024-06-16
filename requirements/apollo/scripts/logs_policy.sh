@@ -19,7 +19,6 @@ elif [ x${ELASTIC_PASSWORD} == x ]; then
   exit 1;
 fi;
 
-
 # Create the GeoIP ingest pipeline
 echo -e "${COLOR_GREEN}Creating GeoIP ingest pipeline...${COLOR_RESET}"
 
