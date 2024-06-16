@@ -38,8 +38,6 @@ class Consumer(OurBasicConsumer):
         self.user = self.scope['user']
         self.isPlayer = False
         self.id = len(self.myMatch.players)
-        print(self.myMatch.players)
-        print("My id is: " + str(self.id) + "\nMy room is " + self.roomName)
 
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
@@ -96,7 +94,7 @@ class Consumer(OurBasicConsumer):
                 logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
 
         logging.info("Player " + str(self.user.id) + " has left game room " + self.roomName)
-
+        time.sleep(1)
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from front
@@ -220,7 +218,6 @@ class Consumer(OurBasicConsumer):
             if len(self.myMatch.players) > 1:
                 if self.myMatch.gameStarted is False:
                     self.myMatch.gameStarted = True
-                    time.sleep(3)
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
                 if pointWinner != -1:
                     self.myMatch.score[pointWinner] += 1
@@ -229,6 +226,7 @@ class Consumer(OurBasicConsumer):
                             "type": "updateScore",
                         }
                     )
+                # It's being called several times 
                 if self.myMatch.score[self.id] == 5:
                     await self.channel_layer.group_send (
                         self.roomName, {

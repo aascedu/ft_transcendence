@@ -114,6 +114,7 @@ async function init_game_socket(roomName) {
     };
 
     socket.onclose = function() {
+        shouldContinue = false;
         clearInterval(intervalId);
         console.log("Socket closed in the front");
     }
@@ -126,7 +127,8 @@ async function init_game_socket(roomName) {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
-            shouldContinue = false
+            shouldContinue = false;
+            clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
@@ -181,7 +183,11 @@ async function init_game_socket(roomName) {
         socket.send(JSON.stringify(gameData));
     }
 
-    function sendData(type, frames) {
+    function sendData(type, frames, shouldContinue) {
+        if (!shouldContinue) {
+            return ;
+        }
+
         const gameData = {
           type: type,
           frames: frames,
@@ -235,9 +241,6 @@ async function init_game_socket(roomName) {
     htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
     function gameLoop(shouldContinue) {
-        if (!shouldContinue) {
-            return;
-        }
 
         // End of point
         if (ball.pos['x'] > screenWidth) {
@@ -260,7 +263,7 @@ async function init_game_socket(roomName) {
         // Send info to back
         // sendData("gameState", me.up, me.down);
         if (i % nbframes == 0) {
-            sendData("gameState", frames);
+            sendData("gameState", frames, shouldContinue);
             frames = {};
         }
 
