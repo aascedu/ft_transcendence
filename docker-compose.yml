@@ -100,13 +100,13 @@ services:
         PROXY_CONF: $PROXY_CONF
     env_file: .env
     ports:
-      - "80:80"
-      - "443:443"
-      # - "7999:80"
-      # - "8000:443"
+      # - "80:80"
+      # - "443:443"
+      - "7999:80"
+      - "8000:443"
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
-      - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
+      # - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
     networks:
       - aegis guard
       - atlas

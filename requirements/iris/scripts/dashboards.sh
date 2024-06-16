@@ -11,15 +11,6 @@ CA_CERT="/usr/share/kibana/config/certs/ca/ca.crt"
 
 set -e
 
-# Check env variables
-if [ x${ELASTIC_USER} == x ]; then
-  echo "${COLOR_RED}Set the ELASTIC_USER environment variable in the .env file${COLOR_RESET}";
-  exit 1;
-elif [ x${ELASTIC_PASSWORD} == x ]; then
-  echo "${COLOR_RED}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
-  exit 1;
-fi
-
 # Check Dashboards existance
 response=$(curl -X GET "http://$KIBANA_URL/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
                 -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
