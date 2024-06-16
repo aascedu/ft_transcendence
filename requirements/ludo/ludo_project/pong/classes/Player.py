@@ -7,8 +7,6 @@ class Player:
         self.up = False
         self.down = False
         self.id = id
-        # speed = 0
-        # acceleration = 0
     def move(self, gameSettings):
         mvt = self.down - self.up
         newPos = self.pos + mvt * gameSettings.screenHeight / 100
