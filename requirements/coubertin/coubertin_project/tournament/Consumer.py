@@ -63,8 +63,13 @@ class Consumer(OurBasicConsumer):
 
     async def StartGame(self, event):
         global tournaments
-        logging.debug("Starting tournament game from back, this is round " + str(tournaments[self.tournamentId].currentRound))
+        logging.debug("These are the remaining contenders: ")
+        logging.debug(tournaments[self.tournamentId].contenders)
 
+        # Ici c'est chiant, self.id pour les gens qui ont perdu n'existe pas ! If ?
+        if self.id not in tournaments[self.tournamentId].contenders:
+            return
+        
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
@@ -104,14 +109,17 @@ class Consumer(OurBasicConsumer):
     async def TournamentEnd(self, event):
         global tournaments
 
-        if tournaments[self.tournamentId].ended is False or self.id not in tournaments[self.tournamentId].contenders:
+        # Check cette condition !
+        if self.tournamentId not in tournaments:
             return
 
-        tournaments[self.tournamentId].ended = False
+        if self.id not in tournaments[self.tournamentId].contenders:
+            return
 
+        logging.debug("Sending to db tournament result")
         try:
             request = requests.post(
-                f'http://mnemosine:8008/memory/pong/tournaments/0/',
+                f'http://mnemosine:8008/memory/tournaments/0/',
                 json=tournaments[self.tournamentId].toDict()
             )
             if request.status_code != 200:
@@ -119,8 +127,8 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             logging.error("Tournament could not be registered in database")
 
-        del tournaments[self.id]
         logging.info("Tournament " + str(tournaments[self.tournamentId].id) + " ended")
+        del tournaments[self.tournamentId]
 
         try:
             request = requests.post(
