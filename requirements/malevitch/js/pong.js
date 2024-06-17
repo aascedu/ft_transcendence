@@ -7,8 +7,8 @@ const ballStyle = getComputedStyle(htmlBall);
 const meStyle = getComputedStyle(htmlme);
 const opponentStyle = getComputedStyle(htmlopponent);
 
-const tmpScreenHeight = window.innerHeight;
-const tmpScreenWidth = window.innerWidth;
+var tmpScreenHeight = window.innerHeight;
+var tmpScreenWidth = window.innerWidth;
 
 htmlopponent.style.left = tmpScreenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
 htmlme.style.left = 10 + 'px';
@@ -41,16 +41,16 @@ class Ball {
         this.speed = {x: 0, y: 0};
         this.size = 0;
     }
-    move(playerPos, playerStyle, opponentPos, opponentStyle) {
+    move(playerPos, playerStyle, opponentPos, opponentStyle, ballStyle) {
         var newPosX = this.pos['x'] + this.speed['x'];
         var newPosY = this.pos['y'] + this.speed['y'];
-        if (newPosX < 10 + parseInt(playerStyle.width, 10)) {
+        if (newPosX - parseInt(ballStyle.height, 10) < 10 + parseInt(playerStyle.width, 10)) {
             if (this.pos['y'] > playerPos - parseInt(playerStyle.height, 10) / 2 &&
                 this.pos['y'] < playerPos + parseInt(playerStyle.height, 10) / 2) {
                     newPosX = this.pos['x'] - this.speed['x'];
                 }
         }
-        else if (newPosX > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
+        else if (newPosX + parseInt(ballStyle.height, 10) > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
             if (this.pos['y'] > opponentPos - parseInt(opponentStyle.height, 10) / 2 &&
                 this.pos['y'] < opponentPos + parseInt(opponentStyle.height, 10) / 2) {
                     newPosX = this.pos['x'] - this.speed['x'];

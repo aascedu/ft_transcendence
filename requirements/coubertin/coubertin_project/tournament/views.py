@@ -107,9 +107,9 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': request.user.id})
             if r.status_code != 200:
-                self.close()
+                return JsonErrResponse({'Err': "Couldn't update available state"})
         except Exception as e:
-            self.close()
+            return JsonErrResponse({'Err': e.__str__()})
 
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
@@ -157,9 +157,9 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': userId})
             if r.status_code != 200:
-                self.close()
+                return JsonErrResponse({'Err': "Couldn't update available state"})
         except Exception as e:
-            self.close()
+            return JsonErrResponse({'Err': e.__str__()})
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
@@ -242,6 +242,35 @@ class myTournaments(View):
 
         return JsonResponse(request, {'Ongoing': response})
 
+class startTournament(View):
+    def post(self, request):
+        if request.user.is_autenticated is False:
+                return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
+
+        data = request.data
+        userId = request.user.id
+        try:
+            tournamentId = data['TournamentId']
+        except KeyError as e:
+            return JsonBadRequest(request, f'Missing key {e}')
+
+        if tournaments[tournamentId].admin != userId:
+            return JsonUnauthorized(request, "You need to be admin of tournament to start it")
+
+        if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
+            return JsonErrResponse(request, "Not enough players to start the tournament")
+
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            tournamentId, {
+                'type': 'StartGame',
+            }
+        )
+
+        updateTournament(tournamentId, False, request.user.id)
+        logging.info("Tournament " + str(tournamentId) + " is starting round 1")
+        return JsonResponse(request, {'Msg': "Tournament started"})
+
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState
         global tournaments
@@ -283,35 +312,6 @@ class gameResult(View):
 
         updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
-
-class startTournament(View):
-    def post(self, request):
-        if request.user.is_autenticated is False:
-                return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
-
-        data = request.data
-        userId = request.user.id
-        try:
-            tournamentId = data['TournamentId']
-        except KeyError as e:
-            return JsonBadRequest(request, f'Missing key {e}')
-
-        if tournaments[tournamentId].admin != userId:
-            return JsonUnauthorized(request, "You need to be admin of tournament to start it")
-
-        if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
-            return JsonErrResponse(request, "Not enough players to start the tournament")
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            tournamentId, {
-                'type': 'StartGame',
-            }
-        )
-
-        updateTournament(tournamentId, False, request.user.id)
-        logging.info("Tournament " + str(tournamentId) + " is starting round 1")
-        return JsonResponse(request, {'Msg': "Tournament started"})
 
 ############## Debug ##############
 def printData(data):
