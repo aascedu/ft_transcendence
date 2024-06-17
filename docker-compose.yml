@@ -331,8 +331,6 @@ services:
 # # Kibana's Data View container
   data_views:
     depends_on:
-      policy:
-        condition: service_healthy
       aether:
         condition: service_healthy
     container_name: data_views
@@ -355,8 +353,6 @@ services:
     depends_on:
       data_views:
         condition: service_healthy
-      aegis:
-        condition: service_started
     container_name: dashboards
     image: docker:latest
     networks:
@@ -365,12 +361,6 @@ services:
     volumes:
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
     entrypoint: /bin/sh -c "docker exec iris sh -c '/usr/share/kibana/scripts/dashboards.sh'"
-    healthcheck:
-      test: ["CMD-SHELL", "docker logs dashboards | grep -q 'All Dashboards creation completed.'"]
-      interval: 1s
-      timeout: 5s
-      retries: 120
-    restart: on-failure
 
 # # Grafana container
   davinci:
