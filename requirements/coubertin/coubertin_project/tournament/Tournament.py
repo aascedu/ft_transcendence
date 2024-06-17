@@ -31,14 +31,6 @@ class Tournament:
         if strPlayer in self.invited:
             self.invited.remove(strPlayer)
 
-    def removePlayer(self, playerId):
-        if (playerId not in self.players):
-            raise Exception ("This player is not participating in this tournament")
-        if self.started == False:
-            self.players.remove(playerId)
-        else: # Debug
-            print("you tried to remove a player during a tournament")
-
     def addGame(self, game):
         game['Round'] = self.currentRound
         self.gameHistory.append(game)

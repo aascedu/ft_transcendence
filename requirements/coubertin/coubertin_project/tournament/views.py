@@ -143,7 +143,7 @@ class tournamentEntry(View):
         # Check if we need to start tournament
         if len(tournaments[tournamentId].players) == tournaments[tournamentId].nbPlayers:
             tournaments[tournamentId].started = True
-            tournaments[tournamentId].contenders = tournaments[tournamentId].players
+            tournaments[tournamentId].contenders = tournaments[tournamentId].players.copy()
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
                 str(tournamentId), {
@@ -233,11 +233,14 @@ class myTournaments(View):
         userId = request.user.id
         response = []
 
-        for i in tournaments:
-            if tournaments[i].userParticipating(userId) or userId == tournaments[i].admin:
+        for id in tournaments:
+            logging.debug("Tournament name: " + tournaments[id].name)
+            logging.debug("Tournaments[id] players: ")
+            logging.debug(tournaments[id].players)
+            if tournaments[id].userParticipating(userId) or userId == tournaments[id].admin:
                 t = {}
-                t['Name'] = tournaments[i].name
-                t['Id'] = tournaments[i].id
+                t['Name'] = tournaments[id].name
+                t['Id'] = tournaments[id].id
                 response.append(t)
 
         return JsonResponse(request, {'Ongoing': response})
