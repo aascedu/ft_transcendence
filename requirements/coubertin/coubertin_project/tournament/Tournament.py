@@ -1,4 +1,7 @@
 import requests
+import logging
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class Tournament:
     def __init__(self, name, nbPlayers, id, admin, invited):
@@ -40,16 +43,44 @@ class Tournament:
         game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.ongoingGames -= 1
-        self.contenders.remove(game['Loser'])
+        if game['Loser'] in self.contenders:
+            self.contenders.remove(game['Loser'])
 
         try:
             request = requests.post(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': game['Loser']})
             if request.status_code != 200:
-                self.close()
+                return # Raise exception
         except Exception as e:
-            self.close()
+            return # Raise exception
+
+        channel_layer = get_channel_layer()
+
+        logging.debug("Ongoing game is: " + str(self.ongoingGames))
+        if self.ongoingGames == 0:
+            self.currentRound += 1
+
+            # Check tournament end
+            logging.debug("nb players: " + str(self.nbPlayers))
+            logging.debug("my calc: " + str(pow(2, self.currentRound - 1)))
+
+            if self.nbPlayers == int(pow(2, self.currentRound - 1)): # NumPlayers == 2 puissance currentRound
+                logging.info("Tournament " + str(self.id) + " is ending")
+                async_to_sync(channel_layer.group_send)(
+                    str(self.id), {
+                        'type': "TournamentEnd",
+                    }
+                )
+                return
+
+            async_to_sync(channel_layer.group_send)(
+                str(self.id), {
+                    'type': 'StartGame',
+                }
+            )
+            logging.info("Tournament " + str(self.id) + " is starting round " + str(self.currentRound))
+
 
     def userParticipating(self, userId):
         for i in self.players:

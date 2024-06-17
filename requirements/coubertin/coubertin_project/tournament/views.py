@@ -284,32 +284,6 @@ class gameResult(View):
         tournamentId = data['tournamentId']
         tournaments[tournamentId].addGame(data['game'])
 
-        channel_layer = get_channel_layer()
-
-        logging.debug("Ongoing game is: " + str(tournaments[tournamentId].ongoingGames))
-        if tournaments[tournamentId].ongoingGames == 0:
-            tournaments[tournamentId].currentRound += 1
-
-            # Check tournament end
-            logging.debug("nb players: " + str(tournaments[tournamentId].nbPlayers))
-            logging.debug("my calc: " + str(pow(2, tournaments[tournamentId].currentRound - 1)))
-
-            if tournaments[tournamentId].nbPlayers == int(pow(2, tournaments[tournamentId].currentRound - 1)): # NumPlayers == 2 puissance currentRound
-                logging.info("Tournament " + str(tournaments[tournamentId].id) + " is ending")
-                async_to_sync(channel_layer.group_send)(
-                    str(tournamentId), {
-                        'type': "TournamentEnd",
-                    }
-                )
-                return JsonResponse(request, {'Msg': "Tournament ended"})
-
-            async_to_sync(channel_layer.group_send)(
-                str(tournamentId), {
-                    'type': 'StartGame',
-                }
-            )
-            logging.info("Tournament " + str(tournaments[tournamentId].id) + " is starting round " + str(tournaments[tournamentId].currentRound))
-
         updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
 

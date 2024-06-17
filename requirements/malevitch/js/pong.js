@@ -253,7 +253,7 @@ async function init_game_socket(roomName) {
     function animate() {
         me.move(meStyle);
         opponent.move(opponentStyle);
-        ball.move(me.pos, meStyle, opponent.pos, opponentStyle);
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
         htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
         htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
         htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
