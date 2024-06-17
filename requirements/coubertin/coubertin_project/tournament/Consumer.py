@@ -135,9 +135,9 @@ class Consumer(OurBasicConsumer):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
             if request.status_code != 200:
-                self.close()
+                return self.close()
         except Exception as e:
-            self.close()
+            return self.close()
 
 # To do
 # Remove someone from tournament if admin
