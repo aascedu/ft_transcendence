@@ -24,10 +24,6 @@ class Consumer(OurBasicConsumer):
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
-        # self.admin = False
-        # if (tournaments[self.tournamentId].admin == self.id):
-        #     self.admin = True # Do we let the admin chose if he plays or not ?
-
         await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
 
@@ -114,6 +110,7 @@ class Consumer(OurBasicConsumer):
         if self.id not in tournaments[self.tournamentId].contenders:
             return
 
+        tournaments[self.tournamentId].ended = True
         logging.debug("Sending to db tournament result")
         try:
             request = requests.post(
