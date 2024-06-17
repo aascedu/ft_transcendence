@@ -294,8 +294,18 @@ async function matchFound(opponent) {
 		opponentElement.textContent = opponentNick;
 	}
 
-	// hide search match notif
+	// reset timer & hide search match notif
+	seconds = 0;
+	minutes = 0;
+	hours = 0;
+	clearInterval(timerId);
+	document.querySelector('.notif-search-match .notif-info').textContent = "00:00:00";
 	document.querySelector('.notif-search-match').classList.add('visually-hidden');
+
+	// reset match scores
+	document.querySelectorAll('.game .score').forEach(function(item) {
+		item.textContent = '0';
+	});
 
 	// show match found notif
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
