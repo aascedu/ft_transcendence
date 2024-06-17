@@ -24,13 +24,12 @@ response=$(curl -X GET "http://$KIBANA_URL/api/kibana/dashboards/export?dashboar
 
 if [[ "$response" == *"Nginx-Dashboard"* ]]; then
   echo -e "${COLOR_GREEN}All Dashboards creation completed.${COLOR_RESET}"
-  sleep 10
   exit 0
 else
   echo -e "${COLOR_GREEN}Creating Dashboards...${COLOR_RESET}"
 
-  # Creating Dashboards
-  curl -X POST "$KIBANA_URL/api/kibana/dashboards/import?exclude=index-pattern" \
+# Creating Dashboards
+  response=$(curl -X POST "$KIBANA_URL/api/kibana/dashboards/import?exclude=index-pattern" \
   -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   --cacert "$CA_CERT" \
   -H 'kbn-xsrf: true' \
@@ -126,20 +125,12 @@ else
         "typeMigrationVersion": "8.0.0"
       }
     ]
-  }'
+  }')
 fi
 
-# Check Dashboards presence
-response=$(curl -X GET "http://$KIBANA_URL/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
-                -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
-                --cacert "$CA_CERT" \
-                -H 'kbn-xsrf: true')
-
-if [[ "$response" == *"Nginx-Dashboard"* ]]; then
+if [[ "$response" == *"Welcome to the Nginx Logs Dashboard"* ]]; then
   echo -e "${COLOR_GREEN}All Dashboards creation completed.${COLOR_RESET}"
 else
   echo -e "${COLOR_RED}\nIssue with Dashboards creation.${COLOR_RESET}"
   exit 1;
 fi
-
-sleep 5
