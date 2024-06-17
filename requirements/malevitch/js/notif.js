@@ -57,9 +57,15 @@ async function acceptTournamentInvite() {
 	document.querySelector('.tournament-info-join-input').focus();
 }
 
-function dismissTournamentInvite() {
+async function dismissTournamentInvite() {
 	// notif already closed by forEach
 	// tell to the sender that user dismissed invitation
+	try {
+		var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
+		await refuse_invitation_to_tournament(tournamentId);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Friend invite
