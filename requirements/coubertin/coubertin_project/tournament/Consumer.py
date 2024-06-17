@@ -35,7 +35,7 @@ class Consumer(OurBasicConsumer):
         # Leave room group
         global tournaments
 
-        if self.tournamentId not in tournaments:
+        if self.tournamentId in tournaments:
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
 

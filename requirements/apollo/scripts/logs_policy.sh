@@ -83,22 +83,18 @@ policy_names=("nginx_policy" "logstash_policy" "filebeat_policy")
 for policy_name in "${policy_names[@]}"; do
   echo -e "${COLOR_GREEN}Configuring ILM policy for ${policy_name}...${COLOR_RESET}"
   
-  curl -X PUT -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
+  response=$(curl -X PUT -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
     "$ELASTICSEARCH_URL/_ilm/policy/${policy_name}?pretty" \
     -H 'Content-Type: application/json' \
     --cacert "$CA_CERT" \
-    -d "$ilm_policy_json"
-  
-  response=$(curl -s -X GET -u "${ELASTIC_USER}:${ELASTIC_PASSWORD}" \
-            "${ELASTICSEARCH_URL}/_ilm/policy/${policy_name}?pretty" \
-            -H 'Content-Type: application/json' \
-            --cacert "${CA_CERT}")
-  
-  if [[ "$response" == *"${policy_name}"* ]]; then
-    echo -e "${COLOR_GREEN}${policy_name} policy done.${COLOR_RESET}"
-  else
+    -d "$ilm_policy_json")
+
+  if [[ "$response" != *'"acknowledged" : true'* ]]; then
     echo -e "${COLOR_RED}Issue with ${policy_name} policy configuration.${COLOR_RESET}"
+    echo -e "${COLOR_RED}Response: $response${COLOR_RESET}"
     exit 1
+  else
+    echo -e "${COLOR_GREEN}${policy_name} policy done.${COLOR_RESET}"
   fi
 done
 
