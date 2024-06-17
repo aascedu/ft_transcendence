@@ -35,15 +35,15 @@ class Consumer(OurBasicConsumer):
         # Leave room group
         global tournaments
 
-        if self.id in tournaments[self.tournamentId].onPage:
-            tournaments[self.tournamentId].onPage.remove(self.id)
+        if self.tournamentId in tournaments:
+            if self.id in tournaments[self.tournamentId].onPage:
+                tournaments[self.tournamentId].onPage.remove(self.id)
+
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         global tournaments
-
-        logging.debug("Receiving something for the tournament\n\n\n\n")
 
         try:
             text_data_json = json.loads(text_data)
@@ -63,8 +63,6 @@ class Consumer(OurBasicConsumer):
 
     async def StartGame(self, event):
         global tournaments
-        logging.debug("These are the remaining contenders: ")
-        logging.debug(tournaments[self.tournamentId].contenders)
 
         # Ici c'est chiant, self.id pour les gens qui ont perdu n'existe pas ! If ?
         if self.id not in tournaments[self.tournamentId].contenders:
@@ -135,9 +133,9 @@ class Consumer(OurBasicConsumer):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
             if request.status_code != 200:
-                self.close()
+                return self.close()
         except Exception as e:
-            self.close()
+            return self.close()
 
 # To do
 # Remove someone from tournament if admin

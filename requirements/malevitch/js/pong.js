@@ -7,8 +7,8 @@ const ballStyle = getComputedStyle(htmlBall);
 const meStyle = getComputedStyle(htmlme);
 const opponentStyle = getComputedStyle(htmlopponent);
 
-const tmpScreenHeight = window.innerHeight;
-const tmpScreenWidth = window.innerWidth;
+var tmpScreenHeight = window.innerHeight;
+var tmpScreenWidth = window.innerWidth;
 
 htmlopponent.style.left = tmpScreenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
 htmlme.style.left = 10 + 'px';
@@ -41,16 +41,16 @@ class Ball {
         this.speed = {x: 0, y: 0};
         this.size = 0;
     }
-    move(playerPos, playerStyle, opponentPos, opponentStyle) {
+    move(playerPos, playerStyle, opponentPos, opponentStyle, ballStyle) {
         var newPosX = this.pos['x'] + this.speed['x'];
         var newPosY = this.pos['y'] + this.speed['y'];
-        if (newPosX < 10 + parseInt(playerStyle.width, 10)) {
+        if (newPosX - parseInt(ballStyle.height, 10) < 10 + parseInt(playerStyle.width, 10)) {
             if (this.pos['y'] > playerPos - parseInt(playerStyle.height, 10) / 2 &&
                 this.pos['y'] < playerPos + parseInt(playerStyle.height, 10) / 2) {
                     newPosX = this.pos['x'] - this.speed['x'];
                 }
         }
-        else if (newPosX > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
+        else if (newPosX + parseInt(ballStyle.height, 10) > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
             if (this.pos['y'] > opponentPos - parseInt(opponentStyle.height, 10) / 2 &&
                 this.pos['y'] < opponentPos + parseInt(opponentStyle.height, 10) / 2) {
                     newPosX = this.pos['x'] - this.speed['x'];
@@ -68,7 +68,7 @@ class Ball {
     }
 }
 
-/***************************************** Players movements *****************************************/
+/***************************************** Websocket events *****************************************/
 
 let me = new Player("me");
 let opponent = new Player("opponent");
@@ -106,6 +106,7 @@ async function init_game_socket(roomName) {
     const socket = new WebSocket(url); // Probably add room name
     console.log(url);
     var intervalId;
+    var animationId;
     var shouldContinue = true;
 
     let ball = new Ball();
@@ -123,6 +124,7 @@ async function init_game_socket(roomName) {
 
     socket.onclose = function() {
         shouldContinue = false;
+        cancelAnimationFrame(animationId);
         clearInterval(intervalId);
         console.log("Socket closed in the front");
     }
@@ -136,6 +138,7 @@ async function init_game_socket(roomName) {
 
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
+            cancelAnimationFrame(animationId);
             clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
@@ -245,8 +248,6 @@ async function init_game_socket(roomName) {
         i++;
     }
 
-    let stop = false
-
     function animate() {
         me.move(meStyle);
         opponent.move(opponentStyle);
@@ -255,9 +256,9 @@ async function init_game_socket(roomName) {
         htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
         htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
         htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
-        window.requestAnimationFrame(animate)
+        animationId = window.requestAnimationFrame(animate);
     }
-    window.requestAnimationFrame(animate)
+    animationId = window.requestAnimationFrame(animate);
 }
 
 function showGamePage(roomName) {
