@@ -518,6 +518,10 @@ async function setHomepageContent() {
 			document.querySelector('.homepage-header-profile img').setAttribute('src', userInfo.Pic);
 			g_userPic = userInfo.Pic;
 		}
+		else {
+			g_userPic = '/assets/general/pong.png';
+			document.querySelector('.homepage-header-profile img').setAttribute('src', g_userPic);
+		}
 
 	} catch (error) {
 		console.error(error);

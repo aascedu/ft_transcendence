@@ -429,9 +429,9 @@ async function notificationMessage(data) {
     console.log(data);
 }
 
-async function notificationProfileChanged(obj) {
+async function notificationProfileChanged(data) {
 	console.log("profile changed");
-    console.log(obj);
+    console.log(data);
 
 	if (g_state.pageToDisplay == '.game') {
 		return ;
