@@ -100,10 +100,13 @@ services:
         PROXY_CONF: $PROXY_CONF
     env_file: .env
     ports:
+      # - "80:80"
+      # - "443:443"
       - "7999:80"
       - "8000:443"
     volumes:
       - ./requirements/aegis:/usr/share/nginx/html
+      # - /etc/letsencrypt/archive/batch42.me:/etc/letsencrypt/live/batch42.me:r
     networks:
       - aegis guard
       - atlas
@@ -161,6 +164,7 @@ services:
     networks:
       - atlas
       - sentinel
+      - internet_access
     restart: always
     healthcheck:
       test:
@@ -194,6 +198,7 @@ services:
     networks:
       - atlas
       - alfred_network
+      - internet_access
     restart: on-failure
 
 # # Profil database container
@@ -712,7 +717,7 @@ services:
         - "/var/run/docker.sock:/var/run/docker.sock:ro"
     entrypoint: /bin/sh -c "docker exec apollo sh -c '/usr/share/elasticsearch/scripts/logs_policy.sh'"
     healthcheck:
-      test: ["CMD-SHELL", "docker logs policy | grep -q 'All ILM policy configuration completed.'"]
+      test: ["CMD-SHELL", "docker logs policy | grep -q 'All ILM policy configurations completed.'"]
       interval: 1s
       timeout: 5s
       retries: 120

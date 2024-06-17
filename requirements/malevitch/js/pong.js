@@ -117,7 +117,7 @@ async function init_game_socket(roomName) {
         console.log("Socket error");
     }
 
-    socket.onmessage = async (event) => {
+    socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
