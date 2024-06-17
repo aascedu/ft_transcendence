@@ -123,16 +123,16 @@ async function acceptFriendInvite() {
 	}
 	// if we are on the new friend profile, change button to 'remove' instead of pending + add play icon
 	if (g_state.pageToDisplay == '.user-profile') {
-		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
-		if (data.requester == userId) {
+		var	profileId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		var	requesterId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+		if (requesterId == profileId) {
 			clearUserContent();
-			await loadUserContent(userId);
+			await loadUserContent(profileId);
 		}
 	}
 	// if we are on a tournament page, load it back so that new friend can appear in available friends
 	if (g_state.pageToDisplay == '.tournament-info') {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 
 			clearTournamentInfoInvites();
 			await loadTournamentInfoInvites();
@@ -148,9 +148,15 @@ async function acceptFriendInvite() {
 	await loadHomepageHeader();
 }
 
-function dismissFriendInvite() {
+async function dismissFriendInvite() {
 	// notif already closed by forEach
 	// tell to the sender that user dismissed invitation
+	try {
+		var	requesterId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+		await delete_friend(requesterId);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Play invite
