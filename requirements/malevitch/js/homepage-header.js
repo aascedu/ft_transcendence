@@ -256,11 +256,12 @@ document.querySelector('.homepage-header-quick-play').addEventListener('click', 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		item.classList.add('visually-hidden');
 	});
+	setAriaHidden();
 
 	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
 		searchMatch();
 	}
-	setAriaHidden();
+	init_matchmaking_socket(0, 0);
 });
 
 // Play with friend
