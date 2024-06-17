@@ -41,9 +41,23 @@ class Ball {
         this.speed = {x: 0, y: 0};
         this.size = 0;
     }
-    move() {
-        this.pos['x'] += this.speed['x'];
-        this.pos['y'] += this.speed['y'];
+    move(playerPos, playerStyle, opponentPos, opponentStyle) {
+        var newPosX = this.pos['x'] + this.speed['x'];
+        var newPosY = this.pos['y'] + this.speed['y'];
+        if (newPosX < 10 + parseInt(playerStyle.width, 10)) {
+            if (this.pos['y'] > playerPos - parseInt(playerStyle.height, 10) / 2 &&
+                this.pos['y'] < playerPos + parseInt(playerStyle.height, 10) / 2) {
+                    newPosX = this.pos['x'] - this.speed['x'];
+                }
+        }
+        else if (newPosX > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
+            if (this.pos['y'] > opponentPos - parseInt(opponentStyle.height, 10) / 2 &&
+                this.pos['y'] < opponentPos + parseInt(opponentStyle.height, 10) / 2) {
+                    newPosX = this.pos['x'] - this.speed['x'];
+                }
+        }
+        this.pos['x'] = newPosX;
+        this.pos['y'] = newPosY;
     }
     init() {
         this.backpos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
@@ -137,12 +151,7 @@ async function init_game_socket(roomName) {
         else if (data.type == "updateScore") {
             me.points = data.myScore;
             opponent.points = data.opponentScore;
-            ball.prevpos['x'] = tmpScreenWidth / 2;
-            ball.prevpos['y'] = tmpScreenHeight / 2;
-            ball.backpos['x'] = tmpScreenWidth / 2;
-            ball.backpos['y'] = tmpScreenHeight / 2;            
-            ball.pos['x'] = tmpScreenWidth / 2;
-            ball.pos['y'] = tmpScreenHeight / 2;
+            ball.init();
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
             setTimeout(gameLoop, 1000);
@@ -241,7 +250,7 @@ async function init_game_socket(roomName) {
     function animate() {
         me.move(meStyle);
         opponent.move(opponentStyle);
-        ball.move();
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle);
         htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
         htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
         htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
