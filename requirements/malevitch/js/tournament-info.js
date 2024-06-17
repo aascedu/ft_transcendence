@@ -128,12 +128,12 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// If no player at all
 	if ((confirmedPlayers.length + pendingPlayers.length) == 0) {
 		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
-		setAriaHidden();
-		return ;
 	}
-
-	document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+	else {
+		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+	}
 	setAriaHidden();
+
 
 	// Display number of players
 	document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + numPlayers;
