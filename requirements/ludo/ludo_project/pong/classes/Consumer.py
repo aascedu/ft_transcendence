@@ -234,6 +234,20 @@ class Consumer(OurBasicConsumer):
                         }
                     )
 
+            else:
+                t = time.time_ns()
+                if t - self.myMatch.startTime > 5000000000:
+                    logging.warning("Player " + str(self.user.id) + "has unexpectedly left game room " + self.roomName)
+                    self.myMatch.gameEnded[(self.id + 1) % 2] = True
+                    self.myMatch.score[self.id] = 5
+                    await self.channel_layer.group_send(
+                    self.roomName, {
+                        "type": "gameEnd",
+                        "winner": self.id,
+                    }
+                )
+
+
     # Receive gameState from room group
     async def myState(self, event):
         global matches
