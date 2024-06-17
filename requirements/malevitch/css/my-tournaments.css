@@ -53,6 +53,8 @@
 .my-tournaments-card-container
 .content-card {
 	width: calc(50% - 8px);
+	min-height: 60px;
+	max-height: 60px;
 }
 
 .my-tournaments-card-picture {
