@@ -239,10 +239,6 @@ async function init_game_socket(roomName) {
     let stop = false
 
     function animate() {
-        console.log("Ball speed x: " + toString(ball.speed['x']));
-        console.log("Ball speed y: " + toString(ball.speed['y']));
-        console.log("Ball pos x: " + toString(ball.pos['x']));
-        console.log("Ball pos y: " + toString(ball.pos['y']));
         me.move(meStyle);
         opponent.move(opponentStyle);
         ball.move();
