@@ -164,7 +164,7 @@ class tournamentEntry(View):
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 
 class inviteFriend(View):
-    def post(self, request):
+    def post(self, request, tournamentId: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can invite friends')
 
@@ -172,28 +172,25 @@ class inviteFriend(View):
         data = request.data
 
         try:
-            TournamentId = data['TournamentId']
             invited = data['Invited']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
         try:
-            TournamentId = int(TournamentId)
             invited = int(invited)
-            TournamentId = int(data['TournamentId'])
-            if TournamentId not in tournaments:
+            if tournamentId not in tournaments:
                 return JsonNotFound(request, 'tournament does not exists')
         except (TypeError, ValueError) as e:
             return JsonBadRequest(request, f'bad content {e}')
 
 
-        tournaments[TournamentId].invited.append(invited)
+        tournaments[tournamentId].invited.append(invited)
 
         try:
             response = requests.post(
                 'http://hermes:8004/notif/tournament-request/' + str(request.user.id) + '/',
                 json={
-                        'Tournament-Id': TournamentId,
-                        'Tournament-Name': tournaments[TournamentId].name,
+                        'Tournament-Id': tournamentId,
+                        'Tournament-Name': tournaments[tournamentId].name,
                         'Notified': invited
                     }
                 )
@@ -205,24 +202,23 @@ class inviteFriend(View):
             logging.error("Failed to send invitation to player " + str(invited))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
-        updateTournament(TournamentId, False, request.user.id)
-        logging.info("Player " + str(invited) + " has been invited to tournament " + str(TournamentId))
+        updateTournament(tournamentId, False, request.user.id)
+        logging.info("Player " + str(invited) + " has been invited to tournament " + str(tournamentId))
         return JsonResponse(request, {'Msg': "Friend has been invited"})
 
-    def delete(self, request): # If someone declines invitation
+    def delete(self, request, tournamentId: int): # If someone declines invitation
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authenticated players decline tournament invitation')
 
         global tournaments
-        if request['PlayerId'] not in tournaments[request['TournamentId']].invited:
-            return JsonNotFound(request, "Player is not in the invited list of the tournament")
-        tournaments[request['TournamentId']].invited.remove(request['PlayerId'])
 
-        updateTournament(request['Tournament, request.user.idId'], False)
+        if str(request.user.id) not in tournaments[tournamentId].invited:
+            return JsonNotFound(request, "Player is not in the invited list of the tournament")
+        tournaments[tournamentId].invited.remove(str(request.user.id))
+
+        updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {
             'Msg': 'Invitation declined',
-            'PlayerId': request['PlayerId'],
-            'TournamentId': request['TournamentId'],
         })
 
 class myTournaments(View):
@@ -287,7 +283,8 @@ class gameResult(View):
         tournamentId = data['tournamentId']
         tournaments[tournamentId].addGame(data['game'])
 
-        updateTournament(tournamentId, False, request.user.id)
+        if tournaments[tournamentId].ended is False:
+            updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
 
 ############## Debug ##############
