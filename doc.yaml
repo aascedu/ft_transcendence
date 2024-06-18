@@ -1,0 +1,716 @@
+openapi: 3.0.3
+info:
+  title: BATCH - The pong of your dreams
+  description: |-
+    This is the API documentation for the Batch project. It covers only the front to back endpoints and not the endpoints between services.
+    This is done by 42 Lyon students as an end of cursus project to showcase our knowledge and expertise in Web.
+
+  version: 0.0.1
+  
+tags:
+  - name: coubertin
+    description: Tournament service
+  - name: petrus
+    description: Authentication service
+  - name: alfred
+    description: User management service
+  - name: mnemosine
+    description: Database service
+  - name: hermes
+    description: Notification service
+
+paths:
+  /coubertin/tournament/infos/{tournamentId}/:
+    get:
+      tags:
+        - coubertin
+      summary: Get infos from one tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          description: ID of tournament you want infos about
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetTournament'          
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - coubertin
+      summary: Create a tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          description: Not actually used, just put 0
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTournament'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    patch:
+      tags:
+        - coubertin
+      summary: Modify a tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          description: Not actually used, just put 0
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchTournament'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    
+  /coubertin/tournament/entry/{tournamentId}/{playerId}/:
+    post:
+      tags: 
+        - coubertin
+      summary: Join a tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: playerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found  
+    delete:
+      tags:
+        - coubertin
+      summary: Leave a tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: playerId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /coubertin/tournament/entry/invite/:
+    post:
+      tags:
+        - coubertin
+      summary: Invite friend to a tournament
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteFriendToTournament'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /coubertin/tournament/entry/my-tournaments/:
+    get:
+      tags:
+        - coubertin
+      summary: Get all tournaments I'm currently playing in
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MyTournaments' 
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /coubertin/tournament/entry/available-tournaments/:
+    get:
+      tags:
+        - coubertin
+      summary: Get all tournaments I can enter
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableTournaments' 
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /coubertin/tournament/entry/start-tournament/: 
+    post:
+      tags:
+        - coubertin
+      summary: start a tournament
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartTournament'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /alfred/user/users/{id}/:
+    get:
+      tags:
+        - alfred
+      summary: Get user informations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUser'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    patch:
+      tags:
+        - alfred
+      summary: Modifiy user profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUser'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+  
+  /alfred/user/friends/{id}/:
+    get:
+      tags:
+        - alfred
+      summary: Get user friend list
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFriends'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - alfred
+      summary: Add a new friend
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the person to add
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmptyObject'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    delete:
+      tags:
+        - alfred
+      summary: Delete a friend
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the friend to delete
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /alfred/user/avatar/{id}/:
+    get:
+      tags:
+        - alfred
+      summary: get url of the avatar of a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvatarUrl'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+    post:
+      tags:
+        - alfred
+      summary: add avatar to a user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  # Serve avatar ? Cf Brieuc
+  
+  /hermes/notif/online-states/:
+    get:
+      tags:
+        - hermes
+      summary: get a list of online friends
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnlineFriendList'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+      
+  /hermes/notif/available-states/:
+    get:
+      tags:
+        - hermes
+      summary: get a list of available friends
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailableFriendList'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  /mnemosine/memory/players/{id}/:
+    get:
+      tags:
+        - mnemosine
+      summary: get game history of a player
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: id of the user
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GameHistory'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Not Found
+          
+  # /mnemosine/memory/tournament-history/{id}/:
+  #   get:
+  #     tags:
+  #       - mnemosine
+  #     summary: get tournament history of a player
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         description: id of the user
+  #         schema:
+  #           type: integer
+  #     responses:
+  #       '200':
+  #         description: Successful operation
+  #         content:
+  #           application/json:
+  #             schema:
+  #               $ref: '#/components/schemas/TournamentHistory'
+  #       '400':
+  #         description: Invalid ID supplied
+  #       '404':
+  #         description: Not Found
+      
+  
+components:
+  schemas:
+    EmptyObject:
+      type: object
+      properties: {}
+      
+    Game:
+      type: object
+      properties:
+        Winner:
+          type: integer
+          description: Id of the winner
+          example: 6
+        Winner-score:
+          type: integer
+          description: Score of the winner (Below 5)
+          example: 5
+        Loser:
+          type: integer
+          description: Id of the loser
+          example: 8
+        Loser-score:
+          type: integer
+          description: Score of the loser
+          example: 2
+  
+    GetTournament:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        Name:
+          type: string
+          example: MyAwesomeTournament
+        NumPlayers:
+          type: integer
+          format: int32
+          example: 8
+          enum:
+            - 4
+            - 8
+        Started:
+          type: boolean
+          example: true
+        Owner:
+          type: integer
+          example: 3
+        Pending:
+          type: array
+          items:
+            type: integer
+          example: [12, 5, 7]
+          description: List of ids of user invited to tournament but has yet to accept
+        Confirmed:
+          type: array
+          items:
+            type: integer
+          example: [3, 6, 8]
+          description: List of ids of user who entered the tournament
+        Games:
+          type: array
+          items:
+            type: object
+            properties:
+              Round:
+                type: integer
+                example: 2
+              Played:
+                type: boolean
+                example: false
+              Game:
+                $ref: '#/components/schemas/Game'
+                    
+    CreateTournament:
+      type: object
+      properties:
+        Name:
+          type: string
+          example: MyNewTournament
+        NumPlayers:
+          type: integer
+          example: 4
+        Invited:
+          type: array
+          items:
+            type: integer
+            example: [0, 5, 3]
+            description: List of id of invited players
+        Admin:
+          type: integer
+          example: 2
+          description: Id of the tournament admin (usually the one who creates it)
+          
+    PatchTournament:
+      type: object
+      properties:
+        Name:
+          type: string
+          example: NewTournamentName
+        TournamentId:
+          type: integer
+          example: 2
+          
+    InviteFriendToTournament:
+      type: object
+      properties:
+        TournamentId:
+          type: integer
+          example: 1
+        Invited:
+          type: integer
+          example: 42
+          
+    MyTournaments:
+      type: object
+      properties:
+        Name:
+          type: string
+          example: TheFirstTournamentEver
+        Id:
+          type: integer
+          example: 0
+          
+    AvailableTournaments:
+      type: object
+      properties:
+        1:
+          type: string
+          example: RandomTournament
+        2:
+          type: string
+          example: AnotherRandomTournament
+        3:
+          type: string
+          example: LastRandomTournament
+        <TournamentId>:
+          type: string
+          example: <TournamentName>
+          
+    StartTournament:
+      type: object
+      properties:
+        TournamentId:
+          type: integer
+          example: 1
+          
+    GetUser:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Nick:
+          type: string
+          example: twang
+        Pic:
+          type: string
+          description: url to profile picture
+          
+    PatchUser:
+      type: object
+      properties:
+        Lang:
+          type: string
+          example: fr
+        Font:
+          type: integer
+          example: 1
+        Nick:
+          type: string
+        Email:
+          type: string
+        Contrast-mode:
+          type: boolean
+          
+    GetFriends:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Friends:
+          type: array
+          items:
+            type: object
+            properties:
+              Id:
+                type: integer
+              Nick:
+                type: string
+              Pic:
+                type: string
+                description: url of profile picture
+        Requests:
+          type: array
+          items:
+            type: object
+            properties:
+              Id:
+                type: integer
+              Nick:
+                type: string
+              Pic:
+                type: string
+                description: url of profile picture
+        Sent:
+          type: array
+          items:
+            type: object
+            properties:
+              Id:
+                type: integer
+              Nick:
+                type: string
+              Pic:
+                type: string
+                description: url of profile picture
+                
+    AvatarUrl:
+      type: object
+      properties:
+        url:
+          type: string
+          example: https://myavatarurl.com
+          
+    OnlineFriendList:
+      type: object
+      properties:
+        online-status:
+          type: object
+          properties:
+            id:
+              type: boolean
+              
+    AvailableFriendList:
+      type: object
+      properties:
+        Ava:
+          type: array
+          items:
+            type: integer
+            
+    GameHistory:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Win-count:
+          type: integer
+        Lose-count:
+          type: integer
+        History:
+          type: array
+          items:
+            $ref: '#/components/schemas/Game'
+            
+    # TournamentHistory:
+    #   type: object
+    #   properties:
+        
+    
+        
+      
+          
+        

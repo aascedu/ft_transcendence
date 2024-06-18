@@ -93,17 +93,14 @@ class tournamentManagement(View):
 
 class tournamentEntry(View):
     def delete(self, request, tournamentId: int, playerId: int):
+        global tournaments
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
-
-        global tournaments
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            str(tournamentId), {
-                'type': 'LeaveTournament',
-                'player': playerId,
-            }
-        )
+        
+        if playerId in tournaments[tournamentId].players:
+            tournaments[tournamentId].players.remove(playerId)
+            del tournaments[tournamentId].aliases[playerId]
 
         try:
             r = requests.post(

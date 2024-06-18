@@ -7,23 +7,10 @@ const ballStyle = getComputedStyle(htmlBall);
 const meStyle = getComputedStyle(htmlme);
 const opponentStyle = getComputedStyle(htmlopponent);
 
-const tmpScreenHeight = window.innerHeight|| document.documentElement.clientHeight|| document.body.clientHeight;
-const tmpScreenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-ratio1 = tmpScreenHeight / 1080;
-ratio2 = tmpScreenWidth / 1920;
-const ratio = Math.min(ratio1, ratio2);
+const tmpScreenHeight = window.innerHeight;
+const tmpScreenWidth = window.innerWidth;
 
-var screenHeight = tmpScreenHeight;
-var screenWidth = tmpScreenWidth;
-if (ratio == ratio1) {
-    screenHeight = tmpScreenHeight;
-    screenWidth = screenHeight * 1920 / 1080;
-} else {
-    screenWidth = tmpScreenWidth;
-    screenHeight = screenWidth * 1080 / 1920;
-}
-
-htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
+htmlopponent.style.left = tmpScreenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
 htmlme.style.left = 10 + 'px';
 
 /***************************************** Classes *****************************************/
@@ -32,15 +19,15 @@ class Player {
     constructor(name) {
         this.name = name;
         this.points = 0;
-        this.pos = screenHeight / 2;
+        this.pos = tmpScreenHeight / 2;
         this.up = false;
         this.down = false;
         this.isPlayer = true;
     }
     move(playerStyle) {
         let mvt = this.down - this.up;
-        const newPos = this.pos + mvt * screenHeight / 300;
-        if (newPos + parseInt(playerStyle.height, 10) / 2 < screenHeight && newPos > parseInt(playerStyle.height, 10) / 2) {
+        const newPos = this.pos + (mvt * tmpScreenHeight / 100) / 2;
+        if (newPos + parseInt(playerStyle.height, 10) / 2 < tmpScreenHeight && newPos > parseInt(playerStyle.height, 10) / 2) {
             this.pos = newPos;
         }
     }
@@ -48,20 +35,36 @@ class Player {
 
 class Ball {
     constructor() {
-        this.pos = {x: screenWidth / 2, y: screenHeight / 2};
-        this.speedStart = 0; // Non !
-        this.speed = 0;
-        this.angle = Math.PI;
-        this.size = 0; // Non !
+        this.prevpos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.backpos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.pos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.speed = {x: 0, y: 0};
+        this.size = 0;
     }
-    move() {
-        this.pos['x'] += this.speed * Math.cos(this.angle);
-        this.pos['y'] -= this.speed * Math.sin(this.angle);
+    move(playerPos, playerStyle, opponentPos, opponentStyle) {
+        var newPosX = this.pos['x'] + this.speed['x'];
+        var newPosY = this.pos['y'] + this.speed['y'];
+        if (newPosX < 10 + parseInt(playerStyle.width, 10)) {
+            if (this.pos['y'] > playerPos - parseInt(playerStyle.height, 10) / 2 &&
+                this.pos['y'] < playerPos + parseInt(playerStyle.height, 10) / 2) {
+                    newPosX = this.pos['x'] - this.speed['x'];
+                }
+        }
+        else if (newPosX > tmpScreenWidth - parseInt(opponentStyle.width) - 10) {
+            if (this.pos['y'] > opponentPos - parseInt(opponentStyle.height, 10) / 2 &&
+                this.pos['y'] < opponentPos + parseInt(opponentStyle.height, 10) / 2) {
+                    newPosX = this.pos['x'] - this.speed['x'];
+                }
+        }
+        this.pos['x'] = newPosX;
+        this.pos['y'] = newPosY;
     }
     init() {
-        this.pos = {x: screenWidth / 2, y: screenHeight / 2};
-        this.speed = this.speedStart; // Non !
-        this.angle = Math.PI;
+        this.backpos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.prevpos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.pos = {x: tmpScreenWidth / 2, y: tmpScreenHeight / 2};
+        this.speed['x'] = 0;
+        this.speed['y'] = 0;
     }
 }
 
@@ -105,15 +108,21 @@ async function init_game_socket(roomName) {
     var intervalId;
     var shouldContinue = true;
 
+    let ball = new Ball();
+    let i = 1;
+    let frames = {};
+    let nbframes = 1;
+
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
         if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 10, shouldContinue);
+            intervalId = setInterval(gameLoop, 33, shouldContinue);
         }
     };
 
     socket.onclose = function() {
+        shouldContinue = false;
         clearInterval(intervalId);
         console.log("Socket closed in the front");
     }
@@ -126,35 +135,23 @@ async function init_game_socket(roomName) {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
-            shouldContinue = false
+            shouldContinue = false;
+            clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
         }
 
         else if (data.type == "gameParameters") {
-            // Display
-            // htmlme.style.height = data.playerHeight * ratio + 'px';
-            // htmlopponent.style.height = data.playerHeight * ratio + 'px';
-            // htmlme.style.width = data.playerWidth * ratio + 'px';
-            // htmlopponent.style.width = data.playerWidth * ratio + 'px';
-            // htmlBall.style.height = data.ballSize * ratio + 'px';
-            // htmlBall.style.width = data.ballSize * ratio + 'px';
-
             // Actual objects
-            ball.size = data.ballSize * ratio;
-            ball.speedStart = data.ballSpeed * ratio;
-            ball.speed = ball.speedStart;
             me.isPlayer = data.isPlayer;
-
             console.log("gameStart response");
         }
 
         else if (data.type == "updateScore") {
             me.points = data.myScore;
             opponent.points = data.opponentScore;
-            ball.pos['x'] = screenWidth / 2;
-            ball.pos['y'] = screenHeight / 2;
+            ball.init();
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
             setTimeout(gameLoop, 1000);
@@ -162,13 +159,20 @@ async function init_game_socket(roomName) {
 
         else if (data.type == "myState" || data.type == "opponentState") {
             if (data.type == "myState") {
-                me.pos = data.mePos / 100 * screenHeight;
+                me.pos = data.mePos / 100 * tmpScreenHeight;
             } else {
-                opponent.pos = data.opponentPos / 100 * screenHeight;
+                opponent.pos = data.opponentPos / 100 * tmpScreenHeight;
             }
-            ball.pos['x'] = data.ballPosX / 100 * screenWidth;
-            ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-
+            ball.prevpos['x'] = ball.backpos['x'];
+            ball.prevpos['y'] = ball.backpos['y'];
+            ball.pos['x'] = data.ballPosX / 100 * tmpScreenWidth;
+            ball.backpos['x'] = data.ballPosX / 100 * tmpScreenWidth;
+            ball.pos['y'] = data.ballPosY / 100 * tmpScreenHeight;
+            ball.backpos['y'] = data.ballPosY / 100 * tmpScreenHeight;
+            ball.speed['x'] = ball.backpos['x'] - ball.prevpos['x'];
+            ball.speed['y'] = ball.backpos['y'] - ball.prevpos['y'];
+            me.points = data.myScore;
+            opponent.points = data.opponentScore;
         }
     };
     function sendStartGameData(type) {
@@ -181,7 +185,11 @@ async function init_game_socket(roomName) {
         socket.send(JSON.stringify(gameData));
     }
 
-    function sendData(type, frames) {
+    function sendData(type, frames, shouldContinue) {
+        if (!shouldContinue) {
+            return ;
+        }
+
         const gameData = {
           type: type,
           frames: frames,
@@ -191,35 +199,12 @@ async function init_game_socket(roomName) {
     }
 /***************************************** Game logic *****************************************/
 
-    function isPlayerCollision(ball, player, playerStyle) {
-        if (ball.pos['y'] > player.pos - (parseInt(playerStyle.height, 10) / 2) &&
-            ball.pos['y'] < player.pos + (parseInt(playerStyle.height, 10) / 2)) {
-            return true;
-        }
-        return false;
-    }
-
-    function playerCollision(ball, player, playerStyle) {
-        let impactToMid = (ball.pos['y'] - player.pos) / (parseInt(playerStyle.height, 10) * 0.5); // > 0 quand la balle tape en DESSOUS du milieu
-        if (player.name === "me") {
-            ball.angle = - (Math.PI / 4) * impactToMid;
-        } else if (player.name === "opponent") {
-            ball.angle = Math.PI + (Math.PI / 4) * impactToMid;
-        }
-        ball.speed *= 1.1;
-    }
-
-    let ball = new Ball();
-    let i = 1;
-    let frames = {};
-    let nbframes = 1;
-
     function updateScreenSize() {
-        screenHeight = window.innerHeight;
-        screenWidth = window.innerWidth;
-        ratioHeight = screenHeight / 1080;
-        ratioWidth = screenWidth / 1920;
-        ratioBall = Math.min(ratioHeight, ratioWidth);
+        const screenHeight = window.innerHeight;
+        const screenWidth = window.innerWidth;
+        const ratioHeight = screenHeight / 1080;
+        const ratioWidth = screenWidth / 1920;
+        const ratioBall = Math.min(ratioHeight, ratioWidth);
         htmlme.style.height = 200 * ratioHeight + 'px';
         htmlopponent.style.height = 200 * ratioHeight + 'px';
         htmlme.style.width = 24 * ratioWidth + 'px';
@@ -235,32 +220,19 @@ async function init_game_socket(roomName) {
     htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
     function gameLoop(shouldContinue) {
-        if (!shouldContinue) {
-            return;
-        }
 
-        // End of point
-        if (ball.pos['x'] > screenWidth) {
-            me.points++;
-            ball.init();
-        } else if (ball.pos['x'] < 0) {
-            opponent.points++;
-            ball.init();
-        }
+        console.log("GameLoop");
 
         // Update score
         document.getElementById("score1").innerHTML = me.points.toString();
         document.getElementById("score2").innerHTML = opponent.points.toString();
 
         // Update positions
-        // ball.move();
-        // me.move(meStyle);
         frames[i] = {"meUp": me.up, "meDown": me.down};
 
         // Send info to back
-        // sendData("gameState", me.up, me.down);
         if (i % nbframes == 0) {
-            sendData("gameState", frames);
+            sendData("gameState", frames, shouldContinue);
             frames = {};
         }
 
@@ -270,24 +242,22 @@ async function init_game_socket(roomName) {
         htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
         htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-        // Collision with opponent
-        if (ball.pos['x'] >= screenWidth - (parseInt(ballStyle.width, 10) + parseInt(opponentStyle.width, 10)) && isPlayerCollision(ball, opponent, opponentStyle)) {
-            playerCollision(ball, opponent, opponentStyle);
-        }
-
-        // Collision with me
-        if (ball.pos['x'] <= parseInt(ballStyle.width, 10) + parseInt(meStyle.width, 10) && isPlayerCollision(ball, me, meStyle)) {
-            playerCollision(ball, me, meStyle);
-        }
-
-        // Collision with walls
-        if (ball.pos['y'] <= parseInt(ballStyle.height, 10) / 2 || ball.pos['y'] >= screenHeight - parseInt(ballStyle.height, 10) / 2) {
-            ball.angle = - ball.angle;
-        }
         i++;
     }
 
-// requestAnimationFrame()
+    let stop = false
+
+    function animate() {
+        me.move(meStyle);
+        opponent.move(opponentStyle);
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle);
+        htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
+        htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
+        htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
+        htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
+        window.requestAnimationFrame(animate)
+    }
+    window.requestAnimationFrame(animate)
 }
 
 function showGamePage(roomName) {

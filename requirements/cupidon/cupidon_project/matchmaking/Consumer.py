@@ -51,7 +51,7 @@ class Consumer(OurBasicConsumer):
             del waitingList[self.id]
         if self.id in gameRequesters:
             gameRequesters.remove(self.id)
-    
+
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
         self.close()
 
@@ -59,11 +59,17 @@ class Consumer(OurBasicConsumer):
     async def receive(self, text_data):
         global waitingList
 
-        text_data_json = json.loads(text_data)
-        action = text_data_json['type']
+        try:
+            text_data_json = json.loads(text_data)
+            action = text_data_json['type']
+        except json.JSONDecodeError:
+            logging.error("A non json object was received")
+            return
+        except KeyError:
+            logging.error("No type key in received message")
+            return
 
         # Send message to room group
-
         await self.channel_layer.group_send(
             "matchmakingRoom", {
                 'type': action,
@@ -102,7 +108,7 @@ class Consumer(OurBasicConsumer):
                         }
                     )
                     return
-            
+
     async def Leave(self, event):
         print("Player closing: " + str(self.id))
         self.close()
