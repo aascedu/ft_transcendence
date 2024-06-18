@@ -5,9 +5,11 @@ charset-normalizer==3.3.2
 cryptography==42.0.7
 Django==5.0.6
 django-prometheus==2.3.1
+gunicorn==22.0.0
 hvac==2.2.0
 idna==3.7
 nanoid==2.0.0
+packaging==24.1
 pillow==10.3.0
 prometheus_client==0.20.0
 psycopg2-binary==2.9.9
