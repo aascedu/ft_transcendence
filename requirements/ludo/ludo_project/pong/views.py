@@ -20,4 +20,16 @@ class ongoingGames(View):
             if request['Id'] == p1 or request['Id'] == p2:
                 return JsonResponse({'Room': roomName})
             
-        return JsonResponse({'Info': "This player is not currently in game"})
+        return JsonResponse(request, {'Info': "This player is not currently in game"})
+    
+class gameAvailability(View):
+    def get(self, request):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "You need to be logged to see ongoing games")
+        if 'Room' not in request:
+            return JsonBadRequest(request, "You need the id of the player to see his game")
+        
+        if request['Room'] in matches:
+            return JsonUnauthorized(request, "This game is already running")
+        
+        return JsonResponse(request, {'Ava': True})

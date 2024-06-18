@@ -100,7 +100,9 @@ class tournamentEntry(View):
         
         if playerId in tournaments[tournamentId].players:
             tournaments[tournamentId].players.remove(playerId)
-            del tournaments[tournamentId].aliases[playerId]
+            for dict in tournaments[tournamentId].aliases:
+                if dict['Id'] == playerId:
+                    tournaments[tournamentId].aliases.remove(dict)
 
         try:
             r = requests.post(
