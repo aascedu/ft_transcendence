@@ -66,7 +66,7 @@ async function init_tournament_socket(tournamentId) {
 				for (i = 0; i < ongoingTournaments.length; i++) {
 					tournamentId = ongoingTournaments[i].Id;
 					if (tournamentId == tournament.Id) {
-						clearMyTournaments();
+						await clearMyTournaments();
 						await loadMyTournaments();
 					}
 				}
@@ -84,18 +84,18 @@ async function init_tournament_socket(tournamentId) {
 
 				Object.entries(availableTournaments).forEach(async ([key, value]) => {
 					if (key == tournament.Id) {
-						clearAvailableTournaments();
+						await clearAvailableTournaments();
 						await loadAvailableTournaments();
 					}
 				});
 			}
 			// load back available friends in case a friend joined a tournament and is no longer available
 			if (g_state.pageToDisplay == '.create-tournament') {
-				clearCreateTournamentAvailableFriends();
+				await clearCreateTournamentAvailableFriends();
 				await createTournamentLoadAvailableFriends();
 			}
 			// load back header in case a friend joined a tournament and is no longer available
-			clearHomepageHeader();
+			await clearHomepageHeader();
 			await loadHomepageHeader();
 
 			return ;
