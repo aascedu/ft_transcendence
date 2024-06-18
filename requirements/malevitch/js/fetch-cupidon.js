@@ -5,8 +5,18 @@ function add_cupidon_in_url(url) {
 async function invite_friend_to_game(PlayerToInvite) {
     json = {PlayerToInvite: PlayerToInvite};
 
-    fetch_post(add_cupidon_in_url("game-request/"), json);
-    init_matchmaking_socket(g_userId, PlayerToInvite);
+    response = await fetch_post(add_cupidon_in_url("game-request/"), json);
+    if ('RoomName' in response) {
+        roomName = response.RoomName;
+        console.log(roomName);
+        document.querySelector('.notif-play-invite').classList.add('visually-hidden');
+        setAriaHidden();
+        await matchFound(PlayerToInvite);
+        showGamePage(roomName);
+    }
+    else {
+        init_matchmaking_socket(g_userId, PlayerToInvite);
+    }
 }
 
 async function cancel_invitation_to_game() {
@@ -15,7 +25,7 @@ async function cancel_invitation_to_game() {
 
 async function accept_invitation_to_game(requester, invited) {
     const RoomName = requester + "-" + invited
-    fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
+    await fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
     showGamePage(RoomName);
 }
 

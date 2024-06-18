@@ -23,7 +23,6 @@ class Consumer(OurBasicConsumer):
             matches[self.roomName] = Match()
         self.myMatch = matches[self.roomName] # A check !!!
 
-
         if "err" in self.scope:
             await self.close()
 
@@ -79,9 +78,6 @@ class Consumer(OurBasicConsumer):
                         "winner": self.myMatch.players[(self.id + 1) % 2].id
                     }
                 )
-
-        if self.roomName in matches:
-            del matches[self.roomName]
 
         if self.roomName.count('-') == 1:
             try:
@@ -164,19 +160,6 @@ class Consumer(OurBasicConsumer):
 
         self.myMatch.endTime = time.time_ns()
 
-        if self.myMatch.gameEnded[(self.id + 1) % 2]:
-            if self.roomName.count('-') == 2:
-                tab = self.roomName.split('-')
-                tournamentId = int(tab[0])
-                requests.post(
-                    'http://coubertin:8002/tournament/gameResult/',
-                    json={'tournamentId': tournamentId,
-                        'game': self.myMatch.to_mnemosine()})
-            else:
-                requests.post(
-                    'http://mnemosine:8008/memory/pong/games/',
-                    json=self.myMatch.to_mnemosine())
-
         if event["winner"] == self.id:
             await self.send (text_data=json.dumps({
                 "type": "youWin",
@@ -193,6 +176,22 @@ class Consumer(OurBasicConsumer):
                 "isTournament": self.myMatch.isTournamentGame,
 		        "opponentId": self.myMatch.playersId[(self.id + 1) % 2],
             }))
+
+        if self.myMatch.gameEnded[(self.id + 1) % 2]:
+            if self.roomName.count('-') == 2:
+                tab = self.roomName.split('-')
+                tournamentId = int(tab[0])
+                requests.post(
+                    'http://coubertin:8002/tournament/gameResult/',
+                    json={'tournamentId': tournamentId,
+                        'game': self.myMatch.to_mnemosine()})
+            else:
+                requests.post(
+                    'http://mnemosine:8008/memory/pong/games/',
+                    json=self.myMatch.to_mnemosine())
+
+            if self.roomName in matches:
+                del matches[self.roomName]
 
         logging.info("Game in room " + self.roomName + " has ended")
 

@@ -8,15 +8,32 @@ import logging
 
 class RequestGame(View):
     def post(self, request):
+        global gameRequesters
+
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can invite friends to play')
 
         data = request.data
         try:
             p1 = request.user.id
-            p2 = data['PlayerToInvite']
+            p2 = int(data['PlayerToInvite'])
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to request game')
+        
+        logging.debug(gameRequesters)
+        logging.debug([p2, p1])
+
+        if [p2, p1] in gameRequesters:
+            channel_layer = get_channel_layer()
+            async_to_sync(channel_layer.group_send)(
+                str(p2), {
+                    'type': 'SendToGame',
+                    'player1': p2,
+                    'player2': p1,
+                }
+            )
+            gameRequesters.remove([p2, p1])
+            return JsonResponse(request, {'RoomName': str(p2) + '-' + str(p1)})
         
         try:
             response = requests.post(
@@ -46,7 +63,7 @@ class RequestGame(View):
                 gameRequesters.remove(i)
                 channel_layer = get_channel_layer()
                 async_to_sync(channel_layer.group_send)(
-                    request.user.id, {
+                    str(request.user.id), {
                         'type': 'Leave',
                     }
                 )
@@ -69,10 +86,9 @@ class RequestGameResponse(View):
             }
         )
         gameRequesters.remove([requester, invited])
-
         # Mettre le mec unavailable pdt la recherche ?
 
-        return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited),})
+        return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited)})
 
     def delete(self, request, requester: int, invited: int):
         global gameRequesters

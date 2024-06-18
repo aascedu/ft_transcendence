@@ -7,3 +7,9 @@ async function get_game_room_name(playerId) {
 
     fetch_get(add_ludo_in_url("ongoingGames/"), json);
 }
+
+async function get_game_availability(room) {
+    json = {Room: room};
+
+    fetch_get(add_ludo_in_url("gameAvailability/"), json);
+}
