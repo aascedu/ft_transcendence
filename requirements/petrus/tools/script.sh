@@ -7,5 +7,5 @@ if [ -z "${MAKE_MIGRATIONS}" ]; then
 fi
 python manage.py migrate
 python manage.py migrate signin
-# python manage.py runserver 0.0.0.0:8009
-gunicorn --bind 0.0.0.0:8009 petrus_project.wsgi:application
+python manage.py runserver 0.0.0.0:8009
+#gunicorn --bind 0.0.0.0:8009 petrus_project.wsgi:application
