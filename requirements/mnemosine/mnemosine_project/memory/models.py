@@ -33,6 +33,14 @@ class TournamentParticipation(baseModel):
             'Alias': self.alias
         }
 
+    @staticmethod
+    def from_json_saved(json):
+        new = TournamentParticipation()
+        new.player = Player.objects.get(id=json['Id'])
+        new.alias = json['Alias']
+        new.save()
+        return new
+
 class Tournament(baseModel):
     name = models.SlugField()
     players = models.ManyToManyField(TournamentParticipation, related_name="tournament")
@@ -51,8 +59,11 @@ class Tournament(baseModel):
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament
-        for player in json['Players']:
-            TournamentParticipation.objects.create(player=Player.objects.get(id=player['Id']), alias=player['Name'])
+        for alias in json['Alias']:
+            participation = TournamentParticipation.from_json_saved(alias)
+            participation.tournaments = tournament
+            participation.save()
+            tournament.players.add(participation)
         return tournament
 
 
@@ -124,9 +135,6 @@ class TournamentGame(baseModel):
         game.game = Game.from_json_saved(json)
         game.tournament = tournament
         game.round = json['Round']
-        if (game.round == 1):
-            tournament.players.add(game.game.winner)
-            tournament.players.add(game.game.loser)
         game.full_clean()
         game.save()
         return game

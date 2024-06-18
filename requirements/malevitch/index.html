@@ -410,15 +410,15 @@
 		</div>
 		<!-- AVAILABLE TOURNAMENTS -->
 		<div class="available-tournaments w-50 d-flex justify-content-center align-items-center position-absolute visually-hidden">
-			<div class="available-tournaments-container category w-100 d-flex flex-column align-items-center purple-shadow">
+			<div class="available-tournaments-container category w-100 d-flex flex-column flex-wrap purple-shadow">
 				<div class="category-title w-100 d-flex justify-content-center align-items-center position-absolute">
 					<button class="available-tournaments-icon category-icon d-flex justify-content-center align-items-center position-absolute purple-shadow">
 						<img src="assets/general/tournament.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
 					</button>
 					<p data-language="tournaments" class="unselectable">Available tournaments</p>
 				</div>
-				<div class="available-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto">
-					<div class="w-100 d-flex flex-wrap align-items-start">
+				<div class="available-tournaments-card-container w-100 overflow-x-hidden overflow-y-auto">
+					<div class="w-100 d-flex flex-wrap align-items-center">
 					</div>
 				</div>
 				<div class="available-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
@@ -437,7 +437,7 @@
 					<p data-language="my-tournaments" class="unselectable">My tournaments</p>
 				</div>
 				<!-- EXAMPLE OF TOURNAMENTS -->
-				<div class="my-tournaments-card-container w-100 d-flex flex-wrap overflow-x-hidden overflow-y-auto visually-hidden">
+				<div class="my-tournaments-card-container w-100 overflow-x-hidden overflow-y-auto">
 					<div class="my-tournaments-ongoing w-100 d-flex flex-wrap align-items-center">
 						<div class="my-tournaments-ongoing-title my-tournaments-title w-100">
 							<p data-language="my-ongoing-tournaments" class="unselectable">My ongoing tournaments</p>
@@ -445,12 +445,6 @@
 						<div class="my-tournaments-no-open w-100 d-flex justify-content-center align-items-center text-center visually-hidden">
 							<p class="empty-list-content unselectable" data-language="no-ongoing-tournament">You don't have any ongoing tournament...</p>
 						</div>
-						<button class="content-card d-flex justify-content-center align-items-center purple-shadow">
-							<div class="my-tournaments-card-picture position-absolute">
-								<img src="assets/general/trophy.svg" alt="trophy icon" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi1</div>
-						</button>
 					</div>
 					<div class="my-tournaments-closed w-100 d-flex flex-wrap">
 						<div class="my-tournaments-closed-title my-tournaments-title w-100">
@@ -459,15 +453,9 @@
 						<div class="my-tournaments-no-closed w-100 d-flex justify-content-center align-items-center text-center visually-hidden">
 							<p class="empty-list-content unselectable" data-language="no-closed-tournament">You don't have any closed tournament...</p>
 						</div>
-						<button class="content-card d-flex justify-content-center align-items-center purple-shadow">
-							<div class="my-tournaments-card-picture position-absolute">
-								<img src="assets/general/trophy.svg" alt="tournament icon" draggable="false" (dragstart)="false;" class="unselectable">
-							</div>
-							<div class="my-tournaments-card-name d-flex justify-content-center align-items-center text-center unselectable">Tournoi2</div>
-						</button>
 					</div>
 				</div>
-				<div class="my-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute">
+				<div class="my-tournaments-empty w-100 d-flex flex-column justify-content-center align-items-center translate-middle top-50 start-50 position-absolute visually-hidden">
 					<img src="assets/general/no-history.svg" alt="no history icon" draggable="false" (dragstart)="false;" class="unselectable">
 					<p data-language="no-tournament" class="text-center unselectable">You didn't play in any tournament yet...</p>
 				</div>
