@@ -13,12 +13,14 @@ cryptography==42.0.5
 daphne==4.1.0
 Django==5.0.2
 django-prometheus==2.3.1
+gunicorn==22.0.0
 hvac==2.1.0
 hyperlink==21.0.0
 idna==3.7
 incremental==22.10.0
 msgpack==1.0.8
 nanoid==2.0.0
+packaging==24.1
 prometheus_client==0.20.0
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
