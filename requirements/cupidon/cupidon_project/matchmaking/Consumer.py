@@ -16,29 +16,32 @@ class Consumer(OurBasicConsumer):
             return self.close()
 
         self.id = int(self.scope['user'].id)
-        if self.id in waitingList:
-            return self.close()
 
         #Try catch
-        self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
-        self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
+        try:
+            self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
+            self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
+        except:
+            return self.close()
 
         if self.requester == 0 and self.invited == 0:
+            if self.id in waitingList:
+                return self.close()
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
+            try:
+                response = requests.get(
+                    f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
+                )
+                elo = response.json()['elo']
+                waitingList[self.id] = Player(self.id, elo)
+
+            except Exception as e:
+                logging.error(e)
+                return self.close()
+
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
-
-        try:
-            response = requests.get(
-                f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
-            )
-            elo = response.json()['elo']
-            waitingList[self.id] = Player(self.id, elo)
-
-        except Exception as e:
-            logging.error(e)
-            return self.close()
         
         try:
             request = requests.delete(
