@@ -86,7 +86,6 @@ class RequestGameResponse(View):
             }
         )
         gameRequesters.remove([requester, invited])
-        # Mettre le mec unavailable pdt la recherche ?
 
         return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited)})
 
@@ -106,6 +105,14 @@ class RequestGameResponse(View):
                         'type': 'Leave',
                     }
                 )
-            # Notif ?
+            try:
+                request = requests.post(
+                    'http://hermes:8004/notif/available-states/',
+                    json={'Id': requester})
+                if request.status_code != 200:
+                    logging.error("Player " + str(self.user.id) + " state update request has failed")
+            except Exception as e:
+                logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
+
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})
