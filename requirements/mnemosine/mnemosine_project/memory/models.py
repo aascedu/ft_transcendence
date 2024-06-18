@@ -29,7 +29,6 @@ class TournamentParticipation(baseModel):
     alias = models.SlugField()
 
     def to_dict(self):
-        print("i print this")
         return self.player.to_dict() | {
             'Alias': self.alias
         }
@@ -60,10 +59,11 @@ class Tournament(baseModel):
         games = [TournamentGame.from_json_saved(game_array, tournament) for game_array in json['Games']]
         for game in games:
             game.tournament = tournament
-        print(json['Alias'])
         for alias in json['Alias']:
-            print(alias)
-            tournament.players.add(TournamentParticipation.from_json_saved(alias))
+            participation = TournamentParticipation.from_json_saved(alias)
+            participation.tournaments = tournament
+            participation.save()
+            tournament.players.add(participation)
         return tournament
 
 
