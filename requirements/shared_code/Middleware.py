@@ -86,7 +86,7 @@ class RawJsonToDataGetMiddleware:
     def process_view(self, request, view_func, view_args, view_kwargs):
         try:
             request.data = json.loads(request.body.decode('utf-8'))
-        except JSONDecodeError:
+        except (JSONDecodeError, UnicodeDecodeError):
             request.Error_Data = "Warn body couldn't be read : ignore if body is supposed to be empty"
         return None
 

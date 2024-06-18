@@ -24,10 +24,6 @@ class Consumer(OurBasicConsumer):
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
-        # self.admin = False
-        # if (tournaments[self.tournamentId].admin == self.id):
-        #     self.admin = True # Do we let the admin chose if he plays or not ?
-
         await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
 
@@ -35,15 +31,15 @@ class Consumer(OurBasicConsumer):
         # Leave room group
         global tournaments
 
-        if self.id in tournaments[self.tournamentId].onPage:
-            tournaments[self.tournamentId].onPage.remove(self.id)
+        if self.tournamentId in tournaments:
+            if self.id in tournaments[self.tournamentId].onPage:
+                tournaments[self.tournamentId].onPage.remove(self.id)
+
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
     async def receive(self, text_data):
         global tournaments
-
-        logging.debug("Receiving something for the tournament\n\n\n\n")
 
         try:
             text_data_json = json.loads(text_data)
@@ -63,8 +59,6 @@ class Consumer(OurBasicConsumer):
 
     async def StartGame(self, event):
         global tournaments
-        logging.debug("These are the remaining contenders: ")
-        logging.debug(tournaments[self.tournamentId].contenders)
 
         # Ici c'est chiant, self.id pour les gens qui ont perdu n'existe pas ! If ?
         if self.id not in tournaments[self.tournamentId].contenders:
@@ -116,6 +110,7 @@ class Consumer(OurBasicConsumer):
         if self.id not in tournaments[self.tournamentId].contenders:
             return
 
+        tournaments[self.tournamentId].ended = True
         logging.debug("Sending to db tournament result")
         try:
             request = requests.post(
@@ -135,9 +130,9 @@ class Consumer(OurBasicConsumer):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
             if request.status_code != 200:
-                self.close()
+                return self.close()
         except Exception as e:
-            self.close()
+            return self.close()
 
 # To do
 # Remove someone from tournament if admin

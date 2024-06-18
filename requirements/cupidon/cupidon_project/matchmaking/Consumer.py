@@ -13,11 +13,11 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
         if self.security_check() is False:
-            await self.close()
+            return self.close()
 
         self.id = int(self.scope['user'].id)
         if self.id in waitingList:
-            await self.close()
+            return self.close()
 
         #Try catch
         self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
@@ -38,7 +38,7 @@ class Consumer(OurBasicConsumer):
 
         except Exception as e:
             logging.error(e)
-            self.close()
+            return self.close()
 
         await self.accept()
 
@@ -53,7 +53,6 @@ class Consumer(OurBasicConsumer):
             gameRequesters.remove(self.id)
 
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
-        self.close()
 
     # Receive message from WebSocket
     async def receive(self, text_data):
@@ -110,5 +109,4 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
-        print("Player closing: " + str(self.id))
-        self.close()
+        await self.close()

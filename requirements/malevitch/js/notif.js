@@ -57,9 +57,15 @@ async function acceptTournamentInvite() {
 	document.querySelector('.tournament-info-join-input').focus();
 }
 
-function dismissTournamentInvite() {
+async function dismissTournamentInvite() {
 	// notif already closed by forEach
 	// tell to the sender that user dismissed invitation
+	try {
+		var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
+		await refuse_invitation_to_tournament(tournamentId);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Friend invite
@@ -123,16 +129,16 @@ async function acceptFriendInvite() {
 	}
 	// if we are on the new friend profile, change button to 'remove' instead of pending + add play icon
 	if (g_state.pageToDisplay == '.user-profile') {
-		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
-		if (data.requester == userId) {
+		var	profileId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		var	requesterId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+		if (requesterId == profileId) {
 			clearUserContent();
-			await loadUserContent(userId);
+			await loadUserContent(profileId);
 		}
 	}
 	// if we are on a tournament page, load it back so that new friend can appear in available friends
 	if (g_state.pageToDisplay == '.tournament-info') {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 
 			clearTournamentInfoInvites();
 			await loadTournamentInfoInvites();
@@ -148,9 +154,15 @@ async function acceptFriendInvite() {
 	await loadHomepageHeader();
 }
 
-function dismissFriendInvite() {
+async function dismissFriendInvite() {
 	// notif already closed by forEach
 	// tell to the sender that user dismissed invitation
+	try {
+		var	requesterId = document.querySelector('.notif-friend-invite .notif-sender').getAttribute('user-id');
+		await delete_friend(requesterId);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 // Play invite
@@ -294,8 +306,18 @@ async function matchFound(opponent) {
 		opponentElement.textContent = opponentNick;
 	}
 
-	// hide search match notif
+	// reset timer & hide search match notif
+	seconds = 0;
+	minutes = 0;
+	hours = 0;
+	clearInterval(timerId);
+	document.querySelector('.notif-search-match .notif-info').textContent = "00:00:00";
 	document.querySelector('.notif-search-match').classList.add('visually-hidden');
+
+	// reset match scores
+	document.querySelectorAll('.game .score').forEach(function(item) {
+		item.textContent = '0';
+	});
 
 	// show match found notif
 	document.querySelector('.notif-match-found').classList.remove('visually-hidden');
