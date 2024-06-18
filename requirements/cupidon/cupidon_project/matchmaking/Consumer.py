@@ -39,6 +39,15 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             logging.error(e)
             return self.close()
+        
+        try:
+            request = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                await self.close()
+        except Exception as e:
+            await self.close()
 
         await self.accept()
 
@@ -49,8 +58,8 @@ class Consumer(OurBasicConsumer):
 
         if self.id in waitingList:
             del waitingList[self.id]
-        if self.id in gameRequesters:
-            gameRequesters.remove(self.id)
+        if [self.requester, self.invited] in gameRequesters:
+            gameRequesters.remove([self.requester, self.invited])
 
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
 
