@@ -605,23 +605,47 @@ document.querySelector('.tournament-info-leave-icon').addEventListener('click', 
 	// Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-leave-alert .alert-confirm-button').addEventListener('click', async function () {
-	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
-
-	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
-	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
-	document.querySelector('.tournament-info-join-icon').focus();
-
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	await remove_player_from_tournament(tournamentId, g_userId);
-
-	setAriaHidden();
+	confirmLeaveTournament();
 });
 
 document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
 	setAriaHidden();
 });
+
+async function confirmLeaveTournament() {
+	try {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		await remove_player_from_tournament(tournamentId, g_userId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
+	// Hide alert
+	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
+
+	// Change icon
+	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
+	document.querySelector('.tournament-info-join-icon').focus();
+
+	// Remove yourself from
+	var	itemToRemove;
+	var	userId;
+
+	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		userId = item.getAttribute('user-id');
+		if (userId == g_userId) {
+			itemToRemove = item;
+			return ;
+		}
+	});
+
+	itemToRemove.parentElement.removeChild(itemToRemove);
+
+	setAriaHidden();
+}
 
 // Enter edit mode
 
