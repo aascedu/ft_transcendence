@@ -11,14 +11,20 @@ class tournamentHistoryView(View):
     def get(self, request, id: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Connect yourself to fetch this data')
-        
+
         try:
             player = Player.objects.get(id=id)
         except ObjectDoesNotExist:
-            JsonNotFound(request, 'Id is not found in db')
-        return_json = {player.id: [tournament.to_dict() for tournament in player.tournaments.all()]}
-
-        return JsonResponse(request, return_json)
+            return JsonNotFound(request, 'Id is not found in db')
+        return JsonResponse(request, {
+                        player.id:
+                            [
+                                tournament_participation.tournament.first().to_dict()
+                                    for tournament_participation
+                                    in list(player.tournaments.all())
+                             ]
+                    }
+                )
 
 class tournamentView(View):
     def get(self, request, id: int):
