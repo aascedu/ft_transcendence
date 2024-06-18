@@ -15,10 +15,11 @@
         }
       ]
     },
-    "description": "I'm Batman",
+    "description": "I'm Batman, a vigilante of the shadows",
     "editable": true,
     "fiscalYearStartMonth": 0,
     "graphTooltip": 0,
+    "id": 1,
     "links": [],
     "panels": [
       {
@@ -566,81 +567,6 @@
         "type": "stat"
       },
       {
-        "datasource": {},
-        "description": "",
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "mappings": [],
-            "noValue": "n/a",
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "red",
-                  "value": null
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          },
-          "overrides": []
-        },
-        "gridPos": {
-          "h": 2,
-          "w": 2,
-          "x": 2,
-          "y": 3
-        },
-        "id": 8,
-        "options": {
-          "colorMode": "background",
-          "graphMode": "area",
-          "justifyMode": "center",
-          "orientation": "auto",
-          "reduceOptions": {
-            "calcs": [
-              "last"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "showPercentChange": false,
-          "textMode": "auto",
-          "wideLayout": true
-        },
-        "pluginVersion": "10.4.0",
-        "targets": [
-          {
-            "datasource": {
-              "type": "prometheus",
-              "uid": "8011"
-            },
-            "disableTextWrap": false,
-            "editorMode": "builder",
-            "exemplar": false,
-            "expr": "up{job=\"lovelace\"}",
-            "format": "time_series",
-            "fullMetaSearch": false,
-            "hide": false,
-            "includeNullMetadata": true,
-            "instant": true,
-            "interval": "",
-            "legendFormat": "__auto",
-            "range": false,
-            "refId": "A",
-            "useBackend": false
-          }
-        ],
-        "title": "Lovelace",
-        "type": "stat"
-      },
-      {
         "datasource": {
           "type": "prometheus",
           "uid": "8011"
@@ -964,7 +890,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
-        "description": "in the last 5 minutes",
+        "description": "in the last 30 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1020,8 +946,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "builder",
-            "expr": "irate(nginx_server_requests{code!=\"total\", host=\"*\"}[5m])",
+            "editorMode": "code",
+            "expr": "irate(nginx_server_requests{code!=\"total\", host=\"*\"}[30m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1039,7 +965,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
-        "description": "in the last 5 minutes",
+        "description": "in the last 30 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1095,8 +1021,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "builder",
-            "expr": "irate(nginx_server_bytes{host=\"*\"}[5m]) / 1000000",
+            "editorMode": "code",
+            "expr": "irate(nginx_server_bytes{host=\"*\"}[30m]) / 1000000",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1127,7 +1053,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
-        "description": "Queries per second in the last 5 minutes",
+        "description": "Queries per second in the last 30 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1181,8 +1107,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"auth_management\"}[5m])",
+            "editorMode": "code",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"auth_management\"}[30m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1201,7 +1127,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
-        "description": "Queries per second in the last 5 minutes",
+        "description": "Queries per second in the last 30 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1255,8 +1181,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"memory_management\"}[5m])",
+            "editorMode": "code",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"memory_management\"}[30m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1275,7 +1201,7 @@
           "type": "prometheus",
           "uid": "8011"
         },
-        "description": "Queries per second in the last 5 minutes",
+        "description": "Queries per second in the last 30 minutes",
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -1329,8 +1255,8 @@
               "uid": "8011"
             },
             "disableTextWrap": false,
-            "editorMode": "builder",
-            "expr": "irate(pg_stat_database_xact_commit{datname=\"user_management\"}[5m])",
+            "editorMode": "code",
+            "expr": "irate(pg_stat_database_xact_commit{datname=\"user_management\"}[30m])",
             "fullMetaSearch": false,
             "includeNullMetadata": true,
             "instant": false,
@@ -1626,7 +1552,7 @@
       "list": []
     },
     "time": {
-      "from": "now-5m",
+      "from": "now-1h",
       "to": "now"
     },
     "timepicker": {},
