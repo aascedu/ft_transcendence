@@ -16,29 +16,41 @@ class Consumer(OurBasicConsumer):
             return self.close()
 
         self.id = int(self.scope['user'].id)
-        if self.id in waitingList:
-            return self.close()
 
         #Try catch
-        self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
-        self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
+        try:
+            self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
+            self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
+        except:
+            return self.close()
 
         if self.requester == 0 and self.invited == 0:
+            if self.id in waitingList:
+                return self.close()
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
+            try:
+                response = requests.get(
+                    f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
+                )
+                elo = response.json()['elo']
+                waitingList[self.id] = Player(self.id, elo)
+
+            except Exception as e:
+                logging.error(e)
+                return self.close()
+
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
-
+        
         try:
-            response = requests.get(
-                f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
-            )
-            elo = response.json()['elo']
-            waitingList[self.id] = Player(self.id, elo)
-
+            request = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code != 200:
+                await self.close()
         except Exception as e:
-            logging.error(e)
-            return self.close()
+            await self.close()
 
         await self.accept()
 
@@ -49,8 +61,8 @@ class Consumer(OurBasicConsumer):
 
         if self.id in waitingList:
             del waitingList[self.id]
-        if self.id in gameRequesters:
-            gameRequesters.remove(self.id)
+        if [self.requester, self.invited] in gameRequesters:
+            gameRequesters.remove([self.requester, self.invited])
 
         await self.channel_layer.group_discard("matchmakingRoom", self.channel_name)
 
