@@ -14,15 +14,6 @@ class Match:
         self.startTime = 0
         self.endTime = 0
 
-    def toDict(self):
-        return ({
-            'Player1': self.playersId[0],
-            'Player2': self.playersId[1],
-            'Score1': self.score[0],
-            'Score2': self.score[1],
-            'Duration': (self.endTime - self.startTime) / 1000000000
-        })
-
     def to_mnemosine(self):
         if self.score[0] < self.score[1]:
             return ({
