@@ -96,7 +96,7 @@ class Tournament:
 
         gamesAlreadyPlayed = len(games)
         i = gamesAlreadyPlayed
-        while i <= self.nbPlayers: # Besoin du cast ??
+        while i <= self.nbPlayers / 2: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 1)
             i += 1
         while i <= self.nbPlayers / 2 + self.nbPlayers / 4: # Besoin du cast ??
