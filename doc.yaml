@@ -38,11 +38,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetTournament'          
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+                $ref: '#/components/schemas/GetTournament'
+        '401':
+          description: User not authenticated
     post:
       tags:
         - coubertin
@@ -64,9 +62,11 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+          description: Missing keys in the body
+        '401':
+          description: User not authenticated
+        x-4xx:
+          description: Failed to notify Hermes
     patch:
       tags:
         - coubertin
@@ -88,9 +88,9 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+          description: Missing keys in the body
+        '401':
+          description: User ot authenticated or not tournament admin
     
   /coubertin/tournament/entry/{tournamentId}/{playerId}/:
     post:
@@ -112,9 +112,13 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
+          description: Either missing keys in the body or tournament already full
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found  
+          description: Tournament not found
+        x-4xx:
+          description: Failed to notify Hermes
     delete:
       tags:
         - coubertin
@@ -134,15 +138,21 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+          description: Either missing keys in the body or tournament already full
+        '401':
+          description: User not authenticated
           
-  /coubertin/tournament/entry/invite/:
+  /coubertin/tournament/entry/invite/{tournamentId}:
     post:
       tags:
         - coubertin
       summary: Invite friend to a tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
@@ -153,9 +163,29 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
+          description: Missing keys in the body
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: Tournament not found
+    delete:
+      tags:
+        - coubertin
+      summary: Refuse invitation to tournament
+      parameters:
+        - name: tournamentId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+        '401':
+          description: User not authenticated
+        '404':
+          description: Tournament not found or player not invited to this tournament
+      
           
   /coubertin/tournament/entry/my-tournaments/:
     get:
@@ -169,10 +199,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MyTournaments' 
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+        '401':
+          description: User not authenticated
           
   /coubertin/tournament/entry/available-tournaments/:
     get:
@@ -186,29 +214,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AvailableTournaments' 
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
-          
-  /coubertin/tournament/entry/start-tournament/: 
-    post:
-      tags:
-        - coubertin
-      summary: start a tournament
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StartTournament'
-      responses:
-        '200':
-          description: Successful operation
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+        '401':
+          description: User not authenticated
           
   /alfred/user/users/{id}/:
     get:
@@ -228,10 +235,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetUser'
-        '400':
-          description: Invalid ID supplied
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: User not found
     patch:
       tags:
         - alfred
@@ -251,11 +258,9 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '400':
-          description: Invalid ID supplied
         '404':
-          description: Not Found
-  
+          description: User not found
+          
   /alfred/user/friends/{id}/:
     get:
       tags:
@@ -275,10 +280,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GetFriends'
-        '400':
-          description: Invalid ID supplied
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: User not found
     post:
       tags:
         - alfred
@@ -300,9 +305,11 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
+          description: Invalid id (Usually trying to add yourself as friend)
+        '403':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: User to add not found
     delete:
       tags:
         - alfred
@@ -317,10 +324,10 @@ paths:
       responses:
         '200':
           description: Successful operation
-        '400':
-          description: Invalid ID supplied
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: Friend not found
           
   /alfred/user/avatar/{id}/:
     get:
@@ -341,10 +348,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AvatarUrl'
-        '400':
-          description: Invalid ID supplied
         '404':
-          description: Not Found
+          description: User not found
     post:
       tags:
         - alfred
@@ -360,11 +365,7 @@ paths:
         '200':
           description: Successful operation
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
-          
-  # Serve avatar ? Cf Brieuc
+          description: Missing file to add
   
   /hermes/notif/online-states/:
     get:
@@ -379,9 +380,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/OnlineFriendList'
         '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+          description: Id has to be an int
+        '401':
+          description: User not authenticated
       
   /hermes/notif/available-states/:
     get:
@@ -395,10 +396,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AvailableFriendList'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Not Found
+        '401':
+          description: User not authenticated
           
   /mnemosine/memory/players/{id}/:
     get:
@@ -419,10 +418,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GameHistory'
-        '400':
-          description: Invalid ID supplied
+        '401':
+          description: User not authenticated
         '404':
-          description: Not Found
+          description: User not found
           
   # /mnemosine/memory/tournament-history/{id}/:
   #   get:
@@ -447,8 +446,52 @@ paths:
   #         description: Invalid ID supplied
   #       '404':
   #         description: Not Found
-      
   
+  # /mnemosine/memory/tournaments/{id}/:
+      
+  /petrus/auth/signin/nickname/:
+    post:
+      tags:
+        - petrus
+      summary: signin or signup to the website
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignIn'
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Missing keys in the body, or id is not an int
+        '403':
+          description: Wrong password
+        '404':
+          description: User not found
+          
+  /petrus/auth/signin/{nickname}/:
+    post:
+      tags: 
+        - petrus
+      summary: connection to website
+      parameters:
+        - name: nickname
+          in: path
+          required: true
+          description: nickname of the user
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Missing keys in the body or bad nickname format
+        '409':
+          description: Conflict in the database
+        '422':
+          description: Wrong password
+          
 components:
   schemas:
     EmptyObject:
@@ -557,9 +600,6 @@ components:
     InviteFriendToTournament:
       type: object
       properties:
-        TournamentId:
-          type: integer
-          example: 1
         Invited:
           type: integer
           example: 42
@@ -708,6 +748,18 @@ components:
     # TournamentHistory:
     #   type: object
     #   properties:
+    
+    SignIn:
+      type: object
+      properties:
+        Id:
+          type: integer
+        Pass:
+          type: string
+        Email:
+          type: string
+          
+        
         
     
         
