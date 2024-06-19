@@ -112,15 +112,6 @@ services:
       - atlas
       - sentinel
     restart: on-failure
-    healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -k https://localhost:8000",
-        ]
-      interval: 10s
-      timeout: 10s
-      retries: 120
 
 # Nginx exporter container
   aegis_vts_exporter:
