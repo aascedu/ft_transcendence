@@ -21,7 +21,7 @@ class Tournament:
         self.onPage = []
 
     def addPlayer(self, player, alias):
-        if len(self.players) >= int(self.nbPlayers): # Pas besoin de cast ici ?
+        if len(self.players) >= self.nbPlayers: # Pas besoin de cast ici ?
             raise Exception("Too many players already")
         if self.userParticipating(player):
             raise Exception("Player is already participating in tournament")
@@ -96,13 +96,13 @@ class Tournament:
 
         gamesAlreadyPlayed = len(games)
         i = gamesAlreadyPlayed
-        while i <= int(self.nbPlayers) / 2: # Besoin du cast ??
+        while i <= self.nbPlayers: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 1)
             i += 1
-        while i <= int(self.nbPlayers) / 2 + int(self.nbPlayers) / 4: # Besoin du cast ??
+        while i <= self.nbPlayers / 2 + self.nbPlayers / 4: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 2)
             i += 1
-        if int(self.nbPlayers) == 8: # Besoin du cast ??
+        if self.nbPlayers == 8: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 3)
             i += 1
 
