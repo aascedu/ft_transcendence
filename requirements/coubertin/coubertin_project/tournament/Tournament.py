@@ -74,7 +74,7 @@ class Tournament:
 
     def userParticipating(self, userId):
         for i in self.players:
-            if int(i) == int(userId):
+            if i == userId:
                 return True
         return False
 
