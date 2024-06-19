@@ -11,13 +11,6 @@
       "mappings": {
           "dynamic": false,
           "properties": {
-              "geoip": {
-                  "properties": {
-                      "location": {
-                          "type": "geo_point"
-                      }
-                  }
-              },
               "@timestamp": {
                   "type": "date"
               },
@@ -76,7 +69,41 @@
                           "ignore_above": 256
                       }
                   }
-              }
+              },
+              "geoip": {
+                  "properties": {
+                      "location": {
+                          "type": "geo_point"
+                      },
+                      "city_name": {
+                          "type": "keyword"
+                      },
+                      "continent_code": {
+                          "type": "keyword"
+                      },
+                      "country_iso_code": {
+                          "type": "keyword"
+                      },
+                      "country_name": {
+                          "type": "keyword"
+                      },
+                      "postal_code": {
+                          "type": "keyword"
+                      },
+                      "region_iso_code": {
+                          "type": "keyword"
+                      },
+                      "region_name": {
+                          "type": "keyword"
+                      },
+                      "timezone": {
+                          "type": "keyword"
+                      },
+                      "dma_code": {
+                          "type": "integer"
+                      }
+               }
+            }
           }
       }
   }
