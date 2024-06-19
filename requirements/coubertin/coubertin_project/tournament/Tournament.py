@@ -55,7 +55,7 @@ class Tournament:
             self.currentRound += 1
 
             # Check tournament end
-            if self.nbPlayers == int(pow(2, self.currentRound - 1)):
+            if self.nbPlayers == pow(2, self.currentRound - 1):
                 logging.info("Tournament " + str(self.id) + " is ending")
                 async_to_sync(channel_layer.group_send)(
                     str(self.id), {
