@@ -108,10 +108,10 @@ class Consumer(OurBasicConsumer):
 
         # Check cette condition !
         if self.tournamentId not in tournaments:
-            return
+            self.close()
 
         if self.id not in tournaments[self.tournamentId].contenders:
-            return
+            self.close()
 
         tournaments[self.tournamentId].ended = True
         logging.debug("Sending to db tournament result")
@@ -136,6 +136,10 @@ class Consumer(OurBasicConsumer):
                 return self.close()
         except Exception as e:
             return self.close()
+        
+        self.close()
+        
+            
 
 # To do
 # Remove someone from tournament if admin
