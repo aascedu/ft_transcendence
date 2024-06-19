@@ -13,13 +13,14 @@ class Consumer(OurBasicConsumer):
 
         if self.security_check() is False:
             return self.close()
-        test = self.scope['user'].id
-        self.id = int(self.scope['user'].id)
-        logging.debug(test)
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
-        self.tournamentId = int(self.roomName)
+        try:
+            self.id = int(self.scope['user'].id)
+            self.tournamentId = int(self.roomName)
+        except:
+            return self.close()
         if self.id in tournaments[self.tournamentId].onPage:
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
@@ -60,7 +61,6 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
-        # Ici c'est chiant, self.id pour les gens qui ont perdu n'existe pas ! If ?
         if self.id not in tournaments[self.tournamentId].contenders:
             return
         
@@ -84,7 +84,10 @@ class Consumer(OurBasicConsumer):
 
         logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
-        roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
+        try:
+            roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
+        except:
+            return self.close()
         await self.send(json.dumps({
             'Action': "startGame",
             'RoomName': roomName,
