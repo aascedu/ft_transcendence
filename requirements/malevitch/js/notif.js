@@ -188,14 +188,6 @@ document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('ke
 });
 
 async function acceptPlayInvite() {
-	try {
-		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
-		await accept_invitation_to_game(requester, g_userId);
-	} catch (error) {
-		console.error(error);
-		return ;
-	}
-
 	// close the notif
 	document.querySelector('.notif-play-invite').classList.add('visually-hidden');
 	setAriaHidden();
@@ -204,6 +196,13 @@ async function acceptPlayInvite() {
 	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
 	document.querySelector('.notif-match-found .notif-sender').textContent = opponent;
 	await matchFound(null);
+
+	try {
+		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
+		await accept_invitation_to_game(requester, g_userId);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 async function dismissPlayInvite() {

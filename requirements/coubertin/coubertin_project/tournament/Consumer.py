@@ -22,6 +22,7 @@ class Consumer(OurBasicConsumer):
         except:
             return self.close()
         if self.id in tournaments[self.tournamentId].onPage:
+            tournaments[self.tournamentId].onPage.append(self.id)
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
@@ -35,6 +36,9 @@ class Consumer(OurBasicConsumer):
         if self.tournamentId in tournaments:
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
+
+            if self.id in tournaments[self.tournamentId].contenders:
+                tournaments[self.tournamentId].contenders.remove(self.id)
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -61,28 +65,18 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
+        logging.debug(tournaments[self.tournamentId].contenders)
         if self.id not in tournaments[self.tournamentId].contenders:
             return
         
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
-        if opponentId not in tournaments[self.tournamentId].onPage:
-            logging.info("Player " + str(self.id) + " won his game because opponent failed to connect to the game.")
-            game = {
-                'Winner': self.id,
-                'Winner-score': 5,
-                'Loser': opponentId,
-                'Loser-score': 0,
-                'Duration': 0
-            }
-            tournaments[self.tournamentId].addGame(game)
-            return
+        logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
 
-        logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
         try:
             roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
