@@ -39,6 +39,7 @@ class Tournament:
         self.gameHistory.append(game)
         self.ongoingGames -= 1
         if game['Loser'] in self.contenders:
+            logging.debug("Removing Loser")
             self.contenders.remove(game['Loser'])
 
         try:
