@@ -51,4 +51,3 @@ async function is_participating_in_tournament(tournamentId) {
 
     return response;
 }
-
