@@ -9,7 +9,7 @@ let g_refreshInterval;
 let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
-let g_state;
+let g_state = {pageToDisplay : '.homepage-id'};
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -75,7 +75,7 @@ async function determine_state() {
             throw custom_error(response);
         }
         await assign_global();
-        render();
+        await render();
     } catch {
             console.log("No JWT in request : try to connect")
             disconnect();
@@ -255,7 +255,6 @@ function setLanguageSelector(prevSelector, nextSelector) {
 function setAllLanguageSelectors() {
 	var	languageSelector = document.querySelector('.homepage-header-language-selector');
 	var	lang = languageSelector.querySelector('button img').alt;
-	console.log(lang);
 
 	document.querySelectorAll('.language-selector').forEach(function(item) {
 		if (item != languageSelector) {
@@ -692,7 +691,6 @@ async function loadHomepageFriends() {
             document.querySelector('.user-profile-remove-icon').focus();
 
             clearUserContent();
-            console.log(item.getAttribute('user-id'));
             await loadUserContent(item.getAttribute('user-id'));
 
             hideEveryPage();
@@ -771,6 +769,10 @@ function hideEveryPage() {
 	document.querySelector('.my-tournaments').classList.add('visually-hidden');
 	document.querySelector('.available-tournaments').classList.add('visually-hidden');
 	document.querySelector('.tournament-info').classList.add('visually-hidden');
+	// When hiding tournament info, check if we should close the tournament socket for user or not
+	if (g_state.pageToDisplay == '.tournament-info') {
+		checkCloseTournamentSocket();
+	}
 	// Leave tournament info edit mode
 	if (!document.querySelector('.tournament-info-name-input-container').classList.contains('visually-hidden')) {
 		leaveTournamentEditMode();
@@ -781,6 +783,28 @@ function hideEveryPage() {
 	// Automatically cancel tournament creation if there was one
 	resetTournamentCreation();
 	document.querySelector('.accessibility').classList.add('visually-hidden');
+}
+
+//
+
+async function checkCloseTournamentSocket() {
+	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('user-id');
+	var	inTournament;
+
+	if (tournamentId == null) {
+		return ;
+	}
+	try {
+		inTournament = await is_participating_in_tournament(tournamentId);
+		inTournament = inTournament.IsParticipating;
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+		
+	if (!inTournament && g_tournamentSocket != null) {
+		g_tournamentSocket.close();
+	}
 }
 
 //

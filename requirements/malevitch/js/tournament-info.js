@@ -11,7 +11,9 @@ async function loadOngoingTournament(id) {
 		return ;
 	}
 
-	init_tournament_socket(id)
+	if (g_tournamentSocket == null) {
+		init_tournament_socket(id);
+	}
 	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
 }
@@ -72,19 +74,27 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		// Display icons only if tournament has not yet started
 		if (tournamentInfo.Started == false) {
 			document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
-			for (i = 0; i < confirmedPlayers.length; i++) {
-				userId = confirmedPlayers[i].Id;
-				if (userId == g_userId) {
+			try {
+				var inTournament = await is_participating_in_tournament(tournamentInfo.Id);
+				inTournament = inTournament.IsParticipating;
+
+				if (inTournament) {
+					document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
 					document.querySelector('.tournament-info-leave-icon').classList.remove('visually-hidden');
 					document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
-					break ;
 				}
-			}
-			if (document.querySelector('.tournament-info-leave-icon').classList.contains('visually-hidden')) {
-				document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
-				if (tournamentInfo.Owner != g_userId) {
-					document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
+				else {
+					document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
+					document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
+					if (tournamentInfo.Owner == g_userId) {
+						document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
+					}
+					else {
+						document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
+					}
 				}
+			} catch (error) {
+				console.error(error);
 			}
 		}
 		else {
