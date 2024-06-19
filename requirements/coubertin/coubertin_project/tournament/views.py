@@ -138,6 +138,10 @@ class tournamentEntry(View):
 
         if (tournamentId not in tournaments):
             return JsonNotFound(request, 'Tournament not found')
+        
+        for i in tournaments:
+            if i.userParticipating(playerId):
+                return JsonBadRequest(request, "Already in tournament")
 
         try:
             tournaments[tournamentId].addPlayer(userId, playerAlias)
