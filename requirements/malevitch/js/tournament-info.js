@@ -579,6 +579,15 @@ async function confirmJoinTournament() {
 
 			setAriaHidden();
 		}
+		if (errMsg == 'Bad Request : Already in tournament: HTTP error: 400 : Bad Request : Already in tournament') {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.tournament-already-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
 		return ;
 	}
 
@@ -618,6 +627,24 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 	document.querySelector('.available-tournaments-icon').focus();
 
 	g_state.pageToDisplay = '.available-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
+// Close 'already in tournament' alert
+document.querySelector('.tournament-already-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.tournament-already-alert').classList.add('visually-hidden');
+	setAriaHidden();
+
+	// Go to available tournaments
+	hideEveryPage();
+
+	clearMyTournaments();
+	await loadMyTournaments();
+
+	document.querySelector('.my-tournaments-icon').focus();
+
+	g_state.pageToDisplay = '.my-tournaments';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
 });
