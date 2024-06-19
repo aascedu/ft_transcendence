@@ -140,7 +140,7 @@ class tournamentEntry(View):
             return JsonNotFound(request, 'Tournament not found')
         
         for i in tournaments:
-            if i.userParticipating(playerId):
+            if tournaments[i].userParticipating(userId):
                 return JsonBadRequest(request, "Already in tournament")
 
         try:
@@ -260,8 +260,8 @@ class myTournaments(View):
 class inTournament(View):
     def get(self, request, tournamentId: int):
         if tournaments[tournamentId].userParticipating(request.user.id):
-            return JsonResponse({'IsParticipating': True})
-        return JsonResponse({'IsParticipating': False})
+            return JsonResponse(request, {'IsParticipating': True})
+        return JsonResponse(request, {'IsParticipating': False})
 
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState
