@@ -9,6 +9,5 @@ fi
 
 python manage.py migrate
 python manage.py migrate user_management
-python manage.py runserver 0.0.0.0:8001
 
-#gunicorn --bind 0.0.0.0:8001 alfred_project.wsgi:application
+daphne -b 0.0.0.0 -p 8001 alfred_project.asgi:application
