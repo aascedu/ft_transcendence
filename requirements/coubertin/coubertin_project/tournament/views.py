@@ -8,8 +8,13 @@ import logging
 
 def updateTournament(tournamentId, isJoining, id):
     channel_layer = get_channel_layer()
+
+    try:
+        roomName = str(tournamentId)
+    except:
+        return
     async_to_sync(channel_layer.group_send)(
-        str(tournamentId), {
+        roomName, {
             'type': 'TournamentState',
             'opt': isJoining,
             'id': id
@@ -147,12 +152,16 @@ class tournamentEntry(View):
             tournaments[tournamentId].started = True
             tournaments[tournamentId].contenders = tournaments[tournamentId].players.copy()
             channel_layer = get_channel_layer()
-            async_to_sync(channel_layer.group_send)(
-                str(tournamentId), {
-                    'type': 'StartGame',
-                }
-            )
-            logging.info("Starting tournament")
+            try:
+                roomName = str(tournamentId)
+                async_to_sync(channel_layer.group_send)(
+                    roomName, {
+                        'type': 'StartGame',
+                    }
+                )
+                logging.info("Starting tournament")
+            except:
+                return JsonBadRequest(request, "Couldn't start tournament because of invalid tournament id")
 
         try:
             r = requests.delete(
@@ -214,9 +223,13 @@ class inviteFriend(View):
 
         global tournaments
 
-        if str(request.user.id) not in tournaments[tournamentId].invited:
-            return JsonNotFound(request, "Player is not in the invited list of the tournament")
-        tournaments[tournamentId].invited.remove(str(request.user.id))
+        try:
+            strid = str(request.user.id)
+            if strid not in tournaments[tournamentId].invited:
+                return JsonNotFound(request, "Player is not in the invited list of the tournament")
+            tournaments[tournamentId].invited.remove(strid)
+        except:
+            return JsonBadRequest(request, 'Invalid user id')
 
         updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {
@@ -232,9 +245,6 @@ class myTournaments(View):
         response = []
 
         for id in tournaments:
-            logging.debug("Tournament name: " + tournaments[id].name)
-            logging.debug("Tournaments[id] players: ")
-            logging.debug(tournaments[id].players)
             if tournaments[id].userParticipating(userId) or userId == tournaments[id].admin:
                 t = {}
                 t['Name'] = tournaments[id].name
@@ -242,35 +252,6 @@ class myTournaments(View):
                 response.append(t)
 
         return JsonResponse(request, {'Ongoing': response})
-
-class startTournament(View):
-    def post(self, request):
-        if request.user.is_autenticated is False:
-                return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
-
-        data = request.data
-        userId = request.user.id
-        try:
-            tournamentId = data['TournamentId']
-        except KeyError as e:
-            return JsonBadRequest(request, f'Missing key {e}')
-
-        if tournaments[tournamentId].admin != userId:
-            return JsonUnauthorized(request, "You need to be admin of tournament to start it")
-
-        if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
-            return JsonErrResponse(request, "Not enough players to start the tournament")
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            tournamentId, {
-                'type': 'StartGame',
-            }
-        )
-
-        updateTournament(tournamentId, False, request.user.id)
-        logging.info("Tournament " + str(tournamentId) + " is starting round 1")
-        return JsonResponse(request, {'Msg': "Tournament started"})
 
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState
@@ -288,10 +269,3 @@ class gameResult(View):
         if tournaments[tournamentId].ended is False:
             updateTournament(tournamentId, False, request.user.id)
         return JsonResponse(request, {'Msg': "Tournament game added"})
-
-############## Debug ##############
-def printData(data):
-    print('Tournament id: ', data['tournamentId'])
-    game = data['game']
-    print('Winner is ', game['Winner'], ' with a score of ', game['Winner-score'])
-    print('Loser is ', game['Loser'], ' with a score of ', game['Loser-score'])
