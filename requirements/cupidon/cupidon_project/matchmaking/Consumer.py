@@ -15,10 +15,8 @@ class Consumer(OurBasicConsumer):
         if self.security_check() is False:
             return self.close()
 
-        self.id = int(self.scope['user'].id)
-
-        #Try catch
         try:
+            self.id = int(self.scope['user'].id)
             self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
             self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
         except:
@@ -90,12 +88,16 @@ class Consumer(OurBasicConsumer):
         )
 
     async def SendToGame(self, event): # Need to manage when game invite
-        if int(event['player1']) == self.id or int(event['player2']) == self.id:
+        try:
+            player1 = int(event['player1'])
+            player2 = int(event['player2'])
+        except:
+            return
+        if player1 == self.id or player2 == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
-                'RoomName': str(event['player1']) + '-' + str(event['player2']),
+                'RoomName': event['player1'] + '-' + event['player2'],
             }))
-
             if self.id in waitingList:
                 del waitingList[self.id] # Only if not from invite
 

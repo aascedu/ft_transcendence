@@ -17,36 +17,35 @@ class RequestGame(View):
         try:
             p1 = request.user.id
             p2 = int(data['PlayerToInvite'])
+            strp1 = str(p1)
+            strp2 = data['PlayerToInvite']
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to request game')
-        
-        logging.debug(gameRequesters)
-        logging.debug([p2, p1])
 
         if [p2, p1] in gameRequesters:
             channel_layer = get_channel_layer()
             async_to_sync(channel_layer.group_send)(
-                str(p2), {
+                strp2, {
                     'type': 'SendToGame',
                     'player1': p2,
                     'player2': p1,
                 }
             )
             gameRequesters.remove([p2, p1])
-            return JsonResponse(request, {'RoomName': str(p2) + '-' + str(p1)})
+            return JsonResponse(request, {'RoomName': strp2 + '-' + strp1})
         
         try:
             response = requests.post(
-                'http://hermes:8004/notif/game-request/' + str(p1) + '/',
+                'http://hermes:8004/notif/game-request/' + strp1 + '/',
                 json={
                     'Notified': p2,
                 }
             )
             if response.status_code != 200:
-                logging.warning("Failed to send invitation to player " + str(p2))
+                logging.warning("Failed to send invitation to player " + strp2)
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
         except Exception as e:
-            logging.error("Failed to send invitation to player " + str(p2))
+            logging.error("Failed to send invitation to player " + strp2)
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         return JsonResponse(request, {'Msg': 'Invitation successfully sent'})
@@ -57,7 +56,6 @@ class RequestGame(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can cancel invitation')
 
-        # Check if the room exists ?
         for i in gameRequesters:
             if request.user.id in i:
                 gameRequesters.remove(i)
@@ -77,9 +75,15 @@ class RequestGameResponse(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
         
+        try:
+            strRequester = str(requester)
+            strinvited = str(invited)
+        except:
+            return JsonBadRequest(request, 'Invalid requester id')
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
-            str(requester), {
+            strRequester, {
                 'type': 'SendToGame',
                 'player1': requester,
                 'player2': invited,
@@ -87,13 +91,18 @@ class RequestGameResponse(View):
         )
         gameRequesters.remove([requester, invited])
 
-        return JsonResponse(request, {'RoomName': str(requester) + '-' + str(invited)})
+        return JsonResponse(request, {'RoomName': strRequester + '-' + strinvited})
 
     def delete(self, request, requester: int, invited: int):
         global gameRequesters
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can refuse an invitation')
+        
+        try:
+            strRequester = str(requester)
+        except:
+            return JsonBadRequest(request, 'Invalid requester id')
 
         for i in gameRequesters:
             if request.user.id in i:
@@ -101,7 +110,7 @@ class RequestGameResponse(View):
                 channel_layer = get_channel_layer()
                 
                 async_to_sync(channel_layer.group_send)(
-                    str(requester), {
+                    strRequester, {
                         'type': 'Leave',
                     }
                 )
@@ -110,9 +119,9 @@ class RequestGameResponse(View):
                     'http://hermes:8004/notif/available-states/',
                     json={'Id': requester})
                 if request.status_code != 200:
-                    logging.error("Player " + str(self.user.id) + " state update request has failed")
+                    logging.error("Player " + strRequester + " state update request has failed")
             except Exception as e:
-                logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
+                logging.critical("Player " + strRequester + " state update request has critically failed")
 
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})
