@@ -567,8 +567,18 @@ async function confirmJoinTournament() {
 
 	try {
 		await join_tournament(tournamentId, tournamentNick);
-	} catch (error) {
-		console.error();
+	}
+	catch (error) {
+		const errMsg = await error;
+		if (errMsg == 'Bad Request : Too many players already: HTTP error: 400 : Bad Request : Too many players already') {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.tournament-full-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
 		return ;
 	}
 
@@ -594,6 +604,24 @@ document.querySelector('.tournament-info-join-alert .alert-cancel-button').addEv
 	setAriaHidden();
 });
 
+// Close tournament is full alert
+document.querySelector('.tournament-full-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.tournament-full-alert').classList.add('visually-hidden');
+	setAriaHidden();
+
+	// Go to available tournaments
+	hideEveryPage();
+
+	clearAvailableTournaments();
+	await loadAvailableTournaments();
+
+	document.querySelector('.available-tournaments-icon').focus();
+
+	g_state.pageToDisplay = '.available-tournaments';
+	window.history.pushState(g_state, null, "");
+	render(g_state);
+});
+
 // Ask for confirmation when leaving tournament
 
 document.querySelector('.tournament-info-leave-icon').addEventListener('click', function() {
@@ -605,23 +633,47 @@ document.querySelector('.tournament-info-leave-icon').addEventListener('click', 
 	// Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-leave-alert .alert-confirm-button').addEventListener('click', async function () {
-	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
-
-	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
-	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
-	document.querySelector('.tournament-info-join-icon').focus();
-
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	await remove_player_from_tournament(tournamentId, g_userId);
-
-	setAriaHidden();
+	confirmLeaveTournament();
 });
 
 document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
 	setAriaHidden();
 });
+
+async function confirmLeaveTournament() {
+	try {
+		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
+		await remove_player_from_tournament(tournamentId, g_userId);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
+
+	// Hide alert
+	document.querySelector('.tournament-info-leave-alert').classList.add('visually-hidden');
+
+	// Change icon
+	document.querySelector('.tournament-info-leave-icon').classList.add('visually-hidden');
+	document.querySelector('.tournament-info-join-icon').classList.remove('visually-hidden');
+	document.querySelector('.tournament-info-join-icon').focus();
+
+	// Remove yourself from
+	var	itemToRemove;
+	var	userId;
+
+	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		userId = item.getAttribute('user-id');
+		if (userId == g_userId) {
+			itemToRemove = item;
+			return ;
+		}
+	});
+
+	itemToRemove.parentElement.removeChild(itemToRemove);
+
+	setAriaHidden();
+}
 
 // Enter edit mode
 
