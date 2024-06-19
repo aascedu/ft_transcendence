@@ -39,18 +39,5 @@ setup.ilm.rollover_alias: "filebeat"
 setup.ilm.pattern: "{now/d}-000001"
 setup.ilm.overwrite: true
 
-# logging:
-#   level: debug
-
 output.logstash:
   hosts: ${LOGSTASH_HOSTS}
-
-# output.elasticsearch:
-#   hosts: ${ELASTIC_HOSTS}
-#   username: ${ELASTIC_USER}
-#   password: ${ELASTIC_PASSWORD}
-#   ssl.enabled: true
-#   ssl.certificate_authorities: "config/certs/ca/ca.crt"
-
-# output.console:
-#   enabled: true
