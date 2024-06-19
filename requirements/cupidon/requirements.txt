@@ -13,7 +13,6 @@ cryptography==42.0.3
 daphne==4.1.0
 Django==5.0.2
 django-prometheus==2.3.1
-gunicorn==22.0.0
 hvac==2.1.0
 hyperlink==21.0.0
 idna==3.7
