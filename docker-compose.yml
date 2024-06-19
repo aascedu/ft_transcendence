@@ -160,7 +160,7 @@ services:
       xpack.monitoring.enabled: false
       ELASTIC_USER: elastic
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD}
-      ELASTIC_HOSTS: https://apollo:9200
+      ELASTIC_HOSTS: https://batch42.me:9200
     networks:
       - atlas
       - sentinel
@@ -401,7 +401,7 @@ services:
     environment:
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
-      - ELASTIC_HOSTS=https://apollo:9200
+      - ELASTIC_HOSTS=https://batch42.me:9200
       - KIBANA_HOSTS=http://iris:5601
       - LOGSTASH_HOSTS=aether:5044
     networks:
@@ -451,7 +451,7 @@ services:
       - 5601:5601
     environment:
       SERVERNAME: kibana
-      ELASTICSEARCH_HOSTS: https://apollo:9200
+      ELASTICSEARCH_HOSTS: https://batch42.me:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
       ELASTIC_USER: ${ELASTIC_USER}
@@ -460,7 +460,7 @@ services:
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
       XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      SERVER_PUBLICBASEURL: http://localhost:5601
+      SERVER_PUBLICBASEURL: http://batch42.me:5601
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -469,7 +469,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+          "curl -s -I http://batch42.me:5601 | grep -q 'HTTP/1.1 302 Found'",
         ]
       interval: 10s
       timeout: 10s
