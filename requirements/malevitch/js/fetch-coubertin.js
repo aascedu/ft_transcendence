@@ -46,9 +46,3 @@ async function get_tournaments_available() {
     return fetch_get(add_coubertin_in_url('available-tournaments/'));
 }
 
-async function start_tournament(TournamentId) {
-    json = {TournamentId: TournamentId};
-
-    return fetch_post(add_coubertin_in_url('start-tournament/'), json);
-}
-

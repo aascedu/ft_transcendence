@@ -232,9 +232,6 @@ class myTournaments(View):
         response = []
 
         for id in tournaments:
-            logging.debug("Tournament name: " + tournaments[id].name)
-            logging.debug("Tournaments[id] players: ")
-            logging.debug(tournaments[id].players)
             if tournaments[id].userParticipating(userId) or userId == tournaments[id].admin:
                 t = {}
                 t['Name'] = tournaments[id].name
@@ -242,35 +239,6 @@ class myTournaments(View):
                 response.append(t)
 
         return JsonResponse(request, {'Ongoing': response})
-
-class startTournament(View):
-    def post(self, request):
-        if request.user.is_autenticated is False:
-                return JsonUnauthorized(request, "You need to be authenticated to start a tournament")
-
-        data = request.data
-        userId = request.user.id
-        try:
-            tournamentId = data['TournamentId']
-        except KeyError as e:
-            return JsonBadRequest(request, f'Missing key {e}')
-
-        if tournaments[tournamentId].admin != userId:
-            return JsonUnauthorized(request, "You need to be admin of tournament to start it")
-
-        if tournaments[tournamentId].nbPlayers != len(tournaments[tournamentId].players):
-            return JsonErrResponse(request, "Not enough players to start the tournament")
-
-        channel_layer = get_channel_layer()
-        async_to_sync(channel_layer.group_send)(
-            tournamentId, {
-                'type': 'StartGame',
-            }
-        )
-
-        updateTournament(tournamentId, False, request.user.id)
-        logging.info("Tournament " + str(tournamentId) + " is starting round 1")
-        return JsonResponse(request, {'Msg': "Tournament started"})
 
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState

@@ -36,7 +36,7 @@ def JsonBadRequest(request, error_message):
     return JsonErrResponse(request, "Bad Request : " + error_message, status=400)
 
 def JsonForbidden(request, error_message):
-    return JsonErrResponse(request, "Forbiden : " + error_message, status=403)
+    return JsonErrResponse(request, "Forbidden : " + error_message, status=403)
 
 def JsonNotFound(request, error_message):
     return JsonErrResponse(request, "Ressource not found : " + error_message, status=404)
