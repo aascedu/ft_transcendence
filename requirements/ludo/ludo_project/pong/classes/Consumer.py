@@ -21,7 +21,7 @@ class Consumer(OurBasicConsumer):
 
         if self.roomName not in matches:
             matches[self.roomName] = Match()
-        self.myMatch = matches[self.roomName] # A check !!!
+        self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
             await self.close()
@@ -32,9 +32,13 @@ class Consumer(OurBasicConsumer):
         if count == 2:
             self.myMatch.isTournamentGame = True
 
-        p1 = int(self.roomName.split('-')[count - 1])
-        p2 = int(self.roomName.split('-')[count])
         self.user = self.scope['user']
+        try:
+            p1 = int(self.roomName.split('-')[count - 1])
+            p2 = int(self.roomName.split('-')[count])
+            self.strId = str(self.user.id)
+        except:
+            return self.close()
         self.isPlayer = False
         self.id = len(self.myMatch.players)
 
@@ -51,7 +55,7 @@ class Consumer(OurBasicConsumer):
         if self.isPlayer:
             self.myMatch.players.append(Player(self.id, self.gameSettings))
 
-        logging.info("Player " + str(self.user.id) + " has entered game room " + self.roomName)
+        logging.info("Player " + self.strId + " has entered game room " + self.roomName)
 
         try:
             request = requests.delete(
@@ -69,7 +73,7 @@ class Consumer(OurBasicConsumer):
         global matches
 
         if self.myMatch.score[0] != 5 and self.myMatch.score[1] != 5 and self.myMatch.gameStarted:
-            logging.warning("Player " + str(self.user.id) + "has unexpectedly left game room " + self.roomName)
+            logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
             self.myMatch.gameEnded[self.id] = True
             self.myMatch.score[(self.id + 1) % 2] = 5
             await self.channel_layer.group_send(
@@ -85,11 +89,11 @@ class Consumer(OurBasicConsumer):
                     'http://hermes:8004/notif/available-states/',
                     json={'Id': self.user.id})
                 if request.status_code != 200:
-                    logging.error("Player " + str(self.user.id) + " state update request has failed")
+                    logging.error("Player " + self.strId + " state update request has failed")
             except Exception as e:
-                logging.critical("Player " + str(self.user.id) + " state update request has critically failed")
+                logging.critical("Player " + self.strId + " state update request has critically failed")
 
-        logging.info("Player " + str(self.user.id) + " has left game room " + self.roomName)
+        logging.info("Player " + self.strId + " has left game room " + self.roomName)
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from front
@@ -236,7 +240,7 @@ class Consumer(OurBasicConsumer):
             else:
                 t = time.time_ns()
                 if t - self.myMatch.startTime > 5000000000:
-                    logging.warning("Player " + str(self.user.id) + "has unexpectedly left game room " + self.roomName)
+                    logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
                     self.myMatch.gameEnded[(self.id + 1) % 2] = True
                     self.myMatch.score[self.id] = 5
                     await self.channel_layer.group_send(

@@ -21,16 +21,18 @@ class Tournament:
         self.onPage = []
 
     def addPlayer(self, player, alias):
-        if len(self.players) >= int(self.nbPlayers):
+        if len(self.players) >= int(self.nbPlayers): # Pas besoin de cast ici ?
             raise Exception("Too many players already")
         if self.userParticipating(player):
             raise Exception("Player is already participating in tournament")
         self.players.append(player)
         self.aliases.append({'Id': player, 'Alias': alias})
-        print("player: " + str(player))
-        strPlayer = str(player)
-        if strPlayer in self.invited:
-            self.invited.remove(strPlayer)
+        try:
+            strPlayer = str(player)
+            if strPlayer in self.invited:
+                self.invited.remove(strPlayer)
+        except:
+            raise Exception("Invalid player")
 
     def addGame(self, game):
         game['Round'] = self.currentRound
@@ -44,21 +46,16 @@ class Tournament:
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': game['Loser']})
             if request.status_code != 200:
-                return # Raise exception
+                pass
         except Exception as e:
-            return # Raise exception
-
+            pass
         channel_layer = get_channel_layer()
 
-        logging.debug("Ongoing game is: " + str(self.ongoingGames))
         if self.ongoingGames == 0:
             self.currentRound += 1
 
             # Check tournament end
-            logging.debug("nb players: " + str(self.nbPlayers))
-            logging.debug("my calc: " + str(pow(2, self.currentRound - 1)))
-
-            if self.nbPlayers == int(pow(2, self.currentRound - 1)): # NumPlayers == 2 puissance currentRound
+            if self.nbPlayers == pow(2, self.currentRound - 1):
                 logging.info("Tournament " + str(self.id) + " is ending")
                 async_to_sync(channel_layer.group_send)(
                     str(self.id), {
@@ -83,7 +80,7 @@ class Tournament:
 
     def appendEmptyGameToTab(self, tab, round):
         newGame = {}
-        newGame['Round'] = round # A trouver, vaut 3 2 ou 1 en fonction de i, commencer par la finale
+        newGame['Round'] = round
         newGame['Game'] = {}
         newGame['Played'] = False
         tab.append(newGame)
@@ -99,13 +96,13 @@ class Tournament:
 
         gamesAlreadyPlayed = len(games)
         i = gamesAlreadyPlayed
-        while i <= int(self.nbPlayers) / 2:
+        while i <= int(self.nbPlayers) / 2: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 1)
             i += 1
-        while i <= int(self.nbPlayers) / 2 + int(self.nbPlayers) / 4:
+        while i <= int(self.nbPlayers) / 2 + int(self.nbPlayers) / 4: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 2)
             i += 1
-        if int(self.nbPlayers) == 8:
+        if int(self.nbPlayers) == 8: # Besoin du cast ??
             self.appendEmptyGameToTab(games, round = 3)
             i += 1
 
