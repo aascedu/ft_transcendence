@@ -28,19 +28,20 @@ RUN     mkdir -p /data/nginx/cache &&                                  \
             -out /etc/nginx/ssl/ft_transcendence.crt                   \
             -keyout /etc/nginx/ssl/ft_transcendence.key                \
             -subj "/C=FR/L=Lyon/CN=batch42.me" ||                      \
-            { echo "SSL certification failed"; exit 1; } &&            \
-        openssl req -x509 -nodes                                       \
-            -out /etc/nginx/ssl/elastic.crt                            \
-            -keyout /etc/nginx/ssl/elastic.key                         \
-            -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
-            { echo "SSL elastic certification failed"; exit 1; }
+            { echo "SSL certification failed"; exit 1; }
+        #      &&            \
+        # openssl req -x509 -nodes                                       \
+        #     -out /etc/nginx/ssl/elastic.crt                            \
+        #     -keyout /etc/nginx/ssl/elastic.key                         \
+        #     -subj "/C=FR/L=Lyon/CN=elasticsearch.test.me" ||           \
+        #     { echo "SSL elastic certification failed"; exit 1; }
 
 # By default the Alpine image automatically streams Nginx logs (access and error logs) to stdout and stderr
 # by creating a symbolic link from stdout to /var/log/nginx/access.log and stderr to /var/log/nginx/error.log
 # Lets remove these symbolic links so that we can setup a volume and persist the logs so that they are available
 # between restarts
-RUN     unlink /var/log/nginx/access.log && \
-        unlink /var/log/nginx/error.log && \
-        touch /var/log/nginx/access.log /var/log/nginx/error.log && \
-        chown nginx:nginx /var/log/nginx/access.log /var/log/nginx/error.log && \
-        chmod 644 /var/log/nginx/access.log /var/log/nginx/error.log
+# RUN     unlink /var/log/nginx/access.log && \
+#         unlink /var/log/nginx/error.log && \
+#         touch /var/log/nginx/access.log /var/log/nginx/error.log && \
+#         chown nginx:nginx /var/log/nginx/access.log /var/log/nginx/error.log && \
+#         chmod 644 /var/log/nginx/access.log /var/log/nginx/error.log
