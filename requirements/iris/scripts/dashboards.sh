@@ -153,5 +153,6 @@ if [[ "$response" == *"Welcome to the Nginx Logs Dashboard"* ]]; then
   echo -e "${COLOR_GREEN}All Dashboards creation completed.${COLOR_RESET}"
 else
   echo -e "${COLOR_RED}\nIssue with Dashboards creation.${COLOR_RESET}"
+  echo -e "$response"
   exit 1;
 fi
