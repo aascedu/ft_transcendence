@@ -91,12 +91,14 @@ class Consumer(OurBasicConsumer):
         try:
             player1 = int(event['player1'])
             player2 = int(event['player2'])
+            strplayer1 = str(event['player1'])
+            strplayer2 = str(event['player2'])
         except:
             return
         if player1 == self.id or player2 == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
-                'RoomName': event['player1'] + '-' + event['player2'],
+                'RoomName': strplayer1 + '-' + strplayer2,
             }))
             if self.id in waitingList:
                 del waitingList[self.id] # Only if not from invite
