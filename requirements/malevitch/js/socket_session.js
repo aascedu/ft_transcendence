@@ -127,10 +127,6 @@ async function notificationNewFriendship(data) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
-
-		g_state.pageToDisplay = '.homepage-game';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
 	}
 	// if we are on friends list, add new friend to friends list
 	if (g_state.pageToDisplay == '.friends-list') {
@@ -266,10 +262,6 @@ async function notificationNewClientConnected(data) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
-
-		g_state.pageToDisplay = '.homepage-game';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
 	}
 	// if we are on friends list, update it
 	if (g_state.pageToDisplay == '.friends-list') {
@@ -353,10 +345,6 @@ async function notificationFriendshipSuppressed(data) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
-
-		g_state.pageToDisplay = '.homepage-game';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
 	}
 	// if we are on friends list, remove ex friend from friends list
 	if (g_state.pageToDisplay == '.friends-list') {
@@ -445,10 +433,6 @@ async function notificationProfileChanged(data) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
-
-		g_state.pageToDisplay = '.homepage-game';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
 	}
 	// if we are on friends list, update friend info in friends online
 	if (g_state.pageToDisplay == '.friends-list') {
@@ -501,10 +485,6 @@ async function notificationFriendDisconnected(obj) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
-
-		g_state.pageToDisplay = '.homepage-game';
-		window.history.pushState(g_state, null, "");
-		render(g_state);
 	}
 	// if we are on friends list, update it
 	if (g_state.pageToDisplay == '.friends-list') {
