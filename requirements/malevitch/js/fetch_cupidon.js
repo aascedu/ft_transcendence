@@ -26,6 +26,12 @@ async function cancel_invitation_to_game() {
 async function accept_invitation_to_game(requester, invited) {
     const RoomName = requester + "-" + invited
     await fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
+
+	// show "match found" notif to inform we play against Sender
+	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
+	document.querySelector('.notif-match-found .notif-sender').textContent = opponent;
+	await matchFound(null);
+
     showGamePage(RoomName);
 }
 

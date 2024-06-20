@@ -217,6 +217,9 @@ function switchNextLanguageFromPreviousSelector(previous, next) {
 		else {
 			nextSelector = document.querySelector(next + '-language-selector');
 		}
+		if (nextSelector == null) {
+			return ;
+		}
 
 		setLanguageSelector(prevSelector, nextSelector);
 	}
@@ -445,10 +448,13 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 		else {
 			nextFontSizeInput = document.querySelector(next + '-font-size');
 		}
+		if (nextFontSizeInput == null) {
+			return ;
+		}
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
 
-		updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
+		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
 
