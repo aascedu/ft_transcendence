@@ -71,6 +71,10 @@ async function init_session_socket() {
             notificationProfileChanged(obj);
             return ;
         }
+        if (obj.type === "notification.update.state") {
+            notificationUpdateAvaState();
+            return ;
+        }
     }
 }
 

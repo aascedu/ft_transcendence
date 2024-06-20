@@ -162,3 +162,13 @@ def updateProfile(request, requester:int):
     error = 'Only service can notify login change'
     return response, content, error
 
+@notification_to_friends
+def updateAva(request, requester:int):
+    response = JsonResponse(request, {'Ava states': 'updated'})
+    content = {
+            'type': 'notification.update.state',
+            'requester': requester,
+        }
+    error = 'Only service can notify login change'
+    return response, content, error
+
