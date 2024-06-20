@@ -61,12 +61,14 @@ class availableFriendView(View):
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
         set_cache(f'ava_{id}', True)
+        updateAva(request, id)
         return JsonResponse(request, {'Ava': True})
 
     def delete(self, request):
         if request.user.is_service is False:
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
+        updateAva(request, id)
         set_cache(f'ava_{id}', False)
         return JsonResponse(request, {'Ava': False})
 

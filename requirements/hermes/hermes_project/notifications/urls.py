@@ -13,5 +13,4 @@ urlpatterns = [
     path("game-request/<int:requester>/", views.gameRequest),
     path("tournament-request/<int:requester>/", views.tournamentRequest),
     path("update-profile/<int:requester>/", views.updateProfile),
-    path("available-update/<int:requester>/", views.updateAva),
 ]
