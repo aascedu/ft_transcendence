@@ -52,32 +52,7 @@
         },
         "parsed_message": {
           "type": "object",
-          "properties": {
-            "log": {
-              "type": "object",
-              "properties": {
-                "request": {
-                  "type": "object",
-                  "properties": {
-                    "method": { "type": "keyword" },
-                    "path": { "type": "keyword" },
-                    "query_string": { "type": "text" },
-                    "remote_addr": { "type": "ip" },
-                    "ip_client": { "type": "ip" },
-                    "body": { "type": "text" },
-                    "error": { "type": "text" }
-                  }
-                },
-                "response": {
-                  "type": "object",
-                  "properties": {
-                    "status_code": { "type": "integer" },
-                    "response_body": { "type": "text" }
-                  }
-                }
-              }
-            }
-          }
+          "enabled": false
         }
       }
     }
