@@ -40,6 +40,12 @@ nginx_data_view='{
       "response_size": {
         "customLabel": "Response Size"
       },
+      "hour_of_day": {
+        "customLabel": "Hour of Day"
+      },
+      "date_of_day": {
+        "customLabel": "Date of Day"
+      },
       "geoip.location": {
         "customLabel": "GeoIP Location"
       },
@@ -54,25 +60,11 @@ nginx_data_view='{
       },
       "geoip.country_name": {
         "customLabel": "GeoIP Country Name"
-      },
-      "geoip.postal_code": {
-        "customLabel": "GeoIP Postal Code"
-      },
-      "geoip.region_iso_code": {
-        "customLabel": "GeoIP Region ISO Code"
-      },
-      "geoip.region_name": {
-        "customLabel": "GeoIP Region Name"
-      },
-      "geoip.timezone": {
-        "customLabel": "GeoIP Timezone"
-      },
-      "geoip.dma_code": {
-        "customLabel": "GeoIP DMA Code"
       }
     }
   }
 }'
+
 
 logstash_data_view='{
   "data_view": {
