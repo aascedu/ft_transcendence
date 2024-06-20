@@ -287,8 +287,8 @@ function clearUserContent() {
 	setAriaHidden();
 
     // clear history
-	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
-	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
 
 	var	historyContainer = document.querySelector('.user-profile-history');
 
