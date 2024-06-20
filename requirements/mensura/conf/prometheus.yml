@@ -69,12 +69,6 @@ scrape_configs:
     static_configs:
       - targets: ['hermes:8004']
 
-  - job_name: 'lovelace'
-    metrics_path: /metrics/metrics
-    scrape_interval:     30s
-    static_configs:
-      - targets: ['lovelace:8005']
-
   - job_name: 'ludo'
     metrics_path: /metrics/metrics
     scrape_interval:     30s
