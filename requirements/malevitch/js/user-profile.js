@@ -123,6 +123,16 @@ async function loadUserContent(id) {
 		return ;
 	}
 
+	if (history.length == 0) {
+		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
+		return ;
+	}
+	else {
+		document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
+		document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+	}
+
 	var	historyContainer = document.querySelector('.user-profile-history');
 	var	numWins = 0;
 	var	totalPoints = 0;
@@ -187,12 +197,6 @@ async function loadUserContent(id) {
 			totalPoints += history[i]["Winner-score"];
 		}
 		totalTime += history[i].Duration;
-	}
-
-	if (history.length == 0) {
-		document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
-		document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
-		return ;
 	}
 
 	// Display stats
@@ -287,8 +291,8 @@ function clearUserContent() {
 	setAriaHidden();
 
     // clear history
-	document.querySelector('.user-profile-empty-history').classList.add('visually-hidden');
-	document.querySelector('.user-profile-statistics').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-empty-history').classList.remove('visually-hidden');
+	document.querySelector('.user-profile-statistics').classList.add('visually-hidden');
 
 	var	historyContainer = document.querySelector('.user-profile-history');
 

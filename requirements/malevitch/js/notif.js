@@ -192,11 +192,6 @@ async function acceptPlayInvite() {
 	document.querySelector('.notif-play-invite').classList.add('visually-hidden');
 	setAriaHidden();
 
-	// show "match found" notif to inform we play against Sender
-	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
-	document.querySelector('.notif-match-found .notif-sender').textContent = opponent;
-	await matchFound(null);
-
 	try {
 		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
 		await accept_invitation_to_game(requester, g_userId);
