@@ -10,13 +10,6 @@ filebeat.inputs:
     fields_under_root: true
     ignore_inactive: since_last_start
     ignore_older: 24h
-    parsers:
-      - multiline:
-          match: after
-          negate: true
-          pattern: ^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}
-          type: pattern
-    take_over: true
 
 processors:
   - add_docker_metadata:

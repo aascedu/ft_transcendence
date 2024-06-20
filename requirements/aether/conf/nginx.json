@@ -70,6 +70,12 @@
                       }
                   }
               },
+              "hour_of_day": {
+                "type": "keyword"
+              },
+              "date_of_day": {
+                "type": "keyword"
+              },
               "geoip": {
                   "properties": {
                       "location": {
