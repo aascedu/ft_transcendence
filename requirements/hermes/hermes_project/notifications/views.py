@@ -51,7 +51,8 @@ class availableFriendView(View):
         friends = response.json().get('Friends', [])
         array = []
         for friend in friends:
-            if get_cache(f'ava_{id}') is True:
+            friend_id = friend['Id']
+            if get_cache(f'ava_{friend_id}') is True:
                 array.append(friend)
         return JsonResponse(request, {'Ava': array})
 
