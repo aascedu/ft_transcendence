@@ -51,7 +51,8 @@ class availableFriendView(View):
         friends = response.json().get('Friends', [])
         array = []
         for friend in friends:
-            if get_cache(f'ava_{id}') is True:
+            friend_id = friend['Id']
+            if get_cache(f'ava_{friend_id}') is True:
                 array.append(friend)
         return JsonResponse(request, {'Ava': array})
 
@@ -61,12 +62,14 @@ class availableFriendView(View):
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
         set_cache(f'ava_{id}', True)
+        updateAva(request, id)
         return JsonResponse(request, {'Ava': True})
 
     def delete(self, request):
         if request.user.is_service is False:
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
+        updateAva(request, id)
         set_cache(f'ava_{id}', False)
         return JsonResponse(request, {'Ava': False})
 
@@ -157,6 +160,16 @@ def updateProfile(request, requester:int):
     response = JsonResponse(request, {'Login': 'Notified'})
     content = {
             'type': 'notification.profile.change',
+            'requester': requester,
+        }
+    error = 'Only service can notify login change'
+    return response, content, error
+
+@notification_to_friends
+def updateAva(request, requester:int):
+    response = JsonResponse(request, {'Ava states': 'updated'})
+    content = {
+            'type': 'notification.update.state',
             'requester': requester,
         }
     error = 'Only service can notify login change'

@@ -33,7 +33,7 @@ class RequestGame(View):
             )
             gameRequesters.remove([p2, p1])
             return JsonResponse(request, {'RoomName': strp2 + '-' + strp1})
-        
+
         try:
             response = requests.post(
                 'http://hermes:8004/notif/game-request/' + strp1 + '/',
@@ -65,8 +65,14 @@ class RequestGame(View):
                         'type': 'Leave',
                     }
                 )
+        try:
+            requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': request.user.id})
+        except BaseException:
+            pass
 
-        return JsonResponse(request, {'Msg': 'Invitation successfully canceled'})    
+        return JsonResponse(request, {'Msg': 'Invitation successfully canceled'})
 
 class RequestGameResponse(View):
     def post(self, request, requester: int, invited: int):
@@ -74,7 +80,7 @@ class RequestGameResponse(View):
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can accept an invitation')
-        
+
         try:
             strRequester = str(requester)
             strinvited = str(invited)
@@ -98,7 +104,7 @@ class RequestGameResponse(View):
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can refuse an invitation')
-        
+
         try:
             strRequester = str(requester)
         except:
@@ -108,7 +114,7 @@ class RequestGameResponse(View):
             if request.user.id in i:
                 gameRequesters.remove(i)
                 channel_layer = get_channel_layer()
-                
+
                 async_to_sync(channel_layer.group_send)(
                     strRequester, {
                         'type': 'Leave',

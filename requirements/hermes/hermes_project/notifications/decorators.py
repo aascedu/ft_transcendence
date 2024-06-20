@@ -31,8 +31,6 @@ def notification_by_notified_id(function):
 def notification_to_friends(function):
     def wrapper(request, requester: int):
         response, notification_content, error = function(request, requester)
-        if request.method != 'POST':
-            return JsonUnallowedMethod(request, "Only 'POST' method allowed to create notifications")
         if request.user.is_service is False:
             return JsonUnauthorized(request, error if error else 'Only service can notify client')
         if response.status_code != 200:
