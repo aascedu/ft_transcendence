@@ -96,12 +96,12 @@ class signupView(View):
             if response.status_code != 200:
                 raise BaseException("Error : error during mnemosine row creation")
         except BaseException as error:
-            print(f'Error : {error} : during creation of ressources : {client}')
+            logging.error(f'{error} : during creation of ressources : {client}')
             try:
                 requests.delete(f'http://alfred:8001/user/users/{client.id}/')
                 requests.delete(f'http://mnemosine:8008/memory/players/{client.id}/')
             except BaseException as e:
-                print(f'Error: during deleting row. {e}')
+                logging.error(f'error during deleting row. {e}')
             client.delete()
             return JsonConflict(request, str(error))
 
