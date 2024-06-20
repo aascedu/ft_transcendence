@@ -58,21 +58,21 @@ services:
   aegis:
     depends_on:
       alfred:
-        condition: service_started
+        condition: service_healthy
       coubertin:
-        condition: service_started
+        condition: service_healthy
       cupidon:
-        condition: service_started
+        condition: service_healthy
       hermes:
-        condition: service_started
+        condition: service_healthy
       ludo:
-        condition: service_started
+        condition: service_healthy
       malevitch:
         condition: service_started
       mnemosine:
-        condition: service_started
+        condition: service_healthy
       petrus:
-        condition: service_started
+        condition: service_healthy
       tutum:
         condition: service_started
     container_name: aegis
@@ -131,6 +131,18 @@ services:
     networks:
       - atlas
       - alfred_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8001/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: on-failure
 
 # # Profil database container
@@ -181,6 +193,14 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8002/healthcheck/"
+        ]
     restart: on-failure
 
 # # Matchmaking container
@@ -203,6 +223,14 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8003/healthcheck/"
+        ]
     restart: on-failure
 
 # # Notification container
@@ -225,6 +253,14 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8004/healthcheck/"
+        ]
     restart: on-failure
 
 # # Game container
@@ -247,6 +283,14 @@ services:
     depends_on:
       tutum:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8006/healthcheck/"
+        ]
     restart: on-failure
 
 # # Front container
@@ -290,6 +334,14 @@ services:
     networks:
       - atlas
       - mnemosine_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8008/healthcheck/"
+        ]
     restart: on-failure
 
 # # Stats database container
@@ -346,6 +398,14 @@ services:
     networks:
       - atlas
       - petrus_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8009/healthcheck/"
+        ]
     restart: on-failure
 
 # # Authentification database container
