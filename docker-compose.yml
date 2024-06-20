@@ -59,6 +59,8 @@ volumes:
 
   token_env_data: {}
 
+  token_alertmanager_data: {}
+
 
 services:
 # # Reverse proxy container
@@ -578,8 +580,8 @@ services:
     build:
       context: ./requirements/mensura/alertmanager
       dockerfile: Dockerfile
-    environment:
-      - "GOOGLE_PASS=${GOOGLE_PASS}"
+    volumes:
+      - token_alertmanager_data:/tokens
     ports:
       - "9093:9093"
     depends_on:
@@ -724,6 +726,7 @@ services:
       - token_petrus_db_data:/tokens/petrus-db
       - token_root_data:/tokens/root
       - token_env_data:/tokens/env
+      - token_alertmanager_data:/tokens/alertmanager
     ports:
       - "8200:8200"
     networks:
