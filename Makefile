@@ -35,17 +35,17 @@ SYSTEM		=	docker system
 debug: | copyfile tutum
 	. ./tools/init.sh
 
-all: | copyfil tutum
+all: | copyfile tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
-up: | copyfil tutum
+up: | copyfile tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
 ifeq ($(CI), ci)
-build: | copyfil
+build: | copyfile
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | copyfil
+build: | copyfile
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
