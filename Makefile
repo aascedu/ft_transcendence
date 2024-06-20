@@ -4,9 +4,6 @@
 
 include .env
 ENV_FILE		=	.env
-VOLUMES_DIR		=	alfred_data mnemosine_data petrus_data
-VOLUMES_PATH	=	$(HOME)/data/transcendence_data
-VOLUMES			=	$(addprefix $(VOLUMES_PATH)/, $(VOLUMES_DIR))
 DJANGO_CTT		=	alfred coubertin cupidon hermes ludo \
 					mnemosine petrus
 
@@ -35,20 +32,20 @@ SYSTEM		=	docker system
 #---- rules -----------------------------------------------------------#
 
 #---- base ----#
-debug: | copyfile volumes tutum
+debug: | copyfile tutum
 	. ./tools/init.sh
 
-all: | copyfile volumes tutum
+all: | copyfil tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
 
-up: | copyfile volumes tutum
+up: | copyfil tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
 
 ifeq ($(CI), ci)
-build: | copyfile volumes
+build: | copyfil
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 else
-build: | copyfile volumes
+build: | copyfil
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) build
 endif
 
@@ -88,17 +85,11 @@ logs:
 
 #---- setups ----#
 
-volumes:
-	mkdir -p $(VOLUMES)
-
 copyfile:
 	./tools/copyfile.sh $(DJANGO_CTT)
 
 tutum:
 	$(COMPOSE_F) $(DOCKER_FILE) up -d tutum
-
-test: copyfile
-	./tools/test.sh $(DJANGO_CTT)
 
 #---- clean ----#
 # - Stops all running containers
@@ -121,7 +112,6 @@ fclean: | clean
 	docker rmi $$(docker images -q) || true
 	docker volume rm $$(docker volume ls -q) || true
 	docker network rm $$(docker network ls -q) 2>/dev/null || true
-	rm -rf $(VOLUMES_PATH)/*
 
 # - Removes all unused Docker data, including images, containers, volumes, and networks
 prune: | fclean
@@ -135,20 +125,15 @@ db_reset: db_suppr copyfile
 
 #---- re ----#
 
-ifeq ($(WHO), twang)
-re: | fclean
-	make debug
-else
 re: | down
 	make debug
-endif
 # pour la prod: remettre up
 
 #---- settings --------------------------------------------------------#
 
 .SILENT:
 .DEFAULT: debug # pour la prod: remettre all
-.PHONY: all up build down build_parallel down_restart restart kill reset \
-        volumes copyfile modsec tutum test clean fclean prune \
-        db_suppr db_reset re
+.PHONY: all up build down build_parallel down_restart restart kill \
+		reset copyfile modsec tutum test clean fclean prune db_suppr \
+		db_reset re
 
