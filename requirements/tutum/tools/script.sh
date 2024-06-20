@@ -111,7 +111,10 @@ if [ $status -eq 2 ]; then
     vault kv put -mount=secret petrus/db/db db=$T_POSTGRES_PETRUS_DB
     vault kv put -mount=secret petrus/db/user user=$T_POSTGRES_PETRUS_USER
     vault kv put -mount=secret petrus/db/password password=$T_POSTGRES_PETRUS_PASSWORD
-
+    
+    mkdir -p /tokens/alertmanager
+    vault policy write alertmanager /alertmanager-policy.hcl
+    vault token create -policy=alertmanager | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/alertmanager/alertmanager-token.txt
     vault kv put -mount=secret env/googlepass googlepass="$GOOGLE_PASS1"
 
     #DB_EXPORTER
