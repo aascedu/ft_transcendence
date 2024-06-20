@@ -68,31 +68,31 @@ services:
     container_name: aegis
     depends_on:
       alfred:
-        condition: service_started
+        condition: service_healthy
       aether:
         condition: service_healthy
       apollo:
         condition: service_healthy
       coubertin:
-        condition: service_started
+        condition: service_healthy
       cupidon:
-        condition: service_started
+        condition: service_healthy
       davinci:
         condition: service_started
       hermes:
-        condition: service_started
+        condition: service_healthy
       iris:
         condition: service_healthy
       ludo:
-        condition: service_started
+        condition: service_healthy
       malevitch:
         condition: service_started
       mensura:
         condition: service_started
       mnemosine:
-        condition: service_started
+        condition: service_healthy
       petrus:
-        condition: service_started
+        condition: service_healthy
       tutum:
         condition: service_healthy
     build:
@@ -192,6 +192,18 @@ services:
       - atlas
       - alfred_network
       - internet_access
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8001/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Profil database container
@@ -228,7 +240,7 @@ services:
       tutum:
         condition: service_healthy
     container_name: apollo
-    build: 
+    build:
       context: ./requirements/apollo
       dockerfile: Dockerfile
     labels:
@@ -298,6 +310,14 @@ services:
       - "8002:8002"
     networks:
       - atlas
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8002/healthcheck/"
+        ]
     restart: on-failure
 
 # # Matchmaking container
@@ -319,6 +339,18 @@ services:
       - "8003:8003"
     networks:
       - atlas
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8003/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Kibana's Data View container
@@ -422,6 +454,18 @@ services:
         condition: service_healthy
       aether:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8004/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Kibana container
@@ -488,6 +532,18 @@ services:
         condition: service_healthy
       aether:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8006/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Front container
@@ -587,6 +643,8 @@ services:
     depends_on:
       mensura:
         condition: service_started
+      aegis:
+        condition: service_started
     networks:
       - aegis guard
       - sentinel
@@ -612,6 +670,18 @@ services:
         condition: service_healthy
       aether:
         condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8008/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Stats database container
@@ -658,6 +728,18 @@ services:
     networks:
       - atlas
       - petrus_network
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "python3",
+          "/app/shared/curl.py",
+          "http://localhost:8009/healthcheck/"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     restart: on-failure
 
 # # Authentification database container
