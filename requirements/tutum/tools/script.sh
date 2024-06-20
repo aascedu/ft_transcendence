@@ -114,7 +114,7 @@ if [ $status -eq 2 ]; then
     
     mkdir -p /tokens/alertmanager
     vault policy write alertmanager /alertmanager-policy.hcl
-    vault token create -policy=env | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/alertmanager/alertmanager-token.txt
+    vault token create -policy=alertmanager | grep 'token' | awk '{print $2}' | head -n 1 > /tokens/alertmanager/alertmanager-token.txt
     vault kv put -mount=secret env/googlepass googlepass="$GOOGLE_PASS1"
 
     #DB_EXPORTER
