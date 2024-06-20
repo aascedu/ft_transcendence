@@ -587,6 +587,8 @@ services:
     depends_on:
       mensura:
         condition: service_started
+      aegis:
+        condition: service_started
     networks:
       - aegis guard
       - sentinel
