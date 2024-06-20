@@ -40,7 +40,6 @@ class Ball {
         this.size = 0;
     }
     move(playerPos, playerStyle, opponentPos, opponentStyle, ballStyle) {
-        console.log(this.speed['x']);
         var newPosX = this.pos['x'] + this.speed['x'];
         var newPosY = this.pos['y'] + this.speed['y'];
         if (newPosX - parseInt(ballStyle.height, 10) < 10 + parseInt(playerStyle.width, 10)) {
@@ -51,10 +50,10 @@ class Ball {
                     this.speed['x'] *= -1;
                 }
         }
-        else if (newPosX + parseInt(ballStyle.height, 10) > screenWidth - parseInt(opponentStyle.width) - 10) {
+        else if (newPosX + parseInt(ballStyle.height, 10) > screenWidth - parseInt(opponentStyle.width, 10) - 10) {
             if (this.pos['y'] > opponentPos - parseInt(opponentStyle.height, 10) / 2 &&
                 this.pos['y'] < opponentPos + parseInt(opponentStyle.height, 10) / 2 &&
-                this.speed['y'] > 0) {
+                this.speed['x'] > 0) {
                     newPosX = this.pos['x'] - this.speed['x'];
                     this.speed['x'] *= -1;
                 }
