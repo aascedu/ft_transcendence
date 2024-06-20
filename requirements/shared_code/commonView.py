@@ -21,3 +21,8 @@ class socketConnectionView(View):
         identificators |= {key: request.user}
 
         return JsonResponse({"Key": key})
+
+class healthcheckView(View):
+    def get(self, request):
+        return JsonResponse({"Service": "Up"})
+
