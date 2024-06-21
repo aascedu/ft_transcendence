@@ -537,12 +537,13 @@ async function changeNickname() {
 		console.error(error);
 		return ;
 	}
+	g_userNick = nicknameInput.value;
 
 	// Hide alert
 	document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
 
-	// Update tournament name
+	// Update profile name
 	document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 }
 
