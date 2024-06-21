@@ -137,22 +137,21 @@ class RestoreAvailability(View):
     def delete(self, request, requester: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can refuse an invitation')
-        for i in waitingList:
-            channel_layer = get_channel_layer()
+        channel_layer = get_channel_layer()
 
-            async_to_sync(channel_layer.group_send)(
-                'matchmakingRoom', {
-                    'type': 'Leave',
-                    'id': request.user.id
-                }
-            )
-            try:
-                request = requests.post(
-                    'http://hermes:8004/notif/available-states/',
-                    json={'Id': requester})
-                if request.status_code != 200:
-                    logging.error("Player " + strRequester + " state update request has failed")
-            except Exception as e:
-                logging.critical("Player " + strRequester + " state update request has critically failed")
+        async_to_sync(channel_layer.group_send)(
+            'matchmakingRoom', {
+                'type': 'Leave',
+                'id': request.user.id
+            }
+        )
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': requester})
+            if request.status_code != 200:
+                logging.error("Player " + strRequester + " state update request has failed")
+        except Exception as e:
+            logging.critical("Player " + strRequester + " state update request has critically failed")
 
         return JsonResponse(request, {'Msg': 'Stopped looking for a game'})
