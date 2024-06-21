@@ -267,10 +267,9 @@ document.querySelector('.notif-search-match .notif-dismiss').addEventListener('k
 
 function cancelSearchMatch() {
 	// notif already closed by forEach
-
 	// cancel match searching
 	if (g_matchmakingSocket) {
-		g_matchmakingSocket.close();
+        restore_availability(g_userId);
 	}
 
 	// reset timer
