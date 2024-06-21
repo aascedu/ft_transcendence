@@ -46,5 +46,4 @@ async function clear_all_invitations() {
 
 async function restore_availability(requester) {
     fetch_delete(add_cupidon_in_url("game-availability/" + requester + "/"));
-    g_matchmakingSocket = null;
 }
