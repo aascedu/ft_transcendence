@@ -40,7 +40,7 @@ class Consumer(OurBasicConsumer):
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
-        
+
         try:
             request = requests.delete(
                 'http://hermes:8004/notif/available-states/',
@@ -125,4 +125,5 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
-        await self.close()
+        if event['id'] == self.id:
+            await self.close()

@@ -108,3 +108,6 @@ class Consumer(OurBasicConsumer):
 
     async def notification_profile_change(self, event):
         await self.send (text_data=json.dumps(event))
+
+    async def notification_update_state(self, event):
+        await self.send (text_data=json.dumps(event))
