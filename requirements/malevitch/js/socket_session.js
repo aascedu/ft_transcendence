@@ -279,9 +279,8 @@ async function notificationNewClientConnected(data) {
 	// if we are on a tournament page, load it back so that friend can appear in available friends
 	if (g_state.pageToDisplay == '.tournament-info') {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-			await loadOngoingTournament(tournamentId);
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that friend appears in available friends
@@ -315,9 +314,8 @@ async function notificationGameRefused(data) {
 	}
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
-		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-		await loadOngoingTournament(tournamentId);
+		clearTournamentInfoInvites();
+		await loadTournamentInfoInvites();
 	}
 	// Load back header to display friend as available back to play with them
 	clearHomepageHeader();
@@ -407,9 +405,8 @@ async function notificationTournamentRefused(data) {
 	}
 	// If we are looking to invite the friend to a tournament, display friend if they are available again
 	if (g_state.pageToDisplay == '.tournament-info') {
-		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-		await loadOngoingTournament(tournamentId);
+		clearTournamentInfoInvites();
+		await loadTournamentInfoInvites();
 	}
 	// Load back header to display friend as available back to play with them
 	clearHomepageHeader();
@@ -502,9 +499,8 @@ async function notificationFriendDisconnected(obj) {
 	// if we are on a tournament page, load it back so that friend is removed from available friends
 	if (g_state.pageToDisplay == '.tournament-info') {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-			await loadOngoingTournament(tournamentId);
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that friend is removed from available friends
@@ -529,9 +525,8 @@ async function notificationUpdateAvaState(data) {
 	// if we are on a tournament page, load it back so that friend is updated in available friends
 	if (g_state.pageToDisplay == '.tournament-info') {
 		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-			await loadOngoingTournament(tournamentId);
+			clearTournamentInfoInvites();
+			await loadTournamentInfoInvites();
 		}
 	}
 	// if we are creating a tournament, load back available friends so that friend is updated in available friends
