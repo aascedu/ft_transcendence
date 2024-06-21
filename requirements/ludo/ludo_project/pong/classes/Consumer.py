@@ -218,87 +218,92 @@ class Consumer(OurBasicConsumer):
             self.myMatch.players[id].move(self.gameSettings)
 
             # Ball and score management
-            if len(self.myMatch.players) > 1:
-                if self.myMatch.gameStarted is False:
-                    self.myMatch.gameStarted = True
-                pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
-                if pointWinner != -1:
-                    self.myMatch.score[pointWinner] += 1
-                    await self.channel_layer.group_send (
-                        self.roomName, {
-                            "type": "updateScore",
-                        }
-                    )
-                # It's being called several times 
-                if self.myMatch.score[self.id] == 5:
-                    await self.channel_layer.group_send (
-                        self.roomName, {
-                            "type": "gameEnd",
-                            "winner": self.id
-                        }
-                    )
-
-            else:
-                t = time.time_ns()
-                if t - self.myMatch.startTime > 5000000000:
-                    logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
-                    self.myMatch.gameEnded[(self.id + 1) % 2] = True
-                    self.myMatch.score[self.id] = 5
-                    await self.channel_layer.group_send(
+            pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
+            if pointWinner != -1:
+                self.myMatch.score[pointWinner] += 1
+                await self.channel_layer.group_send (
                     self.roomName, {
-                        "type": "gameEnd",
-                        "winner": self.id,
+                        "type": "updateScore",
                     }
                 )
-
+            # It's being called several times 
+            if self.myMatch.score[self.id] == 5:
+                await self.channel_layer.group_send (
+                    self.roomName, {
+                        "type": "gameEnd",
+                        "winner": self.id
+                    }
+                )
 
     # Receive gameState from room group
     async def myState(self, event):
         global matches
 
         # Received from me
-        if event["id"] == self.id:
-            await self.gameLogic(event["frames"], self.id)
-            if self.id % 2 == 0:
-                await self.send(text_data=json.dumps({
-                    "type": "myState",
-                    "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
-                    "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
-                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "myScore": self.myMatch.score[self.id],
-                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+        if len(self.myMatch.players) > 1:
+            if self.myMatch.gameStarted is False:
+                self.myMatch.gameStarted = True
+            if event["id"] == self.id:
+                await self.gameLogic(event["frames"], self.id)
+                if self.id % 2 == 0:
+                    await self.send(text_data=json.dumps({
+                        "type": "myState",
+                        "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
+                        "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+                        "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
+                        "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                        "ballSpeedX": self.myMatch.ball.speed * math.cos(self.myMatch.ball.angle),
+                        "ballSpeedY": self.myMatch.ball.speed * math.sin(self.myMatch.ball.angle),
+                        "myScore": self.myMatch.score[self.id],
+                        "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+                    }))
+                else:
+                    await self.send(text_data=json.dumps({
+                        "type": "myState",
+                        "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
+                        "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+                        "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
+                        "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+                        "ballSpeedX": - self.myMatch.ball.speed * math.cos(self.myMatch.ball.angle),
+                        "ballSpeedY": self.myMatch.ball.speed * math.sin(self.myMatch.ball.angle),
+                        "myScore": self.myMatch.score[self.id],
+                        "opponentScore": self.myMatch.score[(self.id + 1) % 2],
                 }))
-            else:
-                await self.send(text_data=json.dumps({
-                    "type": "myState",
-                    "mePos": 100 * self.myMatch.players[self.id].pos / self.gameSettings.screenHeight,
-                    "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
-                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "myScore": self.myMatch.score[self.id],
-                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-            }))
+                    
+        else:
+            t = time.time_ns()
+            if t - self.myMatch.startTime > 5000000000:
+                logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
+                self.myMatch.gameEnded[(self.id + 1) % 2] = True
+                self.myMatch.score[self.id] = 5
+                await self.channel_layer.group_send(
+                self.roomName, {
+                    "type": "gameEnd",
+                    "winner": self.id,
+                }
+            )
 
         # Received from opponent
-        else:
-            await self.gameLogic(event["frames"], (self.id + 1) % 2)
-            if self.id % 2 == 0:
-                await self.send(text_data=json.dumps({
-                    "type": "opponentState",
-                    "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-                    "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
-                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "myScore": self.myMatch.score[self.id],
-                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-                }))
-            else:
-                await self.send(text_data=json.dumps({
-                    "type": "opponentState",
-                    "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-                    "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
-                    "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-                    "myScore": self.myMatch.score[self.id],
-                    "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-                }))
+        # else:
+        #     await self.gameLogic(event["frames"], (self.id + 1) % 2)
+        #     if self.id % 2 == 0:
+        #         await self.send(text_data=json.dumps({
+        #             "type": "opponentState",
+        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+        #             "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
+        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+        #             "myScore": self.myMatch.score[self.id],
+        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+        #         }))
+        #     else:
+        #         await self.send(text_data=json.dumps({
+        #             "type": "opponentState",
+        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
+        #             "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
+        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
+        #             "myScore": self.myMatch.score[self.id],
+        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
+        #         }))
 
 
 # Keep this id (as gameId) and add the id of the player incoming. For the time of the game use gameId, when sending result use the real id.

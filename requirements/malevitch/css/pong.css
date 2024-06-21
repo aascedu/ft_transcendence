@@ -3,12 +3,13 @@
 }
 
 .ball {
-	height: 32px;
-	width: 32px;
+	height: 24px;
+	width: 24px;
 	background-color: #F4BF04;
 	border-radius: 50%;
 	position: absolute;
 	filter: drop-shadow(2px 2px 8px rgba(244, 191, 4, 0.6));
+	transition: transform 5000ms ease-in-out;
 }
 
 .ball-contrast {
