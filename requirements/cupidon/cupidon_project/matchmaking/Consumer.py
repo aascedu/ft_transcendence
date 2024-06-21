@@ -125,4 +125,5 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
-        await self.close()
+        if event['id'] == self.id:
+            await self.close()
