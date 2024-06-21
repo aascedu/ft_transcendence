@@ -531,20 +531,22 @@ document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEven
 async function changeNickname() {
 	var	nicknameInput = document.querySelector('.user-profile-name-input');
 
-	try {
-		await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
-	} catch (error) {
-		console.error(error);
-		return ;
+	if (nicknameInput.value != g_userNick) {
+		try {
+			await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
+		} catch (error) {
+			console.error(error);
+			return ;
+		}
+		g_userNick = nicknameInput.value;
+
+		// Update profile name
+		document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 	}
-	g_userNick = nicknameInput.value;
 
 	// Hide alert
 	document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
-
-	// Update profile name
-	document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 }
 
 function leaveNicknameEditMode() {
