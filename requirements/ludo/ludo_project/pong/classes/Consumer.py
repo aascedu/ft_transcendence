@@ -103,10 +103,6 @@ class Consumer(OurBasicConsumer):
 
         # Check if the request is good here
         try:
-            currentTime = time.time_ns()
-            if currentTime - self.lastRequestTime < 9800000:
-                return
-            self.lastRequestTime = currentTime
 
             try:
                 gameDataJson = json.loads(text_data)
@@ -218,7 +214,8 @@ class Consumer(OurBasicConsumer):
             self.myMatch.players[id].move(self.gameSettings)
 
             # Ball and score management
-            pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings)
+            pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)
+            self.myMatch.lastMoveTime = time.time_ns()
             if pointWinner != -1:
                 self.myMatch.score[pointWinner] += 1
                 await self.channel_layer.group_send (
@@ -242,6 +239,7 @@ class Consumer(OurBasicConsumer):
         # Received from me
         if len(self.myMatch.players) > 1:
             if self.myMatch.gameStarted is False:
+                self.myMatch.lastMoveTime = time.time_ns()
                 self.myMatch.gameStarted = True
             if event["id"] == self.id:
                 await self.gameLogic(event["frames"], self.id)
