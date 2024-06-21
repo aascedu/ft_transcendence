@@ -180,7 +180,7 @@ body {
 	cursor: pointer;
 }
 
-.range-input::-webkit-slider-thumb:hover,
+.range-input:hover::-webkit-slider-thumb,
 .range-input:focus::-webkit-slider-thumb {
 	cursor: pointer;
 	outline-width: 5px;
@@ -392,5 +392,5 @@ body {
 	border-style: solid;
 	border-width: 2px;
 	color: #7300E6;
-	font-size: 400;
+	font-weight: 400;
 }
