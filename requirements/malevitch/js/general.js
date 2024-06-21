@@ -329,15 +329,21 @@ function nicknameValidChar(nickname) {
 
 function warnInvalidNickname(nickname, element) {
 	if (!nicknameValidChar(nickname)) {
-		element.setAttribute('data-language', 'nickname-invalid-char');
+		if (element != null) {
+			element.setAttribute('data-language', 'nickname-invalid-char');
+		}
 		return false;
 	}
 	else if (nickname.length < 3) {
-		element.setAttribute('data-language', 'nickname-too-short');
+		if (element != null) {
+			element.setAttribute('data-language', 'nickname-too-short');
+		}
 		return false;
 	}
 	else if (nickname.length > 15) {
-		element.setAttribute('data-language', 'nickname-too-long');
+		if (element != null) {
+			element.setAttribute('data-language', 'nickname-too-long');
+		}
 		return false;
 	}
 	return true;
