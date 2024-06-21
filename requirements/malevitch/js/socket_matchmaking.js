@@ -46,6 +46,9 @@ async function init_matchmaking_socket(requester, invited) {
         const data = {
             type: type,
         };
+		if (g_matchmakingSocket == null) {
+			return ;
+		}
 
         g_matchmakingSocket.send(JSON.stringify(data));
     }
