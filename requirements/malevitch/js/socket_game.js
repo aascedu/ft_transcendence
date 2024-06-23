@@ -178,8 +178,8 @@ async function init_game_socket(roomName) {
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-            ball.speed['x'] = data.ballSpeedX * ratioWidth / 120;
-            ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
+            ball.speed['x'] = data.ballSpeedX * ratioWidth * 2;
+            ball.speed['y'] = data.ballSpeedY * ratioHeight * 2;
 
             // newPosX = data.ballPosX / 100 * screenWidth;
             // newPosY = data.ballPosY / 100 * screenHeight;            
