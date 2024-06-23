@@ -459,8 +459,6 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 		}
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
-
-		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
 
@@ -513,7 +511,7 @@ async function setHomepageContent() {
 
 		// change font if needed
 		if (userInfo.Font != g_prevFontSize) {
-			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
+			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font - g_prevFontSize);
 			g_prevFontSize = userInfo.Font;
 		}
 		document.querySelector('.accessibility-font-size').value = userInfo.Font;
@@ -849,5 +847,6 @@ function clearHomepageId() {
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;
+	updateFontSizeOfPage(document.querySelector('body'), (0 - g_prevFontSize));
 	setAllLanguageSelectors();
 }
