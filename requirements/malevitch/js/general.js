@@ -594,6 +594,11 @@ async function setHomepageContent() {
 			totalTime += history[i].Duration;
 		}
 
+		// Adapt new content cards to font size
+		document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
+			updateFontSize(item, g_prevFontSize);
+		});
+
 		if (history.length == 0) {
 			document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
 				item.classList.remove('visually-hidden');
@@ -647,6 +652,11 @@ async function setHomepageContent() {
 		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
 	</div>`);
+
+	// Adapt new content cards to font size
+	document.querySelectorAll('.homepage-stats-content-card-container .content-card').forEach(function(item) {
+		updateFontSize(item, g_prevFontSize);
+	});
 }
 
 async function loadHomepageFriends() {
@@ -688,6 +698,11 @@ async function loadHomepageFriends() {
 				numOfFriendsOnline++;
 			}
 		}
+
+		// Adapt new content cards to font size
+		document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
+			updateFontSize(item, g_prevFontSize);
+		});
 
 		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
 			document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');

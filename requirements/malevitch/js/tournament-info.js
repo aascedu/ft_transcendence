@@ -195,6 +195,11 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		}
 	}
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		updateFontSize(item, g_prevFontSize);
+	});
+
 	// Load user profile page when clicking on a player
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
@@ -390,6 +395,8 @@ async function loadBracketPlayerContent(playerId, playerAlias, playerScore, play
 	</div>
 	<div class="bracket-player-name unselectable">` + playerAlias + `</div>
 	<div class="bracket-player-score unselectable">` + playerScore + `</div>`);
+
+	updateFontSize(playerSelector, g_prevFontSize);
 }
 
 async function loadTournamentInfoInvites() {
@@ -418,6 +425,11 @@ async function loadTournamentInfoInvites() {
 		if (availableFriends.length == 0) {
 			document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
 		}
+
+		// Adapt new content cards to font size
+		document.querySelectorAll('.tournament-info-invite .content-card').forEach(function(item) {
+			updateFontSize(item, g_prevFontSize);
+		});
 	} catch (error) {
 		console.error(error);
 		document.querySelector('.tournament-info-no-friends').classList.remove('visually-hidden');
@@ -989,6 +1001,10 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
             <img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
         </div>
     </button>`);
+
+	var	invitedPlayerElement = playersList.querySelector('.content-card:last-child');
+
+	updateFontSize(invitedPlayerElement, g_prevFontSize);
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', async function(event) {

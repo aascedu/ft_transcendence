@@ -34,6 +34,11 @@ async function loadHomepageHeader() {
 		</button>`);
 	}
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.homepage-header-open-play .content-card').forEach(function(item) {
+		updateFontSize(item, g_prevFontSize);
+	});
+
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
 		item.addEventListener('click', async function() {
 			try {

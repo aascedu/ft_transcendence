@@ -34,6 +34,11 @@ async function loadAvailableTournaments() {
 		</button>`);
 	});
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.available-tournaments-card-container .content-card').forEach(function(item) {
+		updateFontSize(item, g_prevFontSize);
+	});
+
 	// Load tournament page when clicking on a tournament
 
 	document.querySelectorAll('.available-tournaments-card-container .content-card').forEach(function(item) {
