@@ -128,9 +128,9 @@ async function init_game_socket(roomName) {
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
-        if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 33, shouldContinue);
-        }
+        // if (me.isPlayer) {
+        //     intervalId = setInterval(gameLoop, 33, shouldContinue);
+        // }
     };
 
     socket.onclose = function() {
@@ -150,7 +150,7 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
             cancelAnimationFrame(animationId);
-            clearInterval(intervalId);
+            // clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
@@ -181,12 +181,12 @@ async function init_game_socket(roomName) {
             ball.speed['x'] = data.ballSpeedX * ratioWidth / 120;
             ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
 
-            newPosX = data.ballPosX / 100 * screenWidth;
-            newPosY = data.ballPosY / 100 * screenHeight;            
-            ball.pos['x'] = newPosX;
-            htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
+            // newPosX = data.ballPosX / 100 * screenWidth;
+            // newPosY = data.ballPosY / 100 * screenHeight;            
+            // ball.pos['x'] = newPosX;
+            // htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
+            // ball.pos['y'] = data.ballPosY / 100 * screenHeight;
+            // htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
             // if (Math.abs(newPosX - data.ballPosX) > Math.abs(ball.speed['x'])) {
             //     ball.pos['x'] = newPosX;
             //     htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
@@ -267,9 +267,9 @@ async function init_game_socket(roomName) {
         // me.move(meStyle, htmlme);
         // opponent.move(opponentStyle, htmlopponent);
         // console.log(ball.speed['x']);
-        // gameLoop(shouldContinue);
-        // ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
-        // animationId = window.requestAnimationFrame(animate);
+        gameLoop(shouldContinue);
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        animationId = window.requestAnimationFrame(animate);
     }
 }
 
