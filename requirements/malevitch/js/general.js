@@ -849,4 +849,10 @@ function clearHomepageId() {
 	document.querySelector('.sign-up-font-size').value = 0;
 	updateFontSizeOfPage(document.querySelector('body'), (0 - g_prevFontSize));
 	setAllLanguageSelectors();
+	
+	var	accessibilityCheck = document.querySelector('.accessibility .switch input');
+	if (accessibilityCheck.checked) {
+		accessibilityCheck.checked = false;
+		contrastMode();
+	}
 }
