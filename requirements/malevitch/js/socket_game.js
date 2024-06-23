@@ -128,9 +128,9 @@ async function init_game_socket(roomName) {
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
-        // if (me.isPlayer) {
-        //     intervalId = setInterval(gameLoop, 33, shouldContinue);
-        // }
+        if (me.isPlayer) {
+            intervalId = setInterval(gameLoop, 33, shouldContinue);
+        }
     };
 
     socket.onclose = function() {
