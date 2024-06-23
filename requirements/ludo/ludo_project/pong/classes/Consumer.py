@@ -215,7 +215,7 @@ class Consumer(OurBasicConsumer):
 
             # Ball and score management
             pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)
-            self.myMatch.lastMoveTime = time.time_ns()
+            # self.myMatch.lastMoveTime = time.time_ns()
             if pointWinner != -1:
                 self.myMatch.score[pointWinner] += 1
                 await self.channel_layer.group_send (

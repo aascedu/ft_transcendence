@@ -129,7 +129,7 @@ async function init_game_socket(roomName) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
         if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 10, shouldContinue);
+            intervalId = setInterval(gameLoop, 33, shouldContinue);
         }
     };
 
