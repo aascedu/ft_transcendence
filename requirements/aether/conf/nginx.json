@@ -52,6 +52,9 @@
               "response_size": {
                   "type": "integer"
               },
+              "log_type": {
+                  "type": "keyword"
+              },            
               "referer": {
                   "type": "text",
                   "fields": {
@@ -69,12 +72,6 @@
                           "ignore_above": 256
                       }
                   }
-              },
-              "hour_of_day": {
-                "type": "keyword"
-              },
-              "date_of_day": {
-                "type": "keyword"
               },
               "geoip": {
                   "properties": {

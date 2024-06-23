@@ -355,19 +355,36 @@ document.querySelector('.homepage-header-add-friend-submit').addEventListener('k
 
 async function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
+	var	warning = document.querySelector('.homepage-header-add-friend-input-warning');
+	var	valid = warnInvalidNickname(nickname, warning);
+	var locale = document.querySelector('.homepage-header-language-selector button img').alt;
+
+	// check if nickname is valid
+	if (!valid) {
+		switchLanguageContent(locale);
+		warning.classList.remove('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input').value = '';
+		document.querySelector('.homepage-header-add-friend-input').focus();
+		setAriaHidden();
+		return ;
+	}
 
 	// check if user is yourself
 	if (nickname == g_userNick || !nickname.length) {
 		return ;
 	}
 
+	// check if user exists
 	try {
         const data = await fetch_get('/alfred/user/signin/' + nickname + '/');
 
         console.log(data);
 
         if (data.Ava) {
-            document.querySelector('.homepage-header-add-friend-input-warning').classList.remove('visually-hidden');
+			warning.setAttribute('data-language', 'unknown-user');
+			switchLanguageContent(locale);
+            warning.classList.remove('visually-hidden');
             document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
             document.querySelector('.homepage-header-add-friend-input').value = '';
             document.querySelector('.homepage-header-add-friend-input').focus();
@@ -380,7 +397,7 @@ async function addFriend() {
             // Close menu and reset UI elements
             document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
             document.querySelector('.homepage-header-add-friend-input-box').classList.add('visually-hidden');
-            document.querySelector('.homepage-header-add-friend-input-warning').classList.add('visually-hidden');
+            warning.classList.add('visually-hidden');
             document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
             document.querySelector('.homepage-header-add-friend-input').value = '';
             document.querySelector('.homepage-header-open-friends').classList.add('visually-hidden');
