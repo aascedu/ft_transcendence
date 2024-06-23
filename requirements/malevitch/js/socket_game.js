@@ -178,15 +178,15 @@ async function init_game_socket(roomName) {
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-            ball.speed['x'] = data.ballSpeedX * ratioWidth * 2;
-            ball.speed['y'] = data.ballSpeedY * ratioHeight * 2;
+            ball.speed['x'] = data.ballSpeedX * ratioWidth / 2;
+            ball.speed['y'] = data.ballSpeedY * ratioHeight / 2;
 
-            newPosX = data.ballPosX / 100 * screenWidth;
-            newPosY = data.ballPosY / 100 * screenHeight;            
-            ball.pos['x'] = newPosX;
-            htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
+            // newPosX = data.ballPosX / 100 * screenWidth;
+            // newPosY = data.ballPosY / 100 * screenHeight;            
+            // ball.pos['x'] = newPosX;
+            // htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
+            // ball.pos['y'] = data.ballPosY / 100 * screenHeight;
+            // htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
             // if (Math.abs(newPosX - data.ballPosX) > Math.abs(ball.speed['x'])) {
             //     ball.pos['x'] = newPosX;
             //     htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
@@ -268,8 +268,8 @@ async function init_game_socket(roomName) {
         // opponent.move(opponentStyle, htmlopponent);
         // console.log(ball.speed['x']);
         // gameLoop(shouldContinue);
-        // ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
-        // animationId = window.requestAnimationFrame(animate);
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        animationId = window.requestAnimationFrame(animate);
     }
 }
 
