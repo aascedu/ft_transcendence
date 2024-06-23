@@ -65,13 +65,12 @@ class Ball {
         else if (newPosY - parseInt(ballStyle.height, 10) / 2 < 0 && this.speed['y'] < 0 || newPosY + parseInt(ballStyle.height, 10) / 2 > screenHeight && this.speed['y'] > 0) {
             this.speed['y'] *= -1;
             newPosY = this.pos['y'] + this.speed['y'];
-            console.log("yo")
         }
         this.pos['x'] = newPosX;
         this.pos['y'] = newPosY;
         htmlBall.style.top = this.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
         htmlBall.style.left = this.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-        console.log(this.speed['y']);
+        // console.log(this.speed['y']);
     }
     init() {
         this.pos = {x: screenWidth / 2, y: screenHeight / 2};
@@ -112,7 +111,7 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 async function init_game_socket(roomName) {
     unique_use_token = await get_socket_connection_token('/ludo/');
-    console.log(unique_use_token);
+    // console.log(unique_use_token);
     const domain = window.location.host;
     const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
@@ -129,9 +128,9 @@ async function init_game_socket(roomName) {
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
-        // if (me.isPlayer) {
-        //     intervalId = setInterval(gameLoop, 10, shouldContinue);
-        // }
+        if (me.isPlayer) {
+            intervalId = setInterval(gameLoop, 10, shouldContinue);
+        }
     };
 
     socket.onclose = function() {
@@ -184,10 +183,10 @@ async function init_game_socket(roomName) {
 
             newPosX = data.ballPosX / 100 * screenWidth;
             newPosY = data.ballPosY / 100 * screenHeight;            
-            // ball.pos['x'] = newPosX;
-            // htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            // ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            // htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
+            ball.pos['x'] = newPosX;
+            htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
+            ball.pos['y'] = data.ballPosY / 100 * screenHeight;
+            htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
             // if (Math.abs(newPosX - data.ballPosX) > Math.abs(ball.speed['x'])) {
             //     ball.pos['x'] = newPosX;
             //     htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
@@ -230,7 +229,7 @@ async function init_game_socket(roomName) {
 
 // Updtae position de la balle et du joueur !
     function updateScreenSize() {
-        console.log(screenHeight);
+        // console.log(screenHeight);
         screenHeight = window.innerHeight;
         screenWidth = window.innerWidth;
         ratioHeight = screenHeight / 1080;
@@ -242,7 +241,7 @@ async function init_game_socket(roomName) {
         htmlopponent.style.width = 24 * ratioWidth + 'px';
         htmlBall.style.height = 24 * ratioBall + 'px';
         htmlBall.style.width = 24 * ratioBall + 'px';
-        htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';
+        htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 + 'px';  
     }
 
     window.addEventListener('resize', updateScreenSize());
@@ -268,9 +267,9 @@ async function init_game_socket(roomName) {
         // me.move(meStyle, htmlme);
         // opponent.move(opponentStyle, htmlopponent);
         // console.log(ball.speed['x']);
-        gameLoop(shouldContinue);
-        ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
-        animationId = window.requestAnimationFrame(animate);
+        // gameLoop(shouldContinue);
+        // ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        // animationId = window.requestAnimationFrame(animate);
     }
 }
 
