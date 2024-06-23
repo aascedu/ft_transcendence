@@ -112,6 +112,7 @@ fclean: | clean
 	docker rmi $$(docker images -q) || true
 	docker volume rm $$(docker volume ls -q) || true
 	docker network rm $$(docker network ls -q) 2>/dev/null || true
+	./pass.sh
 
 # - Removes all unused Docker data, including images, containers, volumes, and networks
 prune: | fclean

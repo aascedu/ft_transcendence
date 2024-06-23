@@ -40,11 +40,8 @@ nginx_data_view='{
       "response_size": {
         "customLabel": "Response Size"
       },
-      "hour_of_day": {
-        "customLabel": "Hour of Day"
-      },
-      "date_of_day": {
-        "customLabel": "Date of Day"
+      "log_type": {
+        "customLabel": "Log Type"
       },
       "geoip.location": {
         "customLabel": "GeoIP Location"
