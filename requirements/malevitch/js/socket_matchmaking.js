@@ -11,7 +11,7 @@ async function init_matchmaking_socket(requester, invited) {
 
     g_matchmakingSocket.onopen = function(event) {
         console.log("Matchmaking socket opened in the front");
-        intervalId = setInterval(ping, 10000);
+        intervalId = setInterval(ping, 5000);
     };
 
     g_matchmakingSocket.onclose = function() {

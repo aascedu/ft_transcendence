@@ -4,4 +4,4 @@ class gameSettings:
         self.screenWidth = 1920
         self.playerHeight = 200
         self.playerWidth = 24
-        self.ballSize = 32
+        self.ballSize = 24

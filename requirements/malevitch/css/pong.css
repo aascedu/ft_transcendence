@@ -3,8 +3,8 @@
 }
 
 .ball {
-	height: 32px;
-	width: 32px;
+	height: 24px;
+	width: 24px;
 	background-color: #F4BF04;
 	border-radius: 50%;
 	position: absolute;
