@@ -157,18 +157,18 @@
 
 .user-profile-history-card-result,
 .user-profile-stats-card-stat {
-	font-size: 18pt;
+	font-size: 15pt;
 	font-weight: 700;
 	margin-right: 16px;
 }
 
 .user-profile-history-card-event {
-	font-size: 14pt;
+	font-size: 12pt;
 	font-weight: 500;
 }
 
 .user-profile-history-card-event b {
-	font-size: 14pt;
+	font-size: 12pt;
 	font-weight: 700;
 }
 
