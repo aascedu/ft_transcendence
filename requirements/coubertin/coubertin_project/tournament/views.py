@@ -116,9 +116,9 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': request.user.id})
             if r.status_code != 200:
-                return JsonErrResponse({'Err': "Couldn't update available state"})
+                return JsonErrResponse(request, {'Err': "Couldn't update available state"}, status = r.status_code)
         except Exception as e:
-            return JsonErrResponse({'Err': e.__str__()})
+            return JsonErrResponse(request, {'Err': e.__str__()}, status = r.status_code)
 
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
@@ -136,11 +136,11 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': userId})
             if r.status_code == 409:
-                return JsonErrResponse({'Err': "You are not available"})
+                return JsonErrResponse(request, {'Err': "You are not available"}, status=r.status_code)
             elif r.status_code != 200:
-                return JsonErrResponse({'Err': "Couldn't update available state"})
+                return JsonErrResponse(request, {'Err': "Couldn't update available state"}, status=r.status_code)
         except Exception as e:
-            return JsonErrResponse({'Err': e.__str__()})
+            return JsonErrResponse(request, {'Err': e.__str__()}, status=r.status_code)
 
         try:
             tournamentId = int(tournamentId)

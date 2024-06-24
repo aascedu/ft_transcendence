@@ -15,6 +15,9 @@ async function init_matchmaking_socket(requester, invited) {
 
     g_matchmakingSocket.onclose = function() {
         g_matchmakingSocket = null;
+		document.querySelector('.notif-search-match').classList.add('visually-hidden');
+		setAriaHidden();
+		cancelSearchMatch();
     }
     
     g_matchmakingSocket.onmessage = async (event) => {
