@@ -7,7 +7,7 @@ urlpatterns = [
     path('available-states/', views.availableFriendView.as_view()),
     path("send-shit/", views.global_notification, name="notifications"),
     path("friendship/<int:requester>/", views.friendship),
-    path("delete-friend-request/<int:requester>/", views.friendshipRequest),
+    path("delete-friend-request/<int:requester>/", views.friendshipRefused),
     path("friend-request/<int:requester>/", views.friendshipRequest),
     path("delete-friend/<int:requester>/", views.friendshipSuppressed),
     path("game-request/<int:requester>/", views.gameRequest),
