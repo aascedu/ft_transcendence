@@ -2,7 +2,7 @@ from django.views import View
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from django.views.generic.base import logging
-from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized
+from shared.utils import JsonBadRequest, JsonErrResponse, JsonForbidden, JsonUnallowedMethod, JsonUnauthorized, JsonConflict
 from shared.utils import JsonResponseLogging as JsonResponse
 from notifications.cache import get_cache, set_cache
 from notifications.decorators import notification_by_notified_id, notification_global, notification_to_friends
@@ -61,6 +61,8 @@ class availableFriendView(View):
         if request.user.is_service is False:
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
+        if get_cache(f'ava_{id}') is True:
+            return JsonConflict(request, 'Invalid availability action')
         set_cache(f'ava_{id}', True)
         updateAva(request, id)
         return JsonResponse(request, {'Ava': True})
@@ -70,6 +72,8 @@ class availableFriendView(View):
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
         updateAva(request, id)
+        if get_cache(f'ava_{id}') is False:
+            return JsonConflict(request, 'Invalid availability action')
         set_cache(f'ava_{id}', False)
         return JsonResponse(request, {'Ava': False})
 

@@ -6,14 +6,14 @@ class Ball:
 
     def __init__(self, gameSettings):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 5
+        self.speed = gameSettings.screenWidth / 200
         self.angle = math.pi
         self.size = gameSettings.ballSize
         self.lastWallCollision = 0
 
     def newPoint(self, gameSettings, player1, player2):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 5
+        self.speed = gameSettings.screenWidth / 200
         self.angle = math.pi
         self.size = gameSettings.ballSize
         player1.pos = gameSettings.screenHeight / 2
@@ -58,9 +58,7 @@ class Ball:
         self.hostCollision(gameSettings, host)
         self.clientCollision(client, gameSettings)
         self.wallCollision(gameSettings)
-        tmpTime = time.time_ns()
-        diffTime = (tmpTime - lastMoveTime) / 1000000000
-        self.pos[0] += math.cos(self.angle) * self.speed * diffTime
-        self.pos[1] += math.sin(self.angle) * self.speed * diffTime
+        self.pos[0] += math.cos(self.angle) * self.speed
+        self.pos[1] += math.sin(self.angle) * self.speed
         return (self.updatePoints(gameSettings, host, client))
         
