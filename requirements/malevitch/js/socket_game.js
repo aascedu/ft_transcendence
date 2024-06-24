@@ -115,7 +115,6 @@ async function init_game_socket(roomName) {
     const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
     console.log(url);
-    var intervalId;
     var animationId;
     var shouldContinue = true;
 
@@ -127,15 +126,11 @@ async function init_game_socket(roomName) {
     socket.onopen = function(event) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
-        if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 33, shouldContinue);
-        }
     };
 
     socket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
-        clearInterval(intervalId);
         console.log("Socket closed in the front");
     }
 
@@ -149,7 +144,6 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
             cancelAnimationFrame(animationId);
-            clearInterval(intervalId);
             console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
@@ -177,8 +171,8 @@ async function init_game_socket(roomName) {
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-            ball.speed['x'] = data.ballSpeedX * ratioWidth / 2;
-            ball.speed['y'] = data.ballSpeedY * ratioHeight / 2;
+            ball.speed['x'] = data.ballSpeedX * ratioWidth / 120;
+            ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
 
             me.points = data.myScore;
             opponent.points = data.opponentScore;
@@ -247,6 +241,7 @@ async function init_game_socket(roomName) {
 
     function animate() {
         ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        gameLoop(shouldContinue);
         animationId = window.requestAnimationFrame(animate);
     }
 }
