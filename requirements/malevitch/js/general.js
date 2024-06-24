@@ -70,15 +70,12 @@ async function determine_state() {
 
     try {
         response = await fetch('/petrus/auth/JWT-refresh/', content);
-        if (!response.ok) {
-            throw custom_error(response);
+        if (response.ok) {
+            await assign_global();
         }
-        await assign_global();
-        await render();
     } catch {
-            console.log("No JWT in request : try to connect")
-            disconnect();
     }
+    await render();
 }
 
 async function render() {
