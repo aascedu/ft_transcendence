@@ -827,7 +827,10 @@ services:
 # # Websocket container
   redis:
     container_name: redis
-    image: 'bitnami/redis:latest'
+    build:
+      context: ./requirements/redis
+      dockerfile: Dockerfile
+    # image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     networks:
