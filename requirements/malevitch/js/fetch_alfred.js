@@ -1,10 +1,3 @@
-//path("sessions/<int:id>", sessionView.as_view()),
-//path("users/<int:id>", userInfoView.as_view()),
-//path("friends/<int:id>", friendView.as_view()),
-//path("avatar/<int:id>", avatarView.as_view()),
-//path("media/<str:filename>", serve_avatar),
-//path("view-db", view_db)
-
 function add_alfred_in_url(url) {
     return ("/alfred/user" + url)
 }
