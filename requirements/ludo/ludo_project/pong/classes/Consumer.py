@@ -46,6 +46,10 @@ class Consumer(OurBasicConsumer):
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
             self.myMatch.playersId[self.id] = self.user.id
+            if self.user.id == p1:
+                self.myMatch.playersId[(self.id + 1) % 2] = p2
+            else:
+                self.myMatch.playersId[(self.id + 1) % 2] = p1
 
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             await self.close()
@@ -270,7 +274,7 @@ class Consumer(OurBasicConsumer):
         else:
             t = time.time_ns()
             if t - self.myMatch.startTime > 5000000000:
-                logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
+                # Trouver l'id de l'autre mec
                 self.myMatch.gameEnded[(self.id + 1) % 2] = True
                 self.myMatch.score[self.id] = 5
                 await self.channel_layer.group_send(
