@@ -147,6 +147,6 @@ class refreshView(View):
 
     def delete(self, request):
         response = JsonResponse(request, {"Token": "suppressed"})
-        response.delete_cookie("Auth", path='/')
-        response.delete_cookie('Ref', path='/petrus/auth/JWT-refresh/')
+        response.delete_cookie("Auth", samesite="Strict", path='/')
+        response.delete_cookie('Ref', samesite="Strict", path='/petrus/auth/JWT-refresh/')
         return response
