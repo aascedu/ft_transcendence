@@ -22,6 +22,17 @@ class Consumer(OurBasicConsumer):
         except:
             return self.close()
 
+        try:
+            request = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': self.id})
+            if request.status_code == 409:
+                return self.close()
+            elif request.status_code != 200:
+                return self.close()
+        except Exception as e:
+            return self.close()
+
         if self.requester == 0 and self.invited == 0:
             if self.id in waitingList:
                 return self.close()
@@ -30,8 +41,7 @@ class Consumer(OurBasicConsumer):
                 response = requests.get(
                     f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
                 )
-                elo = response.json()['elo']
-                waitingList[self.id] = Player(self.id, elo)
+                waitingList[self.id] = Player(self.id, response.json()['elo'])
 
             except Exception as e:
                 logging.error(e)
@@ -40,15 +50,6 @@ class Consumer(OurBasicConsumer):
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
             gameRequesters.append([self.requester, self.invited])
-
-        try:
-            request = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if request.status_code != 200:
-                await self.close()
-        except Exception as e:
-            await self.close()
 
         await self.accept()
 
@@ -77,6 +78,9 @@ class Consumer(OurBasicConsumer):
         except KeyError:
             logging.error("No type key in received message")
             return
+        
+        if self.id not in waitingList:
+            return self.close()
 
         # Send message to room group
         await self.channel_layer.group_send(

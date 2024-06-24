@@ -83,10 +83,15 @@ document.querySelector('.victory-defeat-again').addEventListener('click', async 
 
 		var	userNick = await get_user_info(userId);
 		userNick = userNick.Nick;
+		
+		if (g_invited == true) {
+			g_invited = false;
+			return ;
+		}
 
 		// Display homepage game
 		document.querySelector('.homepage-header-logo').focus();
-
+		
 		hideEveryPage();
 	
 		g_state.pageToDisplay = '.homepage-game';

@@ -70,7 +70,6 @@ class Ball {
         this.pos['y'] = newPosY;
         htmlBall.style.top = this.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
         htmlBall.style.left = this.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-        // console.log(this.speed['y']);
     }
     init() {
         this.pos = {x: screenWidth / 2, y: screenHeight / 2};
@@ -111,12 +110,9 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 async function init_game_socket(roomName) {
     unique_use_token = await get_socket_connection_token('/ludo/');
-    // console.log(unique_use_token);
     const domain = window.location.host;
     const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
-    console.log(url);
-    var intervalId;
     var animationId;
     var shouldContinue = true;
 
@@ -126,22 +122,12 @@ async function init_game_socket(roomName) {
     let nbframes = 1;
 
     socket.onopen = function(event) {
-        console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
-        if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 33, shouldContinue);
-        }
     };
 
     socket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
-        clearInterval(intervalId);
-        console.log("Socket closed in the front");
-    }
-
-    socket.onerror = function(event) {
-        console.log("Socket error");
     }
 
     socket.onmessage = (event) => {
@@ -150,8 +136,6 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
             cancelAnimationFrame(animationId);
-            clearInterval(intervalId);
-            console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
         }
@@ -159,7 +143,6 @@ async function init_game_socket(roomName) {
         else if (data.type == "gameParameters") {
             // Actual objects
             me.isPlayer = data.isPlayer;
-            console.log("gameStart response");
             animationId = window.requestAnimationFrame(animate);
         }
 
@@ -178,24 +161,8 @@ async function init_game_socket(roomName) {
             htmlme.style.top = me.pos - parseInt(meStyle.height, 10) / 2 + 'px';
             htmlopponent.style.top = opponent.pos - parseInt(opponentStyle.height, 10) / 2 + 'px';
 
-            ball.speed['x'] = data.ballSpeedX * ratioWidth / 2;
-            ball.speed['y'] = data.ballSpeedY * ratioHeight / 2;
-
-            // newPosX = data.ballPosX / 100 * screenWidth;
-            // newPosY = data.ballPosY / 100 * screenHeight;            
-            // ball.pos['x'] = newPosX;
-            // htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            // ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            // htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
-            // if (Math.abs(newPosX - data.ballPosX) > Math.abs(ball.speed['x'])) {
-            //     ball.pos['x'] = newPosX;
-            //     htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            // }
-            // if (Math.abs(newPosY - data.ballPosY) > Math.abs(ball.speed['y'])) {
-            //     ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            //     htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
-            // }
-
+            ball.speed['x'] = data.ballSpeedX * ratioWidth / 120;
+            ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
 
             me.points = data.myScore;
             opponent.points = data.opponentScore;
@@ -229,7 +196,6 @@ async function init_game_socket(roomName) {
 
 // Updtae position de la balle et du joueur !
     function updateScreenSize() {
-        // console.log(screenHeight);
         screenHeight = window.innerHeight;
         screenWidth = window.innerWidth;
         ratioHeight = screenHeight / 1080;
@@ -264,16 +230,13 @@ async function init_game_socket(roomName) {
     }
 
     function animate() {
-        // me.move(meStyle, htmlme);
-        // opponent.move(opponentStyle, htmlopponent);
-        // console.log(ball.speed['x']);
-        // gameLoop(shouldContinue);
         ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        gameLoop(shouldContinue);
         animationId = window.requestAnimationFrame(animate);
     }
 }
 
-function showGamePage(roomName) {
+async function showGamePage(roomName) {
     var	homepageHeader = document.querySelector('.homepage-header');
 	homepageHeader.classList.add('visually-hidden');
 
@@ -282,7 +245,7 @@ function showGamePage(roomName) {
 
 	hideEveryPage();
 
-	init_game_socket(roomName);
+	await init_game_socket(roomName);
 	g_state.pageToDisplay = '.game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);

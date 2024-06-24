@@ -8,8 +8,6 @@ async function init_session_socket() {
 	const domain = window.location.host;
     url =  'wss://' + domain + "/hermes/session/" + g_userNick + "?token=" + unique_use_token
     g_sessionSocket = new WebSocket(url)
-    g_sessionSocket.onopen = function(event) {
-    }
 
     g_sessionSocket.onmessage = function(event) {
         const data = event.data;
@@ -29,7 +27,6 @@ async function init_session_socket() {
             return ;
         }
         if (obj.type === "notification.message") {
-            notificationMessage(obj);
             return ;
         }
         if (obj.type === "notification.friendship.request") {
@@ -76,8 +73,6 @@ async function init_session_socket() {
 }
 
 async function notificationFriendshipRequest(data) {
-    console.log('FriendshipRequest');
-    console.log(data);
 
 	if (g_state.pageToDisplay == '.game') {
 		return ;
@@ -101,8 +96,6 @@ async function notificationFriendshipRequest(data) {
 }
 
 async function notificationNewFriendship(data) {
-    console.log('NewFriendship');
-    console.log(data);
 
 	if (g_state.pageToDisplay == '.game') {
 		return ;
@@ -118,6 +111,7 @@ async function notificationNewFriendship(data) {
 		newFriendshipCountdown(2);
 	} catch (error) {
 		console.error(error);
+		return ;
 	}
 
 	// if we are on homepage-game, add new friend to friends online
@@ -166,9 +160,6 @@ async function notificationNewFriendship(data) {
 }
 
 async function notificationTournamentRequest(data) {
-    console.log('TournamentRequest');
-    console.log(data);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -196,9 +187,6 @@ async function notificationTournamentRequest(data) {
 }
 
 async function notificationGameAccepted(data) {
-    console.log("game accepted");
-    console.log(data);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -221,9 +209,6 @@ async function notificationGameAccepted(data) {
 }
 
 async function notificationGameRequest(data) {
-    console.log("game request");
-    console.log(data);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -248,9 +233,6 @@ async function notificationGameRequest(data) {
 }
 
 async function notificationNewClientConnected(data) {
-    console.log("new friend connected");
-    console.log(data);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -410,15 +392,7 @@ async function notificationTournamentRefused(data) {
 	await loadHomepageHeader();
 }
 
-async function notificationMessage(data) {
-	console.log("new message");
-    console.log(data);
-}
-
 async function notificationProfileChanged(data) {
-	console.log("profile changed");
-    console.log(data);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -468,9 +442,6 @@ async function notificationProfileChanged(data) {
 	await loadHomepageHeader();
 }
 async function notificationFriendDisconnected(obj) {
-	console.log("Friend disconnected");
-    console.log(obj);
-
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}

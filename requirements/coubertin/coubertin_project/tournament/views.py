@@ -49,6 +49,8 @@ class tournamentManagement(View):
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
             invited = data['Invited']
+            if len(tournamentName) > 12 or len(tournamentName) < 3:
+                return JsonBadRequest(request, f'tournament bad format')
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to create tournament')
 
@@ -130,6 +132,17 @@ class tournamentEntry(View):
         userId = request.user.id
 
         try:
+            r = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': userId})
+            if r.status_code == 409:
+                return JsonErrResponse({'Err': "You are not available"})
+            elif r.status_code != 200:
+                return JsonErrResponse({'Err': "Couldn't update available state"})
+        except Exception as e:
+            return JsonErrResponse({'Err': e.__str__()})
+
+        try:
             tournamentId = int(tournamentId)
             data = request.data
             playerAlias = data['Alias']
@@ -166,15 +179,6 @@ class tournamentEntry(View):
                 logging.info("Starting tournament")
             except:
                 return JsonBadRequest(request, "Couldn't start tournament because of invalid tournament id")
-
-        try:
-            r = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': userId})
-            if r.status_code != 200:
-                return JsonErrResponse({'Err': "Couldn't update available state"})
-        except Exception as e:
-            return JsonErrResponse({'Err': e.__str__()})
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
 

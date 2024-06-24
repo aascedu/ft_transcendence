@@ -199,6 +199,12 @@ async function loadUserContent(id) {
 		totalTime += history[i].Duration;
 	}
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.user-profile-history .content-card').forEach(function(item) {
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
+	});
+
 	// Display stats
 
 	document.querySelector('.user-profile-winrate').textContent = Math.round((numWins / history.length + Number.EPSILON) * 100) + '%';
