@@ -129,7 +129,7 @@ async function init_game_socket(roomName) {
         console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
         if (me.isPlayer) {
-            intervalId = setInterval(gameLoop, 10, shouldContinue);
+            // intervalId = setInterval(gameLoop, 10, shouldContinue);
         }
     };
 
@@ -267,9 +267,9 @@ async function init_game_socket(roomName) {
         // me.move(meStyle, htmlme);
         // opponent.move(opponentStyle, htmlopponent);
         // console.log(ball.speed['x']);
-        // gameLoop(shouldContinue);
-        // ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
-        // animationId = window.requestAnimationFrame(animate);
+        gameLoop(shouldContinue);
+        ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
+        animationId = window.requestAnimationFrame(animate);
     }
 }
 
