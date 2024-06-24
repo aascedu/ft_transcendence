@@ -9,6 +9,6 @@ class Player:
         self.id = id
     def move(self, gameSettings):
         mvt = self.down - self.up
-        newPos = self.pos + mvt * gameSettings.screenHeight / 60
+        newPos = self.pos + mvt * gameSettings.screenHeight / 150
         if (newPos + gameSettings.playerHeight / 2 < gameSettings.screenHeight and newPos > gameSettings.playerHeight / 2):
             self.pos = newPos
