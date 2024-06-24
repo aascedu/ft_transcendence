@@ -347,7 +347,7 @@ function warnInvalidNickname(nickname, element) {
 		}
 		return false;
 	}
-	else if (nickname.length > 15) {
+	else if (nickname.length > 10) {
 		if (element != null) {
 			element.setAttribute('data-language', 'nickname-too-long');
 		}
@@ -372,7 +372,7 @@ function warnInvalidTournamentName(name, element) {
 		element.setAttribute('data-language', 'tournament-name-too-short');
 		return false;
 	}
-	else if (name.length > 23) {
+	else if (name.length > 12) {
 		element.setAttribute('data-language', 'tournament-name-too-long');
 		return false;
 	}

@@ -15,7 +15,7 @@ class Client(models.Model):
                     ]
     )
     id = models.BigAutoField(primary_key=True)
-    nick = models.CharField(max_length=16, unique=True,
+    nick = models.CharField(max_length=10, unique=True,
                     validators=[NickNameValidator])
     email = models.EmailField()
     friends = models.ManyToManyField('self', blank=True)
