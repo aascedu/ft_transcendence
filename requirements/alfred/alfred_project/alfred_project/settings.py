@@ -33,7 +33,7 @@ DEFAULT_AVATAR_URL = ""
 SECRET_KEY = 'django-insecure-+52k4g8*w7q#%ny%+!kd)^zup5vn21!=vh2xe=3)-ns2ra+x)l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
