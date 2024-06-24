@@ -5,6 +5,7 @@ PROXY_CONF=$(cat .env | grep 'PROXY_CONF' | awk -F '=' '{print $2}')
 if [ "$PROXY_CONF" = "proxy.conf" ]; then
     DOCKER_FILE="docker-compose.yml"
     sudo /sbin/sysctl -w vm.max_map_count=262144
+    sudo sysctl vm.overcommit_memory=1
 else
     DOCKER_FILE="docker-compose-nologs.yml"
 fi
