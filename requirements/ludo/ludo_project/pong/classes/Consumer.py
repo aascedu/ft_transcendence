@@ -227,7 +227,6 @@ class Consumer(OurBasicConsumer):
                         "type": "updateScore",
                     }
                 )
-            # It's being called several times 
             if self.myMatch.score[self.id] == 5:
                 await self.channel_layer.group_send (
                     self.roomName, {
@@ -275,7 +274,6 @@ class Consumer(OurBasicConsumer):
         else:
             t = time.time_ns()
             if t - self.myMatch.startTime > 5000000000:
-                # Trouver l'id de l'autre mec
                 self.myMatch.gameEnded[(self.id + 1) % 2] = True
                 self.myMatch.score[self.id] = 5
                 await self.channel_layer.group_send(
