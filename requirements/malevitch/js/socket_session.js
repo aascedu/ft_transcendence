@@ -490,13 +490,6 @@ async function notificationUpdateAvaState(data) {
 			await loadUserContent(userId);
 		}
 	}
-	// if we are on a tournament page, load it back so that friend is updated in available friends
-	if (g_state.pageToDisplay == '.tournament-info') {
-		if (!document.querySelector('.tournament-info-invite-icon').classList.contains('visually-hidden')) {
-			clearTournamentInfoInvites();
-			await loadTournamentInfoInvites();
-		}
-	}
 	// if we are creating a tournament, load back available friends so that friend is updated in available friends
 	if (g_state.pageToDisplay == '.create-tournament') {
 		clearCreateTournamentAvailableFriends();
