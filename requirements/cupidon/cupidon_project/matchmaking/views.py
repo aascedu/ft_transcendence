@@ -1,5 +1,5 @@
 from django.views import View
-from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
+from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse, JsonConflict
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from matchmaking.Player import gameRequesters, waitingList
@@ -130,7 +130,7 @@ class RequestGameResponse(View):
                     json={'Id': requester})
                 if request.status_code != 200:
                     logging.error("Player " + strRequester + " state update request has failed")
-                    return JsonErrResponse(request, {'Err': "Player state update request has failed"})
+                    return JsonConflict(request, {'Err': "Player state update request has failed"})
             except Exception as e:
                 logging.critical("Player " + strRequester + " state update request has critically failed")
                 return JsonErrResponse(request, {'Err': "Player state update request has failed"})
@@ -156,7 +156,7 @@ class RestoreAvailability(View):
                 json={'Id': requester})
             if request.status_code != 200:
                 logging.error("Player state update request has failed")
-                return JsonErrResponse(request, {'Err': "Player state update request has failed"})
+                return JsonConflict(request, {'Err': "Player state update request has failed"})
         except Exception as e:
             logging.critical("Player state update request has critically failed")
             return JsonErrResponse(request, {'Err': "Player state update request has failed"})
