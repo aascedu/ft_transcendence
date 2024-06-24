@@ -78,6 +78,7 @@
 		"friends-requests": "Friends requests",
 		"add-friend": "Add a friend...",
 		"friend-nickname": "Enter a nickname...",
+		"friend-already": "This user is already your friend.",
 		"unknown-user": "User not found.",
 		"confirm-invite": "Do you confirm this invitation ?",
 		"confirm-remove": "Do you want to remove this friend ?",
@@ -109,6 +110,7 @@
 		"notif-play-invite": "wants to play with you",
 		"notif-search-match": "Searching a match...",
 		"notif-match-found": "Match found ! Starting in",
+		"game-already": "You are already in game.",
 		"notif-invite-sent": "You have successfully invited",
 		"notif-new-friendship": "has accepted your friend request"
 	},
@@ -191,6 +193,7 @@
 		"friends-requests": "Demandes d'ami",
 		"add-friend": "Ajouter un ami...",
 		"friend-nickname": "Entrez un pseudonyme...",
+		"friend-already": "Cet utilisateur est déjà votre ami.",
 		"unknown-user": "Utilisateur introuvable.",
 		"confirm-invite": "Confirmez-vous cette invitation ?",
 		"confirm-remove": "Voulez-vous supprimer cet ami ?",
@@ -222,6 +225,7 @@
 		"notif-play-invite": "veut jouer avec vous",
 		"notif-search-match": "Recherche de partie...",
 		"notif-match-found": "Partie trouvée ! Début dans",
+		"game-already": "Vous êtes déjà en jeu.",
 		"notif-invite-sent": "Invitation envoyée à",
 		"notif-new-friendship": "a accepté votre demande d'ami"
 	},
@@ -304,6 +308,7 @@
 		"friends-requests": "好友请求",
 		"add-friend": "添加好友。。。",
 		"friend-nickname": "输入昵称。。。",
+		"friend-already": "此用户已经是你的朋友",
 		"unknown-user": "找不到用户",
 		"confirm-invite": "您确认这个邀请吗？",
 		"confirm-remove": "您想删除该好友吗？",
@@ -335,6 +340,7 @@
 		"notif-play-invite": "想和您一起玩",
 		"notif-search-match": "正在寻找匹配项。。。",
 		"notif-match-found": "匹配成功！ 即将开始",
+		"game-already": "你已经进入游戏",
 		"notif-invite-sent": "您已成功邀请",
 		"notif-new-friendship": "已接受您的好友请求"
 	}
