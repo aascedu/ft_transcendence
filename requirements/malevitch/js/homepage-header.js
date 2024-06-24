@@ -353,12 +353,6 @@ document.querySelector('.homepage-header-add-friend-submit').addEventListener('c
 	await addFriend();
 });
 
-document.querySelector('.homepage-header-add-friend-submit').addEventListener('keypress', async function(e) {
-	if (e.key == 'Enter') {
-		await addFriend();
-	}
-});
-
 async function addFriend() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	var	warning = document.querySelector('.homepage-header-add-friend-input-warning');

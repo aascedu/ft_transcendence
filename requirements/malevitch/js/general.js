@@ -900,9 +900,3 @@ document.querySelector('.game-already-alert .alert-confirm-button').addEventList
 	document.querySelector('.game-already-alert').classList.add('visually-hidden');
 	setAriaHidden();
 });
-document.querySelector('.game-already-alert .alert-confirm-button').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		document.querySelector('.game-already-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
-});
