@@ -25,8 +25,15 @@ async function cancel_invitation_to_game() {
 }
 
 async function accept_invitation_to_game(requester, invited) {
-    const RoomName = requester + "-" + invited
-    await fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
+    const RoomName = requester + "-" + invited;
+	try {
+		await fetch_post(add_cupidon_in_url("game-request-response/" + requester + "/" + invited + "/"), json={});
+	} catch (error) {
+		document.querySelector('.notif-play-invite').classList.add('visually-hidden');
+		document.querySelector('.game-already-alert').classList.remove('visually-hidden');
+		setAriaHidden();
+		return ;
+	}
 
 	// show "match found" notif to inform we play against Sender
 	var	opponent = document.querySelector('.notif-play-invite .notif-sender').textContent;
