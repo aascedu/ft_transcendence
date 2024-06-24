@@ -36,7 +36,8 @@ async function loadHomepageHeader() {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.homepage-header-open-play .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {

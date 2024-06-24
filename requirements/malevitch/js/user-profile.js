@@ -201,7 +201,8 @@ async function loadUserContent(id) {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.user-profile-history .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
 	// Display stats

@@ -72,7 +72,8 @@ async function createTournamentLoadAvailableFriends() {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.create-tournament-invite-container .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
 	// Invite friends

@@ -26,10 +26,10 @@ document.querySelector('.accessibility .switch input').addEventListener('change'
 		console.error(error);
 		return ;
 	}
-	contrastMode();
+	toggleContrastMode();
 });
 
-function contrastMode() {
+function toggleContrastMode() {
 	document.querySelectorAll('.category').forEach(function(item) {
 		item.classList.toggle('category-contrast');
 	});
@@ -62,12 +62,78 @@ function contrastMode() {
 	});
 }
 
+function removeContrastMode() {
+	document.querySelectorAll('.category').forEach(function(item) {
+		item.classList.remove('category-contrast');
+	});
+	document.querySelectorAll('.category-icon').forEach(function(item) {
+		item.classList.remove('category-icon-contrast');
+	});
+	document.querySelectorAll('.content-card').forEach(function(item) {
+		item.classList.remove('content-card-contrast');
+	});
+	document.querySelectorAll('.user-profile-picture').forEach(function(item) {
+		item.classList.remove('user-profile-picture-contrast');
+	});
+	document.querySelectorAll('.bracket-player').forEach(function(item) {
+		item.classList.remove('bracket-player-contrast');
+	});
+	document.querySelectorAll('.homepage-header-category').forEach(function(item) {
+		item.classList.remove('homepage-header-category-contrast');
+	});
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.remove('homepage-header-open-menu-contrast');
+	});
+	document.querySelectorAll('.create-tournament-invite-container').forEach(function(item) {
+		item.classList.remove('create-tournament-invite-container-contrast');
+	});
+	document.querySelectorAll('.notif').forEach(function(item) {
+		item.classList.remove('notif-contrast');
+	});
+	document.querySelectorAll('.ball').forEach(function(item) {
+		item.classList.remove('ball-contrast');
+	});
+}
+
+function addContrastMode() {
+	document.querySelectorAll('.category').forEach(function(item) {
+		item.classList.add('category-contrast');
+	});
+	document.querySelectorAll('.category-icon').forEach(function(item) {
+		item.classList.add('category-icon-contrast');
+	});
+	document.querySelectorAll('.content-card').forEach(function(item) {
+		item.classList.add('content-card-contrast');
+	});
+	document.querySelectorAll('.user-profile-picture').forEach(function(item) {
+		item.classList.add('user-profile-picture-contrast');
+	});
+	document.querySelectorAll('.bracket-player').forEach(function(item) {
+		item.classList.add('bracket-player-contrast');
+	});
+	document.querySelectorAll('.homepage-header-category').forEach(function(item) {
+		item.classList.add('homepage-header-category-contrast');
+	});
+	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
+		item.classList.add('homepage-header-open-menu-contrast');
+	});
+	document.querySelectorAll('.create-tournament-invite-container').forEach(function(item) {
+		item.classList.add('create-tournament-invite-container-contrast');
+	});
+	document.querySelectorAll('.notif').forEach(function(item) {
+		item.classList.add('notif-contrast');
+	});
+	document.querySelectorAll('.ball').forEach(function(item) {
+		item.classList.add('ball-contrast');
+	});
+}
+
 // Keyboard navigation
 
 document.querySelector('.switch').addEventListener('keypress', function(e) {
 	if (e.key === 'Enter') {
 		this.querySelector('input').checked = !this.querySelector('input').checked;
-		contrastMode();
+		toggleContrastMode();
 	}
 });
 

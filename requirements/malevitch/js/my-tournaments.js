@@ -52,7 +52,8 @@ async function loadMyTournaments() {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
 	// Closed tournaments
@@ -77,7 +78,8 @@ async function loadMyTournaments() {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
 	// Load tournament page when clicking on a tournament

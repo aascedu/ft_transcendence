@@ -30,7 +30,11 @@ async function assign_global() {
                 if (!!data.Pic) {
                     g_userPic = data.Pic;
                 }
+				setBaseFontSize(document.querySelector('body'));
                 g_prevFontSize = data.Font;
+				if (data.Font > 0) {
+					updateFontSizeOfPage(document.querySelector('body'), data.Font);
+				}
                 g_state = {pageToDisplay : '.homepage-game'};
                 refreshLoop();
                 init_session_socket();
@@ -91,6 +95,8 @@ async function render() {
 
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
+		
+		var	fontSize = document.querySelector('.homepage-id-font-size').value;
 	}
 	if (g_state.pageToDisplay == '.homepage-id'
 		|| g_state.pageToDisplay == '.sign-in'
@@ -422,11 +428,28 @@ document.querySelectorAll('.font-size-input').forEach(function(item) {
 	});
 });
 
+function setBaseFontSize(element) {
+	var	computedStyle = window.getComputedStyle(element);
+	var	elementFontSize = computedStyle.fontSize;
+	if (elementFontSize !== '' && parseFloat(elementFontSize) > 0) {
+		element.setAttribute('base-font-size', elementFontSize);
+	}
+
+	for (let child of element.children) {
+		setBaseFontSize(child);
+	}
+}
+
 function updateFontSize(element, difference) {
 	var computedStyle = window.getComputedStyle(element);
 	var fontSizeInPx = parseFloat(computedStyle.fontSize);
 	var fontSizeInPt = fontSizeInPx * (72 / 96);
-	fontSizeInPt += 2 * difference;
+	if (element.classList.contains('homepage-game-content-stats-card-context')) {
+		fontSizeInPt += 1 * difference;
+	}
+	else {
+		fontSizeInPt += 2 * difference;
+	}
 	var newFontSizeInPx = fontSizeInPt * (96 / 72);
 	element.style.fontSize = newFontSizeInPx + "px";
 }
@@ -440,6 +463,17 @@ function updateFontSizeOfPage(element, size) {
 
 	for (let child of element.children) {
 		updateFontSizeOfPage(child, size);
+	}
+}
+
+function resetFontSizeOfPage(element) {
+	var	elementBaseFontSize = element.getAttribute('base-font-size');
+	if (elementBaseFontSize != null) {
+		element.style.fontSize = elementBaseFontSize;
+	}
+
+	for (let child of element.children) {
+		resetFontSizeOfPage(child);
 	}
 }
 
@@ -484,12 +518,12 @@ function clearHomepageContent() {
 async function setHomepageContent() {
 
 	var	userInfo;
+	var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
 
 	try {
 		userInfo = await get_personal_info();
 
 		// change lang if needed
-		var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
 		if (userInfo.Lang != locale) {
 			var	localeImg = document.querySelector('.homepage-header-language-selector button img');
 			var	localeImgSrc = localeImg.getAttribute('src');
@@ -518,7 +552,7 @@ async function setHomepageContent() {
 
 		// change contrast mode if needed
 		if (userInfo["Contrast-mode"] == true) {
-			contrastMode();
+			addContrastMode();
 			document.querySelector('.accessibility .switch input').checked = true;
 		}
 
@@ -594,7 +628,8 @@ async function setHomepageContent() {
 
 		// Adapt new content cards to font size
 		document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
-			updateFontSize(item, g_prevFontSize);
+			setBaseFontSize(item);
+			updateFontSizeOfPage(item, g_prevFontSize);
 		});
 
 		if (history.length == 0) {
@@ -653,7 +688,9 @@ async function setHomepageContent() {
 
 	// Adapt new content cards to font size
 	document.querySelectorAll('.homepage-stats-content-card-container .content-card').forEach(function(item) {
-		updateFontSize(item, g_prevFontSize);
+		switchLanguageContent(locale);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 }
 
@@ -699,7 +736,8 @@ async function loadHomepageFriends() {
 
 		// Adapt new content cards to font size
 		document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
-			updateFontSize(item, g_prevFontSize);
+			setBaseFontSize(item);
+			updateFontSizeOfPage(item, g_prevFontSize);
 		});
 
 		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
@@ -838,6 +876,15 @@ function clearHomepageId() {
 	document.querySelector('.homepage-header').classList.add('visually-hidden');
 	document.querySelector('.homepage-game-picture').classList.add('visually-hidden');
 
+	resetFontSizeOfPage(document.querySelector('body'));
+	setAllLanguageSelectors();
+	
+	var	accessibilityCheck = document.querySelector('.accessibility .switch input');
+	if (accessibilityCheck.checked == true) {
+		accessibilityCheck.checked = false;
+		removeContrastMode();
+	}
+
 	document.querySelector('.homepage-id-input').value = '';
 	document.querySelector('.sign-in-input').value = '';
 	document.querySelector('.sign-up-nickname-input').value = '';
@@ -847,12 +894,4 @@ function clearHomepageId() {
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;
-	updateFontSizeOfPage(document.querySelector('body'), (0 - g_prevFontSize));
-	setAllLanguageSelectors();
-	
-	var	accessibilityCheck = document.querySelector('.accessibility .switch input');
-	if (accessibilityCheck.checked) {
-		accessibilityCheck.checked = false;
-		contrastMode();
-	}
 }
