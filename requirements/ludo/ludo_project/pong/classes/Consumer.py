@@ -215,7 +215,6 @@ class Consumer(OurBasicConsumer):
 
             # Ball and score management
             pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)
-            # self.myMatch.lastMoveTime = time.time_ns()
             if pointWinner != -1:
                 self.myMatch.score[pointWinner] += 1
                 await self.channel_layer.group_send (
@@ -280,28 +279,3 @@ class Consumer(OurBasicConsumer):
                     "winner": self.id,
                 }
             )
-
-        # Received from opponent
-        # else:
-        #     await self.gameLogic(event["frames"], (self.id + 1) % 2)
-        #     if self.id % 2 == 0:
-        #         await self.send(text_data=json.dumps({
-        #             "type": "opponentState",
-        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-        #             "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
-        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-        #             "myScore": self.myMatch.score[self.id],
-        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        #         }))
-        #     else:
-        #         await self.send(text_data=json.dumps({
-        #             "type": "opponentState",
-        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-        #             "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
-        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-        #             "myScore": self.myMatch.score[self.id],
-        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        #         }))
-
-
-# Keep this id (as gameId) and add the id of the player incoming. For the time of the game use gameId, when sending result use the real id.

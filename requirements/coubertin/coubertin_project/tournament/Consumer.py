@@ -65,14 +65,12 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
-        logging.debug(tournaments[self.tournamentId].contenders)
         if self.id not in tournaments[self.tournamentId].contenders:
             return
         
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
         opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
-        logging.debug("myId: " + str(self.id) + "\nmyIndex: " + str(myIndex) + "\nmyOpponentIndex: " + str(opponentIndex))
 
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
@@ -108,7 +106,6 @@ class Consumer(OurBasicConsumer):
             self.close()
 
         tournaments[self.tournamentId].ended = True
-        logging.debug("Sending to db tournament result")
         try:
             request = requests.post(
                 f'http://mnemosine:8008/memory/tournaments/0/',
