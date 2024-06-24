@@ -10,17 +10,11 @@ async function init_matchmaking_socket(requester, invited) {
     var intervalId;
 
     g_matchmakingSocket.onopen = function(event) {
-        console.log("Matchmaking socket opened in the front");
         intervalId = setInterval(ping, 5000);
     };
 
     g_matchmakingSocket.onclose = function() {
-        console.log("Matchmaking socket closed in the front");
         g_matchmakingSocket = null;
-    }
-    
-    g_matchmakingSocket.onerror = function(event) {
-        console.log("Socket error");
     }
     
     g_matchmakingSocket.onmessage = async (event) => {

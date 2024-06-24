@@ -110,11 +110,9 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 
 async function init_game_socket(roomName) {
     unique_use_token = await get_socket_connection_token('/ludo/');
-    // console.log(unique_use_token);
     const domain = window.location.host;
     const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
     const socket = new WebSocket(url); // Probably add room name
-    console.log(url);
     var animationId;
     var shouldContinue = true;
 
@@ -124,18 +122,12 @@ async function init_game_socket(roomName) {
     let nbframes = 1;
 
     socket.onopen = function(event) {
-        console.log("Socket opened in the front");
         sendStartGameData("gameStart"); // Player names maybe ?
     };
 
     socket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
-        console.log("Socket closed in the front");
-    }
-
-    socket.onerror = function(event) {
-        console.log("Socket error");
     }
 
     socket.onmessage = (event) => {
@@ -144,7 +136,6 @@ async function init_game_socket(roomName) {
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
             cancelAnimationFrame(animationId);
-            console.log(data.type);
             victoryDefeatScreen(data);
             socket.close();
         }
@@ -152,7 +143,6 @@ async function init_game_socket(roomName) {
         else if (data.type == "gameParameters") {
             // Actual objects
             me.isPlayer = data.isPlayer;
-            console.log("gameStart response");
             animationId = window.requestAnimationFrame(animate);
         }
 
