@@ -4,12 +4,6 @@ document.querySelectorAll('.notif-dismiss').forEach(function(item) {
 	item.addEventListener('click', function() {
 		item.parentNode.parentNode.classList.add('visually-hidden');
 	});
-
-	item.addEventListener('keypress', function(event) {
-		if (event.key == 'Enter') {
-			item.parentNode.parentNode.classList.add('visually-hidden');
-		}
-	});
 	setAriaHidden();
 });
 
@@ -19,20 +13,8 @@ document.querySelector('.notif-tournament-invite .notif-accept').addEventListene
 	await acceptTournamentInvite();
 });
 
-document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('keypress', async function(e) {
-	if (e.key == 'Enter') {
-		await acceptTournamentInvite();
-	}
-});
-
 document.querySelector('.notif-tournament-invite .notif-dismiss').addEventListener('click', function() {
 	dismissTournamentInvite();
-});
-
-document.querySelector('.notif-tournament-invite .notif-dismiss').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		dismissTournamentInvite();
-	}
 });
 
 async function acceptTournamentInvite() {
@@ -74,20 +56,8 @@ document.querySelector('.notif-friend-invite .notif-accept').addEventListener('c
 	await acceptFriendInvite();
 });
 
-document.querySelector('.notif-friend-invite .notif-accept').addEventListener('keypress', async function(e) {
-	if (e.key == 'Enter') {
-		await acceptFriendInvite();
-	}
-});
-
 document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('click', function() {
 	dismissFriendInvite();
-});
-
-document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		dismissFriendInvite();
-	}
 });
 
 async function acceptFriendInvite() {
@@ -171,20 +141,8 @@ document.querySelector('.notif-play-invite .notif-accept').addEventListener('cli
 	acceptPlayInvite();
 });
 
-document.querySelector('.notif-play-invite .notif-accept').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		acceptPlayInvite();
-	}
-});
-
 document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('click', function() {
 	dismissPlayInvite();
-});
-
-document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		dismissPlayInvite();
-	}
 });
 
 async function acceptPlayInvite() {
@@ -257,12 +215,6 @@ function startTimer() {
 
 document.querySelector('.notif-search-match .notif-dismiss').addEventListener('click', function() {
 	cancelSearchMatch();
-});
-
-document.querySelector('.notif-search-match .notif-dismiss').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		cancelSearchMatch();
-	}
 });
 
 function cancelSearchMatch() {
