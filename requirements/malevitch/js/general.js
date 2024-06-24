@@ -40,7 +40,6 @@ async function assign_global() {
                 refreshLoop();
                 init_session_socket();
             }).catch (error => {
-                console.error(error);
                 reset_global();
                 g_state.pageToDisplay = '.homepage-id';
                 throw custom_error(response)
@@ -865,7 +864,7 @@ async function checkCloseTournamentSocket() {
 		console.error(error);
 		return ;
 	}
-		
+
 	if (!inTournament && g_tournamentSocket != null) {
 		g_tournamentSocket.close();
 	}

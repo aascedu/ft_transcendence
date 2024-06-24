@@ -12,7 +12,6 @@ async function fetch_get(url) {
             return response.json()
         })
         .then(data => {
-            console.log(data)
             return data
         });
 }
@@ -34,7 +33,6 @@ async function fetch_post(url, json) {
 			return response.json();
 		})
         .then (data => {
-            console.log(data)
             return data
         });
 }
@@ -54,7 +52,6 @@ async function fetch_delete(url) {
             return response.json();
         })
         .then (data => {
-            console.log(data);
             return data;
         });
 }
@@ -74,7 +71,6 @@ async function fetch_patch(url, json) {
             return response;
         })
         .then (data => {
-            console.log(data);
             return data;
         });
 }
