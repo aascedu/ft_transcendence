@@ -62,14 +62,15 @@ class Consumer(OurBasicConsumer):
 
         logging.info("Player " + self.strId + " has entered game room " + self.roomName)
 
-        try:
-            request = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.user.id})
-            if request.status_code != 200:
+        if self.myMatch.isTournamentGame == False:
+            try:
+                request = requests.delete(
+                    'http://hermes:8004/notif/available-states/',
+                    json={'Id': self.user.id})
+                if request.status_code != 200:
+                    pass
+            except Exception as e:
                 pass
-        except Exception as e:
-            pass
 
         # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
