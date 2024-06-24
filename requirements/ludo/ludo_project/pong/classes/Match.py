@@ -11,7 +11,6 @@ class Match:
         self.gameStarted = False
         self.gameEnded = [False, False]
         self.isTournamentGame = False
-        self.lastMoveTime = 0
         self.startTime = 0
         self.endTime = 0
 

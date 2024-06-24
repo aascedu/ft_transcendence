@@ -46,6 +46,10 @@ class Consumer(OurBasicConsumer):
         if self.user.id == p1 or self.user.id == p2:
             self.isPlayer = True
             self.myMatch.playersId[self.id] = self.user.id
+            if self.user.id == p1:
+                self.myMatch.playersId[(self.id + 1) % 2] = p2
+            else:
+                self.myMatch.playersId[(self.id + 1) % 2] = p1
 
         if self.isPlayer == False and len(self.myMatch.players) < 2:
             await self.close()
@@ -58,14 +62,15 @@ class Consumer(OurBasicConsumer):
 
         logging.info("Player " + self.strId + " has entered game room " + self.roomName)
 
-        try:
-            request = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.user.id})
-            if request.status_code != 200:
-                pass
-        except Exception as e:
-            pass
+        if self.myMatch.isTournamentGame == False:
+            try:
+                request = requests.delete(
+                    'http://hermes:8004/notif/available-states/',
+                    json={'Id': self.user.id})
+                if request.status_code != 200:
+                    self.close()
+            except Exception as e:
+                self.close()
 
         # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
@@ -215,7 +220,6 @@ class Consumer(OurBasicConsumer):
 
             # Ball and score management
             pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)
-            # self.myMatch.lastMoveTime = time.time_ns()
             if pointWinner != -1:
                 self.myMatch.score[pointWinner] += 1
                 await self.channel_layer.group_send (
@@ -223,7 +227,6 @@ class Consumer(OurBasicConsumer):
                         "type": "updateScore",
                     }
                 )
-            # It's being called several times 
             if self.myMatch.score[self.id] == 5:
                 await self.channel_layer.group_send (
                     self.roomName, {
@@ -271,7 +274,6 @@ class Consumer(OurBasicConsumer):
         else:
             t = time.time_ns()
             if t - self.myMatch.startTime > 5000000000:
-                logging.warning("Player " + self.strId + "has unexpectedly left game room " + self.roomName)
                 self.myMatch.gameEnded[(self.id + 1) % 2] = True
                 self.myMatch.score[self.id] = 5
                 await self.channel_layer.group_send(
@@ -280,28 +282,3 @@ class Consumer(OurBasicConsumer):
                     "winner": self.id,
                 }
             )
-
-        # Received from opponent
-        # else:
-        #     await self.gameLogic(event["frames"], (self.id + 1) % 2)
-        #     if self.id % 2 == 0:
-        #         await self.send(text_data=json.dumps({
-        #             "type": "opponentState",
-        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-        #             "ballPosX": 100 * self.myMatch.ball.pos[0] / self.gameSettings.screenWidth,
-        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-        #             "myScore": self.myMatch.score[self.id],
-        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        #         }))
-        #     else:
-        #         await self.send(text_data=json.dumps({
-        #             "type": "opponentState",
-        #             "opponentPos": 100 * self.myMatch.players[(self.id + 1) % 2].pos / self.gameSettings.screenHeight,
-        #             "ballPosX": 100 * (self.gameSettings.screenWidth - self.myMatch.ball.pos[0]) / self.gameSettings.screenWidth,
-        #             "ballPosY": 100 * self.myMatch.ball.pos[1] / self.gameSettings.screenHeight,
-        #             "myScore": self.myMatch.score[self.id],
-        #             "opponentScore": self.myMatch.score[(self.id + 1) % 2],
-        #         }))
-
-
-# Keep this id (as gameId) and add the id of the player incoming. For the time of the game use gameId, when sending result use the real id.

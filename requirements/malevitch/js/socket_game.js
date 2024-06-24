@@ -70,7 +70,6 @@ class Ball {
         this.pos['y'] = newPosY;
         htmlBall.style.top = this.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
         htmlBall.style.left = this.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-        // console.log(this.speed['y']);
     }
     init() {
         this.pos = {x: screenWidth / 2, y: screenHeight / 2};
@@ -181,22 +180,6 @@ async function init_game_socket(roomName) {
             ball.speed['x'] = data.ballSpeedX * ratioWidth / 2;
             ball.speed['y'] = data.ballSpeedY * ratioHeight / 2;
 
-            // newPosX = data.ballPosX / 100 * screenWidth;
-            // newPosY = data.ballPosY / 100 * screenHeight;            
-            // ball.pos['x'] = newPosX;
-            // htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            // ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            // htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
-            // if (Math.abs(newPosX - data.ballPosX) > Math.abs(ball.speed['x'])) {
-            //     ball.pos['x'] = newPosX;
-            //     htmlBall.style.left = ball.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
-            // }
-            // if (Math.abs(newPosY - data.ballPosY) > Math.abs(ball.speed['y'])) {
-            //     ball.pos['y'] = data.ballPosY / 100 * screenHeight;
-            //     htmlBall.style.top = ball.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
-            // }
-
-
             me.points = data.myScore;
             opponent.points = data.opponentScore;
             document.getElementById("score1").innerHTML = me.points.toString();
@@ -229,7 +212,6 @@ async function init_game_socket(roomName) {
 
 // Updtae position de la balle et du joueur !
     function updateScreenSize() {
-        // console.log(screenHeight);
         screenHeight = window.innerHeight;
         screenWidth = window.innerWidth;
         ratioHeight = screenHeight / 1080;
@@ -264,10 +246,6 @@ async function init_game_socket(roomName) {
     }
 
     function animate() {
-        // me.move(meStyle, htmlme);
-        // opponent.move(opponentStyle, htmlopponent);
-        // console.log(ball.speed['x']);
-        // gameLoop(shouldContinue);
         ball.move(me.pos, meStyle, opponent.pos, opponentStyle, ballStyle);
         animationId = window.requestAnimationFrame(animate);
     }
