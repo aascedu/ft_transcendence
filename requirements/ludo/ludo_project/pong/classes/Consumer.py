@@ -68,9 +68,9 @@ class Consumer(OurBasicConsumer):
                     'http://hermes:8004/notif/available-states/',
                     json={'Id': self.user.id})
                 if request.status_code != 200:
-                    self.close()
+                    return self.close()
             except Exception as e:
-                self.close()
+                return self.close()
 
         # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
@@ -88,7 +88,7 @@ class Consumer(OurBasicConsumer):
                         "winner": self.myMatch.players[(self.id + 1) % 2].id
                     }
                 )
-
+            
         if self.roomName.count('-') == 1:
             try:
                 request = requests.post(
