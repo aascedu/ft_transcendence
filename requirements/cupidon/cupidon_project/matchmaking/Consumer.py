@@ -41,8 +41,7 @@ class Consumer(OurBasicConsumer):
                 response = requests.get(
                     f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
                 )
-                elo = response.json()['elo']
-                waitingList[self.id] = Player(self.id, elo)
+                waitingList[self.id] = Player(self.id, response.json()['elo'])
 
             except Exception as e:
                 logging.error(e)
@@ -79,6 +78,9 @@ class Consumer(OurBasicConsumer):
         except KeyError:
             logging.error("No type key in received message")
             return
+        
+        if self.id not in waitingList:
+            return self.close()
 
         # Send message to room group
         await self.channel_layer.group_send(
