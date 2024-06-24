@@ -449,12 +449,6 @@ document.querySelector('.user-profile-image-alert .alert-confirm-button').addEve
 	document.querySelector('.user-profile-image-alert').classList.add('visually-hidden');
 	setAriaHidden();
 });
-document.querySelector('.user-profile-image-alert .alert-confirm-button').addEventListener('keypress', function(e) {
-	if (e.key == 'Enter') {
-		document.querySelector('.user-profile-image-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
-});
 
 // Hide edit button on hover / focus
 document.querySelector('.user-profile-picture').addEventListener('mouseleave', function() {
@@ -512,26 +506,11 @@ document.querySelector('.user-profile-check-icon').addEventListener('click', fun
 	checkToLeaveNicknameEditMode();
 });
 
-// Leave edit mode using enter key
-
-document.querySelector('.user-profile-name-input').addEventListener('keypress', function(event) {
-	if (event.key === 'Enter') {
-		checkToLeaveNicknameEditMode();
-	}
-});
-
 // Confirm / cancel the leaving
 
 document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEventListener('click', async function () {
 	await changeNickname();
 	leaveNicknameEditMode();
-});
-
-document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
-	if (event.key === 'Enter') {
-		await changeNickname();
-		leaveNicknameEditMode();
-	}
 });
 
 async function changeNickname() {
@@ -575,14 +554,6 @@ document.querySelector('.user-profile-edit-alert .alert-cancel-button').addEvent
 	setAriaHidden();
 });
 
-document.querySelector('.user-profile-edit-alert .alert-cancel-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		// Hide alert
-		document.querySelector('.user-profile-edit-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
-});
-
 // Ask for confirmation when inviting friend
 
 document.querySelector('.user-profile-add-icon').addEventListener('click', function() {
@@ -596,21 +567,10 @@ document.querySelector('.user-profile-add-icon').addEventListener('click', funct
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', async function () {
 	await userProfileFriendInvite();
 });
-document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
-	if (event.key === 'Enter') {
-		await userProfileFriendInvite();
-	}
-});
 
 document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
 	setAriaHidden();
-});
-document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		document.querySelector('.user-profile-invite-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
 });
 
 async function userProfileFriendInvite() {
@@ -660,21 +620,10 @@ document.querySelector('.user-profile-remove-icon').addEventListener('click', fu
 document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('click', async function () {
 	await userProfileFriendRemove();
 });
-document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('keypress', async function(event) {
-	if (event.key === 'Enter') {
-		await userProfileFriendRemove();
-	}
-});
 
 document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('click', function () {
 	document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
 	setAriaHidden();
-});
-document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		document.querySelector('.user-profile-remove-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
 });
 
 async function userProfileFriendRemove() {

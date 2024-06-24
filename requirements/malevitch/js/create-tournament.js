@@ -82,12 +82,6 @@ async function createTournamentLoadAvailableFriends() {
 		item.addEventListener('click', function() {
 			item.classList.toggle('create-tournament-invited-friend');
 		});
-
-		item.addEventListener('keypress', function(event) {
-			if (event.key == 'Enter') {
-				item.classList.toggle('create-tournament-invited-friend');
-			}
-		});
 	});
 }
 
@@ -155,12 +149,6 @@ document.querySelector('.create-tournament-submit').addEventListener('click', fu
 	checkToSubmitTournament();
 });
 
-document.querySelector('.create-tournament-submit').addEventListener('keypress', function(event) {
-	if (event.key === 'Enter') {
-		checkToSubmitTournament();
-	}
-});
-
 function checkToSubmitTournament() {
 	// Check if tournament name is correct
 	var	tournamentNameInput = document.querySelector('.create-tournament-name-input');
@@ -198,24 +186,10 @@ document.querySelector('.create-tournament-alert .alert-confirm-button').addEven
 	await createTournament();
 });
 
-document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('keypress', async function (event) {
-	if (event.key === 'Enter') {
-		await createTournament();
-	}
-});
-
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('click', function () {
 	// Hide alert
 	document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
 	setAriaHidden();
-});
-
-document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('keypress', function (event) {
-	if (event.key === 'Enter') {
-		// Hide alert
-		document.querySelector('.create-tournament-alert').classList.add('visually-hidden');
-		setAriaHidden();
-	}
 });
 
 async function createTournament() {
