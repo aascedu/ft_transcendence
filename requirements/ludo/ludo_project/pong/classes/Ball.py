@@ -58,8 +58,8 @@ class Ball:
         self.hostCollision(gameSettings, host)
         self.clientCollision(client, gameSettings)
         self.wallCollision(gameSettings)
-        # tmpTime = time.time_ns()
-        # diffTime = (tmpTime - lastMoveTime) / 1000000000
+        tmpTime = time.time_ns()
+        diffTime = (tmpTime - lastMoveTime) / 1000000000
         self.pos[0] += math.cos(self.angle) * self.speed
         self.pos[1] += math.sin(self.angle) * self.speed
         return (self.updatePoints(gameSettings, host, client))
