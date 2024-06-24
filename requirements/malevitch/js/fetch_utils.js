@@ -107,10 +107,10 @@ async function custom_error(response) {
     if (json.Err === undefined) {
         console.error("Error not from transcendence Django api");
     } else {
-        console.error(json.Err)
+        console.error(json.Err);
     }
-    const error = new Error('HTTP error: ' + response.status + ' : ' + json.Err)
-    error.name = json.Err
-    error.value = json
-    return error
+    const error = new Error('HTTP error: ' + response.status + ' : ' + json.Err);
+    error.name = json.Err;
+    error.value = json;
+    return error;
 }
