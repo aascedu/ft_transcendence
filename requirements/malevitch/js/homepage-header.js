@@ -34,6 +34,12 @@ async function loadHomepageHeader() {
 		</button>`);
 	}
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.homepage-header-open-play .content-card').forEach(function(item) {
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
+	});
+
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
 		item.addEventListener('click', async function() {
 			try {
@@ -375,6 +381,32 @@ async function addFriend() {
 		return ;
 	}
 
+	// check if user is already your friend
+	try {
+		var	friendsList = await get_friend(g_userId);
+		friendsList = friendsList.Friends;
+
+		for (i = 0; i < friendsList.length; i++) {
+			if (nickname == friendsList[i].Nick) {
+				warning.setAttribute('data-language', 'friend-already');
+				switchLanguageContent(locale);
+				warning.classList.remove('visually-hidden');
+				document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+				document.querySelector('.homepage-header-add-friend-input').value = '';
+				document.querySelector('.homepage-header-add-friend-input').focus();
+				setAriaHidden();
+				return ;
+			}
+		}
+	} catch (error) {
+		console.error(error);
+		document.querySelector('.homepage-header-add-friend-submit').classList.add('visually-hidden');
+		document.querySelector('.homepage-header-add-friend-input').value = '';
+		document.querySelector('.homepage-header-add-friend-input').focus();
+		setAriaHidden();
+		return ;
+	}
+
 	// check if user exists
 	try {
         const data = await fetch_get('/alfred/user/signin/' + nickname + '/');
@@ -406,7 +438,7 @@ async function addFriend() {
         setAriaHidden();
 
     } catch (error) {
-        console.error('Fetch problem:', error.message);
+        console.error(error);
     }
 }
 

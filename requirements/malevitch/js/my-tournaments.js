@@ -50,6 +50,12 @@ async function loadMyTournaments() {
 		document.querySelector('.my-tournaments-no-open').classList.remove('visually-hidden');
 	}
 
+	// Adapt new content cards to font size
+	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
+	});
+
 	// Closed tournaments
 	document.querySelector('.my-tournaments-closed').classList.remove('visually-hidden');
 	document.querySelector('.my-tournaments-no-closed').classList.add('visually-hidden');
@@ -69,6 +75,12 @@ async function loadMyTournaments() {
 	if (closedTournaments.length == 0) {
 		document.querySelector('.my-tournaments-no-closed').classList.remove('visually-hidden');
 	}
+
+	// Adapt new content cards to font size
+	document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
+	});
 
 	// Load tournament page when clicking on a tournament
 
@@ -121,20 +133,6 @@ function clearMyTournaments() {
 	});
 }
 
-// Hide when clicking top left button
-
-document.querySelector('.my-tournaments-icon').addEventListener('click', async function() {
-	document.querySelector('.my-tournaments').classList.add('visually-hidden');
-	document.querySelector('.homepage-header-logo').focus();
-
-	await clearHomepageContent();
-	await setHomepageContent();
-
-	g_state.pageToDisplay = '.homepage-game';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
 // Keyboard navigation
 
 document.addEventListener('keydown', function(e) {
@@ -147,7 +145,7 @@ document.addEventListener('keydown', function(e) {
 	
 		// If no tournament at all
 		if (e.key === 'Tab' && !noTournamentAtAll.classList.contains('visually-hidden')) {
-			document.querySelector('.my-tournaments-icon').focus();
+			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 		}
 		// Determine last tournament card
@@ -162,10 +160,10 @@ document.addEventListener('keydown', function(e) {
 		}
 		// Loop after last tournament card
 		if (e.key === 'Tab' && isFw && document.activeElement === lastTournamentCard) {
-			document.querySelector('.my-tournaments-icon').focus();
+			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 		}
-		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.my-tournaments-icon')) {
+		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.homepage-header-logo')) {
 			lastTournamentCard.focus();
 			e.preventDefault();
 		}

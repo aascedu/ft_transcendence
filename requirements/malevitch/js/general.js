@@ -10,6 +10,7 @@ let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
 let g_state = {pageToDisplay : '.homepage-id'};
+let g_invited = false;
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -30,12 +31,15 @@ async function assign_global() {
                 if (!!data.Pic) {
                     g_userPic = data.Pic;
                 }
+				setBaseFontSize(document.querySelector('body'));
                 g_prevFontSize = data.Font;
+				if (data.Font > 0) {
+					updateFontSizeOfPage(document.querySelector('body'), data.Font);
+				}
                 g_state = {pageToDisplay : '.homepage-game'};
                 refreshLoop();
                 init_session_socket();
             }).catch (error => {
-                console.error(error);
                 reset_global();
                 g_state.pageToDisplay = '.homepage-id';
                 throw custom_error(response)
@@ -91,6 +95,8 @@ async function render() {
 
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
+		
+		var	fontSize = document.querySelector('.homepage-id-font-size').value;
 	}
 	if (g_state.pageToDisplay == '.homepage-id'
 		|| g_state.pageToDisplay == '.sign-in'
@@ -340,7 +346,7 @@ function warnInvalidNickname(nickname, element) {
 		}
 		return false;
 	}
-	else if (nickname.length > 15) {
+	else if (nickname.length > 10) {
 		if (element != null) {
 			element.setAttribute('data-language', 'nickname-too-long');
 		}
@@ -365,7 +371,7 @@ function warnInvalidTournamentName(name, element) {
 		element.setAttribute('data-language', 'tournament-name-too-short');
 		return false;
 	}
-	else if (name.length > 23) {
+	else if (name.length > 12) {
 		element.setAttribute('data-language', 'tournament-name-too-long');
 		return false;
 	}
@@ -422,11 +428,28 @@ document.querySelectorAll('.font-size-input').forEach(function(item) {
 	});
 });
 
+function setBaseFontSize(element) {
+	var	computedStyle = window.getComputedStyle(element);
+	var	elementFontSize = computedStyle.fontSize;
+	if (elementFontSize !== '' && parseFloat(elementFontSize) > 0) {
+		element.setAttribute('base-font-size', elementFontSize);
+	}
+
+	for (let child of element.children) {
+		setBaseFontSize(child);
+	}
+}
+
 function updateFontSize(element, difference) {
 	var computedStyle = window.getComputedStyle(element);
 	var fontSizeInPx = parseFloat(computedStyle.fontSize);
 	var fontSizeInPt = fontSizeInPx * (72 / 96);
-	fontSizeInPt += 2 * difference;
+	if (element.classList.contains('homepage-game-content-stats-card-context')) {
+		fontSizeInPt += 1 * difference;
+	}
+	else {
+		fontSizeInPt += 2 * difference;
+	}
 	var newFontSizeInPx = fontSizeInPt * (96 / 72);
 	element.style.fontSize = newFontSizeInPx + "px";
 }
@@ -440,6 +463,17 @@ function updateFontSizeOfPage(element, size) {
 
 	for (let child of element.children) {
 		updateFontSizeOfPage(child, size);
+	}
+}
+
+function resetFontSizeOfPage(element) {
+	var	elementBaseFontSize = element.getAttribute('base-font-size');
+	if (elementBaseFontSize != null) {
+		element.style.fontSize = elementBaseFontSize;
+	}
+
+	for (let child of element.children) {
+		resetFontSizeOfPage(child);
 	}
 }
 
@@ -459,8 +493,6 @@ function switchNextFontSizeFromPreviousSelector(previous, next) {
 		}
 
 		nextFontSizeInput.value = prevFontSizeInput.value;
-
-		// updateFontSizeOfPage(document.querySelector(next), nextFontSizeInput.value);
 	}
 }
 
@@ -486,12 +518,12 @@ function clearHomepageContent() {
 async function setHomepageContent() {
 
 	var	userInfo;
+	var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
 
 	try {
 		userInfo = await get_personal_info();
 
 		// change lang if needed
-		var	locale = document.querySelector('.homepage-header-language-selector button img').getAttribute('alt');
 		if (userInfo.Lang != locale) {
 			var	localeImg = document.querySelector('.homepage-header-language-selector button img');
 			var	localeImgSrc = localeImg.getAttribute('src');
@@ -513,14 +545,14 @@ async function setHomepageContent() {
 
 		// change font if needed
 		if (userInfo.Font != g_prevFontSize) {
-			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font);
+			updateFontSizeOfPage(document.querySelector('body'), userInfo.Font - g_prevFontSize);
 			g_prevFontSize = userInfo.Font;
 		}
 		document.querySelector('.accessibility-font-size').value = userInfo.Font;
 
 		// change contrast mode if needed
 		if (userInfo["Contrast-mode"] == true) {
-			contrastMode();
+			addContrastMode();
 			document.querySelector('.accessibility .switch input').checked = true;
 		}
 
@@ -594,6 +626,12 @@ async function setHomepageContent() {
 			totalTime += history[i].Duration;
 		}
 
+		// Adapt new content cards to font size
+		document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
+			setBaseFontSize(item);
+			updateFontSizeOfPage(item, g_prevFontSize);
+		});
+
 		if (history.length == 0) {
 			document.querySelectorAll('.homepage-game-content-empty-history').forEach(function(item) {
 				item.classList.remove('visually-hidden');
@@ -647,6 +685,13 @@ async function setHomepageContent() {
 		<div class="homepage-game-content-stats-card-stat unselectable">` + (averageMinutes + `:` + averageSeconds) + `</div>
 		<div class="homepage-game-content-stats-card-context unselectable" data-language="match-duration">Average match duration</div>
 	</div>`);
+
+	// Adapt new content cards to font size
+	document.querySelectorAll('.homepage-stats-content-card-container .content-card').forEach(function(item) {
+		switchLanguageContent(locale);
+		setBaseFontSize(item);
+		updateFontSizeOfPage(item, g_prevFontSize);
+	});
 }
 
 async function loadHomepageFriends() {
@@ -688,6 +733,12 @@ async function loadHomepageFriends() {
 				numOfFriendsOnline++;
 			}
 		}
+
+		// Adapt new content cards to font size
+		document.querySelectorAll('.homepage-friend-content-card-container .content-card').forEach(function(item) {
+			setBaseFontSize(item);
+			updateFontSizeOfPage(item, g_prevFontSize);
+		});
 
 		if (friendsList.length == 0 || numOfFriendsOnline == 0) {
 			document.querySelector('.homepage-game-content-no-friends').classList.remove('visually-hidden');
@@ -813,7 +864,7 @@ async function checkCloseTournamentSocket() {
 		console.error(error);
 		return ;
 	}
-		
+
 	if (!inTournament && g_tournamentSocket != null) {
 		g_tournamentSocket.close();
 	}
@@ -825,6 +876,15 @@ function clearHomepageId() {
 	document.querySelector('.homepage-header').classList.add('visually-hidden');
 	document.querySelector('.homepage-game-picture').classList.add('visually-hidden');
 
+	resetFontSizeOfPage(document.querySelector('body'));
+	setAllLanguageSelectors();
+	
+	var	accessibilityCheck = document.querySelector('.accessibility .switch input');
+	if (accessibilityCheck.checked == true) {
+		accessibilityCheck.checked = false;
+		removeContrastMode();
+	}
+
 	document.querySelector('.homepage-id-input').value = '';
 	document.querySelector('.sign-in-input').value = '';
 	document.querySelector('.sign-up-nickname-input').value = '';
@@ -834,5 +894,18 @@ function clearHomepageId() {
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;
-	setAllLanguageSelectors();
 }
+
+// 
+
+// Close alert
+document.querySelector('.game-already-alert .alert-confirm-button').addEventListener('click', function() {
+	document.querySelector('.game-already-alert').classList.add('visually-hidden');
+	setAriaHidden();
+});
+document.querySelector('.game-already-alert .alert-confirm-button').addEventListener('keypress', function(e) {
+	if (e.key == 'Enter') {
+		document.querySelector('.game-already-alert').classList.add('visually-hidden');
+		setAriaHidden();
+	}
+});
