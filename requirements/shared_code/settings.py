@@ -2,12 +2,11 @@ import os
 from socket import SOCK_STREAM
 
 SHARED_MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "django.middleware.common.CommonMiddleware",
+    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'shared.Middleware.RawJsonToDataGetMiddleware',
     'shared.Middleware.JWTIdentificationMiddleware',
     'shared.Middleware.LoggingRequestMiddleware',
-    # 'shared.Middleware.ensureIdentificationMiddleware',
 ]
 
 def add_prometheused_middleware(middlewares):
