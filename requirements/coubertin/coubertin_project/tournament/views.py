@@ -111,15 +111,6 @@ class tournamentEntry(View):
                 if dict['Id'] == playerId:
                     tournaments[tournamentId].aliases.remove(dict)
 
-        try:
-            r = requests.post(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': request.user.id})
-            if r.status_code != 200:
-                return JsonConflict(request, "Couldn't update available state")
-        except Exception as e:
-            return JsonConflict(request, e.__str__())
-
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
@@ -130,17 +121,6 @@ class tournamentEntry(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to join")
         userId = request.user.id
-
-        try:
-            r = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': userId})
-            if r.status_code == 409:
-                return JsonConflict(request, "You are not available")
-            elif r.status_code != 200:
-                return JsonConflict(request, "Couldn't update available state")
-        except Exception as e:
-            return JsonConflict(request, e.__str__())
 
         try:
             tournamentId = int(tournamentId)
@@ -262,6 +242,7 @@ class inTournament(View):
         if tournaments[tournamentId].userParticipating(request.user.id):
             return JsonResponse(request, {'IsParticipating': True})
         return JsonResponse(request, {'IsParticipating': False})
+    
 
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState

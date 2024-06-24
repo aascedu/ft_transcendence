@@ -10,6 +10,7 @@ async function init_tournament_socket(tournamentId) {
     g_tournamentSocket = new WebSocket(url);
 
     g_tournamentSocket.onclose = function() {
+		console.log("closing socket tournament");
 		g_tournamentSocket = null;
     }
 

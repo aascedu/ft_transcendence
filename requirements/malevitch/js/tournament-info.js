@@ -11,9 +11,9 @@ async function loadOngoingTournament(id) {
 		return ;
 	}
 
-	if (g_tournamentSocket == null) {
-		init_tournament_socket(id);
-	}
+	// if (g_tournamentSocket == null) {
+	// 	init_tournament_socket(id);
+	// }
 	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
 }
@@ -549,6 +549,10 @@ async function confirmJoinTournament() {
 	var	tournamentNick = document.querySelector('.tournament-info-join-input').value;
 	var	warning = document.querySelector('.tournament-info-join-input-warning');
 
+	if (g_tournamentSocket == null) {
+		g_tournamentSocket = init_tournament_socket(tournamentId);
+	}
+
 	if (!checkTournamentNick(tournamentNick, warning)) {
 		var locale = document.querySelector('.homepage-header-language-selector button img').alt;
 		switchLanguageContent(locale);
@@ -673,6 +677,10 @@ document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addE
 });
 
 async function confirmLeaveTournament() {
+	if (g_tournamentSocket) {
+		g_tournamentSocket.close();
+	}
+
 	try {
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 		await remove_player_from_tournament(tournamentId, g_userId);
