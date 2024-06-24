@@ -52,22 +52,14 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		// Display online friends that aren't already invited to tournament
 		await loadTournamentInfoInvites();
 
-		// If you are owner, display edit, invite and kick buttons
+		// If you are owner, display edit, invite buttons
 		if (tournamentInfo.Owner == g_userId) {
 			document.querySelector('.tournament-info-edit-icon').classList.remove('visually-hidden');
 			document.querySelector('.tournament-info-invite-icon').classList.remove('visually-hidden');
-			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-				if (item.parentElement.getAttribute('user-id') != g_userId) {
-					item.classList.remove('visually-hidden');
-				}
-			});
 		}
 		else {
 			document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
 			document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
-			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-				item.classList.add('visually-hidden');
-			});
 		}
 		setAriaHidden();
 
@@ -100,9 +92,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		else {
 			// Hide all icons
 			document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
-			document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-				item.classList.add('visually-hidden');
-			});
 			document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
 			document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
 			document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
@@ -118,9 +107,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	else {
 		// Hide all icons
 		document.querySelector('.tournament-info-edit-icon').classList.add('visually-hidden');
-		document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-			item.classList.add('visually-hidden');
-		});
 		document.querySelector('.tournament-info-check-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-invite-icon').classList.add('visually-hidden');
 		document.querySelector('.tournament-info-join-icon').classList.add('visually-hidden');
@@ -163,9 +149,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		<div class="user-card-picture">
 		<img src="` + userPic + `" alt="profile picture of ` + confirmedPlayers[i].Alias + `" draggable="false" (dragstart)="false;" class="unselectable">
 		</div>
-		<div class="tournament-kick-player d-flex justify-content-center align-items-center position-relative visually-hidden" tabindex="0">
-		<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
-		</div>
 		</button>`);
 	}
 
@@ -187,9 +170,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 				</div>
 				<div class="user-card-picture">
 					<img src="` + userPic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-				</div>
-				<div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
-					<img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
 				</div>
 			</button>`);
 		}
@@ -581,7 +561,7 @@ async function confirmJoinTournament() {
 		await join_tournament(tournamentId, tournamentNick);
 	}
 	catch (error) {
-		const errMsg = await error;
+		var errMsg = await error;
 		if (errMsg == 'Bad Request : Too many players already: HTTP error: 400 : Bad Request : Too many players already') {
 			// Hide tournament nickname alert
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
@@ -596,7 +576,16 @@ async function confirmJoinTournament() {
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
 			// Show tournament full alert
-			document.querySelector('.tournament-already-alert').classList.remove('visually-hidden');
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
+		if (errMsg == 'Conflict : You are not available: HTTP error: 409 : Conflict : You are not available') {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
 
 			setAriaHidden();
 		}
@@ -611,6 +600,9 @@ async function confirmJoinTournament() {
 
 	// Set tournamentId for future victory-defeat screen
 	document.querySelector('.victory-defeat-tournament').setAttribute('tournament-id', tournamentId);
+
+	// Hide tournament invite notif
+	document.querySelector('.notif-tournament-invite').classList.add('visually-hidden');
 
 	await loadOngoingTournament(tournamentId);
 
@@ -644,8 +636,8 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 });
 
 // Close 'already in tournament' alert
-document.querySelector('.tournament-already-alert .alert-confirm-button').addEventListener('click', async function() {
-	document.querySelector('.tournament-already-alert').classList.add('visually-hidden');
+document.querySelector('.not-available-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.not-available-alert').classList.add('visually-hidden');
 	setAriaHidden();
 
 	// Go to available tournaments
@@ -733,90 +725,6 @@ document.querySelector('.tournament-info-edit-icon').addEventListener('click', f
 	tournamentNameInput.focus();
 	setAriaHidden();
 });
-
-// Kick a player
-
-document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-	item.addEventListener('click', function(event) {
-		event.stopPropagation();
-
-		kickPlayer(item);
-	});
-});
-
-document.querySelectorAll('.tournament-kick-player').forEach(function(item) {
-	item.addEventListener('keypress', function(event) {
-		if (event.key == 'Enter') {
-			event.stopPropagation();
-
-			kickPlayer(item);
-		}
-	});
-});
-
-function kickPlayer(item) {
-	var playerToHide = item.parentNode;
-
-	// Show alert
-	document.querySelector('.tournament-info-kick-alert').classList.remove('visually-hidden');
-	document.querySelector('.tournament-info-kick-alert .alert-confirm-button').focus();
-
-	// Confirm the kick
-	document.querySelector('.tournament-info-kick-alert .alert-confirm-button').addEventListener('click', async function () {
-		await confirmKick(playerToHide);
-	});
-	document.querySelector('.tournament-info-kick-alert .alert-confirm-button').addEventListener('keypress', async function(event) {
-		if (event.key === 'Enter') {
-			await confirmKick(playerToHide);
-		}
-	});
-
-	// Cancel the kick
-	document.querySelector('.tournament-info-kick-alert .alert-cancel-button').addEventListener('click', function () {
-		// Hide alert
-		document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
-
-		playerToHide = null;
-	});
-	document.querySelector('.tournament-info-kick-alert .alert-cancel-button').addEventListener('keypress', function (event) {
-		if (event.key === 'Enter') {
-			// Hide alert
-			document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
-
-			playerToHide = null;
-		}
-	});
-
-	// Click outside the alert to cancel
-	document.querySelector('.tournament-info-kick-alert').addEventListener('click', function (event) {
-		if (this !== event.target) {
-			return ;
-		}
-		playerToHide = null;
-	});
-
-	setAriaHidden();
-}
-
-async function confirmKick(playerToHide) {
-	try {
-		await remove_player_from_tournament(tournamentId, playerId);
-	} catch (error) {
-		console.error(error);
-		return ;
-	}
-
-	// Hide alert
-	document.querySelector('.tournament-info-kick-alert').classList.add('visually-hidden');
-
-	var playerId = playerToHide.getAttribute('user-id');
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-
-	// Remove player
-	if (playerToHide && playerToHide.parentNode) {
-		playerToHide.parentNode.removeChild(playerToHide);
-	}
-}
 
 // Leave edit mode
 
@@ -986,9 +894,6 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
         </div>
         <div class="user-card-picture">
             <img src="` + pic + `" alt="profile picture of `+ nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-        </div>
-        <div class="tournament-kick-player d-flex justify-content-center align-items-center position-absolute visually-hidden">
-            <img src="assets/general/remove-black.svg" alt="kick player" draggable="false" (dragstart)="false;" class="unselectable">
         </div>
     </button>`);
 
@@ -1208,19 +1113,6 @@ async function tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing) {
 			document.querySelector('.tournament-info-invite').classList.add('visually-hidden');
 			setAriaHidden();
 			document.querySelector('.tournament-info-invite-icon').focus();
-			e.preventDefault();
-			return ;
-		}
-
-		// if you are the owner (kick icons)
-		if (e.key == 'Tab' && isFw && document.activeElement === lastPlayerCard.querySelector('.tournament-kick-player')) {
-			document.querySelector('.homepage-header-logo').focus();
-			e.preventDefault();
-			return ;
-		}
-		else
-		if (e.key == 'Tab' && isFw && document.activeElement === lastPlayerCard) {
-			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 			return ;
 		}

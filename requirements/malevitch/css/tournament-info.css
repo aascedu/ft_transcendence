@@ -195,37 +195,6 @@
 	margin-top: 16px;
 }
 
-.tournament-kick-player {
-	top: -30px;
-	right: -22px;
-	width: 22px;
-	height: 22px;
-	border-radius: 11px;
-	background-color: #E2123C;
-	z-index: 999;
-	border: 0;
-}
-
-.tournament-kick-player img {
-	height: 10px;
-	filter: invert(1);
-}
-
-.tournament-kick-player:hover,
-.tournament-kick-player:focus {
-	cursor: pointer;
-	background-color: white;
-	outline-offset: -1px;
-	outline-width: 2px;
-	outline-style: solid;
-	outline-color: #E2123C;
-}
-
-.tournament-kick-player:hover img,
-.tournament-kick-player:focus img {
-	filter: invert(15%) sepia(65%) saturate(5623%) hue-rotate(340deg) brightness(93%) contrast(98%);
-}
-
 .tournament-info-empty img {
 	width: 20%;
 	opacity: 50%;
