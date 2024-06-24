@@ -68,9 +68,9 @@ class Consumer(OurBasicConsumer):
                     'http://hermes:8004/notif/available-states/',
                     json={'Id': self.user.id})
                 if request.status_code != 200:
-                    pass
+                    self.close()
             except Exception as e:
-                pass
+                self.close()
 
         # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
