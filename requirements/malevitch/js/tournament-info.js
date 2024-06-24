@@ -576,16 +576,16 @@ async function confirmJoinTournament() {
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
 			// Show tournament full alert
-			document.querySelector('.tournament-already-alert').classList.remove('visually-hidden');
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
 
 			setAriaHidden();
 		}
-		if (errMsg == 'Error: HTTP error: 409 : You are not available') {
+		if (errMsg == 'Conflict : You are not available: HTTP error: 409 : Conflict : You are not available') {
 			// Hide tournament nickname alert
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
 			// Show tournament full alert
-			document.querySelector('.tournament-already-alert').classList.remove('visually-hidden');
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
 
 			setAriaHidden();
 		}
@@ -636,8 +636,8 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 });
 
 // Close 'already in tournament' alert
-document.querySelector('.tournament-already-alert .alert-confirm-button').addEventListener('click', async function() {
-	document.querySelector('.tournament-already-alert').classList.add('visually-hidden');
+document.querySelector('.not-available-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.not-available-alert').classList.add('visually-hidden');
 	setAriaHidden();
 
 	// Go to available tournaments
