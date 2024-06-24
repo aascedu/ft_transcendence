@@ -6,14 +6,14 @@ class Ball:
 
     def __init__(self, gameSettings):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 4
+        self.speed = gameSettings.screenWidth / 3
         self.angle = math.pi
         self.size = gameSettings.ballSize
         self.lastWallCollision = 0
 
     def newPoint(self, gameSettings, player1, player2):
         self.pos = [gameSettings.screenWidth / 2, gameSettings.screenHeight / 2]
-        self.speed = gameSettings.screenWidth / 4
+        self.speed = gameSettings.screenWidth / 3
         self.angle = math.pi
         self.size = gameSettings.ballSize
         player1.pos = gameSettings.screenHeight / 2
@@ -29,16 +29,16 @@ class Ball:
             impactToMid = ((self.pos[1] - host.pos) / (host.height * 0.5))
             self.angle = (math.pi / 4) * impactToMid
             self.speed *= 1.1
-            if self.speed > 1500:
-                self.speed = 1500
+            if self.speed > 2000:
+                self.speed = 2000
 
     def clientCollision(self, client, gameSettings):
         if self.pos[0] + self.size / 2 > gameSettings.screenWidth - 10 - gameSettings.playerWidth and self.isPlayerCollision(client) and math.cos(self.angle) > 0:
             impactToMid = ((self.pos[1] - client.pos) / (client.height * 0.5))
             self.angle = - (math.pi + (math.pi / 4) * impactToMid)
             self.speed *= 1.1
-            if (self.speed > 1500):
-                self.speed = 1500
+            if (self.speed > 2000):
+                self.speed = 2000
     
     def wallCollision(self, gameSettings):
         if (self.pos[1] < self.size / 2  and math.sin(self.angle) < 0 or 
