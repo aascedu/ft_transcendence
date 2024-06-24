@@ -700,8 +700,23 @@ async function confirmLeaveTournament() {
 			return ;
 		}
 	});
-
+	
 	itemToRemove.parentElement.removeChild(itemToRemove);
+
+	// sub 1 from player num
+	var playersNum = document.querySelector('.tournament-info-players-num').textContent;
+	playersNum = playersNum.split('/');
+	var	totalPlayers = playersNum[1];
+	playersNum = playersNum[0] - 1;
+	document.querySelector('.tournament-info-players-num').textContent = playersNum + '/' + totalPlayers;
+
+	// if new number is 0
+	if (playersNum == 0) {
+		document.querySelector('.tournament-info-no-players').classList.remove('visually-hidden');
+	}
+	else {
+		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
+	}
 
 	setAriaHidden();
 }
