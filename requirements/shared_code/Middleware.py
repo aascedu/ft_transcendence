@@ -84,6 +84,7 @@ class RawJsonToDataGetMiddleware:
         return response
 
     def process_view(self, request, view_func, view_args, view_kwargs):
+        request.data = {}
         try:
             request.data = json.loads(request.body.decode('utf-8'))
         except (JSONDecodeError, UnicodeDecodeError):
