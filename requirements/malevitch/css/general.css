@@ -275,11 +275,6 @@ body {
 	border-width: 2px;
 }
 
-.category-icon:hover {
-	cursor: pointer;
-	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
-}
-
 .category-icon:focus {
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }

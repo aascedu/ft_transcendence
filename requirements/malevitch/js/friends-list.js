@@ -149,21 +149,6 @@ function clearFriendsList() {
 	});
 }
 
-// Hide when clicking top left button
-
-document.querySelector('.friends-list-icon').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-logo').focus();
-
-	hideEveryPage();
-
-	await clearHomepageContent();
-	await setHomepageContent();
-
-	g_state.pageToDisplay = '.homepage-game';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
 // Keyboard navigation
 
 document.addEventListener('keydown', function(e) {
@@ -176,7 +161,7 @@ document.addEventListener('keydown', function(e) {
 	
 		// If no friends at all
 		if (e.key === 'Tab' && !noFriendsAtAll.classList.contains('visually-hidden')) {
-			document.querySelector('.friends-list-icon').focus();
+			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 		}
 		// Determine last friends card
@@ -191,10 +176,10 @@ document.addEventListener('keydown', function(e) {
 		}
 		// Loop after last friends card
 		if (e.key === 'Tab' && isFw && document.activeElement === lastFriendCard) {
-			document.querySelector('.friends-list-icon').focus();
+			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 		}
-		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.friends-list-icon')) {
+		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.homepage-header-logo')) {
 			lastFriendCard.focus();
 			e.preventDefault();
 		}

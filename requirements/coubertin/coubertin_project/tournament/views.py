@@ -49,6 +49,8 @@ class tournamentManagement(View):
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
             invited = data['Invited']
+            if len(tournamentName) > 12 or len(tournamentName) < 3:
+                return JsonBadRequest(request, f'tournament bad format')
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to create tournament')
 

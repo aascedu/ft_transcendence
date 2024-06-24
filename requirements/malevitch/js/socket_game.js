@@ -251,7 +251,7 @@ async function init_game_socket(roomName) {
     }
 }
 
-function showGamePage(roomName) {
+async function showGamePage(roomName) {
     var	homepageHeader = document.querySelector('.homepage-header');
 	homepageHeader.classList.add('visually-hidden');
 
@@ -260,7 +260,7 @@ function showGamePage(roomName) {
 
 	hideEveryPage();
 
-	init_game_socket(roomName);
+	await init_game_socket(roomName);
 	g_state.pageToDisplay = '.game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
