@@ -2,7 +2,7 @@ from django.views import View
 from tournament.Tournament import Tournament, tournaments
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from shared.utils import JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
+from shared.utils import JsonConflict, JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
 import requests
 import logging
 
@@ -104,7 +104,7 @@ class tournamentEntry(View):
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
-        
+
         if playerId in tournaments[tournamentId].players:
             tournaments[tournamentId].players.remove(playerId)
             for dict in tournaments[tournamentId].aliases:
@@ -116,9 +116,9 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': request.user.id})
             if r.status_code != 200:
-                return JsonErrResponse(request, {'Err': "Couldn't update available state"}, status = r.status_code)
+                return JsonConflict(request, "Couldn't update available state")
         except Exception as e:
-            return JsonErrResponse(request, {'Err': e.__str__()}, status = r.status_code)
+            return JsonConflict(request, e.__str__())
 
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
@@ -136,11 +136,11 @@ class tournamentEntry(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': userId})
             if r.status_code == 409:
-                return JsonErrResponse(request, {'Err': "You are not available"}, status=r.status_code)
+                return JsonConflict(request, "You are not available")
             elif r.status_code != 200:
-                return JsonErrResponse(request, {'Err': "Couldn't update available state"}, status=r.status_code)
+                return JsonConflict(request, "Couldn't update available state")
         except Exception as e:
-            return JsonErrResponse(request, {'Err': e.__str__()}, status=r.status_code)
+            return JsonConflict(request, e.__str__())
 
         try:
             tournamentId = int(tournamentId)
@@ -151,7 +151,7 @@ class tournamentEntry(View):
 
         if (tournamentId not in tournaments):
             return JsonNotFound(request, 'Tournament not found')
-        
+
         for i in tournaments:
             if tournaments[i].userParticipating(userId):
                 return JsonBadRequest(request, "Already in tournament")
@@ -194,13 +194,9 @@ class inviteFriend(View):
             invited = data['Invited']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
-        try:
-            invited = int(invited)
-            if tournamentId not in tournaments:
-                return JsonNotFound(request, 'tournament does not exists')
-        except (TypeError, ValueError) as e:
-            return JsonBadRequest(request, f'bad content {e}')
-
+        
+        if tournamentId not in tournaments:
+            return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[tournamentId].invited.append(invited)
 
@@ -214,11 +210,11 @@ class inviteFriend(View):
                     }
                 )
             if response.status_code != 200:
-                logging.warning("Failed to send invitation to player " + str(invited))
+                logging.warning("Failed to send invitation to player " + invited)
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         except Exception as e:
-            logging.error("Failed to send invitation to player " + str(invited))
+            logging.error("Failed to send invitation to player " + invited)
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         updateTournament(tournamentId, False, request.user.id)
