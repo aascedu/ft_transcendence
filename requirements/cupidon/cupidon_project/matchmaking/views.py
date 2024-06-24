@@ -87,6 +87,9 @@ class RequestGameResponse(View):
         except:
             return JsonBadRequest(request, 'Invalid requester id')
 
+        if [requester, invited] not in gameRequesters:
+            return JsonBadRequest(request, 'No such game requested')
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             strRequester, {
@@ -127,8 +130,10 @@ class RequestGameResponse(View):
                     json={'Id': requester})
                 if request.status_code != 200:
                     logging.error("Player " + strRequester + " state update request has failed")
+                    return JsonErrResponse(request, {'Err': "Player state update request has failed"})
             except Exception as e:
                 logging.critical("Player " + strRequester + " state update request has critically failed")
+                return JsonErrResponse(request, {'Err': "Player state update request has failed"})
 
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})
@@ -151,7 +156,9 @@ class RestoreAvailability(View):
                 json={'Id': requester})
             if request.status_code != 200:
                 logging.error("Player state update request has failed")
+                return JsonErrResponse(request, {'Err': "Player state update request has failed"})
         except Exception as e:
             logging.critical("Player state update request has critically failed")
+            return JsonErrResponse(request, {'Err': "Player state update request has failed"})
 
         return JsonResponse(request, {'Msg': 'Stopped looking for a game'})
