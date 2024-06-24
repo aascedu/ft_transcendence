@@ -10,6 +10,7 @@ let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
 let g_state = {pageToDisplay : '.homepage-id'};
+let g_invited = false;
 
 // Constant
 const JWT_NAME = 'Auth'

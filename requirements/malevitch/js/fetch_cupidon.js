@@ -11,6 +11,7 @@ async function invite_friend_to_game(PlayerToInvite) {
         console.log(roomName);
         document.querySelector('.notif-play-invite').classList.add('visually-hidden');
         setAriaHidden();
+		g_invited = true;
         await matchFound(PlayerToInvite);
         showGamePage(roomName);
     }
