@@ -91,21 +91,6 @@ async function createTournamentLoadAvailableFriends() {
 	});
 }
 
-// Hide when clicking top left button
-
-document.querySelector('.create-tournament-icon').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-logo').focus();
-
-	hideEveryPage();
-
-	await clearHomepageContent();
-	await setHomepageContent();
-
-	g_state.pageToDisplay = '.homepage-game';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
 // Hitting enter on input
 
 document.querySelector('.create-tournament-name-input').addEventListener('keypress', function(event) {
@@ -291,10 +276,10 @@ document.addEventListener('keydown', function(e) {
 		let isFw =!e.shiftKey;
 
 		if (e.key === 'Tab' && isFw && document.activeElement === document.querySelector('.create-tournament-submit')) {
-			document.querySelector('.create-tournament-icon').focus();
+			document.querySelector('.homepage-header-logo').focus();
 			e.preventDefault();
 		}
-		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.create-tournament-icon')) {
+		if (e.key === 'Tab' && !isFw && document.activeElement === document.querySelector('.homepage-header-logo')) {
 			document.querySelector('.create-tournament-submit').focus();
 			e.preventDefault();
 		}

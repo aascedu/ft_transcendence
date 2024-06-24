@@ -1,16 +1,3 @@
-// Hide when clicking top left button
-
-document.querySelector('.accessibility-icon').addEventListener('click', async function() {
-	document.querySelector('.accessibility').classList.add('visually-hidden');
-
-	await clearHomepageContent();
-	await setHomepageContent();
-
-	g_state.pageToDisplay = '.homepage-game';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
-});
-
 // Contrast mode
 
 document.querySelector('.accessibility .switch input').addEventListener('change', async function() {
