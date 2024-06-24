@@ -61,6 +61,8 @@ class availableFriendView(View):
         if request.user.is_service is False:
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
+        if get_cache(f'ava_{id}') is True:
+            return JsonResponse(request, {'Err': 'Invalid availability action'})
         set_cache(f'ava_{id}', True)
         updateAva(request, id)
         return JsonResponse(request, {'Ava': True})
@@ -70,6 +72,8 @@ class availableFriendView(View):
             return JsonForbidden(request, 'Only service can modify availability')
         id = request.data['Id']
         updateAva(request, id)
+        if get_cache(f'ava_{id}') is False:
+            return JsonResponse(request, {'Err': 'Invalid availability action'})
         set_cache(f'ava_{id}', False)
         return JsonResponse(request, {'Ava': False})
 
