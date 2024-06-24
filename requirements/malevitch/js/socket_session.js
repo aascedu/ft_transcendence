@@ -83,7 +83,7 @@ async function notificationFriendshipRequest(data) {
 	try {
 		userInfo = await get_user_info(data.requester);
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		return ;
 	}
 	var	senderElement = document.querySelector('.notif-friend-invite .notif-sender');
@@ -110,7 +110,7 @@ async function notificationNewFriendship(data) {
 
 		newFriendshipCountdown(2);
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		return ;
 	}
 
@@ -170,7 +170,7 @@ async function notificationTournamentRequest(data) {
 	try {
 		userInfo = await get_user_info(data.requester);
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		return ;
 	}
 
@@ -197,7 +197,7 @@ async function notificationGameAccepted(data) {
 	try {
 		opponent = await get_user_info(data.requester);
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		return ;
 	}
 
@@ -219,7 +219,7 @@ async function notificationGameRequest(data) {
 	try {
 		userInfo = await get_user_info(data.requester);
 	} catch (error) {
-		console.error(error)
+		console.error(error);
 		return ;
 	}
 

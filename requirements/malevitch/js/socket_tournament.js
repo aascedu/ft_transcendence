@@ -49,7 +49,7 @@ async function init_tournament_socket(tournamentId) {
 					ongoingTournaments = await get_my_tournaments();
 					ongoingTournaments = ongoingTournaments.Ongoing;
 				} catch (error) {
-					console.error(error)
+					console.error(error);
 					return ;
 				}
 
