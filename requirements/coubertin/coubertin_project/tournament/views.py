@@ -194,13 +194,9 @@ class inviteFriend(View):
             invited = data['Invited']
         except KeyError as e:
             return JsonBadRequest(request, f'missing key {e}')
-        try:
-            invited = int(invited)
-            if tournamentId not in tournaments:
-                return JsonNotFound(request, 'tournament does not exists')
-        except (TypeError, ValueError) as e:
-            return JsonBadRequest(request, f'bad content {e}')
-
+        
+        if tournamentId not in tournaments:
+            return JsonNotFound(request, 'tournament does not exists')
 
         tournaments[tournamentId].invited.append(invited)
 
@@ -214,11 +210,11 @@ class inviteFriend(View):
                     }
                 )
             if response.status_code != 200:
-                logging.warning("Failed to send invitation to player " + str(invited))
+                logging.warning("Failed to send invitation to player " + invited)
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
 
         except Exception as e:
-            logging.error("Failed to send invitation to player " + str(invited))
+            logging.error("Failed to send invitation to player " + invited)
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 
         updateTournament(tournamentId, False, request.user.id)
