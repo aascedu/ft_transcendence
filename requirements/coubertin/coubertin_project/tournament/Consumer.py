@@ -108,7 +108,16 @@ class Consumer(OurBasicConsumer):
         
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
-        opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
+
+        try:
+            opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
+        except:
+            roomName = str(self.id) + '-' + '0'
+            await self.send(json.dumps({
+                'Action': "startGame",
+                'RoomName': roomName,
+            }))
+            return
 
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
@@ -166,16 +175,4 @@ class Consumer(OurBasicConsumer):
             return self.close()
         
         return self.close()
-        
-            
-
-# To do
-# Remove someone from tournament if admin
-# Rename tournament, Implement ids for tournaments
-
-# Parcours utilisateur
-# Creation du tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
-# Inscription au tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
-# L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
-# Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
-# Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db
+    
