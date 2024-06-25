@@ -16,30 +16,13 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
-
         try:
             self.id = int(self.scope['user'].id)
             self.tournamentId = int(self.roomName)
-        except BaseException as e:
-            print(e)
+        except:
             return self.close()
-        
-        try:
-            r = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if r.status_code == 409:
-                return self.close()
-            elif r.status_code != 200:
-                return self.close()
-        except Exception as e:
-            print(e)
-            return self.close()
-
-
         if self.id in tournaments[self.tournamentId].onPage:
             tournaments[self.tournamentId].onPage.append(self.id)
-            print("Failed to open tournament ws 43")
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
@@ -53,22 +36,6 @@ class Consumer(OurBasicConsumer):
         if self.tournamentId in tournaments:
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
-
-            if self.id in tournaments[self.tournamentId].players and tournaments[self.tournamentId].started == False:
-                tournaments[self.tournamentId].players.remove(self.id)
-
-            for obj in tournaments[self.tournamentId].aliases:
-                if self.id == obj['Id'] and tournaments[self.tournamentId].started == False:
-                    tournaments[self.tournamentId].aliases.remove(obj)
-
-            try:
-                r = requests.post(
-                    'http://hermes:8004/notif/available-states/',
-                    json={'Id': self.id})
-                if r.status_code != 200:
-                    pass
-            except Exception as e:
-                pass
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -95,29 +62,20 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
-        print("contenders: ")
-        print(tournaments[self.tournamentId].contenders)
-
         if self.id not in tournaments[self.tournamentId].contenders:
             return
         
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
-
+        
         try:
             opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         except:
-            tournaments[self.tournamentId].ongoingGames += 1
-            roomName = str(self.id) + '-' + '0'
-            await self.send(json.dumps({
-                'Action': "startGame",
-                'RoomName': roomName,
-            }))
-            return
+            pass
 
-        if self.id > opponentId: # Bah non du coup
+        if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
-        print("Ongoing games: " + str(tournaments[self.tournamentId].ongoingGames) + "\n\n\n\n\n")
+
 
         try:
             roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
@@ -143,10 +101,10 @@ class Consumer(OurBasicConsumer):
 
         # Check cette condition !
         if self.tournamentId not in tournaments:
-            return self.close()
+            self.close()
 
         if self.id not in tournaments[self.tournamentId].contenders:
-            return self.close()
+            self.close()
 
         tournaments[self.tournamentId].ended = True
         try:
@@ -171,5 +129,17 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             return self.close()
         
-        return self.close()
-    
+        self.close()
+        
+            
+
+# To do
+# Remove someone from tournament if admin
+# Rename tournament, Implement ids for tournaments
+
+# Parcours utilisateur
+# Creation du tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
+# Inscription au tournoi -> view correspondante, puis redirection automatique sur la page d'accueil
+# L'admin lance le tournoi via un bouton, on change le state, (notif), on envoie le premier startRound ?
+# Chaque fin de match (donc quand on arrive a nouveau sur l'url du tournoi), on regarde si c'est la fin du tournoi ou la fin du round (auquel cas on lance le round suivant)
+# Fin du tournoi: renvoyer tous les joueurs sur la page d'accueil et maj de la db

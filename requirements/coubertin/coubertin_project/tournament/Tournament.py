@@ -21,7 +21,6 @@ class Tournament:
         self.onPage = []
 
     def addPlayer(self, player, alias):
-        print("adding player" + str(player) + "to tourney\n\n\n\n\n\n\n\n")
         if len(self.players) >= self.nbPlayers: # Pas besoin de cast ici ?
             raise Exception("Too many players already")
         if self.userParticipating(player):
@@ -42,10 +41,18 @@ class Tournament:
         if game['Loser'] in self.contenders:
             self.contenders.remove(game['Loser'])
 
+        try:
+            request = requests.post(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': game['Loser']})
+            if request.status_code != 200:
+                pass
+        except Exception as e:
+            pass
+        channel_layer = get_channel_layer()
+
         if self.ongoingGames == 0:
             self.currentRound += 1
-
-            channel_layer = get_channel_layer()
 
             # Check tournament end
             if self.nbPlayers == pow(2, self.currentRound - 1):
