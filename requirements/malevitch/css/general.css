@@ -323,6 +323,7 @@ body {
 	height: 40px;
 	border-radius: 20px;
 	border-width: 0;
+	object-fit: cover;
 }
 
 .empty-list-content {

@@ -73,8 +73,8 @@ async function init_session_socket() {
 }
 
 async function notificationFriendshipRequest(data) {
-
-	if (g_state.pageToDisplay == '.game') {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
 
@@ -160,7 +160,8 @@ async function notificationNewFriendship(data) {
 }
 
 async function notificationTournamentRequest(data) {
-	if (g_state.pageToDisplay == '.game') {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
 
@@ -209,7 +210,8 @@ async function notificationGameAccepted(data) {
 }
 
 async function notificationGameRequest(data) {
-	if (g_state.pageToDisplay == '.game') {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
 

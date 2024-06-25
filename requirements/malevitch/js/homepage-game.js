@@ -1,6 +1,12 @@
-document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', async function() {
+document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', async function(e) {
+	e.target.disabled = true;
+
 	clearFriendsList();
 	await loadFriendsList();
+
+	setTimeout(() => {
+		e.target.disabled = false;
+	}, 2000);
 
 	document.querySelector('.friends-list-icon').focus();
 
@@ -12,6 +18,10 @@ document.querySelector('.homepage-game-content-friends-icon').addEventListener('
 });
 
 document.querySelector('.homepage-game-content-play').addEventListener('click', function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	if (document.querySelector('.notif-search-match').classList.contains('visually-hidden')) {
 		searchMatch();
 	}

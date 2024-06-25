@@ -139,6 +139,7 @@
 .category-icon img {
 	height: 20px;
 	margin-left: 1px;
+	object-fit: cover;
 }
 
 .homepage-friend-content-card-container

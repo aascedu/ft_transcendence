@@ -145,6 +145,7 @@
 
 .tournament-info-card-picture img {
 	height: 20px;
+	object-fit: cover;
 }
 
 .tournament-info-card-name {
@@ -292,7 +293,9 @@
 
 .bracket-player-picture img {
 	height: 40px;
+	width: 40px;
 	border-radius: 20px;
+	object-fit: cover;
 }
 
 .bracket-loser {
