@@ -1,7 +1,7 @@
 // Load tournament info from backend
 
 // Ongoing tournament : load from Coubertin
-async function loadOngoingTournament(id) {
+async function loadOngoingTournament(id, item) {
 	var	tournamentInfo;
 
 	try {
@@ -16,6 +16,12 @@ async function loadOngoingTournament(id) {
 	// }
 	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
+
+	if (item != null) {
+		setTimeout(() => {
+			item.disabled = false;
+		}, 2000);
+	}
 }
 
 // Closed tournament : load from Mnemosine
@@ -34,6 +40,11 @@ async function loadClosedTournament(id) {
 }
 
 async function loadTournamentInfo(tournamentInfo, ongoing) {
+	// var	contentCards = document.querySelectorAll('.tournament-info-players .content-card');
+	// if (contentCards.length > 0) {
+	// 	return ;
+	// }
+
 	// Save tournament id on the page
 	document.querySelector('.tournament-info-name').setAttribute('tournament-id', tournamentInfo.Id);
 
@@ -477,6 +488,7 @@ function clearTournamentInfo() {
 	document.querySelectorAll('.bracket-player').forEach(function(item) {
 		item.innerHTML = '';
 	});
+	
 }
 
 async function loadUserProfile(id) {
@@ -592,7 +604,11 @@ async function confirmJoinTournament() {
 	// Hide tournament invite notif
 	document.querySelector('.notif-tournament-invite').classList.add('visually-hidden');
 
-	await loadOngoingTournament(tournamentId);
+	var	confirmButton = document.querySelector('.tournament-info-join-alert .alert-confirm-button');
+
+	confirmButton.disabled = true;
+
+	await loadOngoingTournament(tournamentId, confirmButton);
 
 	hideEveryPage();
 	g_state.pageToDisplay = '.tournament-info';

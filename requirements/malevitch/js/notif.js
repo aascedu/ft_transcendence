@@ -9,7 +9,8 @@ document.querySelectorAll('.notif-dismiss').forEach(function(item) {
 
 // Tournament invite
 
-document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', async function() {
+document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', async function(e) {
+	e.target.disabled = true;
 	await acceptTournamentInvite();
 });
 
@@ -23,7 +24,11 @@ async function acceptTournamentInvite() {
 
 	// display tournament page
 	var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
-	await loadOngoingTournament(tournamentId);
+	var	acceptButton = document.querySelector('.notif-tournament-invite .notif-accept');
+
+	acceptButton.disabled = true;
+
+	await loadOngoingTournament(tournamentId, acceptButton);
 
 	hideEveryPage();
 
