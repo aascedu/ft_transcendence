@@ -12,39 +12,17 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.security_check() is False:
-            print("Failed to open tournament ws 15")
             return self.close()
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
-
         try:
             self.id = int(self.scope['user'].id)
             self.tournamentId = int(self.roomName)
-        except BaseException as e:
-            print(e)
-            print("Failed to open tournament ws 24")
+        except:
             return self.close()
-        
-        try:
-            r = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': self.id})
-            if r.status_code == 409:
-                print("Failed to open tournament ws 31")
-                return self.close()
-            elif r.status_code != 200:
-                print("Failed to open tournament ws 33")
-                return self.close()
-        except Exception as e:
-            print("Failed to open tournament ws 37")
-            print(e)
-            return self.close()
-
-
         if self.id in tournaments[self.tournamentId].onPage:
             tournaments[self.tournamentId].onPage.append(self.id)
-            print("Failed to open tournament ws 43")
             return self.close()
         tournaments[self.tournamentId].onPage.append(self.id)
 
@@ -58,25 +36,6 @@ class Consumer(OurBasicConsumer):
         if self.tournamentId in tournaments:
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
-
-            if self.id in tournaments[self.tournamentId].contenders:
-                tournaments[self.tournamentId].contenders.remove(self.id)
-
-            if self.id in tournaments[self.tournamentId].players:
-                tournaments[self.tournamentId].players.remove(self.id)
-
-            for obj in tournaments[self.tournamentId].aliases:
-                if self.id == obj['Id']:
-                    tournaments[self.tournamentId].aliases.remove(obj)
-
-            try:
-                r = requests.post(
-                    'http://hermes:8004/notif/available-states/',
-                    json={'Id': self.id})
-                if r.status_code != 200:
-                    pass
-            except Exception as e:
-                pass
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -112,14 +71,15 @@ class Consumer(OurBasicConsumer):
         try:
             opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         except:
-            roomName = str(self.id) + '-' + '0'
+            tournaments[self.tournamentId].ongoingGames += 1
+            roomName = str(tournaments[self.tournamentId].id) + '-' + str(self.id) + '-0'
             await self.send(json.dumps({
                 'Action': "startGame",
                 'RoomName': roomName,
             }))
             return
 
-        if self.id > opponentId:
+        if self.id > opponentId or opponentId not in tournaments[self.tournamentId].onPage:
             tournaments[self.tournamentId].ongoingGames += 1
 
         try:
@@ -144,12 +104,11 @@ class Consumer(OurBasicConsumer):
     async def TournamentEnd(self, event):
         global tournaments
 
-        # Check cette condition !
         if self.tournamentId not in tournaments:
-            return self.close()
+            self.close()
 
         if self.id not in tournaments[self.tournamentId].contenders:
-            return self.close()
+            self.close()
 
         tournaments[self.tournamentId].ended = True
         try:

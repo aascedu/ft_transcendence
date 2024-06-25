@@ -89,6 +89,18 @@ class RequestGameResponse(View):
 
         if [requester, invited] not in gameRequesters:
             return JsonBadRequest(request, 'No such game requested')
+        
+        try:
+            r = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': invited})
+            if r.status_code == 409:
+                return self.close()
+            elif r.status_code != 200:
+                return self.close()
+        except Exception as e:
+            print(e)
+            return self.close()
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
