@@ -89,9 +89,6 @@ class RequestGameResponse(View):
         except:
             return JsonBadRequest(request, 'Invalid requester id')
 
-        print(gameRequesters)
-        print(requester)
-        print(invited)
         if [requester, invited] not in gameRequesters:
             return JsonBadRequest(request, 'No such game requested')
         
@@ -100,7 +97,6 @@ class RequestGameResponse(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': invited})
             if r.status_code != 200:
-                print("Not available\n\n\n\n\n")
                 return JsonConflict(request, "Couldn't update available state")
             
         except Exception as e:
@@ -141,7 +137,6 @@ class RequestGameResponse(View):
                     }
                 )
             try:
-                print("Yesok\n\n\n\n\n\n\n")
                 request = requests.post(
                     'http://hermes:8004/notif/available-states/',
                     json={'Id': requester})
