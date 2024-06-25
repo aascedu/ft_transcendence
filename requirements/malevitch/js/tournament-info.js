@@ -11,9 +11,9 @@ async function loadOngoingTournament(id, item) {
 		return ;
 	}
 
-	// if (g_tournamentSocket == null) {
-	// 	init_tournament_socket(id);
-	// }
+	if (g_tournamentSocket == null) {
+		init_tournament_socket(id);
+	}
 	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
 
@@ -540,10 +540,6 @@ async function confirmJoinTournament() {
 	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 	var	tournamentNick = document.querySelector('.tournament-info-join-input').value;
 	var	warning = document.querySelector('.tournament-info-join-input-warning');
-
-	if (g_tournamentSocket == null) {
-		g_tournamentSocket = init_tournament_socket(tournamentId);
-	}
 
 	if (!checkTournamentNick(tournamentNick, warning)) {
 		var locale = document.querySelector('.homepage-header-language-selector button img').alt;

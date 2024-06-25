@@ -24,11 +24,11 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
-            await self.close()
+            return self.close()
 
         count = self.roomName.count('-')
         if count != 1 and count != 2:
-            await self.close()
+            return self.close()
         if count == 2:
             self.myMatch.isTournamentGame = True
 
@@ -51,9 +51,6 @@ class Consumer(OurBasicConsumer):
             else:
                 self.myMatch.playersId[(self.id + 1) % 2] = p1
 
-        if self.isPlayer == False and len(self.myMatch.players) < 2:
-            await self.close()
-
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
 
@@ -61,16 +58,6 @@ class Consumer(OurBasicConsumer):
             self.myMatch.players.append(Player(self.id, self.gameSettings))
 
         logging.info("Player " + self.strId + " has entered game room " + self.roomName)
-
-        if self.myMatch.isTournamentGame == False:
-            try:
-                request = requests.delete(
-                    'http://hermes:8004/notif/available-states/',
-                    json={'Id': self.user.id})
-                if request.status_code != 200:
-                    return self.close()
-            except Exception as e:
-                return self.close()
 
         # Faire la requete a hermes ici si besoin (Dans le cas d'une invite game)
         await self.accept()
@@ -89,7 +76,7 @@ class Consumer(OurBasicConsumer):
                     }
                 )
             
-        if self.roomName.count('-') == 1:
+        if self.myMatch.isTournamentGame is False:
             try:
                 request = requests.post(
                     'http://hermes:8004/notif/available-states/',
