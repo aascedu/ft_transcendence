@@ -39,7 +39,7 @@ async function init_tournament_socket(tournamentId) {
 			// load back tournament info in case changes happened on the tournament we're looking at // also updates available friends
 			if (g_state.pageToDisplay == '.tournament-info') {
 				tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
-				await loadOngoingTournament(tournamentId);
+				await loadOngoingTournament(tournamentId, null);
 			}
 			// load back my tournaments in case a tournament has changed its name
 			if (g_state.pageToDisplay == '.my-tournaments') {
