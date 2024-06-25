@@ -1,6 +1,12 @@
-document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', async function() {
+document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', async function(e) {
+	e.target.disabled = true;
+
 	clearFriendsList();
 	await loadFriendsList();
+
+	setTimeout(() => {
+		e.target.disabled = false;
+	}, 2000);
 
 	document.querySelector('.friends-list-icon').focus();
 
