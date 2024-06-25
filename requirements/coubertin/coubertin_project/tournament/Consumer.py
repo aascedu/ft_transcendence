@@ -59,9 +59,6 @@ class Consumer(OurBasicConsumer):
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
 
-            if self.id in tournaments[self.tournamentId].contenders:
-                tournaments[self.tournamentId].contenders.remove(self.id)
-
             if self.id in tournaments[self.tournamentId].players:
                 tournaments[self.tournamentId].players.remove(self.id)
 

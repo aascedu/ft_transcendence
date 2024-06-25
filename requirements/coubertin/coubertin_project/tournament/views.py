@@ -245,7 +245,7 @@ class inTournament(View):
     
 
 class gameResult(View):
-    def post(self, request): # Maybe send un tournamentState
+    def post(self, request):
         global tournaments
 
         if request.user.is_service is False:

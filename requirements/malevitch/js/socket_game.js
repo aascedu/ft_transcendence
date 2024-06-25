@@ -165,8 +165,6 @@ async function init_game_socket(roomName) {
             ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
             ball.pos['x'] = data.ballPosX * screenWidth;
             ball.pos['y'] = data.ballPosY * screenWidth;
-            htmlBall.style.top = this.pos['y'] - parseInt(ballStyle.height, 10) / 2 + 'px';
-            htmlBall.style.left = this.pos['x'] - parseInt(ballStyle.width, 10) / 2 + 'px';
 
             me.points = data.myScore;
             opponent.points = data.opponentScore;

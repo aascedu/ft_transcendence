@@ -41,18 +41,10 @@ class Tournament:
         if game['Loser'] in self.contenders:
             self.contenders.remove(game['Loser'])
 
-        try:
-            request = requests.post(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': game['Loser']})
-            if request.status_code != 200:
-                pass
-        except Exception as e:
-            pass
-        channel_layer = get_channel_layer()
-
         if self.ongoingGames == 0:
             self.currentRound += 1
+
+            channel_layer = get_channel_layer()
 
             # Check tournament end
             if self.nbPlayers == pow(2, self.currentRound - 1):
