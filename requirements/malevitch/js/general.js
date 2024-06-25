@@ -845,6 +845,13 @@ function hideEveryPage() {
 	document.querySelector('.accessibility').classList.add('visually-hidden');
 }
 
+function hideEveryNotif() {
+	document.querySelectorAll('.notif').forEach(function(item) {
+		item.classList.add('visually-hidden');
+	});
+	setAriaHidden();
+}
+
 //
 
 async function checkCloseTournamentSocket() {
