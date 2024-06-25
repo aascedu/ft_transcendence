@@ -9,6 +9,10 @@ async function init_tournament_socket(tournamentId) {
     const url = 'wss://' + domain + '/coubertin/tournament/ws/' + roomName + '/?token=' + token;
     g_tournamentSocket = new WebSocket(url);
 
+	g_tournamentSocket.onopen = function() {
+		console.log("opening tournament socket")
+	}
+
     g_tournamentSocket.onclose = function() {
 		console.log("closing socket tournament");
 		g_tournamentSocket = null;
@@ -19,6 +23,7 @@ async function init_tournament_socket(tournamentId) {
 
         if (data.Action === "startGame") {
 			// "Match found" notif
+			console.log("Starting tournament game");
 			var	opponent = data.RoomName;
 			opponent = opponent.split('-');
 			if (opponent[1] == g_userId) {

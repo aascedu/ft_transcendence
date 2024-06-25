@@ -21,6 +21,7 @@ class Tournament:
         self.onPage = []
 
     def addPlayer(self, player, alias):
+        print("adding player" + str(player) + "to tourney\n\n\n\n\n\n\n\n")
         if len(self.players) >= self.nbPlayers: # Pas besoin de cast ici ?
             raise Exception("Too many players already")
         if self.userParticipating(player):

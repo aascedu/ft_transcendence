@@ -12,7 +12,6 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.security_check() is False:
-            print("Failed to open tournament ws 15")
             return self.close()
 
         # Join room group
@@ -23,7 +22,6 @@ class Consumer(OurBasicConsumer):
             self.tournamentId = int(self.roomName)
         except BaseException as e:
             print(e)
-            print("Failed to open tournament ws 24")
             return self.close()
         
         try:
@@ -31,13 +29,10 @@ class Consumer(OurBasicConsumer):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
             if r.status_code == 409:
-                print("Failed to open tournament ws 31")
                 return self.close()
             elif r.status_code != 200:
-                print("Failed to open tournament ws 33")
                 return self.close()
         except Exception as e:
-            print("Failed to open tournament ws 37")
             print(e)
             return self.close()
 
@@ -59,10 +54,10 @@ class Consumer(OurBasicConsumer):
             if self.id in tournaments[self.tournamentId].onPage:
                 tournaments[self.tournamentId].onPage.remove(self.id)
 
-            if self.id in tournaments[self.tournamentId].players:
+            if self.id in tournaments[self.tournamentId].players and tournaments[self.tournamentId].started == False:
                 tournaments[self.tournamentId].players.remove(self.id)
 
-            for obj in tournaments[self.tournamentId].aliases:
+            for obj in tournaments[self.tournamentId].aliases and tournaments[self.tournamentId].started == False:
                 if self.id == obj['Id']:
                     tournaments[self.tournamentId].aliases.remove(obj)
 
@@ -100,6 +95,9 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
+        print("contenders: ")
+        print(tournaments[self.tournamentId].contenders)
+
         if self.id not in tournaments[self.tournamentId].contenders:
             return
         
@@ -109,6 +107,7 @@ class Consumer(OurBasicConsumer):
         try:
             opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         except:
+            print("Souci\n\n\n\n\n\n\n")
             roomName = str(self.id) + '-' + '0'
             await self.send(json.dumps({
                 'Action': "startGame",
@@ -118,6 +117,7 @@ class Consumer(OurBasicConsumer):
 
         if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
+        print("Ongoing games: " + str(tournaments[self.tournamentId].ongoingGames) + "\n\n\n\n\n")
 
         try:
             roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
