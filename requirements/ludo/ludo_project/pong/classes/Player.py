@@ -1,3 +1,5 @@
+import time
+
 class Player:
     def __init__(self, id, gameSettings):
         self.width = gameSettings.playerWidth
@@ -7,8 +9,10 @@ class Player:
         self.up = False
         self.down = False
         self.id = id
-    def move(self, gameSettings):
+    def move(self, gameSettings, lastMoveTime):
         mvt = self.down - self.up
-        newPos = self.pos + mvt * gameSettings.screenHeight / 150
+        tmpTime = time.time_ns()
+        diffTime = (tmpTime - lastMoveTime) / 1000000000
+        newPos = self.pos + (mvt * gameSettings.screenHeight / 1.5) * diffTime
         if (newPos + gameSettings.playerHeight / 2 < gameSettings.screenHeight and newPos > gameSettings.playerHeight / 2):
             self.pos = newPos
