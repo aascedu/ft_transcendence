@@ -8,7 +8,6 @@ async function invite_friend_to_game(PlayerToInvite) {
     response = await fetch_post(add_cupidon_in_url("game-request/"), json);
     if ('RoomName' in response) {
         roomName = response.RoomName;
-        console.log(roomName);
         document.querySelector('.notif-play-invite').classList.add('visually-hidden');
         setAriaHidden();
 		g_invited = true;
