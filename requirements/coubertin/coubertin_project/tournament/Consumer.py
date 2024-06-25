@@ -67,15 +67,20 @@ class Consumer(OurBasicConsumer):
         
         myIndex = tournaments[self.tournamentId].contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
-        
+
         try:
             opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         except:
-            pass
-
-        if self.id > opponentId:
             tournaments[self.tournamentId].ongoingGames += 1
+            roomName = str(tournaments[self.tournamentId].id) + '-' + str(self.id) + '-0'
+            await self.send(json.dumps({
+                'Action': "startGame",
+                'RoomName': roomName,
+            }))
+            return
 
+        if self.id > opponentId or opponentId not in tournaments[self.tournamentId].onPage:
+            tournaments[self.tournamentId].ongoingGames += 1
 
         try:
             roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
@@ -99,7 +104,6 @@ class Consumer(OurBasicConsumer):
     async def TournamentEnd(self, event):
         global tournaments
 
-        # Check cette condition !
         if self.tournamentId not in tournaments:
             self.close()
 
