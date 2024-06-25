@@ -318,27 +318,15 @@
 	right: -1px;
 }
 
-.bracket-match-line-one,
 .bracket-match-line-two {
 	position: absolute;
 	background-color: #7300E6;
 }
 
-.bracket-match-line-one {
-	height: 2px;
-	width: 12px;
-}
-
 .bracket-match-line-two {
-	height: 88px;
+	height: 210px;
 	width: 2px;
 	left: 11px;
-}
-
-.bracket-match-lines-alt {
-	position: absolute;
-	left: -28px;
-	top: 62px;
 }
 
 .bracket-match:nth-child(even)
@@ -346,6 +334,32 @@
 .bracket-match-line-two {
 	transform: translate(0, -100%);
 	top: 2px;
+}
+
+.bracket-round-one:not(.bracket-round-one-four)
+.bracket-match:nth-child(2)
+.bracket-match-line-two {
+	top: 200%;
+	height: 330px;
+	width: 2px;
+	left: 11px;
+}
+
+.bracket-round-one:not(.bracket-round-one-four)
+.bracket-match:nth-child(3)
+.bracket-match-line-two {
+	top: -200%;
+	height: 330px;
+	width: 2px;
+	left: 11px;
+}
+
+.bracket-round-one-four
+.bracket-match-line-two {
+	top: 0%;
+	height: 200px;
+	width: 2px;
+	left: 11px;
 }
 
 .bracket-round-one
@@ -363,5 +377,5 @@
 .bracket-round-two 
 .bracket-match-lines 
 .bracket-match-line-two {
-	height: 175px;
+	height: 365px;
 }

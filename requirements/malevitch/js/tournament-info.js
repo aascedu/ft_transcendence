@@ -535,10 +535,14 @@ async function confirmJoinTournament() {
 
 	if (!checkTournamentNick(tournamentNick, warning)) {
 		var locale = document.querySelector('.homepage-header-language-selector button img').alt;
-		switchLanguageContent(locale);
 		warning.classList.remove('visually-hidden');
+		switchLanguageContent(locale);
 		setAriaHidden();
 		return ;
+	}
+
+	if (tournamentNick.length == 0) {
+		tournamentNick = g_userNick;
 	}
 
 	try {

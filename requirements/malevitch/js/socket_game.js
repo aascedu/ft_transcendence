@@ -163,8 +163,8 @@ async function init_game_socket(roomName) {
 
             ball.speed['x'] = data.ballSpeedX * ratioWidth / 120;
             ball.speed['y'] = data.ballSpeedY * ratioHeight / 120;
-            ball.pos['x'] = data.ballPosX * screenWidth;
-            ball.pos['y'] = data.ballPosY * screenWidth;
+            ball.pos['x'] = data.ballPosX * screenWidth / 100;
+            ball.pos['y'] = data.ballPosY * screenHeight / 100;
 
             me.points = data.myScore;
             opponent.points = data.opponentScore;
