@@ -245,6 +245,7 @@ async function showGamePage(roomName) {
 	var	homepagePicture = document.querySelector('.homepage-game-picture');
 	homepagePicture.classList.add('visually-hidden');
 
+	hideEveryNotif();
 	hideEveryPage();
 
 	await init_game_socket(roomName);
