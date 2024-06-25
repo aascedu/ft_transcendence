@@ -57,8 +57,8 @@ class Consumer(OurBasicConsumer):
             if self.id in tournaments[self.tournamentId].players and tournaments[self.tournamentId].started == False:
                 tournaments[self.tournamentId].players.remove(self.id)
 
-            for obj in tournaments[self.tournamentId].aliases and tournaments[self.tournamentId].started == False:
-                if self.id == obj['Id']:
+            for obj in tournaments[self.tournamentId].aliases:
+                if self.id == obj['Id'] and tournaments[self.tournamentId].started == False:
                     tournaments[self.tournamentId].aliases.remove(obj)
 
             try:
@@ -107,7 +107,7 @@ class Consumer(OurBasicConsumer):
         try:
             opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
         except:
-            print("Souci\n\n\n\n\n\n\n")
+            tournaments[self.tournamentId].ongoingGames += 1
             roomName = str(self.id) + '-' + '0'
             await self.send(json.dumps({
                 'Action': "startGame",
@@ -115,7 +115,7 @@ class Consumer(OurBasicConsumer):
             }))
             return
 
-        if self.id > opponentId:
+        if self.id > opponentId: # Bah non du coup
             tournaments[self.tournamentId].ongoingGames += 1
         print("Ongoing games: " + str(tournaments[self.tournamentId].ongoingGames) + "\n\n\n\n\n")
 
