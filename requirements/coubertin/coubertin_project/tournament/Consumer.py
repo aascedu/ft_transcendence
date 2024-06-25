@@ -105,10 +105,10 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.tournamentId not in tournaments:
-            self.close()
+            return self.close()
 
         if self.id not in tournaments[self.tournamentId].contenders:
-            self.close()
+            return self.close()
 
         tournaments[self.tournamentId].ended = True
         try:
@@ -133,7 +133,7 @@ class Consumer(OurBasicConsumer):
         except Exception as e:
             return self.close()
         
-        self.close()
+        return self.close()
         
             
 

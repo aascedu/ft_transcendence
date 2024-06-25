@@ -125,7 +125,7 @@ class Consumer(OurBasicConsumer):
 
         except Exception as e:
             await self.send (text_data=json.dumps({'err': e}))
-            await self.close()
+            return self.close()
 
     async def gameStart(self, event):
         global matches
