@@ -49,7 +49,6 @@ class Consumer(OurBasicConsumer):
 
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
-            gameRequesters.append([self.requester, self.invited])
 
         await self.accept()
 

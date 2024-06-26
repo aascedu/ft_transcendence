@@ -125,7 +125,7 @@ class Consumer(OurBasicConsumer):
 
         except Exception as e:
             await self.send (text_data=json.dumps({'err': e}))
-            await self.close()
+            return self.close()
 
     async def gameStart(self, event):
         global matches
@@ -203,7 +203,8 @@ class Consumer(OurBasicConsumer):
         for frame in frames:
             self.myMatch.players[id].up = frames[frame]["meUp"]
             self.myMatch.players[id].down = frames[frame]["meDown"]
-            self.myMatch.players[id].move(self.gameSettings)
+            self.myMatch.players[id].move(self.gameSettings, self.lastRequestTime)
+            self.lastRequestTime = time.time_ns()
 
             # Ball and score management
             pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)

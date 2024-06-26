@@ -84,6 +84,10 @@ function clearHomepageHeader() {
 // Back to homepage
 
 document.querySelector('.homepage-header-logo').addEventListener('click', async function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	document.querySelector('.homepage-game-picture').classList.remove('visually-hidden');
 
 	await clearHomepageContent();
@@ -103,6 +107,10 @@ document.querySelector('.homepage-header-logo').addEventListener('click', async 
 // Display header menus
 
 document.querySelector('.homepage-header-tournaments').addEventListener('click', function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		if (!item.classList.contains('homepage-header-open-tournaments')) {
 			item.classList.add('visually-hidden');
@@ -116,6 +124,10 @@ document.querySelector('.homepage-header-tournaments').addEventListener('click',
 });
 
 document.querySelector('.homepage-header-play').addEventListener('click', function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		if (!item.classList.contains('homepage-header-open-play')) {
 			item.classList.add('visually-hidden');
@@ -129,6 +141,10 @@ document.querySelector('.homepage-header-play').addEventListener('click', functi
 });
 
 document.querySelector('.homepage-header-friends').addEventListener('click', function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
 		if (!item.classList.contains('homepage-header-open-friends')) {
 			item.classList.add('visually-hidden');
@@ -405,8 +421,6 @@ async function addFriend() {
 	try {
         const data = await fetch_get('/alfred/user/signin/' + nickname + '/');
 
-        console.log(data);
-
         if (data.Ava) {
 			warning.setAttribute('data-language', 'unknown-user');
 			switchLanguageContent(locale);
@@ -440,7 +454,12 @@ async function addFriend() {
 
 // Go to profile
 
-document.querySelector('.homepage-header-profile').addEventListener('click', async function() {
+document.querySelector('.homepage-header-profile').addEventListener('click', async function(e) {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
+
 	// Load user profile content
 	// pic and nick
 	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
@@ -467,6 +486,10 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 // Go to accessibility
 
 document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
+	var	matchFound = document.querySelector('.notif-match-found');
+	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
+		return ;
+	}
 	document.querySelector('.accessibility-icon').focus();
 
 	hideEveryPage();

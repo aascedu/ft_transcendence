@@ -105,10 +105,10 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.tournamentId not in tournaments:
-            self.close()
+            return self.close()
 
         if self.id not in tournaments[self.tournamentId].contenders:
-            self.close()
+            return self.close()
 
         tournaments[self.tournamentId].ended = True
         try:

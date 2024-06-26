@@ -34,6 +34,8 @@ class RequestGame(View):
             gameRequesters.remove([p2, p1])
             return JsonResponse(request, {'RoomName': strp2 + '-' + strp1})
 
+        gameRequesters.append([p1, p2])
+
         try:
             response = requests.post(
                 'http://hermes:8004/notif/game-request/' + strp1 + '/',
@@ -94,13 +96,11 @@ class RequestGameResponse(View):
             r = requests.delete(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': invited})
-            if r.status_code == 409:
-                return self.close()
-            elif r.status_code != 200:
-                return self.close()
+            if r.status_code != 200:
+                return JsonConflict(request, "Couldn't update available state")
+            
         except Exception as e:
-            print(e)
-            return self.close()
+            return
 
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(

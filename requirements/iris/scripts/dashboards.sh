@@ -3,23 +3,32 @@ COLOR_GREEN='\e[1;32m'
 COLOR_RED='\e[1;31m'
 COLOR_RESET='\e[0m'
 
+
 # Define the URL for Elasticsearch
-KIBANA_URL="localhost:5601"
+KIBANA_URL="https://localhost:5601"
 
 # Define the path to the CA certificate
 CA_CERT="/usr/share/kibana/config/certs/ca/ca.crt"
 
+# Define the path to the Kibana server certificate and key
+KIBANA_CERT="/usr/share/kibana/config/certs/kibana-server/kibana-server.crt"
+KIBANA_KEY="/usr/share/kibana/config/certs/kibana-server/kibana-server.key"
+
 set -e
 
 # Check Dashboards existance
-response=$(curl -X GET "http://$KIBANA_URL/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
+response=$(curl -X GET "$KIBANA_URL/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
                 -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
                 --cacert "$CA_CERT" \
+                --cert "$KIBANA_CERT" \
+                --key "$KIBANA_KEY" \
                 -H 'kbn-xsrf: true')
 
 # curl -X GET "http://localhost:5601/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
 #                 -u elastic:elastic123 \
 #                 --cacert "/usr/share/kibana/config/certs/ca/ca.crt" \
+                # --cert "/usr/share/kibana/config/certs/kibana-server/kibana-server.crt" \
+                # --key "/usr/share/kibana/config/certs/kibana-server/kibana-server.key" \
 #                 -H 'kbn-xsrf: true'
 
 if [[ "$response" == *"Nginx-Dashboard"* ]]; then
@@ -32,6 +41,8 @@ else
   response=$(curl -X POST "$KIBANA_URL/api/kibana/dashboards/import?exclude=index-pattern" \
   -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   --cacert "$CA_CERT" \
+  --cert "$KIBANA_CERT" \
+  --key "$KIBANA_KEY" \
   -H 'kbn-xsrf: true' \
   -H 'Content-Type: application/json' \
     -d'
