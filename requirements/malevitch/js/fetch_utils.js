@@ -109,15 +109,15 @@ async function custom_error(response) {
     } catch (error) {
         json = {}
     }
-    let reason
+    let name
     if (json.Err === undefined) {
-        reason = "Error not coming from BATCH API : Try something less aggressive";
-	forbiddenNotif();
+        name = "Error not coming from BATCH API : Try something less aggressive";
+        forbiddenNotif();
     } else {
-        reason = json.Err;
+        name = json.Err;
     }
-    const error = new Error('HTTP code: ' + response.status + ' : ' + reason);
-    error.reason = reason;
+    const error = new Error('HTTP code: ' + response.status + ' : ' + name);
+    error.name = name;
     error.value = json;
     return error;
 }
