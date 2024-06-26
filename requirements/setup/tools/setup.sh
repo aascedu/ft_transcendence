@@ -71,10 +71,8 @@ if [ ! -f config/certs/kibana-certs.zip ]; then
   "      - 127.0.0.1\n"\
   "      - 68.183.41.74\n" \
   > config/certs/instances_kibana.yml;
-  # bin/elasticsearch-certutil cert --silent --pem -out config/certs/certs.zip --in config/certs/instances.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
   bin/elasticsearch-certutil cert --silent --pem -out config/certs/kibana-certs.zip --in config/certs/instances_kibana.yml --ca-cert config/certs/ca/ca.crt --ca-key config/certs/ca/ca.key;
   mkdir -p config/certs/kibana-server
-  # bin/elasticsearch-certutil csr --silent -name kibana-server --in config/certs/instances_kibana.yml -out config/certs/csr-bundle.zip
   unzip config/certs/kibana-certs.zip -d config/certs/kibana-server/;
 fi;
 
