@@ -33,6 +33,7 @@ async function assign_global() {
                 }
 				setBaseFontSize(document.querySelector('body'));
                 g_prevFontSize = data.Font;
+				switchLanguageContent(data.Lang);
 				if (data.Font > 0) {
 					updateFontSizeOfPage(document.querySelector('body'), data.Font);
 				}
