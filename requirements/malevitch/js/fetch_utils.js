@@ -117,7 +117,7 @@ async function custom_error(response) {
         reason = json.Err;
     }
     const error = new Error('HTTP code: ' + response.status + ' : ' + reason);
-    error.reason =  name
+    error.reason = reason;
     error.value = json;
     return error;
 }
