@@ -452,7 +452,6 @@ async function notificationProfileChanged(data) {
 	await loadHomepageHeader();
 }
 async function notificationFriendDisconnected(data) {
-	console.log('coucou');
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
