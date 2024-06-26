@@ -24,13 +24,6 @@ response=$(curl -X GET "$KIBANA_URL/api/kibana/dashboards/export?dashboard=45c31
                 --key "$KIBANA_KEY" \
                 -H 'kbn-xsrf: true')
 
-# curl -X GET "http://localhost:5601/api/kibana/dashboards/export?dashboard=45c31047-8d22-4496-88a1-187eaee249c7" \
-#                 -u elastic:elastic123 \
-#                 --cacert "/usr/share/kibana/config/certs/ca/ca.crt" \
-                # --cert "/usr/share/kibana/config/certs/kibana-server/kibana-server.crt" \
-                # --key "/usr/share/kibana/config/certs/kibana-server/kibana-server.key" \
-#                 -H 'kbn-xsrf: true'
-
 if [[ "$response" == *"Nginx-Dashboard"* ]]; then
   echo -e "${COLOR_GREEN}All Dashboards creation completed.${COLOR_RESET}"
   exit 0
