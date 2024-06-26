@@ -7,6 +7,7 @@ async function loadUserContent(id) {
 	var	removeIcon = document.querySelector('.user-profile-remove-icon');
 	var	disconnectIcon = document.querySelector('.user-profile-disconnect-icon');
 	var	editIcon = document.querySelector('.user-profile-edit-icon');
+	var	stateIcon = document.querySelector('.user-profile-state');
 
 	var userInfo;
 	var userNick = 'User';
@@ -30,6 +31,7 @@ async function loadUserContent(id) {
 		var isFriend = false;
 		var	isAvailable = false;
 		var	isInvited = false;
+		var	isOnline = false;
 
 		try {
 			friendsInfo = await get_friend(g_userId);
@@ -62,15 +64,39 @@ async function loadUserContent(id) {
 						break ;
 					}
 				}
+
+				var	friendsOnline = await get_friend_list_online(g_userId);
+				friendsOnline = friendsOnline["online-status"];
+
+				if (friendsOnline[id] == true) {
+					isOnline = true;
+				}
+				else {
+					isOnline = false;
+				}
+
 				if (isAvailable) {
 					playIcon.classList.remove('visually-hidden');
+					stateIcon.classList.add('user-profile-state-online');
+					stateIcon.classList.remove('user-profile-state-unavailable');
+					stateIcon.classList.remove('user-profile-state-offline');
+				}
+				else if (isOnline) {
+					playIcon.classList.add('visually-hidden');
+					stateIcon.classList.remove('user-profile-state-online');
+					stateIcon.classList.add('user-profile-state-unavailable');
+					stateIcon.classList.remove('user-profile-state-offline');
 				}
 				else {
 					playIcon.classList.add('visually-hidden');
+					stateIcon.classList.remove('user-profile-state-online');
+					stateIcon.classList.remove('user-profile-state-unavailable');
+					stateIcon.classList.add('user-profile-state-offline');
 				}
 				addIcon.classList.add('visually-hidden');
 				pendingIcon.classList.add('visually-hidden');
 				removeIcon.classList.remove('visually-hidden');
+				stateIcon.classList.remove('visually-hidden');
 			} catch (error) {
 				console.error();
 			}
@@ -80,12 +106,14 @@ async function loadUserContent(id) {
 			addIcon.classList.add('visually-hidden');
 			pendingIcon.classList.remove('visually-hidden');
 			removeIcon.classList.add('visually-hidden');
+			stateIcon.classList.add('visually-hidden');
 		}
 		else {
 			playIcon.classList.add('visually-hidden');
 			addIcon.classList.remove('visually-hidden');
 			pendingIcon.classList.add('visually-hidden');
 			removeIcon.classList.add('visually-hidden');
+			stateIcon.classList.add('visually-hidden');
 		}
 
 		addIcon.setAttribute('user-id', id);
@@ -104,6 +132,7 @@ async function loadUserContent(id) {
 		removeIcon.removeAttribute('user-id');
 		disconnectIcon.classList.remove('visually-hidden');
 		editIcon.classList.remove('visually-hidden');
+		stateIcon.classList.add('visually-hidden');
 	}
 	// Load user general info
 	document.querySelector('.user-profile-picture img').setAttribute('src', userPic);

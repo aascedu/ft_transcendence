@@ -9,6 +9,17 @@
 	filter: drop-shadow(2px 2px 8px rgba(42, 133, 0, 0.2));
 }
 
+.notif-forbidden {
+	left: 2.5vw;
+	background-color: rgba(170, 14, 45, 0.5);
+	filter: drop-shadow(2px 2px 8px rgba(170, 14, 45, 0.2));
+}
+
+.notif-forbidden .notif-message {
+	font-size: 16pt;
+	font-weight: 600;
+}
+
 .notif-sender, .notif-info, .notif-message {
 	color: white;
 	font-size: 13pt;

@@ -38,7 +38,7 @@ class Consumer(OurBasicConsumer):
                 friend_group,
                 {
                     "type": "notification.new.friend.connected",
-                    "message": f'{self.scope['user'].id}',
+                    "requester": f'{self.scope['user'].id}',
                 })
 
     async def disconnect(self, close_code):
@@ -63,7 +63,7 @@ class Consumer(OurBasicConsumer):
                 friend_group,
                 {
                     "type": "notification.friend.disconnected",
-                    "message": f'{self.scope['user'].id}',
+                    "requester": f'{self.scope['user'].id}',
                 })
 
         await self.channel_layer.group_discard(

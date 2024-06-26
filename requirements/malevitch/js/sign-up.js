@@ -241,32 +241,45 @@ function signUpPasswordConfirm(input) {
 			switchLanguageContent(locale);
 			warning.classList.remove('visually-hidden');
 			container.classList.remove('input-container-focused');
+			setAriaHidden();
+			return false;
 		}
 		else {
 			warning.classList.add('visually-hidden');
 			container.classList.add('input-container-focused');
+			setAriaHidden();
+			return true;
 		}
 	}
 	else {
 		warning.classList.add('visually-hidden');
+		setAriaHidden();
+		return false;
 	}
-	setAriaHidden();
 }
 
 // Submit info and create account
 
 document.querySelectorAll('.sign-up input').forEach(function (item) {
 	item.addEventListener('keypress', function (event) {
-		var submit = document.querySelector('.sign-up-submit');
+		var passwordConfirmBox = document.querySelector('.sign-up-password-confirm-input-box');
+		var	passwordConfirmInput = document.querySelector('.sign-up-password-confirm-input');
 
-		if (event.key === 'Enter' && window.getComputedStyle(submit).width != '0px') {
+		if (event.key === 'Enter' && !passwordConfirmBox.classList.contains('visually-hidden')
+		&& signUpPasswordConfirm(passwordConfirmInput)) {
 			submitCreateAccount();
 		}
 	});
 });
 
 document.querySelector('.sign-up-submit').addEventListener('click', function () {
-	submitCreateAccount();
+	var passwordConfirmBox = document.querySelector('.sign-up-password-confirm-input-box');
+	var	passwordConfirmInput = document.querySelector('.sign-up-password-confirm-input');
+
+	if (!passwordConfirmBox.classList.contains('visually-hidden')
+	&& signUpPasswordConfirm(passwordConfirmInput)) {
+		submitCreateAccount();
+	}
 });
 
 async function submitCreateAccount() {

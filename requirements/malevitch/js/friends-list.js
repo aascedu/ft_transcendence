@@ -73,8 +73,14 @@ async function loadFriendsList() {
 		if (numOfFriendsOnline == 0) {
 			document.querySelector('.friends-list-no-online').classList.remove('visually-hidden');
 		}
+		else {
+			document.querySelector('.friends-list-no-online').classList.add('visually-hidden');
+		}
 		if (numOfFriendsOffline == 0) {
 			document.querySelector('.friends-list-no-offline').classList.remove('visually-hidden');
+		}
+		else {
+			document.querySelector('.friends-list-no-offline').classList.add('visually-hidden');
 		}
 
 	} catch (error) {
