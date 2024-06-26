@@ -284,7 +284,12 @@ async function patchUserContent() {
 	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
 	var	font = document.querySelector('.sign-up-font-size').value;
 
-	patch_user_info(g_userId, lang, font, g_userNick, email, null);
+	try {
+		await patch_user_info(g_userId, lang, font, g_userNick, email, null);
+	} catch (error) {
+		console.error(error);
+		return ;
+	}
 }
 
 // "I already have an account" button.
