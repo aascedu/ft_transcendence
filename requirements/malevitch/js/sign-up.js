@@ -28,12 +28,36 @@ async function warnUnavailableUserInfo(userInfo, infoType, element) {
 // Email checking functions
 
 function warnInvalidEmail(email, element) {
-	const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+	var	emailBackup = email;
+	const regex = /^[a-zA-Z0-9.-]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}$/;
 	var result = regex.test(String(email).toLowerCase());
 	if (!result) {
 		element.setAttribute('data-language', 'invalid-email');
+		return result;
 	}
-	return result;
+	var emailUser = email.split('@')[0];
+	var	firstChar = emailUser[0];
+	var	lastChar = emailUser[emailUser.length - 1];
+
+	const forbiddenFirstLast = /[.-]/;
+
+	result = forbiddenFirstLast.test(firstChar);
+	if (result) {
+		element.setAttribute('data-language', 'invalid-email');
+		return false;
+	}
+
+	if (lastChar == '.') {
+		element.setAttribute('data-language', 'invalid-email');
+		return false;
+	}
+
+	if (emailUser.includes('..') || emailUser.includes('--')) {
+		element.setAttribute('data-language', 'invalid-email');
+		return false;
+	}
+
+	return true;
 }
 
 // Password checking functions
