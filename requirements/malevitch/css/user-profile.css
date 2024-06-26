@@ -64,6 +64,25 @@
 	filter: drop-shadow(2px 2px 8px rgba(115, 0, 230, 0.6));
 }
 
+.user-profile-state {
+	width: 25px;
+	height: 25px;
+	border-radius: 12.5px;
+	left: 200px;
+}
+
+.user-profile-state-online {
+	background-color: #46DB00;
+}
+
+.user-profile-state-unavailable {
+	background-color: #F4BF04;
+}
+
+.user-profile-state-offline {
+	background-color: #ABABAB;
+}
+
 .user-profile-name {
 	flex-grow: 1;
 	font-size: 48pt;

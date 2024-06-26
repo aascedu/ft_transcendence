@@ -244,6 +244,14 @@ async function notificationNewClientConnected(data) {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
 	}
+	// if we are on our friend profile, update availability (play button)
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			await clearUserContent();
+			await loadUserContent(userId);
+		}
+	}
 	// if we are on friends list, update it
 	if (g_state.pageToDisplay == '.friends-list') {
 		clearFriendsList();
@@ -443,7 +451,8 @@ async function notificationProfileChanged(data) {
 	clearHomepageHeader();
 	await loadHomepageHeader();
 }
-async function notificationFriendDisconnected(obj) {
+async function notificationFriendDisconnected(data) {
+	console.log('coucou');
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -452,6 +461,14 @@ async function notificationFriendDisconnected(obj) {
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageFriends();
 		await loadHomepageFriends();
+	}
+	// if we are on our friend profile, update availability (play button)
+	if (g_state.pageToDisplay == '.user-profile') {
+		var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+		if (data.requester == userId) {
+			await clearUserContent();
+			await loadUserContent(userId);
+		}
 	}
 	// if we are on friends list, update it
 	if (g_state.pageToDisplay == '.friends-list') {
