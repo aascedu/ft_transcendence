@@ -8,10 +8,14 @@ COLOR_RED='\e[1;31m'
 COLOR_RESET='\e[0m'
 
 # Define the URL for Elasticsearch
-KIBANA_URL="localhost:5601"
+KIBANA_URL="https://localhost:5601"
 
 # Define the path to the CA certificate
 CA_CERT="/usr/share/kibana/config/certs/ca/ca.crt"
+
+# Define the path to the Kibana server certificate and key
+KIBANA_CERT="/usr/share/kibana/config/certs/kibana-server/kibana-server.crt"
+KIBANA_KEY="/usr/share/kibana/config/certs/kibana-server/kibana-server.key"
 
 nginx_data_view='{
   "data_view": {
@@ -119,6 +123,8 @@ fi
 response=$(curl -X GET "$KIBANA_URL/api/data_views" \
             -u ${ELASTIC_USER}:${ELASTIC_PASSWORD}  \
             --cacert "$CA_CERT"                     \
+            --cert "$KIBANA_CERT" \
+            --key "$KIBANA_KEY" \
             -H 'kbn-xsrf: true')
 if [[ "$response" == *"filebeat-index-*"* ]] && \
   [[ "$response" == *"logstash-index-*"* ]] && \
@@ -133,6 +139,8 @@ else
   response=$(curl -X POST "$KIBANA_URL/api/data_views/data_view" \
   -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   --cacert "$CA_CERT" \
+    --cert "$KIBANA_CERT" \
+    --key "$KIBANA_KEY" \
   -H 'kbn-xsrf: true' \
   -H 'Content-Type: application/json' \
   -d "$nginx_data_view")
@@ -147,6 +155,8 @@ else
   response=$(curl -X POST "$KIBANA_URL/api/data_views/data_view" \
   -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   --cacert "$CA_CERT" \
+    --cert "$KIBANA_CERT" \
+    --key "$KIBANA_KEY" \
   -H 'kbn-xsrf: true' \
   -H 'Content-Type: application/json' \
   -d "$logstash_data_view")
@@ -161,6 +171,8 @@ else
   response=$(curl -X POST "$KIBANA_URL/api/data_views/data_view" \
   -u ${ELASTIC_USER}:${ELASTIC_PASSWORD} \
   --cacert "$CA_CERT" \
+    --cert "$KIBANA_CERT" \
+    --key "$KIBANA_KEY" \
   -H 'kbn-xsrf: true' \
   -H 'Content-Type: application/json' \
   -d "$filebeat_data_view")
@@ -173,21 +185,62 @@ else
 
 fi
 
-# Checking creation
-# response=$(curl -X GET "$KIBANA_URL/api/data_views" \
-#             -u ${ELASTIC_USER}:${ELASTIC_PASSWORD}  \
-#             --cacert "$CA_CERT"                     \
-#             -H 'kbn-xsrf: true')
-
-# if [[ "$response" == *"filebeat-index-*"* ]] && \
-#   [[ "$response" == *"logstash-index-*"* ]] && \
-#   [[ "$response" == *"nginx-index-*"* ]]; then
-#   echo -e "${COLOR_GREEN}\nAll Data Views creation completed.${COLOR_RESET}"
-# else
-#   echo -e "${COLOR_RED}\nIssue with Data Views creation.${COLOR_RESET}"
-#   exit 1;
-# fi
-
 echo -e "${COLOR_GREEN}\nAll Data Views creation completed.${COLOR_RESET}"
 
 sleep 5
+
+# curl -X POST "https://localhost:5601/api/data_views/data_view" \
+#   -u elastic:9UjlCFh8sGJp \
+#   --cacert "/usr/share/kibana/config/certs/ca/ca.crt" \
+#     --cert "/usr/share/kibana/config/certs/kibana-server/kibana-server.crt" \
+#     --key "/usr/share/kibana/config/certs/kibana-server/kibana-server.key" \
+#   -H 'kbn-xsrf: true' \
+#   -H 'Content-Type: application/json' \
+#   -d '{
+#   "data_view": {
+#     "title": "nginx-index-*",
+#     "name": "My Nginx Data View",
+#     "id": "nginx-data",
+#     "fieldAttrs": {
+#       "timestamp": {
+#         "customLabel": "Timestamp"
+#       },
+#       "client_ip": {
+#         "customLabel": "Client IP"
+#       },
+#       "method": {
+#         "customLabel": "Method"
+#       },
+#       "request": {
+#         "customLabel": "Request"
+#       },
+#       "status_code": {
+#         "customLabel": "Status Code"
+#       },
+#       "user_agent": {
+#         "customLabel": "User Agent"
+#       },
+#       "response_size": {
+#         "customLabel": "Response Size"
+#       },
+#       "log_type": {
+#         "customLabel": "Log Type"
+#       },
+#       "geoip.location": {
+#         "customLabel": "GeoIP Location"
+#       },
+#       "geoip.city_name": {
+#         "customLabel": "GeoIP City Name"
+#       },
+#       "geoip.continent_code": {
+#         "customLabel": "GeoIP Continent Code"
+#       },
+#       "geoip.country_iso_code": {
+#         "customLabel": "GeoIP Country ISO Code"
+#       },
+#       "geoip.country_name": {
+#         "customLabel": "GeoIP Country Name"
+#       }
+#     }
+#   }
+# }'

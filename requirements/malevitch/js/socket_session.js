@@ -4,10 +4,15 @@ async function get_socket_connection_token(path) {
 }
 
 async function init_session_socket() {
-    unique_use_token = await get_socket_connection_token("/hermes/")
-	const domain = window.location.host;
-    url =  'wss://' + domain + "/hermes/session/" + g_userNick + "?token=" + unique_use_token
-    g_sessionSocket = new WebSocket(url)
+    try {
+        unique_use_token = await get_socket_connection_token("/hermes/")
+        const domain = window.location.host;
+        url =  'wss://' + domain + "/hermes/session/" + g_userNick + "?token=" + unique_use_token
+        g_sessionSocket = new WebSocket(url)
+    } catch (error) {
+        console.error("Impossible to connect to session service. Experience may be seriously impacted.");
+        return ;
+    }
 
     g_sessionSocket.onmessage = function(event) {
         const data = event.data;
