@@ -31,6 +31,13 @@ async function signup(nick, email, password, lang, font) {
     } catch (error) {
         error = await error;
         console.error(error);
+
+		var	locale = document.querySelector('.sign-up-language-selector button img').alt;
+		switchLanguageContent(locale);
+		var	warning = document.querySelector('.sign-up-password-confirm-input-warning');
+		warning.setAttribute('data-language', 'conflicting-info');
+		warning.classList.remove('visually-hidden');
+		setAriaHidden();
     }
 }
 
