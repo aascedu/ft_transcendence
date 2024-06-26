@@ -111,7 +111,8 @@ async function custom_error(response) {
     }
     let reason
     if (json.Err === undefined) {
-        reason = "Error not comming from BATCH API : Try something less aggressive";
+        reason = "Error not coming from BATCH API : Try something less aggressive";
+	forbiddenNotif();
     } else {
         reason = json.Err;
     }
