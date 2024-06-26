@@ -3,11 +3,16 @@ async function init_tournament_socket(tournamentId) {
 		return ;
 	}
 
-    const roomName = tournamentId;
-    const domain = window.location.host;
-    const token = await get_socket_connection_token('/coubertin/');
-    const url = 'wss://' + domain + '/coubertin/tournament/ws/' + roomName + '/?token=' + token;
-    g_tournamentSocket = new WebSocket(url);
+	try {
+		const roomName = tournamentId;
+		const domain = window.location.host;
+		const token = await get_socket_connection_token('/coubertin/');
+		const url = 'wss://' + domain + '/coubertin/tournament/ws/' + roomName + '/?token=' + token;
+		g_tournamentSocket = new WebSocket(url);
+	} catch (error) {
+		console.error(error);
+		return;
+	}
 
     g_tournamentSocket.onclose = function() {
 		g_tournamentSocket = null;
