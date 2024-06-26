@@ -109,10 +109,15 @@ window.addEventListener("keyup", (e) => { // Booleans with on press and on relea
 /***************************************** Websockets *****************************************/
 
 async function init_game_socket(roomName) {
-    unique_use_token = await get_socket_connection_token('/ludo/');
-    const domain = window.location.host;
-    const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
-    const socket = new WebSocket(url); // Probably add room name
+    try {
+        unique_use_token = await get_socket_connection_token('/ludo/');
+        const domain = window.location.host;
+        const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
+        const socket = new WebSocket(url); // Probably add room name
+    } catch (error) {  
+        console.error(error);
+        return ;
+    }
     var animationId;
     var shouldContinue = true;
 
@@ -248,7 +253,7 @@ async function showGamePage(roomName) {
 	hideEveryNotif();
 	hideEveryPage();
 
-	await init_game_socket(roomName);
+    await init_game_socket(roomName);
 	g_state.pageToDisplay = '.game';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
