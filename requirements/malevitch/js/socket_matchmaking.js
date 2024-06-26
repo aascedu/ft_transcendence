@@ -3,12 +3,17 @@ async function init_matchmaking_socket(requester, invited) {
         return ;
     }
 
-    token = await get_socket_connection_token("/cupidon/")
-    const domain = window.location.host;
-    const url = 'wss://' + domain + '/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token
-    g_matchmakingSocket = new WebSocket(url);
-    var intervalId;
+    try {
+        token = await get_socket_connection_token("/cupidon/")
+        const domain = window.location.host;
+        const url = 'wss://' + domain + '/cupidon/matchmaking/ws/' + requester + '/' + invited + '/?token=' + token
+        g_matchmakingSocket = new WebSocket(url);
+    } catch (error) {
+        console.error(error);
+        return ;
+    }
 
+    var intervalId;
     g_matchmakingSocket.onopen = function(event) {
         intervalId = setInterval(ping, 5000);
     };
