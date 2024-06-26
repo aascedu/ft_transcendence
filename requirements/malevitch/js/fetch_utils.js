@@ -27,9 +27,7 @@ async function fetch_post(url, json) {
             body: JSON.stringify(json)
         })
 		.then (response => {
-            console.log("youppi")
 			if (!response.ok) {
-            console.log("youppi")
                 error = custom_error(response);
 				throw error
 			}
