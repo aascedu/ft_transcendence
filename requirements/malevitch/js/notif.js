@@ -330,6 +330,28 @@ function newFriendshipCountdown(seconds) {
 	}
 }
 
+// Invite send
+
+function forbiddenNotif() {
+	// show notif
+	document.querySelector('.notif-forbidden').classList.remove('visually-hidden');
+	setAriaHidden();
+
+	// wait 2 seconds and close notif
+	forbiddenCountdown(2);
+}
+
+function forbiddenCountdown(seconds) {
+	if (seconds > 0) {
+		setTimeout(() => forbiddenCountdown(seconds - 1), 1000);
+	}
+	else {
+		// close notif
+		document.querySelector('.notif-forbidden').classList.add('visually-hidden');
+		setAriaHidden();
+	}
+}
+
 // Keyboard navigation
 
 document.addEventListener('keydown', function(e) {

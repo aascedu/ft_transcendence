@@ -33,6 +33,7 @@ async function assign_global() {
                 }
 				setBaseFontSize(document.querySelector('body'));
                 g_prevFontSize = data.Font;
+				switchLanguageContent(data.Lang);
 				if (data.Font > 0) {
 					updateFontSizeOfPage(document.querySelector('body'), data.Font);
 				}
@@ -894,7 +895,9 @@ function clearHomepageId() {
 	document.querySelector('.sign-up-nickname-input').value = '';
 	document.querySelector('.sign-up-email-input').value = '';
 	document.querySelector('.sign-up-password-input').value = '';
+	document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
 	document.querySelector('.sign-up-password-confirm-input').value = '';
+	document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
 	document.querySelector('.homepage-id-font-size').value = 0;
 	document.querySelector('.sign-in-font-size').value = 0;
 	document.querySelector('.sign-up-font-size').value = 0;

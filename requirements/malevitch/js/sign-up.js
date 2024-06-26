@@ -241,32 +241,45 @@ function signUpPasswordConfirm(input) {
 			switchLanguageContent(locale);
 			warning.classList.remove('visually-hidden');
 			container.classList.remove('input-container-focused');
+			setAriaHidden();
+			return false;
 		}
 		else {
 			warning.classList.add('visually-hidden');
 			container.classList.add('input-container-focused');
+			setAriaHidden();
+			return true;
 		}
 	}
 	else {
 		warning.classList.add('visually-hidden');
+		setAriaHidden();
+		return false;
 	}
-	setAriaHidden();
 }
 
 // Submit info and create account
 
 document.querySelectorAll('.sign-up input').forEach(function (item) {
 	item.addEventListener('keypress', function (event) {
-		var submit = document.querySelector('.sign-up-submit');
+		var passwordConfirmBox = document.querySelector('.sign-up-password-confirm-input-box');
+		var	passwordConfirmInput = document.querySelector('.sign-up-password-confirm-input');
 
-		if (event.key === 'Enter' && window.getComputedStyle(submit).width != '0px') {
+		if (event.key === 'Enter' && !passwordConfirmBox.classList.contains('visually-hidden')
+		&& signUpPasswordConfirm(passwordConfirmInput)) {
 			submitCreateAccount();
 		}
 	});
 });
 
 document.querySelector('.sign-up-submit').addEventListener('click', function () {
-	submitCreateAccount();
+	var passwordConfirmBox = document.querySelector('.sign-up-password-confirm-input-box');
+	var	passwordConfirmInput = document.querySelector('.sign-up-password-confirm-input');
+
+	if (!passwordConfirmBox.classList.contains('visually-hidden')
+	&& signUpPasswordConfirm(passwordConfirmInput)) {
+		submitCreateAccount();
+	}
 });
 
 async function submitCreateAccount() {
@@ -276,24 +289,7 @@ async function submitCreateAccount() {
 	var	lang = document.querySelector('.sign-up-language-selector button img').alt;
 	var	font = document.querySelector('.sign-up-font-size').value;
 
-	g_userNick = nick;
-
-		const response = await fetch_post(
-            '/petrus/auth/signup/',
-            {
-                Nick: nick,
-                Email: email,
-                Pass: password,
-                Lang: lang,
-                Font: font,
-            })
-        .then(result => {
-			g_userId = result.Client;
-            jwt_management(result.Auth, result.Ref);
-			patchUserContent();
-			goToHomepageGame('.sign-up');
-		})
-        .catch(error => {console.error(error)});
+    signup(nick, email, password, lang, font);
 }
 
 async function patchUserContent() {

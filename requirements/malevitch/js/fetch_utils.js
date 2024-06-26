@@ -8,11 +8,11 @@ async function fetch_get(url) {
         })
         .then(response => {
             if (!response.ok)
-                throw custom_error(response)
-            return response.json()
+                throw custom_error(response);
+            return response.json();
         })
         .then(data => {
-            return data
+            return data;
         });
 }
 
@@ -28,7 +28,8 @@ async function fetch_post(url, json) {
         })
 		.then (response => {
 			if (!response.ok) {
-				throw custom_error(response)
+                error = custom_error(response);
+				throw error
 			}
 			return response.json();
 		})
@@ -103,14 +104,20 @@ async function reconnection_alert() {
 }
 
 async function custom_error(response) {
-    json = await response.json()
-    if (json.Err === undefined) {
-        console.error("Error not from transcendence Django api");
-    } else {
-        console.error(json.Err);
+    try {
+        json = await response.json()
+    } catch (error) {
+        json = {}
     }
-    const error = new Error('HTTP error: ' + response.status + ' : ' + json.Err);
-    error.name = json.Err;
+    let name
+    if (json.Err === undefined) {
+        name = "Error not coming from BATCH API : Try something less aggressive";
+        forbiddenNotif();
+    } else {
+        name = json.Err;
+    }
+    const error = new Error('HTTP code: ' + response.status + ' : ' + name);
+    error.name = name;
     error.value = json;
     return error;
 }

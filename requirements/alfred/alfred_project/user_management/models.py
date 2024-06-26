@@ -17,7 +17,7 @@ class Client(models.Model):
     id = models.BigAutoField(primary_key=True)
     nick = models.CharField(max_length=10, unique=True,
                     validators=[NickNameValidator])
-    email = models.EmailField()
+    email = models.EmailField(unique=True)
     friends = models.ManyToManyField('self', blank=True)
     contrast_mode = models.BooleanField(default=False)
     font = models.IntegerField(choices=font_size_choices, default=0)

@@ -111,7 +111,8 @@
 		"notif-match-found": "Match found ! Starting in",
 		"game-already": "You are already in game.",
 		"notif-invite-sent": "You have successfully invited",
-		"notif-new-friendship": "has accepted your friend request"
+		"notif-new-friendship": "has accepted your friend request",
+		"notif-forbidden": "Request forbidden. Try something else"
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -225,7 +226,8 @@
 		"notif-match-found": "Partie trouvée ! Début dans",
 		"game-already": "Vous êtes déjà en jeu.",
 		"notif-invite-sent": "Invitation envoyée à",
-		"notif-new-friendship": "a accepté votre demande d'ami"
+		"notif-new-friendship": "a accepté votre demande d'ami",
+		"notif-forbidden": "Requête interdite. Essayez autre chose"
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -339,7 +341,8 @@
 		"notif-match-found": "匹配成功！ 即将开始",
 		"game-already": "你已经进入游戏",
 		"notif-invite-sent": "您已成功邀请",
-		"notif-new-friendship": "已接受您的好友请求"
+		"notif-new-friendship": "已接受您的好友请求",
+		"notif-forbidden": "请求被禁止。尝试其他方法"
 	}
 }
 
