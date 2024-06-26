@@ -487,7 +487,7 @@ services:
     ports:
       - 5601:5601
     environment:
-      SERVERNAME: kibana
+      SERVERNAME: kibana-server
       ELASTICSEARCH_HOSTS: https://apollo:9200
       ELASTICSEARCH_USERNAME: kibana_system
       ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD}
@@ -497,7 +497,10 @@ services:
       XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY: ${ENCRYPT_KEY}
       XPACK_REPORTING_ENCRYPTIONKEY: ${REP_ENCRYPT_KEY}
       XPACK_SECURITY_ENCRYPTIONKEY: ${SEC_ENCRYPT_KEY}
-      SERVER_PUBLICBASEURL: http://localhost:5601
+      SERVER_PUBLICBASEURL: https://localhost:5601
+      SERVER_SSL_CERTIFICATE: config/certs/kibana-server/kibana-server.crt
+      SERVER_SSL_KEY: config/certs/kibana-server/kibana-server.key
+      SERVER_SSL_ENABLED: true
     mem_limit: ${KB_MEM_LIMIT}
     networks:
       - internet_access
@@ -506,7 +509,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+          "curl -k -s -I https://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
         ]
       interval: 10s
       timeout: 10s
