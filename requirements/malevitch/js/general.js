@@ -9,6 +9,7 @@ let g_refreshInterval;
 let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
+let	g_gameSocket = null;
 let g_state = {pageToDisplay : '.homepage-id'};
 let g_invited = false;
 
@@ -38,6 +39,7 @@ async function assign_global() {
 					updateFontSizeOfPage(document.querySelector('body'), data.Font);
 				}
                 g_state = {pageToDisplay : '.homepage-game'};
+				window.history.pushState(g_state, null, "");
                 refreshLoop();
                 init_session_socket();
             }).catch (error => {
@@ -126,12 +128,15 @@ async function render() {
 window.addEventListener('popstate', function (event) {
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
 
-	if (event.state) {
-		pageToHide.classList.add('visually-hidden');
-		switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
-		switchNextFontSizeFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
+	if (g_state.pageToDisplay == '.game') {
+		g_gameSocket.close();
+	}
+	else if (event.state) {
 		g_state = event.state;
 	}
+	pageToHide.classList.add('visually-hidden');
+	switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
+	switchNextFontSizeFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
 	render(g_state);
 });
 
@@ -579,7 +584,7 @@ async function setHomepageContent() {
 	try {
 
 		history = await get_game_history(g_userId);
-		history = history.History;
+		history = await history.History;
 		var	historyContainer = document.querySelector('.homepage-history-content-card-container');
 		var	numWins = 0;
 		var	totalPoints = 0;
@@ -638,7 +643,7 @@ async function setHomepageContent() {
 		}
 
 	} catch (error) {
-		console.error();
+		console.error(error);
 		document.querySelectorAll('.homepage-history-content-card-container .content-card').forEach(function(item) {
 			item.parentElement.removeChild(item);
 		});
