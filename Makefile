@@ -36,7 +36,7 @@ debug: | copyfile tutum
 	. ./tools/init.sh
 
 all: | copyfile tutum
-	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d --build --remove-orphans
+	. ./tools/init.sh
 
 up: | copyfile tutum
 	$(COMPOSE_F) $(DOCKER_FILE) --env-file $(ENV_FILE) up -d
@@ -127,13 +127,13 @@ db_reset: db_suppr copyfile
 #---- re ----#
 
 re: | down
-	make debug
+	make all
 # pour la prod: remettre up
 
 #---- settings --------------------------------------------------------#
 
 .SILENT:
-.DEFAULT: debug # pour la prod: remettre all
+.DEFAULT: all
 .PHONY: all up build down build_parallel down_restart restart kill \
 		reset copyfile modsec tutum test clean fclean prune db_suppr \
 		db_reset re
