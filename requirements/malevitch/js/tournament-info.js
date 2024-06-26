@@ -148,7 +148,12 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// Display players that are confirmed
 	for (i = 0; i < confirmedPlayers.length; i++) {
 		userId = confirmedPlayers[i].Id;
-		userInfo = await get_user_info(userId);
+		try {
+			userInfo = await get_user_info(userId);
+		} catch (error) {
+			console.error(error);
+			break ;
+		}
 		userPic = userInfo.Pic;
 		if (userPic == null) {
 			userPic = 'assets/general/pong.png';
@@ -167,7 +172,12 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		// Display invited players that haven't joined (pending)
 		for (i = 0; i < pendingPlayers.length; i++) {
 			userId = pendingPlayers[i];
-			userInfo = await get_user_info(pendingPlayers[i]);
+			try {
+				userInfo = await get_user_info(pendingPlayers[i]);
+			} catch (error) {
+				console.error(error);
+				break ;
+			}
 			userPic = userInfo.Pic;
 			if (userPic == null) {
 				userPic = 'assets/general/pong.png';

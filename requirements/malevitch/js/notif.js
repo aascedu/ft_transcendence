@@ -225,8 +225,12 @@ document.querySelector('.notif-search-match .notif-dismiss').addEventListener('c
 function cancelSearchMatch() {
 	// notif already closed by forEach
 	// cancel match searching
-	if (g_matchmakingSocket) {
-        restore_availability(g_userId);
+	try {
+		if (g_matchmakingSocket) {
+			restore_availability(g_userId);
+		}
+	} catch (error) {
+		console.error(error);
 	}
 
 	// reset timer
