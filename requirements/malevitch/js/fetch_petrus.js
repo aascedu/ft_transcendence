@@ -8,9 +8,30 @@ async function post_signin(id, password) {
     return fetch_post(add_petrus_in_url('/signin/nickname/'), json);
 }
 
-async function post_signup(id, password, mail) {
-    json = {Id: id, Pass: password, Email: mail};
-    return fetch_post(add_petrus_in_url('/signin/nickname/'), json);
+async function signup(nick, email, password, lang, font) {
+    json = {
+        Nick: nick,
+        Email: email,
+        Pass: password,
+        Lang: lang,
+        Font: font,
+    };
+
+    try {
+        return await fetch_post(
+            '/petrus/auth/signup/',
+            json)
+        .then(result => {
+            g_userNick = nick;
+            g_userId = result.Client;
+            jwt_management(result.Auth, result.Ref);
+            patchUserContent();
+            goToHomepageGame('.sign-up');
+        });
+    } catch (error) {
+        error = await error;
+        console.error(error);
+    }
 }
 
 async function post_jwt_refresh() {
