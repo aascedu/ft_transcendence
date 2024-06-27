@@ -134,7 +134,7 @@ async function init_game_socket(roomName) {
     socket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
-    }   
+    }
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
@@ -226,7 +226,6 @@ async function init_game_socket(roomName) {
     function gameLoop(shouldContinue) {
 
         // Update positions
-        console.log("gameloop");
         frames[i] = {"meUp": me.up, "meDown": me.down};
 
         // Send info to back
