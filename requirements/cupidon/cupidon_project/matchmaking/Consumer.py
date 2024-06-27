@@ -80,6 +80,7 @@ class Consumer(OurBasicConsumer):
             return
         
         if self.id not in waitingList:
+            logging.warning('A player not in the waitingList tried to send data')
             return self.close()
 
         # Send message to room group
@@ -98,7 +99,8 @@ class Consumer(OurBasicConsumer):
             strplayer1 = str(event['player1'])
             strplayer2 = str(event['player2'])
         except:
-            return
+            logging.warning('Wrong data sent into ws')
+            return self.close()
         if player1 == self.id or player2 == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
@@ -112,7 +114,8 @@ class Consumer(OurBasicConsumer):
 
         try:
             if self.id != int(event['id']):
-                return
+                logging.warning('Wrong data sent into ws')
+                return self.close()
             self.me.margin += 20
         except BaseException as e:
             logging.warning('Wrong data sent to Ping in websocket')
