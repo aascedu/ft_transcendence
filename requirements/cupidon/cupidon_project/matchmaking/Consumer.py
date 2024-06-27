@@ -41,7 +41,8 @@ class Consumer(OurBasicConsumer):
                 response = requests.get(
                     f"http://mnemosine:8008/memory/pong/elo/{self.scope['user'].id}/"
                 )
-                waitingList[self.id] = Player(self.id, response.json()['elo'])
+                self.me = Player(self.id, response.json()['elo'])
+                waitingList[self.id] = self.me
 
             except Exception as e:
                 logging.error(e)
@@ -77,16 +78,21 @@ class Consumer(OurBasicConsumer):
         except KeyError:
             logging.error("No type key in received message")
             return
+
+        if action not in ['SendToGame', 'Ping', 'Leave']:
+            logging.warning("Wrong data type sent to websocket")
+            return self.close()
         
         if self.id not in waitingList:
+            logging.warning('A player not in the waitingList tried to send data')
             return self.close()
 
         # Send message to room group
         await self.channel_layer.group_send(
             "matchmakingRoom", {
                 'type': action,
-                'id': waitingList[self.id].id,
-                'elo': waitingList[self.id].elo,
+                'id': self.me.id,
+                'elo': self.me.elo,
             }
         )
 
@@ -97,7 +103,8 @@ class Consumer(OurBasicConsumer):
             strplayer1 = str(event['player1'])
             strplayer2 = str(event['player2'])
         except:
-            return
+            logging.warning('Wrong data sent into ws')
+            return self.close()
         if player1 == self.id or player2 == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
@@ -109,14 +116,19 @@ class Consumer(OurBasicConsumer):
     async def Ping(self, event):
         global waitingList
 
-        if self.id != int(event['id']):
-            return
-        waitingList[self.id].margin += 10
+        try:
+            if self.id != int(event['id']):
+                logging.warning('Wrong data sent into ws')
+                return self.close()
+            self.me.margin += 20
+        except BaseException as e:
+            logging.warning('Wrong data sent to Ping in websocket')
+            return self.close()
 
         for id, player in waitingList.items():
             if (id != self.id and
-                waitingList[id].elo > waitingList[self.id].elo - waitingList[self.id].margin and
-                waitingList[id].elo < waitingList[self.id].elo + waitingList[self.id].margin):
+                player.elo > self.me.elo - self.me.margin and
+                player.elo < self.me.elo + self.me.margin):
                     logging.info("Sending to game from id: " + str(self.id) + " against: " + str(id))
                     await self.channel_layer.group_send(
                         "matchmakingRoom", {
@@ -128,5 +140,11 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
+        try:
+            id = event['id']
+        except BaseException as e:
+            logging.warning('Wrong data sent in Leave in websocket')
+            return self.close()
+
         if event['id'] == self.id:
-            await self.close()
+            return self.close()
