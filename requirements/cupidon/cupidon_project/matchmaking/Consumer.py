@@ -78,6 +78,10 @@ class Consumer(OurBasicConsumer):
         except KeyError:
             logging.error("No type key in received message")
             return
+
+        if action not in ['SendToGame', 'Ping', 'Leave']:
+            logging.warning("Wrong data type sent to websocket")
+            return self.close()
         
         if self.id not in waitingList:
             logging.warning('A player not in the waitingList tried to send data')
