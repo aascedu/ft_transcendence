@@ -74,15 +74,16 @@ class Consumer(OurBasicConsumer):
             self.myMatch.score[self.opponentId] = 5
             try:
                 winner = self.myMatch.players[self.opponentId].id
+                await self.channel_layer.group_send(
+                        self.roomName, {
+                            "type": "gameEnd",
+                            "winner": winner,
+                        }
+                    )
             except BaseException as e:
+                logging.error("One of the players init failed")
                 return self.close()
             
-            await self.channel_layer.group_send(
-                    self.roomName, {
-                        "type": "gameEnd",
-                        "winner": winner,
-                    }
-                )
             
         if self.myMatch.isTournamentGame is False:
             try:
@@ -217,24 +218,25 @@ class Consumer(OurBasicConsumer):
             # Ball and score management
             try:
                 pointWinner = self.myMatch.ball.move(self.myMatch.players[0], self.myMatch.players[1], self.gameSettings, self.myMatch.lastMoveTime)
+                self.myMatch.lastMoveTime = time.time_ns()
+                if pointWinner != -1:
+                    self.myMatch.score[pointWinner] += 1
+                    await self.channel_layer.group_send (
+                        self.roomName, {
+                            "type": "updateScore",
+                        }
+                    )
+                if self.myMatch.score[self.id] == 5:
+                    await self.channel_layer.group_send (
+                        self.roomName, {
+                            "type": "gameEnd",
+                            "winner": self.id
+                        }
+                    )
             except BaseException as e:
+                logging.error("One of the players init failed")
                 return self.close()
             
-            self.myMatch.lastMoveTime = time.time_ns()
-            if pointWinner != -1:
-                self.myMatch.score[pointWinner] += 1
-                await self.channel_layer.group_send (
-                    self.roomName, {
-                        "type": "updateScore",
-                    }
-                )
-            if self.myMatch.score[self.id] == 5:
-                await self.channel_layer.group_send (
-                    self.roomName, {
-                        "type": "gameEnd",
-                        "winner": self.id
-                    }
-                )
 
     # Receive gameState from room group
     async def myState(self, event):
