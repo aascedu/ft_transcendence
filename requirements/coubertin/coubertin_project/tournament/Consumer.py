@@ -18,8 +18,8 @@ class Consumer(OurBasicConsumer):
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
         try:
             self.id = int(self.scope['user'].id)
-            tournamentId = int(self.roomName)
-            self.myTournament = tournaments[tournamentId]
+            self.tournamentId = int(self.roomName)
+            self.myTournament = tournaments[self.tournamentId]
         except:
             logging.error("Tournament websocket closed during initialization")
             return self.close()
@@ -129,7 +129,9 @@ class Consumer(OurBasicConsumer):
             logging.error("Tournament could not be registered in database")
 
         logging.info("Tournament " + str(self.myTournament.id) + " ended")
-        del self.myTournament
+        
+        if self.tournamentId in tournaments:
+            del tournaments[self.tournamentId]
 
         try:
             request = requests.post(
