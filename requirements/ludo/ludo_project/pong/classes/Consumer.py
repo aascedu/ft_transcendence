@@ -41,6 +41,9 @@ class Consumer(OurBasicConsumer):
         
         self.isPlayer = False
         self.id = len(self.myMatch.players)
+        if self.id > 1:
+            return self.close()
+
         self.opponentId = (self.id + 1) % 2
 
         if self.user.id == p1 or self.user.id == p2:
@@ -103,7 +106,6 @@ class Consumer(OurBasicConsumer):
         global matches
 
         try:
-
             try:
                 gameDataJson = json.loads(text_data)
                 self.type = gameDataJson["type"]
@@ -147,7 +149,8 @@ class Consumer(OurBasicConsumer):
         self.myMatch.ball = Ball(self.gameSettings)
 
         await self.send (text_data=json.dumps({
-            "isPlayer": self.isPlayer,
+            'type': 'gameParameters',
+            'isPlayer': self.isPlayer,
         }))
 
     async def gameEnd(self, event):
