@@ -134,7 +134,7 @@ async function init_game_socket(roomName) {
     socket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
-    }
+    }   
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
