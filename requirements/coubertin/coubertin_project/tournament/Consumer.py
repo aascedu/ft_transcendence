@@ -19,12 +19,15 @@ class Consumer(OurBasicConsumer):
         try:
             self.id = int(self.scope['user'].id)
             self.tournamentId = int(self.roomName)
+            self.myTournament = tournaments[self.tournamentId]
         except:
+            logging.error("Tournament websocket closed during initialization")
             return self.close()
-        if self.id in tournaments[self.tournamentId].onPage:
-            tournaments[self.tournamentId].onPage.append(self.id)
+        if self.id in self.myTournament.onPage:
+            self.myTournament.onPage.append(self.id)
+            logging.error("Tournament websocket closed during initialization")
             return self.close()
-        tournaments[self.tournamentId].onPage.append(self.id)
+        self.myTournament.onPage.append(self.id)
 
         await self.channel_layer.group_add(self.roomName, self.channel_name)
         await self.accept()
@@ -34,8 +37,8 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.tournamentId in tournaments:
-            if self.id in tournaments[self.tournamentId].onPage:
-                tournaments[self.tournamentId].onPage.remove(self.id)
+            if self.id in self.myTournament.onPage:
+                self.myTournament.onPage.remove(self.id)
 
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
@@ -53,6 +56,10 @@ class Consumer(OurBasicConsumer):
             logging.error("No type key in received message")
             return
 
+        if type_value not in ['StartGame', 'TournamentState', 'TournamentEnd']:
+            logging.error("Wrong data received by websocket")
+            return self.close()
+
         await self.channel_layer.group_send(
             self.roomName, {
                 'Type': type_value
@@ -62,28 +69,28 @@ class Consumer(OurBasicConsumer):
     async def StartGame(self, event):
         global tournaments
 
-        if self.id not in tournaments[self.tournamentId].contenders:
+        if self.id not in self.myTournament.contenders:
             return
         
-        myIndex = tournaments[self.tournamentId].contenders.index(self.id)
+        myIndex = self.myTournament.contenders.index(self.id)
         opponentIndex = (((myIndex % 2) * 2 - 1) * -1) + myIndex
 
         try:
-            opponentId = tournaments[self.tournamentId].contenders[opponentIndex]
+            opponentId = self.myTournament.contenders[opponentIndex]
         except:
-            tournaments[self.tournamentId].ongoingGames += 1
-            roomName = str(tournaments[self.tournamentId].id) + '-' + str(self.id) + '-0'
+            self.myTournament.ongoingGames += 1
+            roomName = str(self.myTournament.id) + '-' + str(self.id) + '-0'
             await self.send(json.dumps({
                 'Action': "startGame",
                 'RoomName': roomName,
             }))
             return
 
-        if self.id > opponentId or opponentId not in tournaments[self.tournamentId].onPage:
-            tournaments[self.tournamentId].ongoingGames += 1
+        if self.id > opponentId or opponentId not in self.myTournament.onPage:
+            self.myTournament.ongoingGames += 1
 
         try:
-            roomName = str(tournaments[self.tournamentId].id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
+            roomName = str(self.myTournament.id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
         except:
             return self.close()
         await self.send(json.dumps({
@@ -98,7 +105,7 @@ class Consumer(OurBasicConsumer):
 
         await self.send(json.dumps({
             'Action': "tournamentState",
-            'Tournament': tournaments[self.tournamentId].toFront(),
+            'Tournament': self.myTournament.toFront(),
         }))
 
     async def TournamentEnd(self, event):
@@ -107,30 +114,34 @@ class Consumer(OurBasicConsumer):
         if self.tournamentId not in tournaments:
             return self.close()
 
-        if self.id not in tournaments[self.tournamentId].contenders:
+        if self.id not in self.myTournament.contenders:
             return self.close()
 
-        tournaments[self.tournamentId].ended = True
+        self.myTournament.ended = True
         try:
             request = requests.post(
                 f'http://mnemosine:8008/memory/tournaments/0/',
-                json=tournaments[self.tournamentId].toDict()
+                json=self.myTournament.toDict()
             )
             if request.status_code != 200:
                 logging.warning("Tournament registration in database may be corrupted")
         except Exception as e:
             logging.error("Tournament could not be registered in database")
 
-        logging.info("Tournament " + str(tournaments[self.tournamentId].id) + " ended")
-        del tournaments[self.tournamentId]
+        logging.info("Tournament " + str(self.myTournament.id) + " ended")
+        
+        if self.tournamentId in tournaments:
+            del tournaments[self.tournamentId]
 
         try:
             request = requests.post(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
             if request.status_code != 200:
+                logging.error("Available state couldn't be updated by Coubertin")
                 return self.close()
         except Exception as e:
+            logging.error("Available state couldn't be updated by Coubertin")
             return self.close()
         
         return self.close()
