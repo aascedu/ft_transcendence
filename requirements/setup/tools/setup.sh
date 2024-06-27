@@ -67,6 +67,7 @@ if [ ! -f config/certs/kibana-certs.zip ]; then
   "    dns:\n"\
   "      - kibana-server\n"\
   "      - localhost\n"\
+  "      - batch42.me\n"\
   "    ip:\n"\
   "      - 127.0.0.1\n"\
   "      - 68.183.41.74\n" \
