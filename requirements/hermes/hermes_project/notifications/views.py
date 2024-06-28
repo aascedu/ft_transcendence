@@ -62,7 +62,7 @@ class availableFriendView(View):
         try:
             id = request.data['Id']
         except KeyError as e:
-            return JsonBadRequest(request, "missing_key :" + str(e)))
+            return JsonBadRequest(request, "missing_key :" + str(e))
 
         if get_cache(f'ava_{id}') is True:
             return JsonConflict(request, 'Invalid availability action')
