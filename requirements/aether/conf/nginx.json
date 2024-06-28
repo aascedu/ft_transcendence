@@ -81,9 +81,6 @@
                       "city_name": {
                           "type": "keyword"
                       },
-                      "continent_code": {
-                          "type": "keyword"
-                      },
                       "country_iso_code": {
                           "type": "keyword"
                       },
