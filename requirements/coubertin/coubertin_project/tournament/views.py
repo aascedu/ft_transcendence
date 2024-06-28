@@ -193,9 +193,9 @@ class inviteFriend(View):
         data = request.data
 
         try:
-            invited = data['Invited']
-        except KeyError as e:
-            return JsonBadRequest(request, f'missing key {e}')
+            invited = str(data['Invited'])
+        except (KeyError, ValueError, TypeError) as e:
+            return JsonBadRequest(request, f'missing key or bad typing : {e}')
 
         if tournamentId not in tournaments:
             return JsonNotFound(request, 'tournament does not exists')
