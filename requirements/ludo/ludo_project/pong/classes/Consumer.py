@@ -42,6 +42,7 @@ class Consumer(OurBasicConsumer):
         self.isPlayer = False
         self.id = len(self.myMatch.players)
         if self.id > 1:
+            logging.warning("Too many players tried to connect into the room")
             return self.close()
 
         self.opponentId = (self.id + 1) % 2
@@ -251,6 +252,8 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.lastMoveTime = time.time_ns()
                 self.myMatch.gameStarted = True
             if event["id"] == self.id:
+                if self.myMatch.gameEnded[self.opponentId] or self.myMatch.gameEnded[self.id]:
+                    return
                 await self.gameLogic(event["frames"], self.id)
                 if self.id % 2 == 0:
                     await self.send(text_data=json.dumps({
