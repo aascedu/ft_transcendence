@@ -86,20 +86,20 @@ class RequestGameResponse(View):
         try:
             strRequester = str(requester)
             strinvited = str(invited)
-        except:
+        except BaseException:
             return JsonBadRequest(request, 'Invalid requester id')
 
         if [requester, invited] not in gameRequesters:
             return JsonBadRequest(request, 'No such game requested')
-        
+
         try:
             r = requests.delete(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': invited})
             if r.status_code != 200:
                 return JsonConflict(request, "Couldn't update available state")
-            
-        except Exception as e:
+
+        except Exception:
             return
 
         channel_layer = get_channel_layer()
@@ -122,7 +122,7 @@ class RequestGameResponse(View):
 
         try:
             strRequester = str(requester)
-        except:
+        except BaseException:
             return JsonBadRequest(request, 'Invalid requester id')
 
         for i in gameRequesters:
@@ -143,9 +143,9 @@ class RequestGameResponse(View):
                 if request.status_code != 200:
                     logging.error("Player " + strRequester + " state update request has failed")
                     return JsonConflict(request, {'Err': "Player state update request has failed"})
-            except Exception as e:
+            except Exception:
                 logging.critical("Player " + strRequester + " state update request has critically failed")
-                return JsonErrResponse(request, {'Err': "Player state update request has failed"})
+                return JsonConflict(request, "Player state update request has failed")
 
 
         return JsonResponse(request, {'Msg': 'Invitation to game refused'})
@@ -167,10 +167,11 @@ class RestoreAvailability(View):
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': requester})
             if request.status_code != 200:
-                logging.error("Player state update request has failed")
-                return JsonConflict(request, {'Err': "Player state update request has failed"})
-        except Exception as e:
+                message = "Player state update request has failed"
+                logging.error(message)
+                return JsonConflict(request, message)
+        except Exception:
             logging.critical("Player state update request has critically failed")
-            return JsonErrResponse(request, {'Err': "Player state update request has failed"})
+            return JsonConflict(request, "Player state update request has failed")
 
         return JsonResponse(request, {'Msg': 'Stopped looking for a game'})

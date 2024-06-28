@@ -27,7 +27,7 @@ class availableTournamentView(View):
             return JsonUnauthorized(request, "Connect yourself to fetch")
         response = {}
         for tournament in tournaments:
-            if tournaments[tournament].started == False and request.user.id not in tournaments[tournament].players: # Et je ne participe pas au tournoi ?
+            if tournaments[tournament].started is False and request.user.id not in tournaments[tournament].players: # Et je ne participe pas au tournoi ?
                 response[tournament] = tournaments[tournament].name
         return JsonResponse(request, response)
 
@@ -45,12 +45,15 @@ class tournamentManagement(View):
         global tournaments
         data = request.data
         try:
-            tournamentName = data['Name']
+            tournamentName = str(data['Name'])
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
             invited = data['Invited']
+            if isinstance(invited, list) is False or \
+                all(isinstance(name, str) for name in invited) is False:
+                return JsonBadRequest(request, 'tournament bad format')
             if len(tournamentName) > 12 or len(tournamentName) < 3:
-                return JsonBadRequest(request, f'tournament bad format')
+                return JsonBadRequest(request, 'tournament bad format')
         except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, f'missing {e} to create tournament')
 
@@ -72,10 +75,9 @@ class tournamentManagement(View):
                 if response.status_code != 200:
                     logging.warning("Failed to send invitation to player " + str(invited))
                     return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
-            except Exception as e:
+            except Exception:
                 logging.error("Failed to send invitation to player " + str(invited))
                 return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
-
         return JsonResponse(request, {'Msg': "Tournament created"})
 
     def patch(self, request, id: int):
@@ -89,7 +91,7 @@ class tournamentManagement(View):
             tournamentId = int(data['TournamentId'])
             if request.user.id != tournaments[tournamentId].admin:
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
-            tournaments[tournamentId].name = data['NewName']
+            tournaments[tournamentId].name = str(data['NewName'])
         except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'missing key {e}')
 
@@ -145,7 +147,7 @@ class tournamentEntry(View):
         try:
             tournamentId = int(tournamentId)
             data = request.data
-            playerAlias = data['Alias']
+            playerAlias = str(data['Alias'])
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
@@ -191,10 +193,10 @@ class inviteFriend(View):
         data = request.data
 
         try:
-            invited = data['Invited']
-        except KeyError as e:
-            return JsonBadRequest(request, f'missing key {e}')
-        
+            invited = str(data['Invited'])
+        except (KeyError, ValueError, TypeError) as e:
+            return JsonBadRequest(request, f'missing key or bad typing : {e}')
+
         if tournamentId not in tournaments:
             return JsonNotFound(request, 'tournament does not exists')
 
@@ -210,12 +212,12 @@ class inviteFriend(View):
                     }
                 )
             if response.status_code != 200:
-                logging.warning("Failed to send invitation to player " + invited)
-                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
+                logging.warning("Failed to send invitation to player " + str(invited))
+                return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status=response.status_code)
 
-        except Exception as e:
-            logging.error("Failed to send invitation to player " + invited)
-            return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
+        except Exception:
+            logging.error("Failed to send invitation to player " + str(invited))
+            return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status=response.status_code)
 
         updateTournament(tournamentId, False, request.user.id)
         logging.info("Player " + str(invited) + " has been invited to tournament " + str(tournamentId))
@@ -232,7 +234,7 @@ class inviteFriend(View):
             if strid not in tournaments[tournamentId].invited:
                 return JsonNotFound(request, "Player is not in the invited list of the tournament")
             tournaments[tournamentId].invited.remove(strid)
-        except:
+        except BaseException:
             return JsonBadRequest(request, 'Invalid user id')
 
         updateTournament(tournamentId, False, request.user.id)

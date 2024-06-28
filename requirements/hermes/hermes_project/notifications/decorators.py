@@ -15,7 +15,7 @@ def notification_by_notified_id(function):
             return response
         try:
             notified = int(request.data['Notified'])
-        except KeyError as e:
+        except (KeyError, TypeError, ValueError) as e:
             return JsonBadRequest(request, str(e))
         except (ValueError, TypeError):
             return JsonBadRequest(request, 'Notified must be an id')
