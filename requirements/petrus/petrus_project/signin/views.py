@@ -24,16 +24,13 @@ class signinView(View):
         data = request.data
 
         try:
-            id = data['Id']
-            password = data['Pass']
+            id = int(data['Id'])
+            password = str(data['Pass'])
         except KeyError as e:
-            logging.info(f"no {str(e)} provided")
             return JsonBadRequest(request, f"no {str(e)} provided")
-
-        try:
-            id = int(id)
         except (ValueError, TypeError):
-            return JsonBadRequest(request, f'{id} is not a valid id')
+            return JsonBadRequest(request, f'{data['Id']} is not a valid id')
+
         try:
             client = Client.objects.get(id=id)
         except ObjectDoesNotExist:
@@ -55,15 +52,17 @@ class signupView(View):
         data = request.data
         client = Client()
         try:
-            client.email = data['Email']
-            client.nick = data['Nick']
-            client.password = data['Pass']
-            lang = data['Lang']
-            font = data['Font']
+            client.email = str(data['Email'])
+            client.nick = str(data['Nick'])
+            client.password = str(data['Pass'])
+            lang = str(data['Lang'])
+            font = int(data['Font'])
         except KeyError as e:
             error_message = f"Key : {str(e)} not provided."
             logging.error(error_message)
             return JsonBadRequest(request, error_message)
+        except (TypeError, ValueError):
+            return JsonBadRequest(request, "Bad typing in body")
 
         try:
             client.check_password()
@@ -121,15 +120,15 @@ class refreshView(View):
         try:
             decoded_token = JWT.jwtToPayload(token, JWT.publicKey)
             decoded_expired_token = JWT.jwtToPayloadNoExp(expired_token, JWT.publicKey)
-        except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError) as e:
+        except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError, TypeError, ValueError) as e:
             return JsonBadRequest(request, e.__str__())
         except DecodeError as e:
             return JsonErrResponse(request, e.__str__(), status=500)
 
         try:
-            id = decoded_token['id']
-            expired_id = decoded_expired_token['id']
-        except KeyError:
+            id = int(decoded_token['id'])
+            expired_id = int(decoded_expired_token['id'])
+        except (KeyError, ValueError, TypeError):
             return JsonForbidden(request, "Ids not provided in tokens")
 
         if id != expired_id:

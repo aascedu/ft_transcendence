@@ -71,7 +71,7 @@ class gameView(View):
 
 
 class playerView(View):
-    def get(self, request, id: int = 0):
+    def get(self, request, id: int):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to get history")
         try:
@@ -83,17 +83,17 @@ class playerView(View):
 
         return JsonResponse(request, return_json)
 
-    def post(self, request, id: int = 0):
+    def post(self, request, id: int):
         if request.user.is_service is False:
             return JsonForbidden(request, "Only services can create a player")
         player = Player()
         try:
-            player.id = request.data['Id']
-        except KeyError as e:
+            player.id = int(request.data['Id'])
+        except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Key : {str(e)} not provided.')
         return save_response(request, player)
 
-    def delete(self, request, id: int = 0):
+    def delete(self, request, id: int):
         if request.user.is_service is False and request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only service can delete a player')
         try:
@@ -102,18 +102,14 @@ class playerView(View):
             return JsonNotFound(request, 'no player found for the id')
         return delete_response(request, player)
 
-    def patch(self, request, id: int = 0):
+    def patch(self, request, id: int):
         if request.user.is_admin is False:
             return JsonForbidden(request, 'Only admin can patch a player')
         try:
-            id = request.data['Id']
-            elo = request.data['Elo']
+            id = int(request.data['Id'])
+            elo = int(request.data['Elo'])
         except KeyError as e:
             return JsonBadRequest(request, f'misses value for key : {e.__str__()}')
-
-        try:
-            id = int(id)
-            elo = int(elo)
         except (ValueError, TypeError):
             return JsonBadRequest(request, f'{id} is not a valid id')
 
