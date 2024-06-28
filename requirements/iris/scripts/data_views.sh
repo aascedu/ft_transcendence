@@ -23,7 +23,7 @@ nginx_data_view='{
     "name": "My Nginx Data View",
     "id": "nginx-data",
     "fieldAttrs": {
-      "syslog_timestamp": {
+      "@timestamp": {
         "customLabel": "Timestamp"
       },
       "client_ip": {
