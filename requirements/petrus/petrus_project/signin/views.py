@@ -123,7 +123,7 @@ class refreshView(View):
         except (InvalidTokenError, ExpiredSignatureError, InvalidTokenError, TypeError, ValueError) as e:
             return JsonBadRequest(request, e.__str__())
         except DecodeError as e:
-            return JsonErrResponse(request, e.__str__(), status=500)
+            return JsonConflict(request, e.__str__())
 
         try:
             id = int(decoded_token['id'])
