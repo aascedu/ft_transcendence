@@ -293,8 +293,6 @@ async function notificationNewClientConnected(data) {
 
 async function notificationGameRefused(data) {
 
-	console.log('game refused');
-
 	clearTimeout(g_gameInviteTimer);
 
 	if (g_state.pageToDisplay == '.game') {
