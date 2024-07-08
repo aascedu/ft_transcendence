@@ -68,7 +68,9 @@ document.querySelector('.reconnection-alert .alert-confirm-button').addEventList
 document.querySelector('.reconnection-alert .alert-cancel-button').addEventListener('click', async function() {
 	document.querySelector('.reconnection-alert').classList.add('visually-hidden');
 	setAriaHidden();
-	await disconnect();
+	if (g_userId != null) {
+		await disconnect();
+	}
 });
 
 // Submit password to database.

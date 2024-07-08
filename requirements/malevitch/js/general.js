@@ -67,8 +67,6 @@ async function reset_global() {
 }
 
 async function determine_state() {
-    var state = {}
-
     content = {
             method: 'POST',
             headers: {
@@ -87,6 +85,13 @@ async function determine_state() {
 }
 
 async function render() {
+	if (g_userId == null
+		&& g_state.pageToDisplay != '.homepage-id'
+		&& g_state.pageToDisplay != '.sign-in'
+		&& g_state.pageToDisplay != '.sign-up') {
+		return ;
+	}
+
 	var	pageToDisplay = document.querySelector(g_state.pageToDisplay);
 	pageToDisplay.classList.remove('visually-hidden');
 
@@ -95,45 +100,67 @@ async function render() {
 
 	if (g_state.pageToDisplay == '.homepage-id') {
 		document.querySelector('.homepage-id-input').focus();
-		
-		var	fontSize = document.querySelector('.homepage-id-font-size').value;
-	}
-	if (g_state.pageToDisplay == '.homepage-id'
-		|| g_state.pageToDisplay == '.sign-in'
-		|| g_state.pageToDisplay == '.sign-up') {
-		homepageHeader.classList.add('visually-hidden');
-		homepagePicture.classList.add('visually-hidden');
 	}
 	if (g_state.pageToDisplay == '.homepage-game') {
 		await clearHomepageContent();
 		await setHomepageContent();
-
-		homepageHeader.classList.remove('visually-hidden');
-		homepagePicture.classList.remove('visually-hidden');
-	}
-	if (g_state.pageToDisplay == '.homepage-id') {
-		document.querySelector('.homepage-id-input').focus();
 	}
 	if (g_state.pageToDisplay != '.homepage-id'
 		&& g_state.pageToDisplay != '.sign-in'
 		&& g_state.pageToDisplay != '.sign-up'
-		&& g_state.pageToDisplay != '.game') {
+		&& g_state.pageToDisplay != '.game'
+		&& g_state.pageToDisplay != '.victory-defeat') {
 		clearHomepageHeader();
 		await loadHomepageHeader();
+
+		homepageHeader.classList.remove('visually-hidden');
+		homepagePicture.classList.remove('visually-hidden');
+	}
+	else {
+		homepageHeader.classList.add('visually-hidden');
+		homepagePicture.classList.add('visually-hidden');
 	}
 
 	setAriaHidden();
 }
 
 window.addEventListener('popstate', function (event) {
+	if (g_userId == null) {
+		g_state.pageToDisplay = '.homepage-id';
+		window.history.pushState(g_state, null, "");
+		return ;
+	}
+
 	var	pageToHide = document.querySelector(g_state.pageToDisplay);
 
 	if (g_state.pageToDisplay == '.game') {
 		g_gameSocket.close();
 	}
+	else if (g_state.pageToDisplay != '.homepage-id'
+		&& g_state.pageToDisplay != '.sign-in'
+		&& g_state.pageToDisplay != '.sign-up') {
+		g_state = event.state;
+		if (g_state.pageToDisplay == '.homepage-id'
+			|| g_state.pageToDisplay == '.sign-in'
+			|| g_state.pageToDisplay == '.sign-up') {
+			g_state.pageToDisplay = '.homepage-game';
+			window.history.pushState(g_state, null, "");
+			pageToHide.classList.add('visually-hidden');
+			switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
+			switchNextFontSizeFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
+			render(g_state);
+			return ;
+		}
+	}
 	else if (event.state) {
 		g_state = event.state;
 	}
+
+	if (g_state.pageToDisplay == '.sign-in') {
+		g_state.pageToDisplay = '.homepage-id';
+		window.history.pushState(g_state, null, "");
+	}
+
 	pageToHide.classList.add('visually-hidden');
 	switchNextLanguageFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
 	switchNextFontSizeFromPreviousSelector(g_state.pageToDisplay, event.state.pageToDisplay);
@@ -413,21 +440,27 @@ function togglePasswordView(container) {
 
 // Font size functions
 
+var	fontTimer = null;
+
 document.querySelectorAll('.font-size-input').forEach(function(item) {
 	item.addEventListener('input', async function () {
 		var	newSize = this.value;
 
-		try {
-			if (item.classList.contains('accessibility-font-size')) {
-				await patch_user_info(g_userId, null, newSize, null, null, null);
-			}
-		} catch (error) {
-			console.error(error);
-			return ;
-		}
+		clearTimeout(fontTimer);
 
 		updateFontSizeOfPage(document.querySelector('body'), newSize - g_prevFontSize);
 		g_prevFontSize = newSize;
+
+		fontTimer = setTimeout(async () => {
+			try {
+				if (item.classList.contains('accessibility-font-size')) {
+					await patch_user_info(g_userId, null, newSize, null, null, null);
+				}
+			} catch (error) {
+				console.error(error);
+			}
+		}, 1500);
+
 	});
 });
 
