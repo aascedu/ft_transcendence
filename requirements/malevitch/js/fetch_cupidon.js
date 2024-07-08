@@ -16,6 +16,21 @@ async function invite_friend_to_game(PlayerToInvite) {
     }
     else {
         init_matchmaking_socket(g_userId, PlayerToInvite);
+
+		clearTimeout(g_gameInviteTimer);
+
+		g_gameInviteTimer = setTimeout(async () => {
+			await cancel_invitation_to_game();
+
+			// if we are on our friend profile, update availability (play button)
+			if (g_state.pageToDisplay == '.user-profile') {
+				var	userId = document.querySelector('.user-profile-name').getAttribute('user-id');
+				if (PlayerToInvite == userId) {
+					document.querySelector('.user-profile-play-icon').classList.remove('visually-hidden');
+					setAriaHidden();
+				}
+			}
+		}, 60000);
     }
 }
 

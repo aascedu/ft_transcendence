@@ -19,6 +19,8 @@ async function init_session_socket() {
 
         obj = JSON.parse(data);
 
+		console.log(obj.type);
+
         if (obj.type === "notification.new.friendship") {
             notificationNewFriendship(obj);
             return ;
@@ -193,6 +195,8 @@ async function notificationTournamentRequest(data) {
 }
 
 async function notificationGameAccepted(data) {
+	clearTimeout(g_gameInviteTimer);
+
 	if (g_state.pageToDisplay == '.game') {
 		return ;
 	}
@@ -237,6 +241,8 @@ async function notificationGameRequest(data) {
 
 	document.querySelector('.notif-play-invite').classList.remove('visually-hidden');
 	setAriaHidden();
+
+	gameInvitedCountdown(60);
 }
 
 async function notificationNewClientConnected(data) {
@@ -288,6 +294,10 @@ async function notificationNewClientConnected(data) {
 }
 
 async function notificationGameRefused(data) {
+
+	console.log('game refused');
+
+	clearTimeout(g_gameInviteTimer);
 
 	if (g_state.pageToDisplay == '.game') {
 		return ;

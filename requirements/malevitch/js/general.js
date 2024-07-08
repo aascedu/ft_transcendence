@@ -12,6 +12,7 @@ let g_matchmakingSocket = null;
 let	g_gameSocket = null;
 let g_state = {pageToDisplay : '.homepage-id'};
 let g_invited = false;
+let	g_gameInviteTimer = null;
 
 // Constant
 const JWT_NAME = 'Auth'
@@ -64,6 +65,7 @@ async function reset_global() {
         clearInterval(g_refreshInterval);
         g_refreshInterval = null;
     }
+	g_gameInviteTimer = null;
 }
 
 async function determine_state() {

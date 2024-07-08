@@ -110,7 +110,7 @@
 		"notif-play-invite": "wants to play with you",
 		"notif-search-match": "Searching a match...",
 		"notif-match-found": "Match found ! Starting in",
-		"game-already": "You are already in game.",
+		"game-already": "Error when trying to start game.",
 		"notif-invite-sent": "You have successfully invited",
 		"notif-new-friendship": "has accepted your friend request",
 		"notif-forbidden": "Request forbidden. Try something else"
@@ -226,7 +226,7 @@
 		"notif-play-invite": "veut jouer avec vous",
 		"notif-search-match": "Recherche de partie...",
 		"notif-match-found": "Partie trouvée ! Début dans",
-		"game-already": "Vous êtes déjà en jeu.",
+		"game-already": "Erreur lors du lancement de la partie.",
 		"notif-invite-sent": "Invitation envoyée à",
 		"notif-new-friendship": "a accepté votre demande d'ami",
 		"notif-forbidden": "Requête interdite. Essayez autre chose"
@@ -342,7 +342,7 @@
 		"notif-play-invite": "想和您一起玩",
 		"notif-search-match": "正在寻找匹配项。。。",
 		"notif-match-found": "匹配成功！ 即将开始",
-		"game-already": "你已经进入游戏",
+		"game-already": "尝试开始游戏时出错",
 		"notif-invite-sent": "您已成功邀请",
 		"notif-new-friendship": "已接受您的好友请求",
 		"notif-forbidden": "请求被禁止。尝试其他方法"

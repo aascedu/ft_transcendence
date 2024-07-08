@@ -29,6 +29,7 @@ async function init_matchmaking_socket(requester, invited) {
         const data = JSON.parse(event.data);
         if (data.type === "start.game") {
             // "Match found" notif
+			clearTimeout(g_gameInviteTimer);
             clearInterval(intervalId);
 			var	opponent = data.RoomName;
 			opponent = opponent.split('-');
@@ -40,8 +41,29 @@ async function init_matchmaking_socket(requester, invited) {
 			}
 			await matchFound(opponent);
             showGamePage(data.RoomName);
-            g_matchmakingSocket.close()
+            g_matchmakingSocket.close();
         }
+		if (data.type === "game.refused") {
+			clearTimeout(g_gameInviteTimer);
+		
+			if (g_state.pageToDisplay == '.game') {
+				return ;
+			}
+
+			// If we are creating a tournament, display friend if they are available again
+			if (g_state.pageToDisplay == '.create-tournament') {
+				clearCreateTournamentAvailableFriends();
+				await createTournamentLoadAvailableFriends();
+			}
+			// If we are looking to invite the friend to a tournament, display friend if they are available again
+			if (g_state.pageToDisplay == '.tournament-info') {
+				clearTournamentInfoInvites();
+				await loadTournamentInfoInvites();
+			}
+			// Load back header to display friend as available back to play with them
+			clearHomepageHeader();
+			await loadHomepageHeader();
+		}
     };
 
     function sendData(type) {
