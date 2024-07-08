@@ -361,15 +361,15 @@ document.querySelector('.homepage-header-add-friend-input').addEventListener('in
 
 document.querySelector('.homepage-header-add-friend-input').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		await addFriend();
+		await headerFriendInvite();
 	}
 });
 
 document.querySelector('.homepage-header-add-friend-submit').addEventListener('click', async function() {
-	await addFriend();
+	await headerFriendInvite();
 });
 
-async function addFriend() {
+async function headerFriendInvite() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	var	warning = document.querySelector('.homepage-header-add-friend-input-warning');
 	var	valid = warnInvalidNickname(nickname, warning);
@@ -429,10 +429,31 @@ async function addFriend() {
             document.querySelector('.homepage-header-add-friend-input').value = '';
             document.querySelector('.homepage-header-add-friend-input').focus();
         } else {
-            await post_friend(data.Id);
+			var	friendRequests = await get_friend(g_userId);
+			friendRequests = friendRequests.Requests;
+			var	hasInvitedMe = false;
 
-            // Show notif that the invite has been sent
-            inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
+			for (i = 0; i < friendRequests.length; i++) {
+				if (friendRequests[i].Id == data.Id) {
+					hasInvitedMe = true;
+					break ;
+				}
+			}
+			// If friend had already sent you an invite
+			if (hasInvitedMe) {
+				var	notifReceived = document.querySelector('.notif-friend-invite');
+				
+				if (!notifReceived.classList.contains('visually-hidden')) {
+					if (notifReceived.querySelector('.notif-sender').textContent == nickname) {
+						notifReceived.classList.add('visually-hidden');
+					}
+				}
+			} else {
+				// Show notif that the invite has been sent
+				inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
+			}
+			
+			await post_friend(data.Id);
 
             // Close menu and reset UI elements
             document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
@@ -455,20 +476,12 @@ async function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', async function(e) {
+	document.querySelector('.homepage-header-profile').disabled = true;
+
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
-
-	// Load user profile content
-	// pic and nick
-	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
-	document.querySelector('.user-profile-name').textContent = g_userNick;
-
-	// Disable adding friend button (you can't add yourself as a friend)
-	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-
-	// history and stats
 
 	// render page
 	document.querySelector('.user-profile-picture-input').focus();
@@ -476,8 +489,12 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 	clearUserContent();
 	await loadUserContent(g_userId);
 
+	setTimeout(() => {
+		document.querySelector('.homepage-header-profile').disabled = false;
+	}, 500);
+	
 	hideEveryPage();
-
+	
 	g_state.pageToDisplay = '.user-profile';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
@@ -485,12 +502,19 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 
 // Go to accessibility
 
-document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
+document.querySelector('.homepage-header-accessibility').addEventListener('click', function(e) {
+	document.querySelector('.homepage-header-accessibility').disabled = true;
+
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
+
 	document.querySelector('.accessibility-icon').focus();
+
+	setTimeout(() => {
+		document.querySelector('.homepage-header-accessibility').disabled = false;
+	}, 500);
 
 	hideEveryPage();
 

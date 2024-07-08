@@ -65,6 +65,7 @@ class RequestGame(View):
                 async_to_sync(channel_layer.group_send)(
                     str(request.user.id), {
                         'type': 'Leave',
+                        'isResponse': False,
                     }
                 )
         try:
@@ -133,7 +134,8 @@ class RequestGameResponse(View):
                 async_to_sync(channel_layer.group_send)(
                     strRequester, {
                         'type': 'Leave',
-                        'id': request.user.id
+                        'id': request.user.id,
+                        'isResponse': True,
                     }
                 )
             try:
@@ -159,7 +161,8 @@ class RestoreAvailability(View):
         async_to_sync(channel_layer.group_send)(
             'matchmakingRoom', {
                 'type': 'Leave',
-                'id': request.user.id
+                'id': request.user.id,
+                'isResponse': False,
             }
         )
         try:

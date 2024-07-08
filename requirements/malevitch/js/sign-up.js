@@ -172,9 +172,13 @@ document.querySelector('.sign-up-email-input').addEventListener('input', functio
 	signUpEmail(this);
 });
 
+var	emailTimer = null;
+
 async function signUpEmail(input) {
 	var	warning = document.querySelector('.sign-up-email-input-warning');
 	var	locale = document.querySelector('.sign-up-language-selector button img').alt;
+
+	clearTimeout(emailTimer);
 
 	if (input.value.length > 0 && !input.classList.contains('visually-hidden')) {
 		// Make the following inputs appear only when the choosen email is valid.
@@ -188,20 +192,23 @@ async function signUpEmail(input) {
 				document.querySelector('.sign-up-password-confirm-input-warning').classList.add('visually-hidden');
 			}
 			else {
-				const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
-				if (!emailAvailability) {
-					switchLanguageContent(locale);
-					warning.classList.remove('visually-hidden');
-					document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
-					document.querySelector('.sign-up-password-input-warning').classList.add('visually-hidden');
-					document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
-					document.querySelector('.sign-up-password-confirm-input-warning').classList.add('visually-hidden');
-				}
-				else {
-					warning.classList.add('visually-hidden');
-					document.querySelector('.sign-up-password-input-box').classList.remove('visually-hidden');
-					signUpPassword(document.querySelector('.sign-up-password-input'));
-				}
+				emailTimer = setTimeout(async () => {
+					const emailAvailability = await warnUnavailableUserInfo(input.value, 'email', warning);
+					if (!emailAvailability) {
+						switchLanguageContent(locale);
+						document.querySelector('.sign-up-email-input-warning').classList.remove('visually-hidden');
+						document.querySelector('.sign-up-password-input-box').classList.add('visually-hidden');
+						document.querySelector('.sign-up-password-input-warning').classList.add('visually-hidden');
+						document.querySelector('.sign-up-password-confirm-input-box').classList.add('visually-hidden');
+						document.querySelector('.sign-up-password-confirm-input-warning').classList.add('visually-hidden');
+					}
+					else {
+						document.querySelector('.sign-up-email-input-warning').classList.add('visually-hidden');
+						document.querySelector('.sign-up-password-input-box').classList.remove('visually-hidden');
+						signUpPassword(document.querySelector('.sign-up-password-input'));
+					}
+					setAriaHidden();
+				}, 300);
 			}
 		}
 		catch(error) {

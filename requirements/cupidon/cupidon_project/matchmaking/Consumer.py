@@ -142,9 +142,15 @@ class Consumer(OurBasicConsumer):
     async def Leave(self, event):
         try:
             id = event['id']
+            isResponse = event['isResponse']
         except BaseException as e:
             logging.warning('Wrong data sent in Leave in websocket')
             return self.close()
+
+        if isResponse:
+            await self.send(json.dumps({
+                'type': "game.refused",
+            }))
 
         if event['id'] == self.id:
             return self.close()

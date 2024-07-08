@@ -607,6 +607,7 @@ async function userProfileFriendInvite() {
 		var	friendRequests = await get_friend(g_userId);
 		friendRequests = friendRequests.Requests;
 		var	hasInvitedMe = false;
+		var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
 
 		for (i = 0; i < friendRequests.length; i++) {
 			if (friendRequests[i].Id == invitedId) {
@@ -614,15 +615,24 @@ async function userProfileFriendInvite() {
 				break ;
 			}
 		}
+
 		if (hasInvitedMe) {
 			document.querySelector('.user-profile-remove-icon').classList.remove('visually-hidden');
+
+			// If friend had already sent you an invite
+			var	notifReceived = document.querySelector('.notif-friend-invite');
+			
+			if (!notifReceived.classList.contains('visually-hidden')) {
+				if (notifReceived.querySelector('.notif-sender').getAttribute('user-id') == invitedId) {
+					notifReceived.classList.add('visually-hidden');
+				}
+			}
 		}
 		else {
 			inviteSentNotif(document.querySelector('.user-profile-name').textContent);
 			document.querySelector('.user-profile-pending-icon').classList.remove('visually-hidden');
 		}
 
-		var invitedId = document.querySelector('.user-profile-add-icon').getAttribute('user-id');
 		await post_friend(invitedId);
 
 	} catch (error) {

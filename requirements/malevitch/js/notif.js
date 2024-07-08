@@ -334,7 +334,7 @@ function newFriendshipCountdown(seconds) {
 	}
 }
 
-// Invite send
+// 
 
 function forbiddenNotif() {
 	// show notif
@@ -352,6 +352,19 @@ function forbiddenCountdown(seconds) {
 	else {
 		// close notif
 		document.querySelector('.notif-forbidden').classList.add('visually-hidden');
+		setAriaHidden();
+	}
+}
+
+//
+
+function gameInvitedCountdown(seconds) {
+	if (seconds > 0) {
+		setTimeout(() => gameInvitedCountdown(seconds - 1), 1000);
+	}
+	else {
+		// close notif
+		document.querySelector('.notif-play-invite').classList.add('visually-hidden');
 		setAriaHidden();
 	}
 }
