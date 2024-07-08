@@ -19,8 +19,6 @@ async function init_session_socket() {
 
         obj = JSON.parse(data);
 
-		console.log(obj.type);
-
         if (obj.type === "notification.new.friendship") {
             notificationNewFriendship(obj);
             return ;
