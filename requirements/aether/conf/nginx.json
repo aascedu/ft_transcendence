@@ -81,16 +81,10 @@
                       "city_name": {
                           "type": "keyword"
                       },
-                      "continent_code": {
-                          "type": "keyword"
-                      },
                       "country_iso_code": {
                           "type": "keyword"
                       },
                       "country_name": {
-                          "type": "keyword"
-                      },
-                      "postal_code": {
                           "type": "keyword"
                       },
                       "region_iso_code": {
@@ -98,12 +92,6 @@
                       },
                       "region_name": {
                           "type": "keyword"
-                      },
-                      "timezone": {
-                          "type": "keyword"
-                      },
-                      "dma_code": {
-                          "type": "integer"
                       }
                }
             }

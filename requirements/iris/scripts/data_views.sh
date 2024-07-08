@@ -23,7 +23,7 @@ nginx_data_view='{
     "name": "My Nginx Data View",
     "id": "nginx-data",
     "fieldAttrs": {
-      "timestamp": {
+      "@timestamp": {
         "customLabel": "Timestamp"
       },
       "client_ip": {
@@ -53,8 +53,8 @@ nginx_data_view='{
       "geoip.city_name": {
         "customLabel": "GeoIP City Name"
       },
-      "geoip.continent_code": {
-        "customLabel": "GeoIP Continent Code"
+      "geoip.continent_name": {
+        "customLabel": "GeoIP Continent Name"
       },
       "geoip.country_iso_code": {
         "customLabel": "GeoIP Country ISO Code"

@@ -27,7 +27,7 @@ class onlineView(View):
         for friend in friends:
             try:
                 id = int(friend['Id'])
-            except (ValueError, TypeError) as e:
+            except (KeyError, ValueError, TypeError) as e:
                 return JsonBadRequest(request, f'friend id : {friend} must be an int : {e}')
             if get_cache(f'user_{id}') is None:
                 return_json |= {id: False}
@@ -56,11 +56,14 @@ class availableFriendView(View):
                 array.append(friend)
         return JsonResponse(request, {'Ava': array})
 
-
     def post(self, request):
         if request.user.is_service is False:
             return JsonForbidden(request, 'Only service can modify availability')
-        id = request.data['Id']
+        try:
+            id = request.data['Id']
+        except KeyError as e:
+            return JsonBadRequest(request, "missing_key :" + str(e))
+
         if get_cache(f'ava_{id}') is True:
             return JsonConflict(request, 'Invalid availability action')
         set_cache(f'ava_{id}', True)
