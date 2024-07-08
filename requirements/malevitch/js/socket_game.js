@@ -16,7 +16,6 @@ htmlopponent.style.left = screenWidth - parseInt(opponentStyle.width, 10) - 10 +
 htmlme.style.left = 10 + 'px';
 
 var count = 0;
-var socket;
 
 /***************************************** Classes *****************************************/
 
@@ -114,7 +113,7 @@ async function init_game_socket(roomName) {
         unique_use_token = await get_socket_connection_token('/ludo/');
         const domain = window.location.host;
         const url = 'wss://' + domain + '/ludo/pong/ws/' + roomName + '/' + "?token=" + unique_use_token;
-        socket = new WebSocket(url); // Probably add room name
+        g_gameSocket = new WebSocket(url); // Probably add room name
     } catch (error) {  
         console.error(error);
         return ;
@@ -127,23 +126,34 @@ async function init_game_socket(roomName) {
     let frames = {};
     let nbframes = 1;
 
-    socket.onopen = function(event) {
+	let	hasWon = false;
+
+    g_gameSocket.onopen = function(event) {
         sendStartGameData("gameStart"); // Player names maybe ?
     };
 
-    socket.onclose = function() {
+    g_gameSocket.onclose = function() {
         shouldContinue = false;
         cancelAnimationFrame(animationId);
+
+		if (!hasWon) {
+			hideEveryPage();
+			document.querySelector('.game').classList.add('visually-hidden');
+			g_state.pageToDisplay = '.homepage-game';
+			render(g_state);
+		}
+		hasWon = false;
     }
 
-    socket.onmessage = (event) => {
+    g_gameSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
         if (data.type == "youWin" || data.type == "youLose") {
             shouldContinue = false;
             cancelAnimationFrame(animationId);
             victoryDefeatScreen(data);
-            socket.close();
+			hasWon = true;
+            g_gameSocket.close();
         }
 
         else if (data.type == "gameParameters") {
@@ -185,7 +195,7 @@ async function init_game_socket(roomName) {
         };
 
         // Send the msg object as a JSON-formatted string.
-        socket.send(JSON.stringify(gameData));
+        g_gameSocket.send(JSON.stringify(gameData));
     }
 
     function sendData(type, frames, shouldContinue) {
@@ -198,7 +208,7 @@ async function init_game_socket(roomName) {
           frames: frames,
         };
 
-        socket.send(JSON.stringify(gameData));
+        g_gameSocket.send(JSON.stringify(gameData));
     }
 /***************************************** Game logic *****************************************/
 
@@ -256,6 +266,5 @@ async function showGamePage(roomName) {
 
     await init_game_socket(roomName);
 	g_state.pageToDisplay = '.game';
-	window.history.pushState(g_state, null, "");
 	render(g_state);
 }
