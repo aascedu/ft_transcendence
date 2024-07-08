@@ -361,15 +361,15 @@ document.querySelector('.homepage-header-add-friend-input').addEventListener('in
 
 document.querySelector('.homepage-header-add-friend-input').addEventListener('keypress', async function(e) {
 	if (e.key == 'Enter') {
-		await addFriend();
+		await headerFriendInvite();
 	}
 });
 
 document.querySelector('.homepage-header-add-friend-submit').addEventListener('click', async function() {
-	await addFriend();
+	await headerFriendInvite();
 });
 
-async function addFriend() {
+async function headerFriendInvite() {
 	var	nickname = document.querySelector('.homepage-header-add-friend-input').value;
 	var	warning = document.querySelector('.homepage-header-add-friend-input-warning');
 	var	valid = warnInvalidNickname(nickname, warning);
@@ -429,10 +429,31 @@ async function addFriend() {
             document.querySelector('.homepage-header-add-friend-input').value = '';
             document.querySelector('.homepage-header-add-friend-input').focus();
         } else {
-            await post_friend(data.Id);
+			var	friendRequests = await get_friend(g_userId);
+			friendRequests = friendRequests.Requests;
+			var	hasInvitedMe = false;
 
-            // Show notif that the invite has been sent
-            inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
+			for (i = 0; i < friendRequests.length; i++) {
+				if (friendRequests[i].Id == data.Id) {
+					hasInvitedMe = true;
+					break ;
+				}
+			}
+			// If friend had already sent you an invite
+			if (hasInvitedMe) {
+				var	notifReceived = document.querySelector('.notif-friend-invite');
+				
+				if (!notifReceived.classList.contains('visually-hidden')) {
+					if (notifReceived.querySelector('.notif-sender').textContent == nickname) {
+						notifReceived.classList.add('visually-hidden');
+					}
+				}
+			} else {
+				// Show notif that the invite has been sent
+				inviteSentNotif(document.querySelector('.homepage-header-add-friend-input').value);
+			}
+			
+			await post_friend(data.Id);
 
             // Close menu and reset UI elements
             document.querySelector('.homepage-header-add-friend').classList.remove('homepage-header-category-clicked');
