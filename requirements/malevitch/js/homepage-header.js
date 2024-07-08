@@ -455,20 +455,12 @@ async function addFriend() {
 // Go to profile
 
 document.querySelector('.homepage-header-profile').addEventListener('click', async function(e) {
+	document.querySelector('.homepage-header-profile').disabled = true;
+
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
-
-	// Load user profile content
-	// pic and nick
-	document.querySelector('.user-profile-picture img').setAttribute('src', g_userPic);
-	document.querySelector('.user-profile-name').textContent = g_userNick;
-
-	// Disable adding friend button (you can't add yourself as a friend)
-	document.querySelector('.user-profile-add-icon').classList.add('visually-hidden');
-
-	// history and stats
 
 	// render page
 	document.querySelector('.user-profile-picture-input').focus();
@@ -476,8 +468,12 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 	clearUserContent();
 	await loadUserContent(g_userId);
 
+	setTimeout(() => {
+		document.querySelector('.homepage-header-profile').disabled = false;
+	}, 500);
+	
 	hideEveryPage();
-
+	
 	g_state.pageToDisplay = '.user-profile';
 	window.history.pushState(g_state, null, "");
 	render(g_state);
@@ -485,12 +481,19 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 
 // Go to accessibility
 
-document.querySelector('.homepage-header-accessibility').addEventListener('click', function() {
+document.querySelector('.homepage-header-accessibility').addEventListener('click', function(e) {
+	document.querySelector('.homepage-header-accessibility').disabled = true;
+
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
+
 	document.querySelector('.accessibility-icon').focus();
+
+	setTimeout(() => {
+		document.querySelector('.homepage-header-accessibility').disabled = false;
+	}, 500);
 
 	hideEveryPage();
 

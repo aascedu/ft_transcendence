@@ -143,6 +143,7 @@ async function init_game_socket(roomName) {
 			render(g_state);
 		}
 		hasWon = false;
+		g_gameSocket = null;
     }
 
     g_gameSocket.onmessage = (event) => {
