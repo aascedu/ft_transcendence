@@ -119,8 +119,14 @@ async function loadFriendsList() {
 
 	document.querySelectorAll('.friends-list-card-container .content-card').forEach(function(item) {
 		item.addEventListener('click', async function () {
+			item.disabled = true;
+
 			clearUserContent();
 			await loadUserContent(item.getAttribute('user-id'));
+
+			setTimeout(() => {
+				item.disabled = false;
+			}, 2000);
 
 			hideEveryPage();
 

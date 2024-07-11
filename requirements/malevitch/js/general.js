@@ -791,8 +791,14 @@ async function loadHomepageFriends() {
         item.addEventListener('click', async function () {
             document.querySelector('.user-profile-remove-icon').focus();
 
+			item.disabled = true;
+
             clearUserContent();
             await loadUserContent(item.getAttribute('user-id'));
+
+			setTimeout(() => {
+				item.disabled = false;
+			}, 2000);
 
             hideEveryPage();
 
