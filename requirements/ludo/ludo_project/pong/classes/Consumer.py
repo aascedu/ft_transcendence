@@ -23,11 +23,15 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
-            return self.close()
+            await self.accept()
+            await self.close()
+            return
 
         count = self.roomName.count('-')
         if count != 1 and count != 2:
-            return self.close()
+            await self.accept()
+            await self.close()
+            return
         if count == 2:
             self.myMatch.isTournamentGame = True
 
@@ -37,13 +41,17 @@ class Consumer(OurBasicConsumer):
             p2 = int(self.roomName.split('-')[count])
             self.strId = str(self.user.id)
         except:
-            return self.close()
+            await self.accept()
+            await self.close()
+            return
         
         self.isPlayer = False
         self.id = len(self.myMatch.players)
         if self.id > 1:
             logging.warning("Too many players tried to connect into the room")
-            return self.close()
+            await self.accept()
+            await self.close()
+            return
 
         self.opponentId = (self.id + 1) % 2
 
@@ -56,7 +64,9 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.playersId[self.opponentId] = p1
 
         else:
-            self.close()
+            await self.accept()
+            await self.close()
+            return
 
         self.lastRequestTime = 0
         self.gameSettings = gameSettings() # Voir si on peut faire autrement
@@ -86,7 +96,8 @@ class Consumer(OurBasicConsumer):
                     )
             except BaseException as e:
                 logging.error("One of the players init failed")
-                return self.close()
+                await self.close()
+                return
             
             
         if self.myMatch.isTournamentGame is False:
@@ -135,11 +146,13 @@ class Consumer(OurBasicConsumer):
                 )
 
             else:
-                return self.close()
+                await self.close()
+                return
 
         except Exception as e:
             await self.send (text_data=json.dumps({'err': e}))
-            return self.close()
+            await self.close()
+            return
 
     async def gameStart(self, event):
         global matches
@@ -217,7 +230,8 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.players[id].move(self.gameSettings, self.lastRequestTime)
                 self.lastRequestTime = time.time_ns()
             except BaseException as e:
-                return self.close()
+                await self.close()
+                return
 
             # Ball and score management
             try:
@@ -239,7 +253,8 @@ class Consumer(OurBasicConsumer):
                     )
             except BaseException as e:
                 logging.error("One of the players init failed")
-                return self.close()
+                await self.close()
+                return
             
 
     # Receive gameState from room group

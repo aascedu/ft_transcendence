@@ -36,7 +36,10 @@ class tournamentManagement(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
         global tournaments
-        return JsonResponse(request, tournaments[id].toFront())
+        if id in tournaments:
+            return JsonResponse(request, tournaments[id].toFront())
+        else:
+            return JsonBadRequest(request, 'Wrong tournament id')
 
 
     def post(self, request, id: int):
