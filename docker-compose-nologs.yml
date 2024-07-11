@@ -41,6 +41,10 @@ volumes:
 
   token_shared_data: {}
 
+  token_davinci_data: {}
+
+  token_db_exporter_data: {}
+
   token_mnemosine_data: {}
 
   token_mnemosine_db_data: {}
@@ -52,6 +56,8 @@ volumes:
   token_root_data: {}
 
   token_env_data: {}
+
+  token_alertmanager_data: {}
 
 services:
 # # Reverse proxy container
@@ -71,6 +77,8 @@ services:
         condition: service_started
       mnemosine:
         condition: service_healthy
+      mensura:
+        condition: service_started
       petrus:
         condition: service_healthy
       tutum:
@@ -104,6 +112,20 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
+
+  aegis_vts_exporter:
+    depends_on:
+      aegis:
+        condition: service_started
+    container_name: aegis_vts_exporter
+    build:
+      context: ./requirements/mensura/aegis_vts_exporter
+      dockerfile: Dockerfile
+    ports:
+      - "9913:9913"
+    networks:
+      - atlas
+    restart: on-failure
 
 # # Profil container
   alfred:
@@ -233,6 +255,22 @@ services:
         ]
     restart: on-failure
 
+  davinci:
+    container_name: davinci
+    build:
+      context: ./requirements/davinci
+      dockerfile: Dockerfile
+    volumes:
+      - token_davinci_data:/tokens
+    ports:
+      - "8010:8010"
+    networks:
+      - sentinel
+    depends_on:
+      tutum:
+        condition: service_healthy
+    restart: on-failure
+
 # # Notification container
   hermes:
     container_name: hermes
@@ -306,6 +344,95 @@ services:
       - "8007:80"
     networks:
       - atlas
+    restart: on-failure
+
+  mensura:
+    container_name: mensura
+    build:
+      context: ./requirements/mensura
+      dockerfile: Dockerfile
+    ports:
+      - "8011:8011"
+    networks:
+      - atlas
+      - sentinel
+    restart: on-failure
+
+  db_exporter_a:
+    container_name: db_exporter_a
+    build:
+      context: ./requirements/mensura/db_exporter_a
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - alfred_network
+    volumes:
+      - token_db_exporter_data:/tokens
+    depends_on:
+      mensura:
+        condition: service_started
+      alfred_db:
+        condition: service_healthy
+    restart: on-failure
+
+  db_exporter_m:
+    container_name: db_exporter_m
+    build:
+      context: ./requirements/mensura/db_exporter_m
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - mnemosine_network
+    volumes:
+      - token_db_exporter_data:/tokens
+    depends_on:
+      mensura:
+        condition: service_started
+      mnemosine_db:
+        condition: service_healthy
+    restart: on-failure
+
+  db_exporter_p:
+    container_name: db_exporter_p
+    build:
+      context: ./requirements/mensura/db_exporter_p
+      dockerfile: Dockerfile
+    ports:
+      - "9187:9187"
+    networks:
+      - sentinel
+      - petrus_network
+    volumes:
+      - token_db_exporter_data:/tokens
+    depends_on:
+      mensura:
+        condition: service_started
+      petrus_db:
+        condition: service_healthy
+    restart: on-failure
+
+# # Data exporter container
+  alertmanager:
+    container_name: alertmanager
+    build:
+      context: ./requirements/mensura/alertmanager
+      dockerfile: Dockerfile
+    volumes:
+      - token_alertmanager_data:/tokens
+    ports:
+      - "9093:9093"
+    depends_on:
+      mensura:
+        condition: service_started
+      aegis:
+        condition: service_started
+    networks:
+      - aegis guard
+      - sentinel
     restart: on-failure
 
 # # Stats container
@@ -452,12 +579,15 @@ services:
       - token_alfred_data:/tokens/alfred
       - token_alfred_db_data:/tokens/alfred-db
       - token_shared_data:/tokens/shared-django
+      - token_davinci_data:/tokens/davinci
+      - token_db_exporter_data:/tokens/db_exporter
       - token_mnemosine_data:/tokens/mnemosine
       - token_mnemosine_db_data:/tokens/mnemosine-db
       - token_petrus_data:/tokens/petrus
       - token_petrus_db_data:/tokens/petrus-db
       - token_root_data:/tokens/root
       - token_env_data:/tokens/env
+      - token_alertmanager_data:/tokens/alertmanager
     ports:
       - "8200:8200"
     networks:
