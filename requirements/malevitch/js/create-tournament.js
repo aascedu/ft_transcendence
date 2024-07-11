@@ -183,7 +183,11 @@ function checkToSubmitTournament() {
 // Confirm / cancel
 
 document.querySelector('.create-tournament-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.create-tournament-alert .alert-confirm-button').disabled = true;
 	await createTournament();
+	setTimeout(() => {
+		document.querySelector('.create-tournament-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 document.querySelector('.create-tournament-alert .alert-cancel-button').addEventListener('click', function () {
