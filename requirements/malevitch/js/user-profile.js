@@ -453,7 +453,6 @@ function uploadImageToDB(file, url) {
     post_avatar(formData)
    .then(response => response.json())
    .then(data => {
-        console.log('Success:', data);
 		document.querySelector('.user-profile-picture > img').setAttribute('src', url);
 		document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
 		g_userPic = data.Pic;
