@@ -14,6 +14,10 @@ async function init_session_socket() {
         return ;
     }
 
+	g_sessionSocket.onclose = function() {
+		g_sessionSocket = null;
+	}
+
     g_sessionSocket.onmessage = function(event) {
         const data = event.data;
 
