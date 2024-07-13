@@ -159,3 +159,13 @@ class Consumer(OurBasicConsumer):
         await self.close()
         return
     
+    async def Leave(self, event):
+        try:
+            id = event['Id']
+        except BaseException as e:
+            logging.warning('Wrong data sent in Leave in websocket')
+            await self.close()
+            return
+        
+        if id == self.id:
+            await self.close()
