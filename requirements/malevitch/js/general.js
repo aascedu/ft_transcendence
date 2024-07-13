@@ -6,7 +6,7 @@ let	g_prevFontSize = 0;
 let	g_translations = null;
 let	g_canvasHeight = 0;
 let g_refreshInterval;
-let g_sessionSocket = null;
+let g_sessionSocket;
 let g_tournamentSocket = null;
 let g_matchmakingSocket = null;
 let	g_gameSocket = null;
