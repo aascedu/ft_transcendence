@@ -1,11 +1,11 @@
 document.querySelector('.homepage-game-content-friends-icon').addEventListener('click', async function(e) {
-	document.querySelector('.homepage-game-content-friends-icon').disabled = true;
+	e.target.disabled = true;
 
 	clearFriendsList();
 	await loadFriendsList();
 
 	setTimeout(() => {
-		document.querySelector('.homepage-game-content-friends-icon').disabled = false;
+		e.target.disabled = false;
 	}, 2000);
 
 	document.querySelector('.friends-list-icon').focus();
@@ -30,14 +30,8 @@ document.querySelector('.homepage-game-content-play').addEventListener('click', 
 });
 
 document.querySelector('.homepage-game-content-tournaments').addEventListener('click', async function() {
-	document.querySelector('.homepage-game-content-tournaments').disabled = true;
-
 	clearMyTournaments();
 	await loadMyTournaments();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-game-content-tournaments').disabled = false;
-	}, 2000);
 
 	document.querySelector('.my-tournaments-icon').focus();
 
@@ -49,15 +43,9 @@ document.querySelector('.homepage-game-content-tournaments').addEventListener('c
 });
 
 document.querySelector('.homepage-game-content-new-tournament').addEventListener('click', async function() {
-	document.querySelector('.homepage-game-content-new-tournament').disabled = true;
-
 	hideEveryPage();
 
 	await loadCreateTournament();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-game-content-new-tournament').disabled = false;
-	}, 2000);
 
 	g_state.pageToDisplay = '.create-tournament';
 	window.history.pushState(g_state, null, "");
@@ -71,14 +59,8 @@ document.querySelectorAll('.homepage-game-content-friends .content-card').forEac
 	item.addEventListener('click', async function () {
 		document.querySelector('.user-profile-remove-icon').focus();
 
-		item.disabled = true;
-
 		clearUserContent();
 		await loadUserContent(item.getAttribute('user-id'));
-
-		setTimeout(() => {
-			item.disabled = false;
-		}, 2000);
 
 		hideEveryPage();
 

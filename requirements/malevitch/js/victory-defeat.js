@@ -55,17 +55,11 @@ function victoryDefeatScreen(data) {
 // Click on "See tournament" button
 
 document.querySelector('.victory-defeat-tournament').addEventListener('click', async function() {
-	document.querySelector('.victory-defeat-tournament').disabled = true;
-	
 	// Go to my tournaments
 	clearMyTournaments();
 	await loadMyTournaments();
 
 	document.querySelector('.my-tournaments-icon').focus();
-
-	setTimeout(() => {
-		document.querySelector('.victory-defeat-tournament').disabled = false;
-	}, 500);
 	
 	hideEveryPage();
 
@@ -84,8 +78,6 @@ document.querySelector('.victory-defeat-tournament').addEventListener('click', a
 
 document.querySelector('.victory-defeat-again').addEventListener('click', async function() {
 	try {
-		document.querySelector('.victory-defeat-again').disabled = true;
-
 		var	userId = this.getAttribute('user-id');
 		await invite_friend_to_game(userId);
 
@@ -96,10 +88,6 @@ document.querySelector('.victory-defeat-again').addEventListener('click', async 
 			g_invited = false;
 			return ;
 		}
-
-		setTimeout(() => {
-			document.querySelector('.victory-defeat-again').disabled = false;
-		}, 500);
 
 		// Display homepage game
 		document.querySelector('.homepage-header-logo').focus();

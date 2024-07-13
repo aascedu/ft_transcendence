@@ -577,9 +577,9 @@ async function setHomepageContent() {
 					userLangBtn.setAttribute('src', localeImgSrc);
 				}
 			});
+			switchLanguageAttr(userInfo.Lang, 'placeholder');
+			switchLanguageContent(userInfo.Lang);
 		}
-		switchLanguageAttr(userInfo.Lang, 'placeholder');
-		switchLanguageContent(userInfo.Lang);
 
 		// change font if needed
 		if (userInfo.Font != g_prevFontSize) {
@@ -791,14 +791,8 @@ async function loadHomepageFriends() {
         item.addEventListener('click', async function () {
             document.querySelector('.user-profile-remove-icon').focus();
 
-			item.disabled = true;
-
             clearUserContent();
             await loadUserContent(item.getAttribute('user-id'));
-
-			setTimeout(() => {
-				item.disabled = false;
-			}, 2000);
 
             hideEveryPage();
 
@@ -817,9 +811,18 @@ function clearHomepageFriends() {
 }
 
 async function goToHomepageGame(previous) {
+	await clearHomepageContent();
+	await setHomepageContent();
+
 	// hide previous and display homepage content
 	var prevPage = document.querySelector(previous);
 	prevPage.classList.add('visually-hidden');
+
+	var	homepageHeader = document.querySelector('.homepage-header');
+	homepageHeader.classList.remove('visually-hidden');
+
+	var	homepagePicture = document.querySelector('.homepage-game-picture');
+	homepagePicture.classList.remove('visually-hidden');
 
 	document.querySelector('.homepage-header-logo').focus();
 

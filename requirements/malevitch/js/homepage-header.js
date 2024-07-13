@@ -42,8 +42,6 @@ async function loadHomepageHeader() {
 
 	document.querySelectorAll('.homepage-header-play-friend-card').forEach(function(item) {
 		item.addEventListener('click', async function() {
-			item.disabled = true;
-
 			try {
 				// send invite
 				var	friendId = item.getAttribute('user-id');
@@ -52,10 +50,6 @@ async function loadHomepageHeader() {
 				console.error(error);
 				return ;
 			}
-
-			setTimeout(() => {
-				item.disabled = false;
-			}, 2000);
 
 			// close header menu and toggle back invites
 			document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
@@ -90,8 +84,6 @@ function clearHomepageHeader() {
 // Back to homepage
 
 document.querySelector('.homepage-header-logo').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-logo').disabled = true;
-
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
@@ -100,10 +92,6 @@ document.querySelector('.homepage-header-logo').addEventListener('click', async 
 
 	await clearHomepageContent();
 	await setHomepageContent();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-logo').disabled = false;
-	}, 500);
 
 	var	currentPage = g_state.pageToDisplay;
 
@@ -229,8 +217,6 @@ window.addEventListener('click', function ({target}){
 // Go to available tournaments
 
 document.querySelector('.homepage-header-available-tournaments').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-available-tournaments').disabled = true;
-
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -239,10 +225,6 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 
 	clearAvailableTournaments();
 	await loadAvailableTournaments();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-available-tournaments').disabled = false;
-	}, 500);
 
 	document.querySelector('.available-tournaments-icon').focus();
 
@@ -254,8 +236,6 @@ document.querySelector('.homepage-header-available-tournaments').addEventListene
 // Go to my tournaments
 
 document.querySelector('.homepage-header-my-tournaments').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-my-tournaments').disabled = true;
-
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -264,10 +244,6 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 
 	clearMyTournaments();
 	await loadMyTournaments();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-my-tournaments').disabled = false;
-	}, 500);
 
 	document.querySelector('.my-tournaments-icon').focus();
 
@@ -279,8 +255,6 @@ document.querySelector('.homepage-header-my-tournaments').addEventListener('clic
 // Go to new tournament
 
 document.querySelector('.homepage-header-new-tournament').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-new-tournament').disabled = true;
-
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -288,10 +262,6 @@ document.querySelector('.homepage-header-new-tournament').addEventListener('clic
 	});
 
 	await loadCreateTournament();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-new-tournament').disabled = false;
-	}, 500);
 
 	g_state.pageToDisplay = '.create-tournament';
 	window.history.pushState(g_state, null, "");
@@ -343,8 +313,6 @@ document.querySelector('.homepage-header-play-friend').addEventListener('click',
 // Go to friends list
 
 document.querySelector('.homepage-header-friend-list').addEventListener('click', async function() {
-	document.querySelector('.homepage-header-friend-list').disabled = true;
-
 	hideEveryPage();
 
 	document.querySelectorAll('.homepage-header-open-menu').forEach(function(item) {
@@ -353,10 +321,6 @@ document.querySelector('.homepage-header-friend-list').addEventListener('click',
 
 	clearFriendsList();
 	await loadFriendsList();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-friend-list').disabled = false;
-	}, 500);
 
 	document.querySelector('.friends-list-icon').focus();
 

@@ -208,7 +208,7 @@ async function signUpEmail(input) {
 						signUpPassword(document.querySelector('.sign-up-password-input'));
 					}
 					setAriaHidden();
-				}, 200);
+				}, 300);
 			}
 		}
 		catch(error) {

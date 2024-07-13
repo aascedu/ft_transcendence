@@ -9,17 +9,13 @@ document.querySelectorAll('.notif-dismiss').forEach(function(item) {
 
 // Tournament invite
 
-document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', async function() {
-	document.querySelector('.notif-tournament-invite .notif-accept').disabled = true;
+document.querySelector('.notif-tournament-invite .notif-accept').addEventListener('click', async function(e) {
+	e.target.disabled = true;
 	await acceptTournamentInvite();
 });
 
 document.querySelector('.notif-tournament-invite .notif-dismiss').addEventListener('click', function() {
-	document.querySelector('.notif-tournament-invite .notif-dismiss').disabled = true;
 	dismissTournamentInvite();
-	setTimeout(() => {
-		document.querySelector('.notif-tournament-invite .notif-dismiss').disabled = false;
-	}, 300);
 });
 
 async function acceptTournamentInvite() {
@@ -30,11 +26,9 @@ async function acceptTournamentInvite() {
 	var	tournamentId = document.querySelector('.notif-tournament-invite .notif-info').getAttribute('tournament-id');
 	var	acceptButton = document.querySelector('.notif-tournament-invite .notif-accept');
 
-	await loadOngoingTournament(tournamentId, acceptButton);
+	acceptButton.disabled = true;
 
-	setTimeout(() => {
-		acceptButton.disabled = false;
-	}, 300);
+	await loadOngoingTournament(tournamentId, acceptButton);
 
 	hideEveryPage();
 
@@ -64,19 +58,11 @@ async function dismissTournamentInvite() {
 // Friend invite
 
 document.querySelector('.notif-friend-invite .notif-accept').addEventListener('click', async function() {
-	document.querySelector('.notif-friend-invite .notif-accept').disabled = true;
 	await acceptFriendInvite();
-	setTimeout(() => {
-		document.querySelector('.notif-friend-invite .notif-accept').disabled = false;
-	}, 300);
 });
 
 document.querySelector('.notif-friend-invite .notif-dismiss').addEventListener('click', function() {
-	document.querySelector('.notif-friend-invite .notif-dismiss').disabled = true;
 	dismissFriendInvite();
-	setTimeout(() => {
-		document.querySelector('.notif-friend-invite .notif-dismiss').disabled = false;
-	}, 300);
 });
 
 async function acceptFriendInvite() {
@@ -157,19 +143,11 @@ async function dismissFriendInvite() {
 // Play invite
 
 document.querySelector('.notif-play-invite .notif-accept').addEventListener('click', function() {
-	document.querySelector('.notif-play-invite .notif-accept').disabled = true;
 	acceptPlayInvite();
-	setTimeout(() => {
-		document.querySelector('.notif-play-invite .notif-accept').disabled = false;
-	}, 300);
 });
 
 document.querySelector('.notif-play-invite .notif-dismiss').addEventListener('click', function() {
-	document.querySelector('.notif-play-invite .notif-dismiss').disabled = true;
 	dismissPlayInvite();
-	setTimeout(() => {
-		document.querySelector('.notif-play-invite .notif-dismiss').disabled = false;
-	}, 300);
 });
 
 async function acceptPlayInvite() {
