@@ -96,7 +96,7 @@ class tournamentManagement(View):
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
             tournaments[tournamentId].name = str(data['NewName'])
         except (KeyError, ValueError, TypeError) as e:
-            return JsonBadRequest(request, f'{e}')
+            return JsonBadRequest(request, f'missing key {e}')
 
         updateTournament(tournamentId, False, request.user.id)
 
@@ -109,9 +109,6 @@ class tournamentEntry(View):
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
-
-        if tournamentId not in tournaments:
-            return JsonNotFound(request, 'This tournament is either finished or never existed')
 
         if playerId in tournaments[tournamentId].players:
             tournaments[tournamentId].players.remove(playerId)
@@ -157,7 +154,7 @@ class tournamentEntry(View):
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
-        if tournamentId not in tournaments:
+        if (tournamentId not in tournaments):
             return JsonNotFound(request, 'Tournament not found')
 
         for i in tournaments:
@@ -167,7 +164,7 @@ class tournamentEntry(View):
         try:
             tournaments[tournamentId].addPlayer(userId, playerAlias)
         except Exception as e:
-            return JsonBadRequest(request, f'{e}')
+            return JsonBadRequest(request, e.__str__())
 
         updateTournament(tournamentId, True, userId)
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
@@ -267,12 +264,6 @@ class myTournaments(View):
 
 class inTournament(View):
     def get(self, request, tournamentId: int):
-        if request.user.is_autenticated is False:
-            return JsonUnauthorized(request, "You need to be authenticated to see participants to a tournament")
-
-        if tournamentId not in tournaments:
-            return JsonNotFound('Tournament does not exist')
-
         if tournaments[tournamentId].userParticipating(request.user.id):
             return JsonResponse(request, {'IsParticipating': True})
         return JsonResponse(request, {'IsParticipating': False})
