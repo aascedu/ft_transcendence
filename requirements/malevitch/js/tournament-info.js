@@ -40,10 +40,6 @@ async function loadClosedTournament(id) {
 }
 
 async function loadTournamentInfo(tournamentInfo, ongoing) {
-	// var	contentCards = document.querySelectorAll('.tournament-info-players .content-card');
-	// if (contentCards.length > 0) {
-	// 	return ;
-	// }
 
 	// Save tournament id on the page
 	document.querySelector('.tournament-info-name').setAttribute('tournament-id', tournamentInfo.Id);
@@ -145,6 +141,8 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// Display number of players
 	document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + numPlayers;
 
+	var	thisCard;
+
 	// Display players that are confirmed
 	for (i = 0; i < confirmedPlayers.length; i++) {
 		userId = confirmedPlayers[i].Id;
@@ -166,6 +164,21 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		<img src="` + userPic + `" alt="profile picture of ` + confirmedPlayers[i].Alias + `" draggable="false" (dragstart)="false;" class="unselectable">
 		</div>
 		</button>`);
+
+		// Load user profile page when clicking on a player
+		thisCard = playersContainer.lastElementChild;
+		console.log(thisCard);
+		thisCard.addEventListener('click', async function(event) {
+			console.log('clicked');
+			thisCard.disabled = true;
+			var userId = thisCard.getAttribute('user-id');
+			if (userId == null) {
+				setTimeout(() => {
+					userId = thisCard.getAttribute('user-id');
+				}, 500);
+			}
+			await loadUserProfile(userId, thisCard);
+		});
 	}
 
 	if (ongoing == true) {
@@ -193,28 +206,26 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 					<img src="` + userPic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
 				</div>
 			</button>`);
+
+			// Load user profile page when clicking on a player
+			thisCard = playersContainer.lastElementChild;
+			thisCard.addEventListener('click', async function(event) {
+				thisCard.disabled = true;
+				var userId = thisCard.getAttribute('user-id');
+				if (userId == null) {
+					setTimeout(() => {
+						userId = thisCard.getAttribute('user-id');
+					}, 500);
+				}
+				await loadUserProfile(userId, thisCard);
+			});
 		}
 	}
 
-	// Adapt new content cards to font size
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		// Adapt new content cards to font size
 		setBaseFontSize(item);
 		updateFontSizeOfPage(item, g_prevFontSize);
-	});
-
-	// Load user profile page when clicking on a player
-
-	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', async function(event) {
-			item.disabled = true;
-			var userId = await event.target.getAttribute('user-id');
-			if (userId == null) {
-				setTimeout(async () => {
-					userId = await event.target.getAttribute('user-id');
-				}, 500);
-			}
-			await loadUserProfile(userId, item);
-		});
 	});
 
 	// Display tournament bracket
@@ -943,17 +954,17 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 	setBaseFontSize(invitedPlayerElement);
 	updateFontSizeOfPage(invitedPlayerElement, g_prevFontSize);
 
-	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', async function(event) {
-			item.disabled = true;
-			var userId = await event.target.getAttribute('user-id');
-			if (userId == null) {
-				setTimeout(async () => {
-					userId = await event.target.getAttribute('user-id');
-				}, 500);
-			}
-			await loadUserProfile(userId, item);
-		});
+	// Load user profile page when clicking on a player
+	var thisCard = playersList.lastElementChild;
+	thisCard.addEventListener('click', async function(event) {
+		thisCard.disabled = true;
+		var userId = thisCard.getAttribute('user-id');
+		if (userId == null) {
+			setTimeout(() => {
+				userId = thisCard.getAttribute('user-id');
+			}, 500);
+		}
+		await loadUserProfile(userId, thisCard);
 	});
 
 	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
