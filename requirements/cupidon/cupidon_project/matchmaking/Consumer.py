@@ -120,14 +120,7 @@ class Consumer(OurBasicConsumer):
     async def Ping(self, event):
         global waitingList
 
-        try:
-            if self.id != int(event['id']):
-                logging.warning('Wrong data sent into ws')
-                return self.close()
-            self.me.margin += 20
-        except BaseException as e:
-            logging.warning('Wrong data sent to Ping in websocket')
-            return self.close()
+        self.me.margin += 20
 
         for id, player in waitingList.items():
             if (id != self.id and
