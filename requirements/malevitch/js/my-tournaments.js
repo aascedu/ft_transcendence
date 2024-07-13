@@ -85,13 +85,12 @@ async function loadMyTournaments() {
 	// Load tournament page when clicking on a tournament
 
 	document.querySelectorAll('.my-tournaments-ongoing .content-card').forEach(function(item) {
-		item.addEventListener('click', async function (e) {
+		item.addEventListener('click', async function () {
 
-			e.target.disabled = true;
+			item.disabled = true;
 
 			tournamentId = item.getAttribute('tournament-id');
 			await loadOngoingTournament(tournamentId, item);
-
 
 			document.querySelector('.tournament-info-icon').focus();
 			
@@ -105,7 +104,13 @@ async function loadMyTournaments() {
 
 	document.querySelectorAll('.my-tournaments-closed .content-card').forEach(function(item) {
 		item.addEventListener('click', async function () {
+			item.disabled = true;
+
 			await loadClosedTournament(item.getAttribute('tournament-id'));
+
+			setTimeout(() => {
+				item.disabled = false;
+			}, 2000);
 
 			document.querySelector('.tournament-info-icon').focus();
 			

@@ -206,13 +206,14 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', async function(event) {
+			item.disabled = true;
 			var userId = await event.target.getAttribute('user-id');
 			if (userId == null) {
 				setTimeout(async () => {
 					userId = await event.target.getAttribute('user-id');
 				}, 500);
 			}
-			await loadUserProfile(userId);
+			await loadUserProfile(userId, item);
 		});
 	});
 
@@ -307,18 +308,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			}
 		}
 	}
-
-	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', async function(event) {
-			var userId = await event.target.getAttribute('user-id');
-			if (userId == null) {
-				setTimeout(async () => {
-					userId = await event.target.getAttribute('user-id');
-				}, 500);
-			}
-			await loadUserProfile(userId);
-		});
-	});
 
 	// Keyboard navigation
 
@@ -443,6 +432,8 @@ async function loadTournamentInfoInvites() {
 
 	document.querySelectorAll('.tournament-info-invite .content-card').forEach(function(item) {
 		item.addEventListener('click', function () {
+			item.disabled = true;
+
 			var	invitedId = item.getAttribute('user-id');
 			var invitedNick = item.querySelector('.user-card-name').textContent;
 			var	invitedPic = item.querySelector('.user-card-picture img').getAttribute('src');
@@ -454,12 +445,16 @@ async function loadTournamentInfoInvites() {
 
 			// Confirm the invite
 			document.querySelector('.tournament-info-invite-alert .alert-confirm-button').addEventListener('click', function () {
+				document.querySelector('.tournament-info-invite-alert .alert-confirm-button').disabled = true;
 				if (invitedNick) {
 					addInvitedPlayerToTournament(invitedId, invitedNick, invitedPic);
 					invitedNick = null;
 
 					removeItemFromFriendsList(item);
 				}
+				setTimeout(() => {
+					document.querySelector('.tournament-info-invite-alert .alert-confirm-button').disabled = false;
+				}, 300);
 			});
 
 			// Cancel the invite
@@ -475,6 +470,10 @@ async function loadTournamentInfoInvites() {
 				}
 				invitedNick = null;
 			});
+
+			setTimeout(() => {
+				item.disabled = false;
+			}, 300);
 		});
 	});
 }
@@ -501,13 +500,17 @@ function clearTournamentInfo() {
 	
 }
 
-async function loadUserProfile(id) {
+async function loadUserProfile(id, item) {
 	if (id == null) {
 		return ;
 	}
 
 	clearUserContent();
 	await loadUserContent(id);
+
+	setTimeout(() => {
+		item.disabled = false;
+	}, 2000);
 
 	hideEveryPage();
 
@@ -543,7 +546,11 @@ function checkTournamentNick(nick, warning) {
 }
 
 document.querySelector('.tournament-info-join-alert .alert-confirm-button').addEventListener('click', function() {
+	document.querySelector('.tournament-info-join-alert .alert-confirm-button').disabled = true;
 	confirmJoinTournament();
+	setTimeout(() => {
+		document.querySelector('.tournament-info-join-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 async function confirmJoinTournament() {
@@ -629,6 +636,8 @@ document.querySelector('.tournament-info-join-alert .alert-cancel-button').addEv
 
 // Close tournament is full alert
 document.querySelector('.tournament-full-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.tournament-full-alert .alert-confirm-button').disabled = true;
+
 	document.querySelector('.tournament-full-alert').classList.add('visually-hidden');
 	setAriaHidden();
 
@@ -637,6 +646,10 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 
 	clearAvailableTournaments();
 	await loadAvailableTournaments();
+
+	setTimeout(() => {
+		document.querySelector('.tournament-full-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 
 	document.querySelector('.available-tournaments-icon').focus();
 
@@ -647,6 +660,8 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 
 // Close 'already in tournament' alert
 document.querySelector('.not-available-alert .alert-confirm-button').addEventListener('click', async function() {
+	document.querySelector('.not-available-alert .alert-confirm-button').disabled = true;
+
 	document.querySelector('.not-available-alert').classList.add('visually-hidden');
 	setAriaHidden();
 
@@ -655,6 +670,10 @@ document.querySelector('.not-available-alert .alert-confirm-button').addEventLis
 
 	clearMyTournaments();
 	await loadMyTournaments();
+
+	setTimeout(() => {
+		document.querySelector('.not-available-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 
 	document.querySelector('.my-tournaments-icon').focus();
 
@@ -674,7 +693,11 @@ document.querySelector('.tournament-info-leave-icon').addEventListener('click', 
 	// Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-leave-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.tournament-info-leave-alert .alert-confirm-button').disabled = true;
 	confirmLeaveTournament();
+	setTimeout(() => {
+		document.querySelector('.tournament-info-leave-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 document.querySelector('.tournament-info-leave-alert .alert-cancel-button').addEventListener('click', function () {
@@ -792,8 +815,12 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 // Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.tournament-info-edit-alert .alert-confirm-button')
 	await changeTournamentName();
 	leaveTournamentEditMode();
+	setTimeout(() => {
+		document.querySelector('.tournament-info-edit-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 async function changeTournamentName() {
@@ -918,13 +945,14 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 		item.addEventListener('click', async function(event) {
+			item.disabled = true;
 			var userId = await event.target.getAttribute('user-id');
 			if (userId == null) {
 				setTimeout(async () => {
 					userId = await event.target.getAttribute('user-id');
 				}, 500);
 			}
-			await loadUserProfile(userId);
+			await loadUserProfile(userId, item);
 		});
 	});
 
