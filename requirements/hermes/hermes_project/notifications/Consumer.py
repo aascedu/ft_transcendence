@@ -10,6 +10,7 @@ class Consumer(OurBasicConsumer):
     async def connect(self):
         # Join room group
         if self.security_check() is False:
+            await self.accept()
             return self.close()
         user = self.scope['user']
 
