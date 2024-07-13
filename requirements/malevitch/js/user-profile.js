@@ -170,6 +170,9 @@ async function loadUserContent(id) {
 	var	opponent;
 
 	for (i = history.length - 1; i >= 0; i--) {
+		if (typeof history[i] === 'undefined') {
+			continue ;
+		}
 		if (history[i].Winner == id) {
 			score = history[i]["Winner-score"] + '-' + history[i]["Loser-score"];
 			try {
@@ -280,6 +283,9 @@ async function loadUserContent(id) {
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
 	for (i = history.length - 1; i >= 0; i--) {
+		if (typeof history[i] === 'undefined') {
+			continue ;
+		}
 		if (history[i].Winner == id) {
 			posY -= spacing;
 		}
@@ -299,6 +305,9 @@ async function loadUserContent(id) {
 	ctx.moveTo(startX, startY);
 	ctx.arc(startX, startY, 5, 0, 2*Math.PI);
 	for (i = history.length - 1; i >= 0; i--) {
+		if (typeof history[i] === 'undefined') {
+			continue ;
+		}
 		if (history[i].Winner == id) {
 			posY -= spacing;
 		}
@@ -355,6 +364,9 @@ function getCanvasHeight(id, history, spacing) {
 	var	max = 0;
 
 	for (i = history.length - 1; i >= 0; i--) {
+		if (typeof history[i] === 'undefined') {
+			continue ;
+		}
 		if (history[i].Winner == id) {
 			result++;
 		}
@@ -373,6 +385,9 @@ function getCanvasStart(id, history, height, spacing) {
 	var	max = 0;
 
 	for (i = history.length - 1; i >= 0; i--) {
+		if (typeof history[i] === 'undefined') {
+			continue ;
+		}
 		if (history[i].Winner == id) {
 			result++;
 		}
@@ -435,7 +450,7 @@ document.querySelector('.user-profile-picture input').addEventListener('change',
 					sendImageAlert("min-image-size");
 					e.target.value = '';
 				}
-				else {
+				else {https://10.13.6.2:8000/
 					var	url = reader.result;
 					uploadImageToDB(file, url);
 				}
@@ -453,7 +468,6 @@ function uploadImageToDB(file, url) {
     post_avatar(formData)
    .then(response => response.json())
    .then(data => {
-        console.log('Success:', data);
 		document.querySelector('.user-profile-picture > img').setAttribute('src', url);
 		document.querySelector('.homepage-header-profile > img').setAttribute('src', url);
 		g_userPic = data.Pic;
@@ -538,8 +552,12 @@ document.querySelector('.user-profile-check-icon').addEventListener('click', fun
 // Confirm / cancel the leaving
 
 document.querySelector('.user-profile-edit-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.user-profile-edit-alert .alert-confirm-button').disabled = true;
 	await changeNickname();
 	leaveNicknameEditMode();
+	setTimeout(() => {
+		document.querySelector('.user-profile-edit-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 async function changeNickname() {
@@ -594,7 +612,11 @@ document.querySelector('.user-profile-add-icon').addEventListener('click', funct
 	// Confirm / cancel the invitation
 
 document.querySelector('.user-profile-invite-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.user-profile-invite-alert .alert-confirm-button').disabled = true;
 	await userProfileFriendInvite();
+	setTimeout(() => {
+		document.querySelector('.user-profile-invite-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 document.querySelector('.user-profile-invite-alert .alert-cancel-button').addEventListener('click', function () {
@@ -657,7 +679,11 @@ document.querySelector('.user-profile-remove-icon').addEventListener('click', fu
 	// Confirm / cancel the remove
 
 document.querySelector('.user-profile-remove-alert .alert-confirm-button').addEventListener('click', async function () {
+	document.querySelector('.user-profile-remove-alert .alert-confirm-button').disabled = true;
 	await userProfileFriendRemove();
+	setTimeout(() => {
+		document.querySelector('.user-profile-remove-alert .alert-confirm-button').disabled = false;
+	}, 2000);
 });
 
 document.querySelector('.user-profile-remove-alert .alert-cancel-button').addEventListener('click', function () {
@@ -686,6 +712,8 @@ async function userProfileFriendRemove() {
 // Invite friend to play
 
 document.querySelector('.user-profile-play-icon').addEventListener('click', async function() {
+	document.querySelector('.user-profile-play-icon').disabled = true;
+
 	try {
 		// send invite to friend
 		var	friendId = document.querySelector('.user-profile-name').getAttribute('user-id');
@@ -696,6 +724,10 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 	}
 
 	this.classList.add('visually-hidden');
+
+	setTimeout(() => {
+		document.querySelector('.user-profile-play-icon').disabled = false;
+	}, 500);
 });
 
 // Disconnect
@@ -714,6 +746,7 @@ function clearWebsockets () {
 	}
 }
 
+// Disconnect
 async function disconnect() {
 	hideEveryPage();
 	clearHomepageId();
@@ -727,7 +760,11 @@ async function disconnect() {
 }
 
 document.querySelector('.user-profile-disconnect-icon').addEventListener('click', async function() {
+	document.querySelector('.user-profile-disconnect-icon').disabled = true;
     await disconnect();
+	setTimeout(() => {
+		document.querySelector('.user-profile-disconnect-icon').disabled = false;
+	}, 500);
 });
 
 // Keyboard navigation

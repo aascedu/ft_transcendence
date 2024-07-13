@@ -14,7 +14,7 @@ function debuging_state() {
     debuging_global();
 }
 
-
+setBaseFontSize(document.querySelector('body'));
 determine_state();
 
 

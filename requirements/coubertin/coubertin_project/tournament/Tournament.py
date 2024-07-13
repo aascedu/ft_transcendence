@@ -38,8 +38,10 @@ class Tournament:
         game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.ongoingGames -= 1
+
         if game['Loser'] in self.contenders:
             self.contenders.remove(game['Loser'])
+      
 
         try:
             request = requests.post(
@@ -57,6 +59,7 @@ class Tournament:
                     'Id': game['Loser'],
                 }
             )
+
 
         if self.ongoingGames == 0:
             self.currentRound += 1
