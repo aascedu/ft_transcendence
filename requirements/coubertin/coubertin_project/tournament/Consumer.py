@@ -104,12 +104,12 @@ class Consumer(OurBasicConsumer):
 
     async def TournamentState(self, event):
 
-        if event['opt'] == True and event['id'] == self.id:
+        if event['exception'] == True and event['id'] == self.id:
             return
 
         await self.send(json.dumps({
-            'Action': "tournamentState",
-            'Tournament': self.myTournament.toFront(),
+            'Action': event['opt'],
+            'Data': event['data'],
         }))
 
     async def TournamentEnd(self, event):
