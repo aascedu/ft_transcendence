@@ -13,6 +13,7 @@ class Consumer(OurBasicConsumer):
 
         # Join room group
         if self.security_check() is False:
+            await self.accept()
             return self.close()
 
         try:
@@ -20,21 +21,23 @@ class Consumer(OurBasicConsumer):
             self.requester = int(self.scope["url_route"]["kwargs"]["requester"])
             self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
         except:
+            await self.accept()
             return self.close()
 
         try:
             request = requests.delete(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': self.id})
-            if request.status_code == 409:
-                return self.close()
-            elif request.status_code != 200:
+            if request.status_code != 200:
+                await self.accept()
                 return self.close()
         except Exception as e:
+            await self.accept()
             return self.close()
 
         if self.requester == 0 and self.invited == 0:
             if self.id in waitingList:
+                await self.accept()
                 return self.close()
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
             try:
@@ -46,6 +49,7 @@ class Consumer(OurBasicConsumer):
 
             except Exception as e:
                 logging.error(e)
+                await self.accept()
                 return self.close()
 
         else:
@@ -153,4 +157,4 @@ class Consumer(OurBasicConsumer):
             }))
 
         if id == self.id:
-            return self.close()
+            await self.close()

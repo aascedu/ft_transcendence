@@ -598,7 +598,7 @@ async function confirmJoinTournament() {
 
 			setAriaHidden();
 		}
-		if (errMsg == 'Conflict : You are not available: HTTP error: 409 : Conflict : You are not available') {
+		if (errMsg.includes('Conflict')) {
 			// Hide tournament nickname alert
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 

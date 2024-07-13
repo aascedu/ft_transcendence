@@ -6,7 +6,7 @@ from shared.utils import JsonConflict, JsonResponseLogging as JsonResponse, Json
 import requests
 import logging
 
-def updateTournament(tournamentId, isJoining, id):
+def updateTournament(tournamentId, exception, id, option):
     channel_layer = get_channel_layer()
 
     try:
@@ -16,8 +16,10 @@ def updateTournament(tournamentId, isJoining, id):
     async_to_sync(channel_layer.group_send)(
         roomName, {
             'type': 'TournamentState',
-            'opt': isJoining,
-            'id': id
+            'except': exception,
+            'id': id,
+            'opt': option,
+            'data': data
         }
     )
 
@@ -36,8 +38,10 @@ class tournamentManagement(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
         global tournaments
-        return JsonResponse(request, tournaments[id].toFront())
-
+        if id tournaments:
+            return JsonResponse(request, tournaments[id].toFront())
+        else:
+            return JsonBadRequest(request, 'Tournament does not exist or is finished')
 
     def post(self, request, id: int):
         if request.user.is_autenticated is False:
@@ -89,13 +93,14 @@ class tournamentManagement(View):
         data = request.data
         try:
             tournamentId = int(data['TournamentId'])
+            newTournamentName = str(data['NewName'])
             if request.user.id != tournaments[tournamentId].admin:
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
-            tournaments[tournamentId].name = str(data['NewName'])
+            tournaments[tournamentId].name = newTournamentName
         except (KeyError, ValueError, TypeError) as e:
             return JsonBadRequest(request, f'{e}')
 
-        updateTournament(tournamentId, False, request.user.id)
+        updateTournament(tournamentId, False, request.user.id, 'nameChange', newTournamentName)
 
         logging.info("Tournament " + str(tournamentId) + " has been renamed " + data['NewName'])
         return JsonResponse(request, {'Msg': "Tournament name changed"})
@@ -125,7 +130,7 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonConflict(request, e.__str__())
 
-        updateTournament(tournamentId, False, request.user.id)
+        updateTournament(tournamentId, False, request.user.id, 'someoneLeft', playerId)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
         return JsonResponse(request, {"Ressource": "A player has left the tournament"})
 
@@ -166,7 +171,7 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonBadRequest(request, f'{e}')
 
-        updateTournament(tournamentId, True, userId)
+        updateTournament(tournamentId, True, userId, 'someoneJoined', {'Id': userId, 'Alias': playerAlias})
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
 
         # Check if we need to start tournament
@@ -222,7 +227,7 @@ class inviteFriend(View):
             logging.error("Failed to send invitation to player " + str(invited))
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status=response.status_code)
 
-        updateTournament(tournamentId, False, request.user.id)
+        updateTournament(tournamentId, False, request.user.id, 'someoneInvited', invited)
         logging.info("Player " + str(invited) + " has been invited to tournament " + str(tournamentId))
         return JsonResponse(request, {'Msg': "Friend has been invited"})
 
@@ -240,7 +245,7 @@ class inviteFriend(View):
         except BaseException:
             return JsonBadRequest(request, 'Invalid user id')
 
-        updateTournament(tournamentId, False, request.user.id)
+        updateTournament(tournamentId, False, request.user.id, 'declineInvited', strid)
         return JsonResponse(request, {
             'Msg': 'Invitation declined',
         })
@@ -288,5 +293,5 @@ class gameResult(View):
         tournaments[tournamentId].addGame(data['game'])
 
         if tournaments[tournamentId].ended is False:
-            updateTournament(tournamentId, False, request.user.id)
+            updateTournament(tournamentId, False, request.user.id, 'tournamentState', None)
         return JsonResponse(request, {'Msg': "Tournament game added"})
