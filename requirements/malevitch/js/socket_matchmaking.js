@@ -16,7 +16,7 @@ async function init_matchmaking_socket(requester, invited) {
     var intervalId;
     g_matchmakingSocket.onopen = function(event) {
         intervalId = setInterval(ping, 5000);
-		console.log('Tournament socket opened');
+		console.log('Matchmaking socket opened');
     };
 
     g_matchmakingSocket.onclose = function() {
@@ -43,6 +43,7 @@ async function init_matchmaking_socket(requester, invited) {
 			}
 			await matchFound(opponent);
             showGamePage(data.RoomName);
+            console.log("Closing here");
             g_matchmakingSocket.close();
         }
 		if (data.type === "game.refused") {

@@ -14,8 +14,8 @@ class Consumer(OurBasicConsumer):
         # Join room group
         if self.security_check() is False:
             await self.accept()
+            print("\n\n\n\n\n1")
             await self.close()
-            return
 
         try:
             self.id = int(self.scope['user'].id)
@@ -23,8 +23,8 @@ class Consumer(OurBasicConsumer):
             self.invited = int(self.scope["url_route"]["kwargs"]["invited"])
         except:
             await self.accept()
+            print("\n\n\n\n\n2")
             await self.close()
-            return
 
         try:
             request = requests.delete(
@@ -32,18 +32,18 @@ class Consumer(OurBasicConsumer):
                 json={'Id': self.id})
             if request.status_code != 200:
                 await self.accept()
+                print("\n\n\n\n\n3")
                 await self.close()
-                return
         except Exception as e:
             await self.accept()
+            print("\n\n\n\n\n4")
             await self.close()
-            return
 
         if self.requester == 0 and self.invited == 0:
             if self.id in waitingList:
                 await self.accept()
+                print("\n\n\n\n\n5")
                 await self.close()
-                return
             await self.channel_layer.group_add("matchmakingRoom", self.channel_name)
             try:
                 response = requests.get(
@@ -55,8 +55,8 @@ class Consumer(OurBasicConsumer):
             except Exception as e:
                 logging.error(e)
                 await self.accept()
+                print("\n\n\n\n\n6")
                 await self.close()
-                return
 
         else:
             await self.channel_layer.group_add(str(self.id), self.channel_name)
@@ -91,13 +91,13 @@ class Consumer(OurBasicConsumer):
 
         if action not in ['SendToGame', 'Ping', 'Leave']:
             logging.warning("Wrong data type sent to websocket")
+            print("\n\n\n\n\n7")
             await self.close()
-            return
         
         if self.id not in waitingList:
             logging.warning('A player not in the waitingList tried to send data')
+            print("\n\n\n\n\n8")
             await self.close()
-            return
 
         # Send message to room group
         await self.channel_layer.group_send(
@@ -117,7 +117,6 @@ class Consumer(OurBasicConsumer):
         except:
             logging.warning('Wrong data sent into ws')
             await self.close()
-            return
         if player1 == self.id or player2 == self.id:
             await self.send(json.dumps({
                 'type': "start.game",
@@ -133,12 +132,10 @@ class Consumer(OurBasicConsumer):
             if self.id != int(event['id']):
                 logging.warning('Wrong data sent into ws')
                 await self.close()
-                return
             self.me.margin += 20
         except BaseException as e:
             logging.warning('Wrong data sent to Ping in websocket')
             await self.close()
-            return
 
         for id, player in waitingList.items():
             if (id != self.id and
@@ -155,13 +152,13 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
+        logging.debug("\n\n\n\n\n\n\nLeave function")
         try:
             id = event['id']
             isResponse = event['isResponse']
         except BaseException as e:
             logging.warning('Wrong data sent in Leave in websocket')
             await self.close()
-            return
 
         if isResponse:
             await self.send(json.dumps({
@@ -169,5 +166,5 @@ class Consumer(OurBasicConsumer):
             }))
 
         if id == self.id:
+            print("\n\n\n\n\n9")
             await self.close()
-            return

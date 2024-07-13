@@ -12,7 +12,6 @@ class Consumer(OurBasicConsumer):
         if self.security_check() is False:
             await self.accept()
             await self.close()
-            return
         user = self.scope['user']
 
         await self.channel_layer.group_add("notification_group", self.channel_name)
