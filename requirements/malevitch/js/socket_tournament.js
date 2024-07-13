@@ -20,6 +20,7 @@ async function init_tournament_socket(tournamentId) {
 
     g_tournamentSocket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
+		console.log(data.Action);
 
         if (data.Action === "startGame") {
 			// "Match found" notif

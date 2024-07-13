@@ -6,7 +6,7 @@ from shared.utils import JsonConflict, JsonResponseLogging as JsonResponse, Json
 import requests
 import logging
 
-def updateTournament(tournamentId, exception, id, option):
+def updateTournament(tournamentId, exception, id, option, data):
     channel_layer = get_channel_layer()
 
     try:
@@ -38,7 +38,7 @@ class tournamentManagement(View):
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, "Connect yourself to fetch")
         global tournaments
-        if id tournaments:
+        if id in tournaments:
             return JsonResponse(request, tournaments[id].toFront())
         else:
             return JsonBadRequest(request, 'Tournament does not exist or is finished')
