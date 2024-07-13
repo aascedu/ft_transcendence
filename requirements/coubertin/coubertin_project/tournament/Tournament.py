@@ -73,14 +73,9 @@ class Tournament:
 
 
     def userParticipating(self, userId):
-        if self.started is False:
-            for i in self.players:
-                if i == userId:
-                    return True
-        else:
-            for j in self.contenders:
-                if j == userId:
-                    return True
+        for i in self.players:
+            if i == userId:
+                return True
         return False
 
     def appendEmptyGameToTab(self, tab, round):
