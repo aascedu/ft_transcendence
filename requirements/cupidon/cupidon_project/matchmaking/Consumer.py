@@ -168,6 +168,6 @@ class Consumer(OurBasicConsumer):
                 'type': "game.refused",
             }))
 
-        if event['id'] == self.id:
+        if id == self.id:
             await self.close()
             return
