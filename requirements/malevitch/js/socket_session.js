@@ -13,6 +13,10 @@ async function init_session_socket() {
         console.error("Impossible to connect to session service. Experience may be seriously impacted.");
         return ;
     }
+	
+	g_sessionSocket.onclose = function() {
+		g_sessionSocket = null;
+	}
 
     g_sessionSocket.onmessage = function(event) {
         const data = event.data;

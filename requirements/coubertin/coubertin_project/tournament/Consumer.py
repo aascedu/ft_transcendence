@@ -144,5 +144,16 @@ class Consumer(OurBasicConsumer):
             logging.error("Available state couldn't be updated by Coubertin")
             return self.close()
         
-        return self.close()
+        await self.close()
+
+    async def Leave(self, event):
+        try:
+            id = event['Id']
+        except BaseException as e:
+            logging.warning('Wrong data sent in Leave in websocket')
+            await self.close()
+            return
+
+        if id == self.id:
+            await self.close()
     

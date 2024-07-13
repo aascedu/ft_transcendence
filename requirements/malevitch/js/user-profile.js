@@ -731,10 +731,25 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 });
 
 // Disconnect
+function clearWebsockets () {
+	if (g_gameSocket) {
+		g_gameSocket.close();
+	}
+	if (g_sessionSocket) {
+		g_sessionSocket.close();
+	}
+	if (g_tournamentSocket) {
+		g_tournamentSocket.close();
+	}
+	if (g_matchmakingSocket) {
+		g_matchmakingSocket.close();
+	}
+}
 
 async function disconnect() {
 	hideEveryPage();
 	clearHomepageId();
+	clearWebsockets();
     await delete_cookies();
     document.querySelector('.homepage-id-input').focus();
 	g_state.pageToDisplay = '.homepage-id';
