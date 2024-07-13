@@ -167,9 +167,7 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 		// Load user profile page when clicking on a player
 		thisCard = playersContainer.lastElementChild;
-		console.log(thisCard);
 		thisCard.addEventListener('click', async function(event) {
-			console.log('clicked');
 			thisCard.disabled = true;
 			var userId = thisCard.getAttribute('user-id');
 			if (userId == null) {
@@ -228,8 +226,17 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
-	// Display tournament bracket
+	// Load bracket
+	await loadTournamentBracket(tournamentInfo, confirmedPlayers, numPlayers);
 
+	// Keyboard navigation
+
+	document.addEventListener('keydown', async function(e) {
+		await tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing);
+	});
+}
+
+async function loadTournamentBracket(tournamentInfo, confirmedPlayers, numPlayers) {
 	var	matchInRound = 0;
 	var	games = tournamentInfo.Games;
 	var	matchSelector;
@@ -280,13 +287,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			setAriaHidden();
 		}
 
-		// Load info
-
-		var	matchInRound = 0;
-		var	games = tournamentInfo.Games;
-		var	matchSelector;
-		var	res;
-
 		for (i = 0; i < games.length; i++) {
 			if (games[i].Round == 1) {
 				matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
@@ -319,12 +319,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			}
 		}
 	}
-
-	// Keyboard navigation
-
-	document.addEventListener('keydown', async function(e) {
-		await tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing);
-	});
 }
 
 async function loadBracketMatchContent(tournamentPlayers, match, matchSelector) {
