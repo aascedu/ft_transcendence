@@ -293,5 +293,5 @@ class gameResult(View):
         tournaments[tournamentId].addGame(data['game'])
 
         if tournaments[tournamentId].ended is False:
-            updateTournament(tournamentId, False, request.user.id, 'tournamentState', 0)
+            updateTournament(tournamentId, False, request.user.id, 'tournamentState', None)
         return JsonResponse(request, {'Msg': "Tournament game added"})
