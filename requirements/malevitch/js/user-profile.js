@@ -731,18 +731,19 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 });
 
 function clearWebsockets () {
-	if (g_gameSocket) {
-		g_gameSocket.close();
-	}
-	if (g_sessionSocket) {
-		g_sessionSocket.close();
-	}
-	if (g_tournamentSocket) {
-		g_tournamentSocket.close();
-	}
-	if (g_matchmakingSocket) {
-		g_matchmakingSocket.close();
-	}
+	// console.log("Disconnecting");
+	// if (g_gameSocket) {
+	// 	g_gameSocket.close();
+	// }
+	// if (g_sessionSocket) {
+	// 	g_sessionSocket.close();
+	// }
+	// if (g_tournamentSocket) {
+	// 	g_tournamentSocket.close();
+	// }
+	// if (g_matchmakingSocket) {
+	// 	g_matchmakingSocket.close();
+	// }
 }
 
 // Disconnect

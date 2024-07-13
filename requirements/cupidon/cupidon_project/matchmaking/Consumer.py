@@ -144,6 +144,7 @@ class Consumer(OurBasicConsumer):
                     return
 
     async def Leave(self, event):
+        logging.debug("\n\n\n\n\n\n\nLeave function")
         try:
             id = event['id']
             isResponse = event['isResponse']

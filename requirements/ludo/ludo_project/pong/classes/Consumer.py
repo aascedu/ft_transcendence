@@ -23,11 +23,13 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
+            print("\n\n\n\n\n1")
             await self.accept()
             return self.close()
 
         count = self.roomName.count('-')
         if count != 1 and count != 2:
+            print("\n\n\n\n\n2")
             await self.accept()
             return self.close()
         if count == 2:
@@ -39,6 +41,7 @@ class Consumer(OurBasicConsumer):
             p2 = int(self.roomName.split('-')[count])
             self.strId = str(self.user.id)
         except:
+            print("\n\n\n\n\n3")
             await self.accept()
             return self.close()
         
@@ -46,6 +49,7 @@ class Consumer(OurBasicConsumer):
         self.id = len(self.myMatch.players)
         if self.id > 1:
             logging.warning("Too many players tried to connect into the room")
+            print("\n\n\n\n\n4")
             await self.accept()
             return self.close()
 
@@ -60,6 +64,7 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.playersId[self.opponentId] = p1
 
         else:
+            print("\n\n\n\n\n5")
             await self.accept()
             return self.close()
 
