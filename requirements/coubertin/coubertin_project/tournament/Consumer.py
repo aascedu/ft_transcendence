@@ -12,8 +12,7 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.security_check() is False:
-            await self.close()
-            return
+            return self.close()
 
         # Join room group
         self.roomName = self.scope["url_route"]["kwargs"]["roomName"]
@@ -23,15 +22,11 @@ class Consumer(OurBasicConsumer):
             self.myTournament = tournaments[self.tournamentId]
         except:
             logging.error("Tournament websocket closed during initialization")
-            await self.accept()
-            await self.close()
-            return
+            return self.close()
         if self.id in self.myTournament.onPage:
             self.myTournament.onPage.append(self.id)
             logging.error("Tournament websocket closed during initialization")
-            await self.accept()
-            await self.close()
-            return
+            return self.close()
         self.myTournament.onPage.append(self.id)
 
         await self.channel_layer.group_add(self.roomName, self.channel_name)
@@ -63,8 +58,7 @@ class Consumer(OurBasicConsumer):
 
         if type_value not in ['StartGame', 'TournamentState', 'TournamentEnd']:
             logging.error("Wrong data received by websocket")
-            await self.close()
-            return
+            return self.close()
 
         await self.channel_layer.group_send(
             self.roomName, {
@@ -98,9 +92,7 @@ class Consumer(OurBasicConsumer):
         try:
             roomName = str(self.myTournament.id) + '-' + str(min(self.id, opponentId)) + '-' + str(max(self.id, opponentId))
         except:
-            await self.close()
-            return
-        
+            return self.close()
         await self.send(json.dumps({
             'Action': "startGame",
             'RoomName': roomName,
@@ -120,12 +112,10 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.tournamentId not in tournaments:
-            await self.close()
-            return
+            return self.close()
 
         if self.id not in self.myTournament.contenders:
-            await self.close()
-            return
+            return self.close()
 
         self.myTournament.ended = True
         try:
@@ -149,13 +139,10 @@ class Consumer(OurBasicConsumer):
                 json={'Id': self.id})
             if request.status_code != 200:
                 logging.error("Available state couldn't be updated by Coubertin")
-                await self.close()
-                return
+                return self.close()
         except Exception as e:
             logging.error("Available state couldn't be updated by Coubertin")
-            await self.close()
-            return
+            return self.close()
         
-        await self.close()
-        return
+        return self.close()
     
