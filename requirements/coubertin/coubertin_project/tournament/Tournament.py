@@ -49,7 +49,14 @@ class Tournament:
                 pass
         except Exception as e:
             pass
+        
         channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+                str(self.id), {
+                    'type': "Leave",
+                    'Id': game['Loser'],
+                }
+            )
 
         if self.ongoingGames == 0:
             self.currentRound += 1
@@ -73,9 +80,15 @@ class Tournament:
 
 
     def userParticipating(self, userId):
-        for i in self.players:
+        if self.started is False:
             if i == userId:
-                return True
+                for i in self.players:
+                    if i == userId:
+                        return True
+        else:
+            for j in self.contenders:
+                if j == userId:
+                    return True
         return False
 
     def appendEmptyGameToTab(self, tab, round):
