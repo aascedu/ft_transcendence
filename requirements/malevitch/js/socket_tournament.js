@@ -14,13 +14,8 @@ async function init_tournament_socket(tournamentId) {
 		return;
 	}
 
-	g_tournamentSocket.onopen = function() {
-		console.log('Tournament socket opened');
-	}
-
     g_tournamentSocket.onclose = function() {
 		g_tournamentSocket = null;
-		console.log('Tournament socket closed');
     }
 
     g_tournamentSocket.onmessage = async (event) => {

@@ -16,12 +16,10 @@ async function init_matchmaking_socket(requester, invited) {
     var intervalId;
     g_matchmakingSocket.onopen = function(event) {
         intervalId = setInterval(ping, 5000);
-		console.log('Tournament socket opened');
     };
 
     g_matchmakingSocket.onclose = function() {
         g_matchmakingSocket = null;
-		console.log('Matchmaking socket closed');
 		document.querySelector('.notif-search-match').classList.add('visually-hidden');
 		setAriaHidden();
 		cancelSearchMatch();

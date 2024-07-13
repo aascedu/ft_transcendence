@@ -38,16 +38,8 @@ class Tournament:
         game['Round'] = self.currentRound
         self.gameHistory.append(game)
         self.ongoingGames -= 1
-
-        channel_layer = get_channel_layer()
         if game['Loser'] in self.contenders:
             self.contenders.remove(game['Loser'])
-            async_to_sync(channel_layer.group_send)(
-                str(self.id), {
-                    'type': "Leave",
-                    'Id': game['Loser'],
-                }
-            )
 
         try:
             request = requests.post(
@@ -57,7 +49,8 @@ class Tournament:
                 pass
         except Exception as e:
             pass
-        
+        channel_layer = get_channel_layer()
+
         if self.ongoingGames == 0:
             self.currentRound += 1
 
