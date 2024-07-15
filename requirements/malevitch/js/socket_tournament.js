@@ -48,6 +48,7 @@ async function init_tournament_socket(tournamentId) {
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 			var	joinedData = data.Data;
 			var	joinedId = joinedData.Id;
+			var	noPlayerYet = document.querySelector('.tournament-info-no-players');
 			
 			if (data.Action === 'someoneJoined') {
 				var	joinedAlias = joinedData.Alias;
@@ -68,8 +69,14 @@ async function init_tournament_socket(tournamentId) {
 						if (userPic == null) {
 							userPic = 'assets/general/pong.png';
 						}
+
+						// If there was no player card before, remove the 'no player yet'
+						if (!noPlayerYet.classList.contains('visually-hidden')) {
+							noPlayerYet.classList.add('visually-hidden');
+						}
 				
 						if (data.Action === 'someoneJoined') {
+							// Add the content card
 							playersContainer.insertAdjacentHTML('beforeend', `\
 							<button class="content-card d-flex justify-content-between align-items-center purple-shadow" user-id="` + joinedId + `">
 							<div class="user-card-name unselectable">` + joinedAlias + `</div>
@@ -77,10 +84,23 @@ async function init_tournament_socket(tournamentId) {
 							<img src="` + userPic + `" alt="profile picture of ` + joinedAlias + `" draggable="false" (dragstart)="false;" class="unselectable">
 							</div>
 							</button>`);
+
+							// If there was a pending card for this player, remove it
+							playersContainer.querySelectorAll('.invite-pending').forEach(function(item) {
+								if (item.getAttribute('user-id') == joinedId) {
+									item.parentElement.removeChild(item);
+								}
+							});
+
+							// Update number of players
+							var	numPlayersElement = document.querySelector('.tournament-info-players-num');
+							var	numPlayersSplit = numPlayersElement.textContent.split('/');
+							numPlayersElement.textContent = (numPlayersSplit[0] + 1) + '/' + numPlayersSplit[1];
 						}
 						else {
+							// Add the pending card
 							playersContainer.insertAdjacentHTML('beforeend', `\
-							<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + invitedId + `">
+							<button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + joinedId + `">
 								<div class="d-flex flex-nowrap align-items-center">
 									<div class="user-card-name unselectable">`+ userInfo.Nick + `</div>
 									<div class="user-card-pending" data-language="pending">(pending...)</div>
@@ -119,6 +139,7 @@ async function init_tournament_socket(tournamentId) {
 			await clearHomepageHeader();
 			await loadHomepageHeader();
 
+			setAriaHidden();
 			return ;
 		}
 
@@ -126,6 +147,7 @@ async function init_tournament_socket(tournamentId) {
 			var tournament = data.Tournament;
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 			var	toRemove = data.Data;
+			var	noPlayerYet = document.querySelector('.tournament-info-no-players');
 
 			// If we are on a tournament page
 			if (g_state.pageToDisplay == '.tournament-info') {
@@ -139,6 +161,21 @@ async function init_tournament_socket(tournamentId) {
 							item.parentElement.removeChild(item);
 						}
 					});
+
+					if (data.Action === 'someoneLeft') {
+						// Update number of players
+						var	numPlayersElement = document.querySelector('.tournament-info-players-num');
+						var	numPlayersSplit = numPlayersElement.textContent.split('/');
+						var	newNumPlayers = (numPlayersSplit[0] - 1);
+						numPlayersElement.textContent = newNumPlayers + '/' + numPlayersSplit[1];
+
+						var	pendingInvites = document.querySelectorAll('.tournament-info-players .invite-pending');
+
+						// If there are no more players and no pending invites
+						if (newNumPlayers == 0 && pendingInvites.length == 0) {
+							noPlayerYet.classList.remove('visually-hidden');
+						}
+					}
 				}
 			}
 
@@ -168,6 +205,7 @@ async function init_tournament_socket(tournamentId) {
 				await clearMyTournaments();
 				await loadMyTournaments();
 			}
+			return ;
 		}
 
 		if (data.Action === 'tournamentState') {
@@ -187,8 +225,8 @@ async function init_tournament_socket(tournamentId) {
 				} catch (error) {
 					console.error(error);
 				}
-				return ;
 			}
+			return ;
 		}
     };
 }
