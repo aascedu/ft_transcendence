@@ -120,14 +120,14 @@ async function init_tournament_socket(tournamentId) {
 						// Load user profile page when clicking on a player
 						var thisCard = playersContainer.lastElementChild;
 						thisCard.addEventListener('click', async function() {
-							thisCard.disabled = true;
-							var userId = thisCard.getAttribute('user-id');
+							this.disabled = true;
+							var userId = this.getAttribute('user-id');
 							if (userId == null) {
 								setTimeout(() => {
-									userId = thisCard.getAttribute('user-id');
+									userId = this.getAttribute('user-id');
 								}, 500);
 							}
-							await loadUserProfile(userId, thisCard);
+							await loadUserProfile(userId, this);
 						});
 					} catch (error) {
 						console.error(error);

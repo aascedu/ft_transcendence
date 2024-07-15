@@ -167,15 +167,15 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 		// Load user profile page when clicking on a player
 		thisCard = playersContainer.lastElementChild;
-		thisCard.addEventListener('click', async function(event) {
-			thisCard.disabled = true;
-			var userId = thisCard.getAttribute('user-id');
+		thisCard.addEventListener('click', async function() {
+			this.disabled = true;
+			var userId = this.getAttribute('user-id');
 			if (userId == null) {
 				setTimeout(() => {
-					userId = thisCard.getAttribute('user-id');
+					userId = this.getAttribute('user-id');
 				}, 500);
 			}
-			await loadUserProfile(userId, thisCard);
+			await loadUserProfile(userId, this);
 		});
 	}
 
@@ -207,15 +207,15 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 
 			// Load user profile page when clicking on a player
 			thisCard = playersContainer.lastElementChild;
-			thisCard.addEventListener('click', async function(event) {
-				thisCard.disabled = true;
-				var userId = thisCard.getAttribute('user-id');
+			thisCard.addEventListener('click', async function() {
+				this.disabled = true;
+				var userId = this.getAttribute('user-id');
 				if (userId == null) {
 					setTimeout(() => {
-						userId = thisCard.getAttribute('user-id');
+						userId = this.getAttribute('user-id');
 					}, 500);
 				}
-				await loadUserProfile(userId, thisCard);
+				await loadUserProfile(userId, this);
 			});
 		}
 	}
