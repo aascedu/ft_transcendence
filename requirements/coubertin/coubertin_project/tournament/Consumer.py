@@ -12,6 +12,7 @@ class Consumer(OurBasicConsumer):
         global tournaments
 
         if self.security_check() is False:
+            await self.accept()
             return self.close()
 
         # Join room group
@@ -22,10 +23,13 @@ class Consumer(OurBasicConsumer):
             self.myTournament = tournaments[self.tournamentId]
         except:
             logging.error("Tournament websocket closed during initialization")
+            await self.accept()
             return self.close()
+            
         if self.id in self.myTournament.onPage:
             self.myTournament.onPage.append(self.id)
             logging.error("Tournament websocket closed during initialization")
+            await self.accept()
             return self.close()
         self.myTournament.onPage.append(self.id)
 
@@ -100,12 +104,14 @@ class Consumer(OurBasicConsumer):
 
     async def TournamentState(self, event):
 
-        if event['opt'] == True and event['id'] == self.id:
+        if event['except'] == True and event['id'] == self.id:
             return
 
+        print("\n\n\n\n\n Tournament state " + str(event['opt']))
         await self.send(json.dumps({
-            'Action': "tournamentState",
-            'Tournament': self.myTournament.toFront(),
+            'Action': event['opt'],
+            'Data': event['data'],
+            'Tournament': self.myTournament.toFront()
         }))
 
     async def TournamentEnd(self, event):
@@ -156,4 +162,3 @@ class Consumer(OurBasicConsumer):
 
         if id == self.id:
             await self.close()
-    

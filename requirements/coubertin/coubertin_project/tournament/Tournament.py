@@ -90,6 +90,12 @@ class Tournament:
                     return True
         return False
 
+    def userParticipated(self, userId):
+        for i in self.players:
+            if i == userId:
+                return True
+        return False
+
     def appendEmptyGameToTab(self, tab, round):
         newGame = {}
         newGame['Round'] = round

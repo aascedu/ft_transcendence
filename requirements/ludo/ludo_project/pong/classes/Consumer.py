@@ -23,10 +23,12 @@ class Consumer(OurBasicConsumer):
         self.myMatch = matches[self.roomName]
 
         if "err" in self.scope:
+            await self.accept()
             return self.close()
 
         count = self.roomName.count('-')
         if count != 1 and count != 2:
+            await self.accept()
             return self.close()
         if count == 2:
             self.myMatch.isTournamentGame = True
@@ -37,12 +39,14 @@ class Consumer(OurBasicConsumer):
             p2 = int(self.roomName.split('-')[count])
             self.strId = str(self.user.id)
         except:
+            await self.accept()
             return self.close()
         
         self.isPlayer = False
         self.id = len(self.myMatch.players)
         if self.id > 1:
             logging.warning("Too many players tried to connect into the room")
+            await self.accept()
             return self.close()
 
         self.opponentId = (self.id + 1) % 2
@@ -56,6 +60,7 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.playersId[self.opponentId] = p1
 
         else:
+            await self.accept()
             self.close()
 
         self.lastRequestTime = 0

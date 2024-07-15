@@ -40,10 +40,6 @@ async function loadClosedTournament(id) {
 }
 
 async function loadTournamentInfo(tournamentInfo, ongoing) {
-	// var	contentCards = document.querySelectorAll('.tournament-info-players .content-card');
-	// if (contentCards.length > 0) {
-	// 	return ;
-	// }
 
 	// Save tournament id on the page
 	document.querySelector('.tournament-info-name').setAttribute('tournament-id', tournamentInfo.Id);
@@ -145,6 +141,8 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 	// Display number of players
 	document.querySelector('.tournament-info-players-num').textContent = confirmedPlayers.length + '/' + numPlayers;
 
+	var	thisCard;
+
 	// Display players that are confirmed
 	for (i = 0; i < confirmedPlayers.length; i++) {
 		userId = confirmedPlayers[i].Id;
@@ -166,6 +164,19 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 		<img src="` + userPic + `" alt="profile picture of ` + confirmedPlayers[i].Alias + `" draggable="false" (dragstart)="false;" class="unselectable">
 		</div>
 		</button>`);
+
+		// Load user profile page when clicking on a player
+		thisCard = playersContainer.lastElementChild;
+		thisCard.addEventListener('click', async function(event) {
+			thisCard.disabled = true;
+			var userId = thisCard.getAttribute('user-id');
+			if (userId == null) {
+				setTimeout(() => {
+					userId = thisCard.getAttribute('user-id');
+				}, 500);
+			}
+			await loadUserProfile(userId, thisCard);
+		});
 	}
 
 	if (ongoing == true) {
@@ -193,32 +204,39 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 					<img src="` + userPic + `" alt="profile picture of `+ userInfo.Nick + `" draggable="false" (dragstart)="false;" class="unselectable">
 				</div>
 			</button>`);
+
+			// Load user profile page when clicking on a player
+			thisCard = playersContainer.lastElementChild;
+			thisCard.addEventListener('click', async function(event) {
+				thisCard.disabled = true;
+				var userId = thisCard.getAttribute('user-id');
+				if (userId == null) {
+					setTimeout(() => {
+						userId = thisCard.getAttribute('user-id');
+					}, 500);
+				}
+				await loadUserProfile(userId, thisCard);
+			});
 		}
 	}
 
-	// Adapt new content cards to font size
 	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
+		// Adapt new content cards to font size
 		setBaseFontSize(item);
 		updateFontSizeOfPage(item, g_prevFontSize);
 	});
 
-	// Load user profile page when clicking on a player
+	// Load bracket
+	await loadTournamentBracket(tournamentInfo, confirmedPlayers, numPlayers);
 
-	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', async function(event) {
-			item.disabled = true;
-			var userId = await event.target.getAttribute('user-id');
-			if (userId == null) {
-				setTimeout(async () => {
-					userId = await event.target.getAttribute('user-id');
-				}, 500);
-			}
-			await loadUserProfile(userId, item);
-		});
+	// Keyboard navigation
+
+	document.addEventListener('keydown', async function(e) {
+		await tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing);
 	});
+}
 
-	// Display tournament bracket
-
+async function loadTournamentBracket(tournamentInfo, confirmedPlayers, numPlayers) {
 	var	matchInRound = 0;
 	var	games = tournamentInfo.Games;
 	var	matchSelector;
@@ -269,13 +287,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			setAriaHidden();
 		}
 
-		// Load info
-
-		var	matchInRound = 0;
-		var	games = tournamentInfo.Games;
-		var	matchSelector;
-		var	res;
-
 		for (i = 0; i < games.length; i++) {
 			if (games[i].Round == 1) {
 				matchSelector = document.querySelectorAll('.bracket-round-one .bracket-match');
@@ -308,12 +319,6 @@ async function loadTournamentInfo(tournamentInfo, ongoing) {
 			}
 		}
 	}
-
-	// Keyboard navigation
-
-	document.addEventListener('keydown', async function(e) {
-		await tournamentInfoKeyboardNavigation(e, tournamentInfo, ongoing);
-	});
 }
 
 async function loadBracketMatchContent(tournamentPlayers, match, matchSelector) {
@@ -436,7 +441,6 @@ async function loadTournamentInfoInvites() {
 
 			var	invitedId = item.getAttribute('user-id');
 			var invitedNick = item.querySelector('.user-card-name').textContent;
-			var	invitedPic = item.querySelector('.user-card-picture img').getAttribute('src');
 
 			// Show alert
 			document.querySelector('.tournament-info-invite-alert').classList.remove('visually-hidden');
@@ -447,7 +451,7 @@ async function loadTournamentInfoInvites() {
 			document.querySelector('.tournament-info-invite-alert .alert-confirm-button').addEventListener('click', function () {
 				document.querySelector('.tournament-info-invite-alert .alert-confirm-button').disabled = true;
 				if (invitedNick) {
-					addInvitedPlayerToTournament(invitedId, invitedNick, invitedPic);
+					addInvitedPlayerToTournament(invitedId);
 					invitedNick = null;
 
 					removeItemFromFriendsList(item);
@@ -593,7 +597,7 @@ async function confirmJoinTournament() {
 
 			setAriaHidden();
 		}
-		if (errMsg == 'Conflict : You are not available: HTTP error: 409 : Conflict : You are not available') {
+		if (errMsg.toString().includes('Conflict')) {
 			// Hide tournament nickname alert
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
@@ -911,7 +915,7 @@ function cancelInviteFriendToTournament() {
 	setAriaHidden();
 }
 
-async function addInvitedPlayerToTournament(id, nick, pic) {
+async function addInvitedPlayerToTournament(id) {
 	try {
 		// Send invite through Coubertin
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
@@ -923,42 +927,6 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 
 	// Hide alert
 	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
-
-	// Create player card
-	var playersList = document.querySelector('.tournament-info-players');
-
-	playersList.insertAdjacentHTML('beforeend', `\
-    <button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + id + `">
-        <div class="d-flex flex-nowrap align-items-center">
-            <div class="user-card-name unselectable">`+ nick + `</div>
-            <div class="user-card-pending" data-language="pending">(pending...)</div>
-        </div>
-        <div class="user-card-picture">
-            <img src="` + pic + `" alt="profile picture of `+ nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-        </div>
-    </button>`);
-
-	var	invitedPlayerElement = playersList.querySelector('.content-card:last-child');
-
-	setBaseFontSize(invitedPlayerElement);
-	updateFontSizeOfPage(invitedPlayerElement, g_prevFontSize);
-
-	document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
-		item.addEventListener('click', async function(event) {
-			item.disabled = true;
-			var userId = await event.target.getAttribute('user-id');
-			if (userId == null) {
-				setTimeout(async () => {
-					userId = await event.target.getAttribute('user-id');
-				}, 500);
-			}
-			await loadUserProfile(userId, item);
-		});
-	});
-
-	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
-		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
-	}
 
 	setAriaHidden();
 }
