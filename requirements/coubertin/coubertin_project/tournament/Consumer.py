@@ -150,11 +150,7 @@ class Consumer(OurBasicConsumer):
             logging.error("Available state couldn't be updated by Coubertin")
             return self.close()
         
-        await self.channel_layer.group_send(
-            self.roomName, {
-                'Type': 'LeaveAll'
-            }
-        )
+        await self.close()
 
     async def Leave(self, event):
         try:
@@ -166,7 +162,3 @@ class Consumer(OurBasicConsumer):
 
         if id == self.id:
             await self.close()
-
-    async def LeaveAll(self, event):
-        await self.close()
-    

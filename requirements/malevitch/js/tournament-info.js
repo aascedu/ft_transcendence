@@ -441,7 +441,6 @@ async function loadTournamentInfoInvites() {
 
 			var	invitedId = item.getAttribute('user-id');
 			var invitedNick = item.querySelector('.user-card-name').textContent;
-			var	invitedPic = item.querySelector('.user-card-picture img').getAttribute('src');
 
 			// Show alert
 			document.querySelector('.tournament-info-invite-alert').classList.remove('visually-hidden');
@@ -452,7 +451,7 @@ async function loadTournamentInfoInvites() {
 			document.querySelector('.tournament-info-invite-alert .alert-confirm-button').addEventListener('click', function () {
 				document.querySelector('.tournament-info-invite-alert .alert-confirm-button').disabled = true;
 				if (invitedNick) {
-					addInvitedPlayerToTournament(invitedId, invitedNick, invitedPic);
+					addInvitedPlayerToTournament(invitedId);
 					invitedNick = null;
 
 					removeItemFromFriendsList(item);
@@ -598,7 +597,7 @@ async function confirmJoinTournament() {
 
 			setAriaHidden();
 		}
-		if (errMsg.includes('Conflict')) {
+		if (errMsg.toString().includes('Conflict')) {
 			// Hide tournament nickname alert
 			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
 
@@ -916,7 +915,7 @@ function cancelInviteFriendToTournament() {
 	setAriaHidden();
 }
 
-async function addInvitedPlayerToTournament(id, nick, pic) {
+async function addInvitedPlayerToTournament(id) {
 	try {
 		// Send invite through Coubertin
 		var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
@@ -928,42 +927,6 @@ async function addInvitedPlayerToTournament(id, nick, pic) {
 
 	// Hide alert
 	document.querySelector('.tournament-info-invite-alert').classList.add('visually-hidden');
-
-	// Create player card
-	var playersList = document.querySelector('.tournament-info-players');
-
-	playersList.insertAdjacentHTML('beforeend', `\
-    <button class="content-card invite-pending d-flex justify-content-between align-items-center purple-shadow" user-id="` + id + `">
-        <div class="d-flex flex-nowrap align-items-center">
-            <div class="user-card-name unselectable">`+ nick + `</div>
-            <div class="user-card-pending" data-language="pending">(pending...)</div>
-        </div>
-        <div class="user-card-picture">
-            <img src="` + pic + `" alt="profile picture of `+ nick + `" draggable="false" (dragstart)="false;" class="unselectable">
-        </div>
-    </button>`);
-
-	var	invitedPlayerElement = playersList.querySelector('.content-card:last-child');
-
-	setBaseFontSize(invitedPlayerElement);
-	updateFontSizeOfPage(invitedPlayerElement, g_prevFontSize);
-
-	// Load user profile page when clicking on a player
-	var thisCard = playersList.lastElementChild;
-	thisCard.addEventListener('click', async function(event) {
-		thisCard.disabled = true;
-		var userId = thisCard.getAttribute('user-id');
-		if (userId == null) {
-			setTimeout(() => {
-				userId = thisCard.getAttribute('user-id');
-			}, 500);
-		}
-		await loadUserProfile(userId, thisCard);
-	});
-
-	if (!document.querySelector('.tournament-info-no-players').classList.contains('visually-hidden')) {
-		document.querySelector('.tournament-info-no-players').classList.add('visually-hidden');
-	}
 
 	setAriaHidden();
 }

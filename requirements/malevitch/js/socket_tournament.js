@@ -47,11 +47,12 @@ async function init_tournament_socket(tournamentId) {
 			var tournament = data.Tournament;
 			var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 			var	joinedData = data.Data;
-			var	joinedId = joinedData.Id;
+			var	joinedId = joinedData;
 			var	noPlayerYet = document.querySelector('.tournament-info-no-players');
 			
 			if (data.Action === 'someoneJoined') {
 				var	joinedAlias = joinedData.Alias;
+                joinedId = joinedData.Id;
 			}
 
 			// If we are on a tournament page
@@ -95,7 +96,7 @@ async function init_tournament_socket(tournamentId) {
 							// Update number of players
 							var	numPlayersElement = document.querySelector('.tournament-info-players-num');
 							var	numPlayersSplit = numPlayersElement.textContent.split('/');
-							numPlayersElement.textContent = (numPlayersSplit[0] + 1) + '/' + numPlayersSplit[1];
+							numPlayersElement.textContent = (parseInt(numPlayersSplit[0], 10) + 1) + '/' + numPlayersSplit[1];
 						}
 						else {
 							// Add the pending card
@@ -110,10 +111,15 @@ async function init_tournament_socket(tournamentId) {
 								</div>
 							</button>`);
 						}
+
+                        var createdCard = playersContainer.lastElementChild;
+
+                        setBaseFontSize(createdCard);
+                        updateFontSizeOfPage(createdCard, g_prevFontSize);
 	
 						// Load user profile page when clicking on a player
 						var thisCard = playersContainer.lastElementChild;
-						thisCard.addEventListener('click', async function(event) {
+						thisCard.addEventListener('click', async function() {
 							thisCard.disabled = true;
 							var userId = thisCard.getAttribute('user-id');
 							if (userId == null) {
