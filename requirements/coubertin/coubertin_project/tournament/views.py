@@ -259,7 +259,7 @@ class myTournaments(View):
         response = []
 
         for id in tournaments:
-            if tournaments[id].userParticipating(userId) or userId == tournaments[id].admin:
+            if tournaments[id].userParticipated(userId) or userId == tournaments[id].admin:
                 t = {}
                 t['Name'] = tournaments[id].name
                 t['Id'] = tournaments[id].id
