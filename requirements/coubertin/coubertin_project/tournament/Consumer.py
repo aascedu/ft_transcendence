@@ -82,7 +82,7 @@ class Consumer(OurBasicConsumer):
 
         await self.channel_layer.group_send(
             self.roomName, {
-                'Type': type_value
+                'type': type_value
             }
         )
 
@@ -168,7 +168,7 @@ class Consumer(OurBasicConsumer):
         
         await self.channel_layer.group_send(
             self.roomName, {
-                'Type': 'LeaveAll',
+                'type': 'LeaveAll',
             }
         )
 
