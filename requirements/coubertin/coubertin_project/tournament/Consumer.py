@@ -44,6 +44,22 @@ class Consumer(OurBasicConsumer):
             if self.id in self.myTournament.onPage:
                 self.myTournament.onPage.remove(self.id)
 
+            if self.id in self.myTournament.players and self.myTournament.started is False:
+                self.myTournament.players.remove(self.id)
+                for dict in self.myTournament.aliases:
+                    if dict['Id'] == self.id:
+                        self.myTournament.aliases.remove(dict)
+
+                await self.channel_layer.group_send(
+                    self.roomName, {
+                        'type': 'TournamentState',
+                        'except': False,
+                        'id': self.id,
+                        'opt': 'someoneLeft',
+                        'data': self.id,
+                    }
+                )
+
         await self.channel_layer.group_discard(self.roomName, self.channel_name)
 
     # Receive message from WebSocket
@@ -150,6 +166,13 @@ class Consumer(OurBasicConsumer):
             logging.error("Available state couldn't be updated by Coubertin")
             return self.close()
         
+        await self.channel_layer.group_send(
+            self.roomName, {
+                'Type': 'LeaveAll',
+            }
+        )
+
+    async def LeaveAll(self, event):
         await self.close()
 
     async def Leave(self, event):
