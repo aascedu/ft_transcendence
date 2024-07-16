@@ -107,12 +107,15 @@ document.querySelector('.homepage-header-logo').addEventListener('click', async 
 
 	var	currentPage = g_state.pageToDisplay;
 
+	if (currentPage != '.homepage-game') {
+		hideEveryPage();
+	}
+
 	g_state.pageToDisplay = '.homepage-game';
 
 	if (currentPage != '.homepage-game') {
 		document.querySelector(currentPage).classList.add('visually-hidden');
 		window.history.pushState(g_state, null, "");
-		hideEveryPage();
 	}
 	render(g_state);
 });
