@@ -129,12 +129,10 @@ async function init_game_socket(roomName) {
 	let	hasWon = false;
 
     g_gameSocket.onopen = function(event) {
-        console.log("game socket opened");
         sendStartGameData("gameStart"); // Player names maybe ?
     };
 
     g_gameSocket.onclose = function() {
-        console.log("game socket closed");
         shouldContinue = false;
         cancelAnimationFrame(animationId);
 

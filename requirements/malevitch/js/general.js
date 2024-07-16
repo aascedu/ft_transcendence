@@ -893,7 +893,7 @@ function hideEveryNotif() {
 //
 
 async function checkCloseTournamentSocket() {
-	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('user-id');
+	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 	var	inTournament;
 
 	if (tournamentId == null) {

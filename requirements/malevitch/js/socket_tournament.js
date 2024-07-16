@@ -15,17 +15,14 @@ async function init_tournament_socket(tournamentId) {
 	}
 
     g_tournamentSocket.onopen = function() {
-        console.log("Tournament socket opened");
     }
 
     g_tournamentSocket.onclose = function() {
-        console.log("Tournament socket closed");
 		g_tournamentSocket = null;
     }
 
     g_tournamentSocket.onmessage = async (event) => {
         const data = JSON.parse(event.data);
-		console.log(data.Action);
 
         if (data.Action === "startGame") {
 			// "Match found" notif

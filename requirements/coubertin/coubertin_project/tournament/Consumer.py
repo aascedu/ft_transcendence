@@ -123,7 +123,6 @@ class Consumer(OurBasicConsumer):
         if event['except'] == True and event['id'] == self.id:
             return
 
-        print("\n\n\n\n\n Tournament state " + str(event['opt']))
         await self.send(json.dumps({
             'Action': event['opt'],
             'Data': event['data'],
