@@ -112,6 +112,7 @@ document.querySelector('.homepage-header-logo').addEventListener('click', async 
 	if (currentPage != '.homepage-game') {
 		document.querySelector(currentPage).classList.add('visually-hidden');
 		window.history.pushState(g_state, null, "");
+		hideEveryPage();
 	}
 	render(g_state);
 });

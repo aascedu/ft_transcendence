@@ -241,7 +241,13 @@ function startTimer() {
 }
 
 document.querySelector('.notif-search-match .notif-dismiss').addEventListener('click', function() {
+	document.querySelector('.homepage-game-content-play').disabled = true;
+	document.querySelector('.homepage-header-quick-play').disabled = true;
 	cancelSearchMatch();
+	setTimeout(() => {
+		document.querySelector('.homepage-game-content-play').disabled = false;
+		document.querySelector('.homepage-header-quick-play').disabled = false;
+	}, 2500);
 });
 
 function cancelSearchMatch() {
