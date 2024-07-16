@@ -226,8 +226,7 @@ async function init_tournament_socket(tournamentId) {
 
 				// load bracket
 				try {
-					var	tournamentInfo = await get_tournament_infos(tournament.Id);
-					await loadTournamentBracket(tournamentInfo, tournamentInfo.Confirmed, tournamentInfo.NumPlayers);
+					await loadTournamentBracket(tournament, tournament.Confirmed, tournament.NumPlayers);
 				} catch (error) {
 					console.error(error);
 				}
