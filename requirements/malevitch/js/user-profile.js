@@ -566,14 +566,13 @@ async function changeNickname() {
 	if (nicknameInput.value != g_userNick) {
 		try {
 			await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
+			g_userNick = nicknameInput.value;
+			// Update profile name
+			document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 		} catch (error) {
 			console.error(error);
 			return ;
 		}
-		g_userNick = nicknameInput.value;
-
-		// Update profile name
-		document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 	}
 
 	// Hide alert

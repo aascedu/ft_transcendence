@@ -833,6 +833,8 @@ async function changeTournamentName() {
 	
 	try {
 		await change_tournament_name(tournamentNameInput.value, tournamentId);
+		// Update tournament name
+		document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 	} catch (error) {
 		console.error();
 		return ;
@@ -841,9 +843,6 @@ async function changeTournamentName() {
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
-	
-	// Update tournament name
-	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 }
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
