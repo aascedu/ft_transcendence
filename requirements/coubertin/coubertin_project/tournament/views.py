@@ -53,7 +53,7 @@ class tournamentManagement(View):
         data = request.data
         try:
             tournamentName = str(data['Name'])
-            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  tournamentName) is False:
+            if re.fullmatch(r"^[-a-zA-Z0-9_\s]+\Z",  tournamentName) is None:
                 return JsonBadRequest(request, 'name is invalid')
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
@@ -99,6 +99,8 @@ class tournamentManagement(View):
         try:
             tournamentId = int(data['TournamentId'])
             newTournamentName = str(data['NewName'])
+            if re.fullmatch(r"^[-a-zA-Z0-9_\s]+\Z",  newTournamentName) is None:
+                return JsonBadRequest(request, 'name is invalid')
             if request.user.id != tournaments[tournamentId].admin:
                 return JsonUnauthorized(request, 'Only admin can patch ongoing tournaments')
             tournaments[tournamentId].name = newTournamentName
@@ -149,7 +151,7 @@ class tournamentEntry(View):
             tournamentId = int(tournamentId)
             data = request.data
             playerAlias = str(data['Alias'])
-            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  playerAlias) is False:
+            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  playerAlias) is None:
                 return JsonBadRequest(request, 'name is invalid')
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
