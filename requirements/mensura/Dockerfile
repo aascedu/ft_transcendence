@@ -1,8 +1,8 @@
 FROM        debian:bookworm
 
-RUN         apt update -y && \
-            apt upgrade -y && \
-            apt install -y prometheus
+RUN         apt-get update -y && \
+            apt-get upgrade -y && \
+            apt-get install -y prometheus
 
 COPY        conf/prometheus.yml /etc/prometheus/prometheus.yml
 COPY        conf/alert.rules.yml /etc/prometheus/alert.rules.yml
