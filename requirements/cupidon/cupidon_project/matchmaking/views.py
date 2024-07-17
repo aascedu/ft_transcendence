@@ -99,10 +99,8 @@ class RequestGameResponse(View):
                 json={'Id': invited})
             if r.status_code != 200:
                 return JsonConflict(request, "Couldn't update available state")
-
         except Exception:
-            return
-
+            return JsonConflict(request, "Couldn't update available state")
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
             strRequester, {
@@ -169,12 +167,7 @@ class RestoreAvailability(View):
             request = requests.post(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': requester})
-            if request.status_code != 200:
-                message = "Player state update request has failed"
-                logging.error(message)
-                return JsonConflict(request, message)
         except Exception:
-            logging.critical("Player state update request has critically failed")
-            return JsonConflict(request, "Player state update request has failed")
+            pass
 
         return JsonResponse(request, {'Msg': 'Stopped looking for a game'})

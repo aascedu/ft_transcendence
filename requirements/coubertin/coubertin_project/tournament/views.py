@@ -125,10 +125,8 @@ class tournamentEntry(View):
             r = requests.post(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': request.user.id})
-            if r.status_code != 200:
-                return JsonConflict(request, "Couldn't update available state")
-        except Exception as e:
-            return JsonConflict(request, e.__str__())
+        except Exception:
+            pass
 
         updateTournament(tournamentId, False, request.user.id, 'someoneLeft', playerId)
         logging.info("Player " + str(playerId) + " has left tournament " + str(tournamentId))
@@ -273,7 +271,7 @@ class inTournament(View):
             return JsonUnauthorized(request, "You need to be authenticated to see participants to a tournament")
 
         if tournamentId not in tournaments:
-            return JsonNotFound('Tournament does not exist')
+            return JsonNotFound(request, 'Tournament does not exist')
 
         if tournaments[tournamentId].userParticipating(request.user.id):
             return JsonResponse(request, {'IsParticipating': True})
