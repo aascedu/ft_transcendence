@@ -246,7 +246,7 @@ async function notificationGameRequest(data) {
 	document.querySelector('.notif-play-invite').classList.remove('visually-hidden');
 	setAriaHidden();
 
-	gameInvitedCountdown(60);
+	gameInvitedCountdown(20);
 }
 
 async function notificationNewClientConnected(data) {
