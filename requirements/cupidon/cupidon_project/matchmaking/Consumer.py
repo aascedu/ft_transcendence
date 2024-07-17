@@ -85,20 +85,23 @@ class Consumer(OurBasicConsumer):
 
         if action not in ['SendToGame', 'Ping', 'Leave']:
             logging.warning("Wrong data type sent to websocket")
-            return self.close()
+            await self.close()
         
         if self.id not in waitingList:
             logging.warning('A player not in the waitingList tried to send data')
-            return self.close()
+            await self.close()
 
         # Send message to room group
-        await self.channel_layer.group_send(
-            "matchmakingRoom", {
-                'type': action,
-                'id': self.me.id,
-                'elo': self.me.elo,
-            }
-        )
+        try:
+            await self.channel_layer.group_send(
+                "matchmakingRoom", {
+                    'type': action,
+                    'id': self.me.id,
+                    'elo': self.me.elo,
+                }
+            )
+        except BaseException as e:
+            await self.close()
 
     async def SendToGame(self, event): # Need to manage when game invite
         try:
