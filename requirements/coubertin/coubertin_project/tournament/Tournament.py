@@ -31,7 +31,7 @@ class Tournament:
             strPlayer = str(player)
             if strPlayer in self.invited:
                 self.invited.remove(strPlayer)
-        except:
+        except Exception:
             raise Exception("Invalid player")
 
     def addGame(self, game):
@@ -49,7 +49,7 @@ class Tournament:
                 pass
         except Exception as e:
             pass
-        
+
         channel_layer = get_channel_layer()
         async_to_sync(channel_layer.group_send)(
                 str(self.id), {

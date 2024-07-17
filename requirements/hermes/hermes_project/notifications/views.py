@@ -80,6 +80,11 @@ class availableFriendView(View):
         set_cache(f'ava_{id}', False)
         return JsonResponse(request, {'Ava': False})
 
+def availability(request, requestee: int):
+    if request.user.is_service is False:
+        return JsonForbidden(request, 'Only service can access hermes')
+    return JsonResponse(request, {'Ava': get_cache(f'ava_{requestee}')})
+
 @notification_global
 def global_notification(request, requester: int):
     response = JsonResponse(request, {'status': 'Notification sent'})

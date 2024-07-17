@@ -86,7 +86,7 @@ class Consumer(OurBasicConsumer):
         if action not in ['SendToGame', 'Ping', 'Leave']:
             logging.warning("Wrong data type sent to websocket")
             await self.close()
-        
+
         if self.id not in waitingList:
             logging.warning('A player not in the waitingList tried to send data')
             await self.close()

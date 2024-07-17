@@ -1,10 +1,13 @@
 from django.views import View
 from tournament.Tournament import Tournament, tournaments
 from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from channels.layers import get_channel_layer, re
 from shared.utils import JsonConflict, JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
+
 import requests
 import logging
+
+
 
 def updateTournament(tournamentId, exception, id, option, data):
     channel_layer = get_channel_layer()
@@ -29,7 +32,7 @@ class availableTournamentView(View):
             return JsonUnauthorized(request, "Connect yourself to fetch")
         response = {}
         for tournament in tournaments:
-            if tournaments[tournament].started is False and request.user.id not in tournaments[tournament].players: # Et je ne participe pas au tournoi ?
+            if tournaments[tournament].started is False and request.user.id not in tournaments[tournament].players:
                 response[tournament] = tournaments[tournament].name
         return JsonResponse(request, response)
 
@@ -50,6 +53,8 @@ class tournamentManagement(View):
         data = request.data
         try:
             tournamentName = str(data['Name'])
+            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  tournamentName) is False:
+                return JsonBadRequest(request, 'name is invalid')
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
             invited = data['Invited']
@@ -111,6 +116,7 @@ class tournamentEntry(View):
 
         if request.user.is_autenticated is False:
             return JsonUnauthorized(request, 'Only authentified player can leave a tournament')
+        playerId = request.user.id
 
         if tournamentId not in tournaments:
             return JsonNotFound(request, 'This tournament is either finished or never existed')
@@ -140,20 +146,11 @@ class tournamentEntry(View):
         userId = request.user.id
 
         try:
-            r = requests.delete(
-                'http://hermes:8004/notif/available-states/',
-                json={'Id': userId})
-            if r.status_code == 409:
-                return JsonConflict(request, "You are not available")
-            elif r.status_code != 200:
-                return JsonConflict(request, "Couldn't update available state")
-        except Exception as e:
-            return JsonConflict(request, e.__str__())
-
-        try:
             tournamentId = int(tournamentId)
             data = request.data
             playerAlias = str(data['Alias'])
+            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  playerAlias) is False:
+                return JsonBadRequest(request, 'name is invalid')
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
@@ -163,6 +160,17 @@ class tournamentEntry(View):
         for i in tournaments:
             if tournaments[i].userParticipating(userId):
                 return JsonBadRequest(request, "Already in tournament")
+
+        try:
+            r = requests.delete(
+                'http://hermes:8004/notif/available-states/',
+                json={'Id': userId})
+            if r.status_code == 409:
+                return JsonConflict(request, "You are not available")
+            elif r.status_code != 200:
+                return JsonConflict(request, "Couldn't update available state")
+        except Exception as e:
+            return JsonConflict(request, e.__str__())
 
         try:
             tournaments[tournamentId].addPlayer(userId, playerAlias)
@@ -185,7 +193,7 @@ class tournamentEntry(View):
                     }
                 )
                 logging.info("Starting tournament")
-            except:
+            except BaseException:
                 return JsonBadRequest(request, "Couldn't start tournament because of invalid tournament id")
 
         return JsonResponse(request, {'Msg': "tournament joined", 'TournamentId': str(tournamentId)}) # url of the websocket to join
@@ -206,6 +214,8 @@ class inviteFriend(View):
         if tournamentId not in tournaments:
             return JsonNotFound(request, 'tournament does not exists')
 
+        if invited in tournaments[tournamentId].invited:
+            return JsonBadRequest(request, 'Allready invited boy')
         tournaments[tournamentId].invited.append(invited)
 
         try:
