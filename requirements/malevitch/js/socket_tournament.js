@@ -162,23 +162,23 @@ async function init_tournament_socket(tournamentId) {
 					document.querySelectorAll('.tournament-info-players .content-card').forEach(function(item) {
 						if (item.getAttribute('user-id') == toRemove) {
 							item.parentElement.removeChild(item);
+
+							if (data.Action === 'someoneLeft') {
+								// Update number of players
+								var	numPlayersElement = document.querySelector('.tournament-info-players-num');
+								var	numPlayersSplit = numPlayersElement.textContent.split('/');
+								var	newNumPlayers = (numPlayersSplit[0] - 1);
+								numPlayersElement.textContent = newNumPlayers + '/' + numPlayersSplit[1];
+		
+								var	pendingInvites = document.querySelectorAll('.tournament-info-players .invite-pending');
+		
+								// If there are no more players and no pending invites
+								if (newNumPlayers == 0 && pendingInvites.length == 0) {
+									noPlayerYet.classList.remove('visually-hidden');
+								}
+							}
 						}
 					});
-
-					if (data.Action === 'someoneLeft') {
-						// Update number of players
-						var	numPlayersElement = document.querySelector('.tournament-info-players-num');
-						var	numPlayersSplit = numPlayersElement.textContent.split('/');
-						var	newNumPlayers = (numPlayersSplit[0] - 1);
-						numPlayersElement.textContent = newNumPlayers + '/' + numPlayersSplit[1];
-
-						var	pendingInvites = document.querySelectorAll('.tournament-info-players .invite-pending');
-
-						// If there are no more players and no pending invites
-						if (newNumPlayers == 0 && pendingInvites.length == 0) {
-							noPlayerYet.classList.remove('visually-hidden');
-						}
-					}
 				}
 			}
 

@@ -11,6 +11,8 @@ async function init_session_socket() {
         g_sessionSocket = new WebSocket(url)
     } catch (error) {
         console.error("Impossible to connect to session service. Experience may be seriously impacted.");
+		document.querySelector('.broken-socket-alert').classList.remove('visually-hidden');
+		setAriaHidden();
         return ;
     }
 	

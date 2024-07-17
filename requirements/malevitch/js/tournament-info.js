@@ -664,26 +664,8 @@ document.querySelector('.tournament-full-alert .alert-confirm-button').addEventL
 
 // Close 'already in tournament' alert
 document.querySelector('.not-available-alert .alert-confirm-button').addEventListener('click', async function() {
-	document.querySelector('.not-available-alert .alert-confirm-button').disabled = true;
-
 	document.querySelector('.not-available-alert').classList.add('visually-hidden');
 	setAriaHidden();
-
-	// Go to available tournaments
-	hideEveryPage();
-
-	clearMyTournaments();
-	await loadMyTournaments();
-
-	setTimeout(() => {
-		document.querySelector('.not-available-alert .alert-confirm-button').disabled = false;
-	}, 2000);
-
-	document.querySelector('.my-tournaments-icon').focus();
-
-	g_state.pageToDisplay = '.my-tournaments';
-	window.history.pushState(g_state, null, "");
-	render(g_state);
 });
 
 // Ask for confirmation when leaving tournament
