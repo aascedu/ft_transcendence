@@ -1,10 +1,13 @@
 from django.views import View
 from tournament.Tournament import Tournament, tournaments
 from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
+from channels.layers import get_channel_layer, re
 from shared.utils import JsonConflict, JsonResponseLogging as JsonResponse, JsonUnauthorized, JsonBadRequest, JsonNotFound, JsonErrResponse
+
 import requests
 import logging
+
+
 
 def updateTournament(tournamentId, exception, id, option, data):
     channel_layer = get_channel_layer()
@@ -29,7 +32,7 @@ class availableTournamentView(View):
             return JsonUnauthorized(request, "Connect yourself to fetch")
         response = {}
         for tournament in tournaments:
-            if tournaments[tournament].started is False and request.user.id not in tournaments[tournament].players: # Et je ne participe pas au tournoi ?
+            if tournaments[tournament].started is False and request.user.id not in tournaments[tournament].players:
                 response[tournament] = tournaments[tournament].name
         return JsonResponse(request, response)
 
@@ -50,6 +53,8 @@ class tournamentManagement(View):
         data = request.data
         try:
             tournamentName = str(data['Name'])
+            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  tournamentName) is False:
+                return JsonBadRequest(request, 'name is invalid')
             nbPlayers = int(data['NumPlayers'])
             admin = int(data['Admin'])
             invited = data['Invited']
@@ -144,6 +149,8 @@ class tournamentEntry(View):
             tournamentId = int(tournamentId)
             data = request.data
             playerAlias = str(data['Alias'])
+            if re.fullmatch(r"^[-a-zA-Z0-9_]+\Z",  playerAlias) is False:
+                return JsonBadRequest(request, 'name is invalid')
         except (ValueError, TypeError) as e:
             return JsonBadRequest(request, f'Request badly formated : id : {e}')
 
