@@ -51,3 +51,9 @@ async function is_participating_in_tournament(tournamentId) {
 
     return response;
 }
+
+async function is_in_a_tournament() {
+    response = fetch_get(add_coubertin_in_url('in-a-tournament/'));
+
+    return response;
+}
