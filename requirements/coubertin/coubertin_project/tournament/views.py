@@ -289,6 +289,18 @@ class inTournament(View):
             return JsonResponse(request, {'IsParticipating': True})
         return JsonResponse(request, {'IsParticipating': False})
 
+class inATournament(View):
+    def get(self, request):
+        if request.user.is_autenticated is False:
+            return JsonUnauthorized(request, "You need to be authenticated to see participants to a tournament")
+        userId = request.user.id
+
+        for tournament in tournaments:
+            if tournaments[tournament].userParticipating(userId):
+                return JsonResponse(request, {"inATournament": True})
+
+        return JsonResponse(request, {"inATournament": False})
+
 class gameResult(View):
     def post(self, request): # Maybe send un tournamentState
         global tournaments
