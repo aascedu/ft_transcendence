@@ -179,6 +179,11 @@ class tournamentEntry(View):
         except Exception as e:
             return JsonBadRequest(request, f'{e}')
 
+        for tournament in tournaments:
+            if str(userId) in tournaments[tournament].invited:
+                tournaments[tournament].invited.remove(str(userId))
+                updateTournament(tournament, False, userId, 'declineInvited', str(userId))
+
         updateTournament(tournamentId, True, userId, 'someoneJoined', {'Id': userId, 'Alias': playerAlias})
         logging.info("Player " + str(userId) + " has joined tournament " + str(tournamentId))
 
