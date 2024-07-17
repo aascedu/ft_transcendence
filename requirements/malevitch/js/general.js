@@ -896,6 +896,7 @@ function hideEveryNotif() {
 async function checkCloseTournamentSocket() {
 	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 	var	inTournament;
+	var	inATournament;
 
 	if (tournamentId == null || g_tournamentSocket == null) {
 		return ;
@@ -903,12 +904,14 @@ async function checkCloseTournamentSocket() {
 	try {
 		inTournament = await is_participating_in_tournament(tournamentId);
 		inTournament = inTournament.IsParticipating;
+		inATournament = await is_in_a_tournament();
+		inATournament = inATournament.inATournament;
 	} catch (error) {
 		console.error(error);
 		return ;
 	}
 
-	if (!inTournament && g_tournamentSocket != null) {
+	if (!inTournament && !inATournament) {
 		g_tournamentSocket.close();
 	}
 }

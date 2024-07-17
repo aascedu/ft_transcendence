@@ -579,33 +579,15 @@ async function confirmJoinTournament() {
 	}
 	catch (error) {
 		var errMsg = await error;
-		if (errMsg == 'Bad Request : Too many players already: HTTP error: 400 : Bad Request : Too many players already') {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
-
-			// Show tournament full alert
-			document.querySelector('.tournament-full-alert').classList.remove('visually-hidden');
-
-			setAriaHidden();
-		}
-		if (errMsg == 'Bad Request : Already in tournament: HTTP error: 400 : Bad Request : Already in tournament') {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+		if (errMsg.toString().includes('Conflict') || errMsg.toString().includes('Bad Request')) {
 
 			// Show tournament full alert
 			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
 
 			setAriaHidden();
 		}
-		if (errMsg.toString().includes('Conflict')) {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
-
-			// Show tournament full alert
-			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
-
-			setAriaHidden();
-		}
+		document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+		setAriaHidden();
 		return ;
 	}
 
@@ -819,7 +801,6 @@ async function changeTournamentName() {
 		document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 	} catch (error) {
 		console.error();
-		return ;
 	}
 	
 	// Hide alert

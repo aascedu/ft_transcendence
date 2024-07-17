@@ -174,7 +174,7 @@ async function loadUserContent(id) {
 	var	score;
 	var	opponent;
 
-	for (i = 0; i < history.length; i--) {
+	for (i = 0; i < history.length; i++) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -570,13 +570,12 @@ async function changeNickname() {
 
 	if (nicknameInput.value != g_userNick) {
 		try {
-			await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
+			var response = await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
 			g_userNick = nicknameInput.value;
 			// Update profile name
 			document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 		} catch (error) {
 			console.error(error);
-			return ;
 		}
 	}
 
@@ -724,27 +723,7 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 		await invite_friend_to_game(friendId);
 	} catch (error) {
 		var errMsg = await error;
-		if (errMsg == 'Bad Request : Too many players already: HTTP error: 400 : Bad Request : Too many players already') {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
-
-			// Show tournament full alert
-			document.querySelector('.tournament-full-alert').classList.remove('visually-hidden');
-
-			setAriaHidden();
-		}
-		if (errMsg == 'Bad Request : Already in tournament: HTTP error: 400 : Bad Request : Already in tournament') {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
-
-			// Show tournament full alert
-			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
-
-			setAriaHidden();
-		}
-		if (errMsg.toString().includes('Conflict')) {
-			// Hide tournament nickname alert
-			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+		if (errMsg.toString().includes('Conflict') || errMsg.toString().includes('Bad Request')) {
 
 			// Show tournament full alert
 			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
