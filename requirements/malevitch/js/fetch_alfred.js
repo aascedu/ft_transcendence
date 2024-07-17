@@ -32,7 +32,7 @@ async function patch_user_info(id, lang, font, nick, email, contrast_mode) {
     if (contrast_mode != null) {
         json['Contrast-mode'] = contrast_mode
     }
-    fetch_patch(url, json)
+    return fetch_patch(url, json)
 }
 
 function signin_url(nickname) {
