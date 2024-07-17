@@ -4,8 +4,6 @@ COLOR_GREEN='\e[1;32m'
 COLOR_BLUE='\e[1;34m'
 COLOR_RESET='\e[0m'
 
-set -e
-
 if [ x${ELASTIC_PASSWORD} == x ]; then
   echo "${COLOR_GREEN}Set the ELASTIC_PASSWORD environment variable in the .env file${COLOR_RESET}";
   exit 1;
