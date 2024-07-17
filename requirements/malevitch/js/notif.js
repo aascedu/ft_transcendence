@@ -32,10 +32,6 @@ async function acceptTournamentInvite() {
 
 	await loadOngoingTournament(tournamentId, acceptButton);
 
-	setTimeout(() => {
-		acceptButton.disabled = false;
-	}, 300);
-
 	hideEveryPage();
 
 	g_state.pageToDisplay = '.tournament-info';
@@ -177,6 +173,10 @@ async function acceptPlayInvite() {
 	document.querySelector('.notif-play-invite').classList.add('visually-hidden');
 	setAriaHidden();
 
+	if (g_matchmakingSocket != null) {
+		return ;
+	}
+
 	try {
 		var	requester = document.querySelector('.notif-play-invite .notif-sender').getAttribute('user-id');
 		await accept_invitation_to_game(requester, g_userId);
@@ -247,7 +247,7 @@ document.querySelector('.notif-search-match .notif-dismiss').addEventListener('c
 	setTimeout(() => {
 		document.querySelector('.homepage-game-content-play').disabled = false;
 		document.querySelector('.homepage-header-quick-play').disabled = false;
-	}, 2500);
+	}, 1000);
 });
 
 function cancelSearchMatch() {

@@ -76,7 +76,12 @@ async function loadUserContent(id) {
 				}
 
 				if (isAvailable) {
-					playIcon.classList.remove('visually-hidden');
+					if (g_matchmakingSocket == null && g_tournamentSocket == null) {
+						playIcon.classList.remove('visually-hidden');
+					}
+					else {
+						playIcon.classList.add('visually-hidden');
+					}
 					stateIcon.classList.add('user-profile-state-online');
 					stateIcon.classList.remove('user-profile-state-unavailable');
 					stateIcon.classList.remove('user-profile-state-offline');
@@ -719,7 +724,6 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 		await invite_friend_to_game(friendId);
 	} catch (error) {
 		console.error(error);
-		return ;
 	}
 
 	this.classList.add('visually-hidden');
