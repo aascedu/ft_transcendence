@@ -44,6 +44,14 @@ async function loadHomepageHeader() {
 		item.addEventListener('click', async function() {
 			item.disabled = true;
 
+			setTimeout(() => {
+				item.disabled = false;
+			}, 2000);
+
+			if (g_matchmakingSocket != null) {
+				return ;
+			}
+
 			try {
 				// send invite
 				var	friendId = item.getAttribute('user-id');
@@ -52,10 +60,6 @@ async function loadHomepageHeader() {
 				console.error(error);
 				return ;
 			}
-
-			setTimeout(() => {
-				item.disabled = false;
-			}, 2000);
 
 			// close header menu and toggle back invites
 			document.querySelector('.homepage-header-open-play').classList.add('visually-hidden');
@@ -519,6 +523,11 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 	document.querySelector('.homepage-header-profile').disabled = true;
 
 	var	matchFound = document.querySelector('.notif-match-found');
+
+	setTimeout(() => {
+		document.querySelector('.homepage-header-profile').disabled = false;
+	}, 500);
+
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
@@ -528,10 +537,6 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 
 	clearUserContent();
 	await loadUserContent(g_userId);
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-profile').disabled = false;
-	}, 500);
 	
 	hideEveryPage();
 	
@@ -545,16 +550,16 @@ document.querySelector('.homepage-header-profile').addEventListener('click', asy
 document.querySelector('.homepage-header-accessibility').addEventListener('click', function(e) {
 	document.querySelector('.homepage-header-accessibility').disabled = true;
 
+	setTimeout(() => {
+		document.querySelector('.homepage-header-accessibility').disabled = false;
+	}, 500);
+
 	var	matchFound = document.querySelector('.notif-match-found');
 	if (g_state.pageToDisplay == '.game' || !matchFound.classList.contains('visually-hidden')) {
 		return ;
 	}
 
 	document.querySelector('.accessibility-icon').focus();
-
-	setTimeout(() => {
-		document.querySelector('.homepage-header-accessibility').disabled = false;
-	}, 500);
 
 	hideEveryPage();
 

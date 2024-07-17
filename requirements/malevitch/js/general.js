@@ -896,7 +896,7 @@ async function checkCloseTournamentSocket() {
 	var	tournamentId = document.querySelector('.tournament-info-name').getAttribute('tournament-id');
 	var	inTournament;
 
-	if (tournamentId == null || g_matchmakingSocket == null) {
+	if (tournamentId == null || g_tournamentSocket == null) {
 		return ;
 	}
 	try {

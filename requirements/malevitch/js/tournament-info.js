@@ -4,6 +4,12 @@
 async function loadOngoingTournament(id, item) {
 	var	tournamentInfo;
 
+	if (item != null) {
+		setTimeout(() => {
+			item.disabled = false;
+		}, 2000);
+	}
+
 	try {
 		tournamentInfo = await get_tournament_infos(id);
 	} catch (error) {
@@ -16,12 +22,6 @@ async function loadOngoingTournament(id, item) {
 	}
 	await clearTournamentInfo();
 	await loadTournamentInfo(tournamentInfo, true);
-
-	if (item != null) {
-		setTimeout(() => {
-			item.disabled = false;
-		}, 2000);
-	}
 }
 
 // Closed tournament : load from Mnemosine
@@ -819,7 +819,7 @@ document.querySelector('.tournament-info-name-input').addEventListener('keypress
 // Confirm / cancel the leaving
 
 document.querySelector('.tournament-info-edit-alert .alert-confirm-button').addEventListener('click', async function () {
-	document.querySelector('.tournament-info-edit-alert .alert-confirm-button')
+	document.querySelector('.tournament-info-edit-alert .alert-confirm-button').disabled = true;
 	await changeTournamentName();
 	leaveTournamentEditMode();
 	setTimeout(() => {
@@ -833,6 +833,8 @@ async function changeTournamentName() {
 	
 	try {
 		await change_tournament_name(tournamentNameInput.value, tournamentId);
+		// Update tournament name
+		document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 	} catch (error) {
 		console.error();
 		return ;
@@ -841,9 +843,6 @@ async function changeTournamentName() {
 	// Hide alert
 	document.querySelector('.tournament-info-edit-alert').classList.add('visually-hidden');
 	setAriaHidden();
-	
-	// Update tournament name
-	document.querySelector('.tournament-info-name').textContent = tournamentNameInput.value;
 }
 
 document.querySelector('.tournament-info-edit-alert .alert-cancel-button').addEventListener('click', function () {
@@ -922,7 +921,6 @@ async function addInvitedPlayerToTournament(id) {
 		await invite_friend_to_tournament(tournamentId, id);
 	} catch (error) {
 		console.error(error);
-		return ;
 	}
 
 	// Hide alert

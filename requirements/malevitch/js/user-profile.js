@@ -76,7 +76,12 @@ async function loadUserContent(id) {
 				}
 
 				if (isAvailable) {
-					playIcon.classList.remove('visually-hidden');
+					if (g_matchmakingSocket == null && g_tournamentSocket == null) {
+						playIcon.classList.remove('visually-hidden');
+					}
+					else {
+						playIcon.classList.add('visually-hidden');
+					}
 					stateIcon.classList.add('user-profile-state-online');
 					stateIcon.classList.remove('user-profile-state-unavailable');
 					stateIcon.classList.remove('user-profile-state-offline');
@@ -566,14 +571,13 @@ async function changeNickname() {
 	if (nicknameInput.value != g_userNick) {
 		try {
 			await patch_user_info(g_userId, null, null, nicknameInput.value, null, null);
+			g_userNick = nicknameInput.value;
+			// Update profile name
+			document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 		} catch (error) {
 			console.error(error);
 			return ;
 		}
-		g_userNick = nicknameInput.value;
-
-		// Update profile name
-		document.querySelector('.user-profile-name').textContent = nicknameInput.value;
 	}
 
 	// Hide alert
@@ -720,7 +724,6 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 		await invite_friend_to_game(friendId);
 	} catch (error) {
 		console.error(error);
-		return ;
 	}
 
 	this.classList.add('visually-hidden');

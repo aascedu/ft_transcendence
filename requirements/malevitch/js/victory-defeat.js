@@ -86,20 +86,21 @@ document.querySelector('.victory-defeat-again').addEventListener('click', async 
 	try {
 		document.querySelector('.victory-defeat-again').disabled = true;
 
+		setTimeout(() => {
+			document.querySelector('.victory-defeat-again').disabled = false;
+		}, 500);
+
 		var	userId = this.getAttribute('user-id');
 		await invite_friend_to_game(userId);
 
 		var	userNick = await get_user_info(userId);
 		userNick = userNick.Nick;
 		
+
 		if (g_invited == true) {
 			g_invited = false;
 			return ;
 		}
-
-		setTimeout(() => {
-			document.querySelector('.victory-defeat-again').disabled = false;
-		}, 500);
 
 		// Display homepage game
 		document.querySelector('.homepage-header-logo').focus();
