@@ -30,7 +30,7 @@ async function invite_friend_to_game(PlayerToInvite) {
 					setAriaHidden();
 				}
 			}
-		}, 60000);
+		}, 20000);
     }
 }
 
