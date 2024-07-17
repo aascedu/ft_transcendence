@@ -14,6 +14,7 @@ class Match:
         self.lastMoveTime = 0
         self.startTime = 0
         self.endTime = 0
+        self.isCorrupted = False
 
     def to_mnemosine(self):
         if self.score[0] < self.score[1]:
