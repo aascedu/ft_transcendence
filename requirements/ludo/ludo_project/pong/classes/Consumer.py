@@ -222,6 +222,15 @@ class Consumer(OurBasicConsumer):
                 self.myMatch.players[id].move(self.gameSettings, self.lastRequestTime)
                 self.lastRequestTime = time.time_ns()
                 if isinstance(self.myMatch.players[id].up, bool) is False or isinstance(self.myMatch.players[id].down, bool) is False:
+                    self.myMatch.gameEnded[self.id] = True
+                    self.myMatch.score[self.opponentId] = 5
+                    winner = self.myMatch.players[self.opponentId].id
+                    await self.channel_layer.group_send(
+                            self.roomName, {
+                                "type": "gameEnd",
+                                "winner": winner,
+                            }
+                        )
                     await self.close()
             except BaseException as e:
                 await self.close()
