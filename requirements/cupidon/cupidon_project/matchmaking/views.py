@@ -46,7 +46,7 @@ class RequestGame(View):
             if response.status_code != 200:
                 logging.warning("Failed to send invitation to player " + strp2)
                 return JsonErrResponse(request, {'Err': "Failed to send notification to invite friend"}, status = response.status_code)
-        except Exception as e:
+        except Exception:
             logging.error("Failed to send invitation to player " + strp2)
             return JsonErrResponse(request, {'Err': "Fatal: Failed to send notification to invite friend"}, status = response.status_code)
 

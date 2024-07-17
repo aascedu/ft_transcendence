@@ -208,7 +208,7 @@ class inviteFriend(View):
             return JsonNotFound(request, 'tournament does not exists')
 
         if invited in tournaments[tournamentId].invited:
-            return JsonBadRequest(request, 'Player already invited')
+            return JsonBadRequest(request, 'Allready invited boy')
         tournaments[tournamentId].invited.append(invited)
 
         try:
@@ -237,8 +237,6 @@ class inviteFriend(View):
             return JsonUnauthorized(request, 'Only authenticated players decline tournament invitation')
 
         global tournaments
-        if tournamentId not in tournaments:
-            return JsonNotFound(request, 'tournamentId not found')
 
         try:
             strid = str(request.user.id)
