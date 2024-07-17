@@ -851,7 +851,8 @@ document.querySelectorAll('.alert').forEach(function(item) {
 		if (this !== event.target) {
 			return ;
 		}
-		if (item.classList.contains('reconnection-alert')) {
+		if (item.classList.contains('reconnection-alert')
+			|| item.classList.contains('broken-socket-alert')) {
 			return ;
 		}
 		item.classList.add('visually-hidden');

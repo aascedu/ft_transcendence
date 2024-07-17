@@ -174,7 +174,7 @@ async function loadUserContent(id) {
 	var	score;
 	var	opponent;
 
-	for (i = history.length - 1; i >= 0; i--) {
+	for (i = 0; i < history.length; i--) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -287,7 +287,7 @@ async function loadUserContent(id) {
 	// draw lines
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
-	for (i = history.length - 1; i >= 0; i--) {
+	for (i = 0; i < history.length; i++) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -309,7 +309,7 @@ async function loadUserContent(id) {
 	ctx.beginPath();
 	ctx.moveTo(startX, startY);
 	ctx.arc(startX, startY, 5, 0, 2*Math.PI);
-	for (i = history.length - 1; i >= 0; i--) {
+	for (i = 0; i < history.length; i++) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -368,7 +368,7 @@ function getCanvasHeight(id, history, spacing) {
 	var	min = 0;
 	var	max = 0;
 
-	for (i = history.length - 1; i >= 0; i--) {
+	for (i = 0; i < history.length; i++) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -389,7 +389,7 @@ function getCanvasStart(id, history, height, spacing) {
 	var	min = 0;
 	var	max = 0;
 
-	for (i = history.length - 1; i >= 0; i--) {
+	for (i = 0; i < history.length; i++) {
 		if (typeof history[i] === 'undefined') {
 			continue ;
 		}
@@ -723,7 +723,35 @@ document.querySelector('.user-profile-play-icon').addEventListener('click', asyn
 		var	friendId = document.querySelector('.user-profile-name').getAttribute('user-id');
 		await invite_friend_to_game(friendId);
 	} catch (error) {
-		console.error(error);
+		var errMsg = await error;
+		if (errMsg == 'Bad Request : Too many players already: HTTP error: 400 : Bad Request : Too many players already') {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.tournament-full-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
+		if (errMsg == 'Bad Request : Already in tournament: HTTP error: 400 : Bad Request : Already in tournament') {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
+		if (errMsg.toString().includes('Conflict')) {
+			// Hide tournament nickname alert
+			document.querySelector('.tournament-info-join-alert').classList.add('visually-hidden');
+
+			// Show tournament full alert
+			document.querySelector('.not-available-alert').classList.remove('visually-hidden');
+
+			setAriaHidden();
+		}
+		return ;
 	}
 
 	this.classList.add('visually-hidden');

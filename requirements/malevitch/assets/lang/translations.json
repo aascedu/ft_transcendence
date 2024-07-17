@@ -112,7 +112,8 @@
 		"game-already": "Error when trying to start game.",
 		"notif-invite-sent": "You have successfully invited",
 		"notif-new-friendship": "has accepted your friend request",
-		"notif-forbidden": "Request forbidden. Try something else"
+		"notif-forbidden": "Request forbidden. Try something else",
+		"broken-socket": "Broken socket. Check that you're not connected elsewhere."
 	},
 	"fr": {
 		"font-size": "Taille de la police",
@@ -227,7 +228,8 @@
 		"game-already": "Erreur lors du lancement de la partie.",
 		"notif-invite-sent": "Invitation envoyée à",
 		"notif-new-friendship": "a accepté votre demande d'ami",
-		"notif-forbidden": "Requête interdite. Essayez autre chose"
+		"notif-forbidden": "Requête interdite. Essayez autre chose",
+		"broken-socket": "Problème de socket. Vérifiez que vous n'êtes pas déjà connecté ailleurs."
 	},
 	"zh": {
 		"font-size": "字体大小",
@@ -342,7 +344,8 @@
 		"game-already": "尝试开始游戏时出错",
 		"notif-invite-sent": "您已成功邀请",
 		"notif-new-friendship": "已接受您的好友请求",
-		"notif-forbidden": "请求被禁止。尝试其他方法"
+		"notif-forbidden": "请求被禁止。尝试其他方法",
+		"broken-socket": "插座损坏。请检查您是否未连接到其他地方。"
 	}
 }
 
