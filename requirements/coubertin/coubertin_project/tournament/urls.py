@@ -12,4 +12,3 @@ urlpatterns = [
     path("is-participating/<int:tournamentId>/", views.inTournament.as_view(), name="isParticipating"),
     path("in-a-tournament/", views.inATournament.as_view(), name="inATournament"),
 ]
-
