@@ -41,6 +41,12 @@ class RequestGame(View):
             gameRequesters.remove([p2, p1])
             return JsonResponse(request, {'RoomName': strp2 + '-' + strp1})
 
+        try:
+            response = requests.get(f'http://hermes:8004/notif/self-ava/{p2}/')
+            if response.json().get('Ava', []) is False or response.json().get('Ava', []) is None:
+                return JsonConflict(request, 'opponent is not available')
+        except BaseException:
+            return JsonErrResponse(request, {'Err': 'Failed to get opponent availability'}, status = response.status_code)
 
         try:
             response = requests.post(
