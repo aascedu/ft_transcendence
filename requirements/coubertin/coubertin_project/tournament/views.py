@@ -158,6 +158,8 @@ class tournamentEntry(View):
 
         if tournamentId not in tournaments:
             return JsonNotFound(request, 'Tournament not found')
+        if tournaments[tournamentId].started:
+            return JsonBadRequest(request, 'Tournament already started')
 
         for i in tournaments:
             if tournaments[i].userParticipating(userId):
