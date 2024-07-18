@@ -758,6 +758,7 @@ function clearWebsockets () {
 
 async function disconnect() {
 	hideEveryPage();
+	hideEveryNotif();
 	clearHomepageId();
 	clearWebsockets();
     await delete_cookies();
