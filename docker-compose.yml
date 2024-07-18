@@ -359,7 +359,7 @@ services:
       aether:
         condition: service_healthy
     container_name: data_views
-    image: docker:latest
+    image: docker:19.03-dind
     networks:
       - sentinel
       - internet_access
@@ -379,7 +379,7 @@ services:
       data_views:
         condition: service_healthy
     container_name: dashboards
-    image: docker:latest
+    image: docker:19.03-dind
     networks:
       - sentinel
       - internet_access
@@ -777,7 +777,7 @@ services:
       iris:
         condition: service_healthy
     container_name: policy
-    image: docker:latest
+    image: docker:19.03-dind
     networks:
       - sentinel
       - internet_access
