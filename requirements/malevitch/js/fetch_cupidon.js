@@ -21,7 +21,6 @@ async function invite_friend_to_game(PlayerToInvite) {
 
 		g_gameInviteTimer = setTimeout(async () => {
 			await cancel_invitation_to_game();
-			console.log('timeout');
 
 			// if we are on our friend profile, update availability (play button)
 			if (g_state.pageToDisplay == '.user-profile') {
