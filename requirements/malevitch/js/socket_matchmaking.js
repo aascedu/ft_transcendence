@@ -41,7 +41,9 @@ async function init_matchmaking_socket(requester, invited) {
 			}
 			await matchFound(opponent);
             showGamePage(data.RoomName);
-            g_matchmakingSocket.close();
+			if (g_matchmakingSocket != null) {
+				g_matchmakingSocket.close();
+			}
         }
 		if (data.type === "game.refused") {
 			clearTimeout(g_gameInviteTimer);

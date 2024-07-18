@@ -82,7 +82,7 @@ class RequestGame(View):
                     }
                 )
         try:
-            requests.delete(
+            requests.post(
                 'http://hermes:8004/notif/available-states/',
                 json={'Id': request.user.id})
         except BaseException:
